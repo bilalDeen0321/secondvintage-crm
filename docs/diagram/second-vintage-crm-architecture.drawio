@@ -1,0 +1,275 @@
+<mxfile host="app.diagrams.net" modified="2024-01-30T18:56:34.000Z" agent="5.0" etag="abc123" version="22.1.16">
+  <diagram name="Second Vintage CRM Architecture" id="architecture">
+    <mxGraphModel dx="2074" dy="1196" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- User Layer -->
+        <mxCell id="userLayer" value="User Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1560" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="admin" value="👤 Admin&#xa;Full Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="userLayer">
+          <mxGeometry x="40" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="manager" value="👤 Manager&#xa;Edit Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="userLayer">
+          <mxGeometry x="200" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="finance" value="👤 Finance&#xa;View + Export" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="userLayer">
+          <mxGeometry x="360" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="agent" value="👤 Agent&#xa;Limited Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="userLayer">
+          <mxGeometry x="520" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="seller" value="👤 Seller&#xa;Own Watches Only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;" vertex="1" parent="userLayer">
+          <mxGeometry x="680" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Frontend Application -->
+        <mxCell id="frontendLayer" value="Frontend Application (Next.js)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="1560" height="280" as="geometry" />
+        </mxCell>
+        
+        <!-- Core Modules -->
+        <mxCell id="coreModules" value="Core Modules" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="frontendLayer">
+          <mxGeometry x="20" y="40" width="500" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dashboard" value="📊 Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="20" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="watchMgmt" value="⌚ Watch Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="180" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="multiPlatform" value="🌐 Multi-platform Sales" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="340" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="batchMgmt" value="📦 Batch Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="20" y="100" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="salesHistory" value="📈 Sales History" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="180" y="100" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="wishList" value="❤️ Wish List" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="coreModules">
+          <mxGeometry x="340" y="100" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- User Management -->
+        <mxCell id="userMgmt" value="User Management" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="frontendLayer">
+          <mxGeometry x="540" y="40" width="500" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="agentBalance" value="💰 Agent Balance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="userMgmt">
+          <mxGeometry x="20" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="agentWatches" value="⌚ Agent Watches" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="userMgmt">
+          <mxGeometry x="180" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="sellerWatches" value="⌚ Seller Watches" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="userMgmt">
+          <mxGeometry x="340" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="users" value="👥 Users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="userMgmt">
+          <mxGeometry x="20" y="100" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- System -->
+        <mxCell id="system" value="System" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="frontendLayer">
+          <mxGeometry x="1060" y="40" width="480" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="fullDataView" value="🗂️ Full Data View" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="system">
+          <mxGeometry x="20" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="settings" value="⚙️ Settings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="system">
+          <mxGeometry x="180" y="40" width="140" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="log" value="📋 Log" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;" vertex="1" parent="system">
+          <mxGeometry x="340" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Backend Services -->
+        <mxCell id="backendLayer" value="Backend Services" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="1560" height="140" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="authService" value="🔐 Authentication&#xa;&amp; Authorization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;" vertex="1" parent="backendLayer">
+          <mxGeometry x="40" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="apiGateway" value="🚪 API Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;" vertex="1" parent="backendLayer">
+          <mxGeometry x="220" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="fileService" value="📁 File Management&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;" vertex="1" parent="backendLayer">
+          <mxGeometry x="400" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="skuGenerator" value="🏷️ SKU Generator&#xa;Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;" vertex="1" parent="backendLayer">
+          <mxGeometry x="580" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="currencyService" value="💱 Currency&#xa;Conversion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#1b5e20;" vertex="1" parent="backendLayer">
+          <mxGeometry x="760" y="40" width="140" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Database Layer -->
+        <mxCell id="databaseLayer" value="Database Layer" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="1000" height="280" as="geometry" />
+        </mxCell>
+        
+        <!-- Core Tables -->
+        <mxCell id="coreTables" value="Core Tables" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="databaseLayer">
+          <mxGeometry x="20" y="40" width="300" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="watchesDB" value="⌚ Watches&#xa;Core Dataset" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="coreTables">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="batchesDB" value="📦 Batches" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="coreTables">
+          <mxGeometry x="160" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="usersDB" value="👥 Users" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="coreTables">
+          <mxGeometry x="20" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="transactionsDB" value="💳 Transactions" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="coreTables">
+          <mxGeometry x="160" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Reference Tables -->
+        <mxCell id="refTables" value="Reference Tables" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="databaseLayer">
+          <mxGeometry x="340" y="40" width="300" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="brandsDB" value="🏷️ Brands" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="refTables">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="locationsDB" value="📍 Locations" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="refTables">
+          <mxGeometry x="160" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="statusesDB" value="📊 Statuses" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="refTables">
+          <mxGeometry x="20" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="stageLogsDB" value="📋 Stage Logs" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="refTables">
+          <mxGeometry x="160" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Separate API -->
+        <mxCell id="separateAPI" value="Separate API" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="databaseLayer">
+          <mxGeometry x="660" y="40" width="320" height="220" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="wishListDB" value="❤️ Wish List&#xa;Separate API" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;" vertex="1" parent="separateAPI">
+          <mxGeometry x="100" y="80" width="120" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- External Integrations -->
+        <mxCell id="externalLayer" value="External Integrations" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="700" width="520" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- Sales Platforms -->
+        <mxCell id="salesPlatforms" value="Sales Platforms" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="externalLayer">
+          <mxGeometry x="20" y="40" width="480" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="catawiki" value="🏺 Catawiki&#xa;CSV Export" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="salesPlatforms">
+          <mxGeometry x="20" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ebay" value="🛒 eBay&#xa;API Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="salesPlatforms">
+          <mxGeometry x="140" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="tradera" value="🇸🇪 Tradera&#xa;API Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="salesPlatforms">
+          <mxGeometry x="260" y="40" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="chrono24" value="⏰ Chrono24&#xa;Future" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="salesPlatforms">
+          <mxGeometry x="380" y="40" width="80" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- AI & Automation -->
+        <mxCell id="aiAutomation" value="AI &amp; Automation" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="externalLayer">
+          <mxGeometry x="20" y="160" width="480" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="makeCom" value="🤖 Make.com&#xa;Webhooks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="aiAutomation">
+          <mxGeometry x="20" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="aiService" value="🧠 AI Description&#xa;Generation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="aiAutomation">
+          <mxGeometry x="160" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Logistics -->
+        <mxCell id="logistics" value="Logistics" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;" vertex="1" parent="externalLayer">
+          <mxGeometry x="20" y="280" width="480" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dhl" value="📦 DHL&#xa;Tracking API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#880e4f;" vertex="1" parent="logistics">
+          <mxGeometry x="20" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- File Storage -->
+        <mxCell id="fileStorage" value="File Storage" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#33691e;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1020" width="520" height="140" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="imageStorage" value="🖼️ Watch Images&#xa;WatchImages/SKU/001.jpg&#xa;Public URLs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#33691e;" vertex="1" parent="fileStorage">
+          <mxGeometry x="40" y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="thumbnailStorage" value="🖼️ Thumbnails&#xa;256x256px&#xa;_s.jpg suffix" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#33691e;" vertex="1" parent="fileStorage">
+          <mxGeometry x="280" y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="conn1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="admin" target="dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="conn2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="dashboard" target="apiGateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="conn3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="apiGateway" target="watchesDB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="conn4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="multiPlatform" target="catawiki">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="conn5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="watchMgmt" target="makeCom">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="conn6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fileService" target="imageStorage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
