@@ -1,0 +1,527 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom theme variables */
+    --theme-sidebar-bg: 222 47% 11%;
+    --theme-sidebar-active: 32 81% 51%;
+    --theme-primary: 32 81% 51%;
+    --theme-primary-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Color Theme Variations */
+  [data-color-theme="default"] {
+    --theme-sidebar-bg: 222 47% 11%;
+    --theme-sidebar-active: 32 81% 51%;
+    --theme-primary: 32 81% 51%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 32 81% 51%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="blue"] {
+    --theme-sidebar-bg: 222 47% 11%;
+    --theme-sidebar-active: 217 91% 60%;
+    --theme-primary: 217 91% 60%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="green"] {
+    --theme-sidebar-bg: 158 64% 10%;
+    --theme-sidebar-active: 142 76% 36%;
+    --theme-primary: 142 76% 36%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="purple"] {
+    --theme-sidebar-bg: 263 83% 17%;
+    --theme-sidebar-active: 271 91% 65%;
+    --theme-primary: 271 91% 65%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 271 91% 65%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="red"] {
+    --theme-sidebar-bg: 0 63% 15%;
+    --theme-sidebar-active: 0 84% 60%;
+    --theme-primary: 0 84% 60%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="orange"] {
+    --theme-sidebar-bg: 24 70% 15%;
+    --theme-sidebar-active: 25 95% 53%;
+    --theme-primary: 25 95% 53%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="pink"] {
+    --theme-sidebar-bg: 336 84% 17%;
+    --theme-sidebar-active: 330 81% 60%;
+    --theme-primary: 330 81% 60%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 330 81% 60%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="indigo"] {
+    --theme-sidebar-bg: 234 89% 17%;
+    --theme-sidebar-active: 239 84% 67%;
+    --theme-primary: 239 84% 67%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="teal"] {
+    --theme-sidebar-bg: 173 80% 15%;
+    --theme-sidebar-active: 172 66% 50%;
+    --theme-primary: 172 66% 50%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 172 66% 50%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="slate"] {
+    --theme-sidebar-bg: 210 40% 8%;
+    --theme-sidebar-active: 215 25% 27%;
+    --theme-primary: 215 25% 27%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 215 25% 27%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="emerald"] {
+    --theme-sidebar-bg: 158 64% 8%;
+    --theme-sidebar-active: 160 84% 25%;
+    --theme-primary: 160 84% 25%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 160 84% 25%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  [data-color-theme="violet"] {
+    --theme-sidebar-bg: 262 83% 12%;
+    --theme-sidebar-active: 258 90% 30%;
+    --theme-primary: 258 90% 30%;
+    --theme-primary-foreground: 0 0% 100%;
+    --primary: 258 90% 30%;
+    --primary-foreground: 0 0% 100%;
+  }
+
+  /* Dark Mode Themes */
+  [data-color-theme="dark-blue"] {
+    --background: 222 84% 4%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 6%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 217 32% 12%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 32% 12%;
+    --accent-foreground: 210 40% 98%;
+    --border: 217 32% 15%;
+    --input: 217 32% 15%;
+    --secondary: 217 32% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 212.7 26.8% 83.9%;
+    --theme-sidebar-bg: 222 84% 2%;
+    --theme-sidebar-active: 217 91% 60%;
+    --theme-primary: 217 91% 60%;
+    --theme-primary-foreground: 222 84% 4%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 84% 4%;
+  }
+
+  [data-color-theme="dark-slate"] {
+    --background: 222 84% 4%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 6%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 217 32% 12%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 32% 12%;
+    --accent-foreground: 210 40% 98%;
+    --border: 217 32% 15%;
+    --input: 217 32% 15%;
+    --secondary: 217 32% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 212.7 26.8% 83.9%;
+    --theme-sidebar-bg: 222 84% 2%;
+    --theme-sidebar-active: 215 25% 30%;
+    --theme-primary: 215 25% 30%;
+    --theme-primary-foreground: 222 84% 4%;
+    --primary: 215 25% 30%;
+    --primary-foreground: 222 84% 4%;
+  }
+
+  [data-color-theme="dark-green"] {
+    --background: 158 64% 4%;
+    --foreground: 210 40% 98%;
+    --card: 158 64% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 158 64% 6%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 155 20% 12%;
+    --muted-foreground: 155 15% 65%;
+    --accent: 155 20% 12%;
+    --accent-foreground: 210 40% 98%;
+    --border: 155 20% 15%;
+    --input: 155 20% 15%;
+    --secondary: 155 20% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 212.7 26.8% 83.9%;
+    --theme-sidebar-bg: 158 64% 2%;
+    --theme-sidebar-active: 142 76% 36%;
+    --theme-primary: 142 76% 36%;
+    --theme-primary-foreground: 158 64% 4%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 158 64% 4%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Ensure all elements properly inherit theme colors */
+  .sheet-content {
+    @apply bg-card text-card-foreground;
+  }
+
+  /* Force card backgrounds to use theme colors */
+  .bg-white {
+    @apply bg-card;
+  }
+
+  .bg-slate-50 {
+    @apply bg-card;
+  }
+
+  .bg-gray-50 {
+    @apply bg-card;
+  }
+
+  /* Force text colors to use theme colors */
+  .text-slate-900 {
+    @apply text-foreground;
+  }
+
+  .text-gray-900 {
+    @apply text-foreground;
+  }
+
+  .text-slate-800 {
+    @apply text-foreground;
+  }
+
+  .text-gray-800 {
+    @apply text-foreground;
+  }
+
+  /* Force muted text to use theme colors */
+  .text-slate-600 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-600 {
+    @apply text-muted-foreground;
+  }
+
+  /* Force border colors to use theme colors */
+  .border-slate-200 {
+    @apply border-border;
+  }
+
+  .border-gray-200 {
+    @apply border-border;
+  }
+
+  .border-slate-300 {
+    @apply border-border;
+  }
+
+  .border-gray-300 {
+    @apply border-border;
+  }
+
+  /* Ensure hover states work with dark themes */
+  .hover\:bg-slate-50:hover {
+    @apply hover:bg-accent;
+  }
+
+  .hover\:bg-gray-50:hover {
+    @apply hover:bg-accent;
+  }
+
+  /* Force page titles to be white in dark themes */
+  [data-color-theme="dark-blue"] h1,
+  [data-color-theme="dark-slate"] h1,
+  [data-color-theme="dark-green"] h1 {
+    color: white !important;
+  }
+
+  [data-color-theme="dark-blue"] .text-3xl.font-bold,
+  [data-color-theme="dark-slate"] .text-3xl.font-bold,
+  [data-color-theme="dark-green"] .text-3xl.font-bold {
+    color: white !important;
+  }
+
+  /* Comprehensive Watch Management dark theme fixes */
+  [data-color-theme="dark-blue"],
+  [data-color-theme="dark-slate"],
+  [data-color-theme="dark-green"] {
+    /* Full Data View - main content wrapper background */
+    .min-h-screen.bg-slate-50 {
+      @apply bg-background;
+    }
+    
+    /* Stats cards at the top */
+    .bg-white {
+      @apply bg-card;
+    }
+    
+    /* Search input */
+    input {
+      @apply bg-card text-foreground border-border;
+    }
+    
+    /* All buttons and selectors */
+    button {
+      @apply bg-card text-foreground border-border;
+    }
+    
+    /* Status filter boxes */
+    .bg-amber-50 {
+      @apply bg-card;
+    }
+    
+    .border-amber-200 {
+      @apply border-border;
+    }
+    
+    /* Table styling with darker borders */
+    table {
+      @apply bg-card border-border;
+      border: 2px solid hsl(var(--border));
+    }
+    
+    thead {
+      @apply bg-muted;
+    }
+    
+    tbody {
+      @apply bg-card;
+    }
+    
+    th {
+      @apply text-foreground bg-muted border-border;
+      border-right: 1px solid hsl(var(--border));
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    
+    td {
+      @apply text-foreground bg-card border-border;
+      border-right: 1px solid hsl(var(--border));
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    
+    /* Table hover states */
+    tr:hover {
+      @apply bg-accent;
+    }
+    
+    /* Table row borders */
+    .divide-y > tr {
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    
+    /* Filter text/numbers - lighter color */
+    .text-slate-600 {
+      color: hsl(215 20% 75%) !important;
+    }
+    
+    .text-lg.font-bold.text-slate-900 {
+      color: hsl(210 40% 90%) !important;
+    }
+    
+    .text-xs.text-slate-600 {
+      color: hsl(215 20% 75%) !important;
+    }
+    
+    /* Form elements */
+    .bg-slate-100 {
+      @apply bg-card;
+    }
+    
+    /* Dropdown and select elements */
+    [role="combobox"] {
+      @apply bg-card text-foreground border-border;
+    }
+    
+    /* Any remaining white backgrounds */
+    .bg-gray-100 {
+      @apply bg-card;
+    }
+    
+    /* Text colors for better contrast */
+    .text-slate-700 {
+      @apply text-foreground;
+    }
+    
+    .text-slate-800 {
+      @apply text-foreground;
+    }
+    
+    /* Border improvements */
+    .border-slate-300 {
+      @apply border-border;
+    }
+    
+    /* Rounded elements */
+    .rounded-lg {
+      @apply bg-card;
+    }
+    
+    /* Pagination and other controls */
+    .text-sm.text-slate-600 {
+      @apply text-muted-foreground;
+    }
+  }
+
+  /* Force gradients to use theme-appropriate colors for dark themes */
+  [data-color-theme="dark-blue"] .bg-gradient-to-br.from-green-50.to-emerald-50,
+  [data-color-theme="dark-slate"] .bg-gradient-to-br.from-green-50.to-emerald-50,
+  [data-color-theme="dark-green"] .bg-gradient-to-br.from-green-50.to-emerald-50 {
+    @apply from-green-900/20 to-emerald-900/20;
+  }
+
+  [data-color-theme="dark-blue"] .bg-gradient-to-br.from-red-50.to-pink-50,
+  [data-color-theme="dark-slate"] .bg-gradient-to-br.from-red-50.to-pink-50,
+  [data-color-theme="dark-green"] .bg-gradient-to-br.from-red-50.to-pink-50 {
+    @apply from-red-900/20 to-pink-900/20;
+  }
+
+  [data-color-theme="dark-blue"] .bg-gradient-to-br.from-blue-50.to-indigo-50,
+  [data-color-theme="dark-slate"] .bg-gradient-to-br.from-blue-50.to-indigo-50,
+  [data-color-theme="dark-green"] .bg-gradient-to-br.from-blue-50.to-indigo-50 {
+    @apply from-blue-900/20 to-indigo-900/20;
+  }
+
+  [data-color-theme="dark-blue"] .bg-gradient-to-br.from-purple-50.to-violet-50,
+  [data-color-theme="dark-slate"] .bg-gradient-to-br.from-purple-50.to-violet-50,
+  [data-color-theme="dark-green"] .bg-gradient-to-br.from-purple-50.to-violet-50 {
+    @apply from-purple-900/20 to-violet-900/20;
+  }
+
+  [data-color-theme="dark-blue"] .bg-gradient-to-br.from-amber-50.to-yellow-50,
+  [data-color-theme="dark-slate"] .bg-gradient-to-br.from-amber-50.to-yellow-50,
+  [data-color-theme="dark-green"] .bg-gradient-to-br.from-amber-50.to-yellow-50 {
+    @apply from-amber-900/20 to-yellow-900/20;
+  }
+}
