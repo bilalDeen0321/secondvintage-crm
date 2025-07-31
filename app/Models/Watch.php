@@ -45,4 +45,60 @@ class Watch extends Model
     {
         return [];
     }
+
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function stage()
+    {
+        return $this->belongsTo(Stage::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    public function watchImages()
+    {
+        return $this->hasMany(WatchImage::class);
+    }
+
+    public function watchLogs()
+    {
+        return $this->hasMany(WatchLog::class);
+    }
+
+    public function platformData()
+    {
+        return $this->hasMany(PlatformData::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

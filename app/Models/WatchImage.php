@@ -31,4 +31,9 @@ class WatchImage extends Model
     {
         return [];
     }
+
+    public function watch()
+    {
+        return $this->belongsTo(Watch::class);
+    }
 }

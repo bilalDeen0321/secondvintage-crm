@@ -32,4 +32,24 @@ class Batch extends Model
     {
         return [];
     }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function watches()
+    {
+        return $this->hasMany(Watch::class);
+    }
 }

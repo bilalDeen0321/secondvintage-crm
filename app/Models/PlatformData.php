@@ -33,4 +33,9 @@ class PlatformData extends Model
             'data' => 'array', // Automatically cast JSON to array/object
         ];
     }
+
+    public function watch()
+    {
+        return $this->belongsTo(Watch::class);
+    }
 }

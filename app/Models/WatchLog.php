@@ -32,4 +32,9 @@ class WatchLog extends Model
             'details' => 'array', // Only if you plan to store structured JSON
         ];
     }
+
+    public function watch()
+    {
+        return $this->belongsTo(Watch::class);
+    }
 }
