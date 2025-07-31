@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Watch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class WatchLogFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'watch_id' => Watch::factory(),
+            'action' => fake()->randomElement(['created', 'updated', 'status_changed', 'image_uploaded']),
+            'details' => fake()->paragraph,
         ];
     }
 }

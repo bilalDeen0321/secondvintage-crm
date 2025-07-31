@@ -17,7 +17,7 @@ class StageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->randomElement(['Watch Management', 'Multi-Platform Sales', 'Shipping']),
         ];
     }
 }

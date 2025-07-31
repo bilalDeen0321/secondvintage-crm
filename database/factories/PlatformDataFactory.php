@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Watch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,14 @@ class PlatformDataFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'watch_id' => Watch::factory(),
+            'platform' => fake()->randomElement(['Catawiki', 'Tradera', 'eBay', 'Chrono24']),
+            'data' => [
+                'listing_id' => fake()->uuid,
+                'price' => fake()->randomFloat(2, 1000, 5000),
+                'currency' => fake()->currencyCode,
+            ],
+            'status' => fake()->randomElement(['draft', 'listed', 'sold', 'removed']),
         ];
     }
 }

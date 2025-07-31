@@ -2,21 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Models\Stage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
-class StageSeeder extends Seeder
+class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $stages = ['Watch Management', 'Multi-Platform Sales', 'Shipping'];
+        $roles = ['Admin', 'Manager', 'Agent', 'Seller'];
 
-        foreach ($stages as $stage) {
-            Stage::firstOrCreate(['name' => $stage]);
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role]);
         }
     }
 }

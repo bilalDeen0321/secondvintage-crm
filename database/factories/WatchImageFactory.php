@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Watch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class WatchImageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'watch_id' => Watch::factory(),
+            'filename' => fake()->uuid . '.jpg',
+            'public_url' => fake()->imageUrl(800, 600),
+            'order' => fake()->numberBetween(1, 5),
         ];
     }
 }
