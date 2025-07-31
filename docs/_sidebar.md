@@ -4,6 +4,11 @@
 - [Architectures](architecture)
 - [Diagram design](diagram-atchitecture)
 
-Development
+    Development
 
 - [Database design](database.md)
+
+    Project sources
+
+- [Project Timeline](project-timeline.md)
+- [Project Milestones](project-milestones.md)
