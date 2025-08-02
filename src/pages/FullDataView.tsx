@@ -1,14 +1,14 @@
-import React, { useState, useMemo } from 'react';
-import Layout from '../components/Layout';
-import { Watch } from '../types/Watch';
-import BrandSelector from '../components/BrandSelector';
-import LocationSelector from '../components/LocationSelector';
-import FieldVisibilityDialog from '../components/FieldVisibilityDialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Search, Database } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Database, Download } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import BrandSelector from '../components/BrandSelector';
+import FieldVisibilityDialog from '../components/FieldVisibilityDialog';
+import Layout from '../components/Layout';
+import LocationSelector from '../components/LocationSelector';
+import { Watch } from '../types/Watch';
 
 // Extended interface for full data view
 interface ExtendedWatch extends Watch {
@@ -273,7 +273,7 @@ const FullDataView = () => {
   };
 
   const filteredAndSortedWatches = useMemo(() => {
-    let filtered = watches.filter(watch => {
+    const filtered = watches.filter(watch => {
       const matchesStatus = statusFilter === 'All' || watch.status === statusFilter;
       const matchesBrand = brandFilter === 'All' || watch.brand === brandFilter;
       const matchesLocation = locationFilter === 'All' || watch.location === locationFilter;
@@ -286,7 +286,7 @@ const FullDataView = () => {
     filtered.sort((a, b) => {
       const aValue = a[sortField as keyof ExtendedWatch];
       const bValue = b[sortField as keyof ExtendedWatch];
-      
+
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
@@ -312,7 +312,7 @@ const FullDataView = () => {
       'Seller', 'Purchase Invoice', 'Service History', 'Description', 'AI Instructions', 'Image URLs',
       'API Status', 'API Last Sync', 'API Platform ID', 'API Listing URL', 'API Errors', 'API Sync Frequency'
     ];
-    
+
     const csvData = [
       headers.join(','),
       ...filteredAndSortedWatches.map(watch =>
@@ -413,7 +413,7 @@ const FullDataView = () => {
                 <p className="text-slate-600 mt-1">Complete comprehensive view of all data</p>
               </div>
               <div className="flex gap-2 flex-shrink-0">
-                <FieldVisibilityDialog 
+                <FieldVisibilityDialog
                   visibleFields={visibleFields}
                   onFieldToggle={handleFieldToggle}
                 />
@@ -455,11 +455,10 @@ const FullDataView = () => {
                     <div
                       key={status}
                       onClick={() => setStatusFilter(status)}
-                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                        statusFilter === status
+                      className={`p-4 rounded-lg border cursor-pointer transition-all ${statusFilter === status
                           ? 'bg-amber-50 border-amber-200'
                           : 'bg-white border-slate-200 hover:border-slate-300'
-                      }`}
+                        }`}
                     >
                       <div className="text-2xl font-bold text-slate-900">{count}</div>
                       <div className="text-sm text-slate-600">{status}</div>
@@ -485,7 +484,7 @@ const FullDataView = () => {
                       brands={uniqueBrands}
                       onEditBrands={handleEditBrands}
                     />
-                    
+
                     <LocationSelector
                       value={locationFilter}
                       onValueChange={setLocationFilter}
@@ -706,18 +705,17 @@ const FullDataView = () => {
                             )}
                             {visibleFields.status && (
                               <TableCell className="p-2">
-                                <span className={`px-1 py-0.5 rounded text-xs font-medium ${
-                                  watch.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
-                                  watch.status === 'Review' ? 'bg-yellow-100 text-yellow-800' :
-                                  watch.status === 'Platform Review' ? 'bg-orange-100 text-orange-800' :
-                                  watch.status === 'Ready for listing' ? 'bg-blue-100 text-blue-800' :
-                                  watch.status === 'Listed' ? 'bg-green-100 text-green-800' :
-                                  watch.status === 'Reserved' ? 'bg-purple-100 text-purple-800' :
-                                  watch.status === 'Sold' ? 'bg-slate-100 text-slate-800' :
-                                  watch.status === 'Defect/Problem' ? 'bg-red-100 text-red-800' :
-                                  watch.status === 'Standby' ? 'bg-amber-100 text-amber-800' :
-                                  'bg-gray-100 text-gray-800'
-                                }`}>
+                                <span className={`px-1 py-0.5 rounded text-xs font-medium ${watch.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
+                                    watch.status === 'Review' ? 'bg-yellow-100 text-yellow-800' :
+                                      watch.status === 'Platform Review' ? 'bg-orange-100 text-orange-800' :
+                                        watch.status === 'Ready for listing' ? 'bg-blue-100 text-blue-800' :
+                                          watch.status === 'Listed' ? 'bg-green-100 text-green-800' :
+                                            watch.status === 'Reserved' ? 'bg-purple-100 text-purple-800' :
+                                              watch.status === 'Sold' ? 'bg-slate-100 text-slate-800' :
+                                                watch.status === 'Defect/Problem' ? 'bg-red-100 text-red-800' :
+                                                  watch.status === 'Standby' ? 'bg-amber-100 text-amber-800' :
+                                                    'bg-gray-100 text-gray-800'
+                                  }`}>
                                   {watch.status}
                                 </span>
                               </TableCell>
@@ -797,13 +795,12 @@ const FullDataView = () => {
                             )}
                             {visibleFields.apiStatus && (
                               <TableCell className="p-2 bg-blue-50">
-                                <span className={`px-1 py-0.5 rounded text-xs font-medium ${
-                                  watch.apiStatus === 'Synced' ? 'bg-green-100 text-green-800' :
-                                  watch.apiStatus === 'Active' ? 'bg-blue-100 text-blue-800' :
-                                  watch.apiStatus === 'Error' ? 'bg-red-100 text-red-800' :
-                                  watch.apiStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-gray-100 text-gray-800'
-                                }`}>
+                                <span className={`px-1 py-0.5 rounded text-xs font-medium ${watch.apiStatus === 'Synced' ? 'bg-green-100 text-green-800' :
+                                    watch.apiStatus === 'Active' ? 'bg-blue-100 text-blue-800' :
+                                      watch.apiStatus === 'Error' ? 'bg-red-100 text-red-800' :
+                                        watch.apiStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                          'bg-gray-100 text-gray-800'
+                                  }`}>
                                   {watch.apiStatus || 'N/A'}
                                 </span>
                               </TableCell>

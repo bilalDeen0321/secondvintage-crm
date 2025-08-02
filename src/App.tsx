@@ -1,30 +1,32 @@
-import { Toaster } from "@/components/ui/toaster";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+//@ts-nocheck
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import AgentWatches from "./pages/AgentWatches";
+import Login from "./pages/Auth/Login";
+import BatchManagement from "./pages/BatchManagement";
 import Dashboard from "./pages/Dashboard";
 import DashboardB from "./pages/DashboardB";
 import DashboardC from "./pages/DashboardC";
-import WatchManagement from "./pages/WatchManagement";
-import MultiplatformSales from "./pages/MultiplatformSales";
-import Promote from "./pages/Promote";
-import WishList from "./pages/WishList";
 import FullDataView from "./pages/FullDataView";
-import BatchManagement from "./pages/BatchManagement";
-import SalesHistory from "./pages/SalesHistory";
-import PerformanceTracking from "./pages/PerformanceTracking";
-import VendorPayments from "./pages/VendorPayments";
-import AgentWatches from "./pages/AgentWatches";
-import Sellers from "./pages/Sellers";
 import Invoices from "./pages/Invoices";
-import Users from "./pages/Users";
-import Tools from "./pages/Tools";
-import Settings from "./pages/Settings";
 import Log from "./pages/Log";
+import MultiplatformSales from "./pages/MultiplatformSales";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
+import PerformanceTracking from "./pages/PerformanceTracking";
+import Promote from "./pages/Promote";
+import SalesHistory from "./pages/SalesHistory";
+import Sellers from "./pages/Sellers";
+import Settings from "./pages/Settings";
+import Tools from "./pages/Tools";
+import Users from "./pages/Users";
+import VendorPayments from "./pages/VendorPayments";
+import WatchManagement from "./pages/WatchManagement";
+import WishList from "./pages/WishList";
 
 const queryClient = new QueryClient();
 

@@ -54,6 +54,12 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    //Application lgoo
+    'logo' => env('APP_LOGO', '/images/logo.png'),
+
+    //application favicon
+    'favicon' => env('APP_FAVICON', '/images/logo.png'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -1,49 +1,64 @@
 
-import React, { useState } from 'react';
+import config from "@/app/config";
+import InputError from "@/components/InputError";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { FormEventHandler, useState } from 'react';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data, setData, post, processing, errors, reset } = useForm({
+    email: '',
+    password: '',
+    remember: false as boolean,
+  });
+
+  const submit: FormEventHandler = (e) => {
     e.preventDefault();
-    // This is just for layout purposes - no actual authentication
-    console.log('Login attempt:', { email, password });
+
+    post(route('login'), {
+      onFinish: () => reset('password'),
+    });
   };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+
+      <Head title="Login" />
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img 
-            src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png" 
-            alt="Second Vintage" 
+          <img
+            src={config.logo}
+            alt={config.name}
             className="h-12 mx-auto mb-6"
           />
           <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to your account to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={submit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
               <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
+                name="email"
                 id="email"
                 type="email"
+                autoComplete="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={data.email}
+                onChange={(e) => setData('email', e.target.value)}
                 className="pl-10"
                 required
               />
             </div>
+            <InputError message={errors.email} className="mt-2" />
           </div>
 
           <div className="space-y-2">
@@ -52,12 +67,12 @@ const Login = () => {
               <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={data.password}
+                onChange={(e) => setData('password', e.target.value)}
                 className="pl-10 pr-10"
-                required
               />
               <button
                 type="button"
@@ -67,6 +82,8 @@ const Login = () => {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+
+            <InputError message={errors.password} className="mt-2" />
           </div>
 
           <div className="flex items-center justify-between">
@@ -74,16 +91,15 @@ const Login = () => {
               <input type="checkbox" className="rounded border-input" />
               <span className="text-muted-foreground">Remember me</span>
             </label>
-            <a 
-              href="#" 
+            <Link
+              href={route('password.request')}
               className="text-sm text-primary hover:underline"
-              onClick={(e) => e.preventDefault()}
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={processing}>
             Sign In
           </Button>
         </form>
