@@ -1,21 +1,21 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Watch } from '../types/Watch';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSearchParams } from '@/hooks/useSearchParams';
+import { Edit, Grid, List, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import BatchSelector from '../components/BatchSelector';
+import BrandSelector from '../components/BrandSelector';
+import Layout from '../components/Layout';
+import LocationSelector from '../components/LocationSelector';
 import WatchCard from '../components/WatchCard';
 import WatchForm from '../components/WatchForm';
 import WatchListView from '../components/WatchListView';
-import BrandSelector from '../components/BrandSelector';
-import BatchSelector from '../components/BatchSelector';
-import LocationSelector from '../components/LocationSelector';
-import Layout from '../components/Layout';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid, List, Edit, Filter, X } from 'lucide-react';
+import { Watch } from '../types/Watch';
 
 const WatchManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [watches, setWatches] = useState<Watch[]>([
     {
       id: '1',
@@ -388,7 +388,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
   const [sortField, setSortField] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
-  
+
   const itemsPerPage = 50;
 
   const getBatchGroup = (watchId: string) => {
@@ -399,7 +399,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
 
   const getNavigationInfo = () => {
     if (!editingWatch) return { hasNext: false, hasPrevious: false };
-    
+
     const currentIndex = filteredAndSortedWatches.findIndex(w => w.id === editingWatch.id);
     return {
       hasNext: currentIndex < filteredAndSortedWatches.length - 1,
@@ -471,8 +471,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
   };
 
   const handleBulkStatusChange = (newStatus: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, status: newStatus as Watch['status'] }
         : watch
     ));
@@ -480,8 +480,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
   };
 
   const handleBulkLocationChange = (newLocation: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, location: newLocation }
         : watch
     ));
@@ -489,8 +489,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
   };
 
   const handleBulkBatchChange = (batchGroup: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, batchGroup }
         : watch
     ));
@@ -504,7 +504,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
       setStatusFilters(prev => {
         // Remove 'All' if it's selected and we're selecting another status
         const newFilters = prev.filter(s => s !== 'All');
-        
+
         if (newFilters.includes(status)) {
           // Remove the status if it's already selected
           const filtered = newFilters.filter(s => s !== status);
@@ -525,8 +525,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
       const matchesBatch = batchFilter === 'All' || getBatchGroup(watch.id) === batchFilter;
       const matchesLocation = locationFilter === 'All' || watch.location === locationFilter;
       const matchesSearch = watch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
+        watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesBrand && matchesBatch && matchesLocation && matchesSearch;
     });
 
@@ -534,14 +534,14 @@ If you have any questions, feel free to contact me after the auction ends.`,
       filtered = [...filtered].sort((a, b) => {
         let aValue = a[sortField as keyof Watch];
         let bValue = b[sortField as keyof Watch];
-        
+
         if (typeof aValue === 'string') {
           aValue = aValue.toLowerCase();
         }
         if (typeof bValue === 'string') {
           bValue = bValue.toLowerCase();
         }
-        
+
         if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
         return 0;
@@ -683,18 +683,17 @@ If you have any questions, feel free to contact me after the auction ends.`,
                 <button
                   key={status}
                   onClick={() => handleStatusToggle(status)}
-                  className={`w-[100px] h-16 p-2 rounded-lg border transition-all text-center ${
-                    statusFilters.includes(status)
+                  className={`w-[100px] h-16 p-2 rounded-lg border transition-all text-center ${statusFilters.includes(status)
                       ? 'bg-primary/10 border-primary ring-2 ring-primary/30'
                       : 'bg-white border-slate-200 hover:border-slate-300'
-                  }`}
+                    }`}
                 >
                   <div className="text-lg font-bold text-slate-900">{count}</div>
                   <div className="text-xs text-slate-600 leading-tight truncate">{status}</div>
                 </button>
               ))}
             </div>
-            
+
             {/* Clear status filters button */}
             {statusFilters.length > 1 || (statusFilters.length === 1 && !statusFilters.includes('All')) ? (
               <div className="mt-2">
@@ -751,7 +750,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
                   onEditBatches={handleEditBatches}
                 />
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Location:</span>
                 <LocationSelector
@@ -776,7 +775,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
                   {selectedWatches.length} watches selected - Bulk Actions:
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <span className="text-sm text-blue-700">Status:</span>
                 <Select onValueChange={handleBulkStatusChange}>
