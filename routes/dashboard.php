@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', fn() => Inertia::render('Dashboard'))->name('home');
-Route::get('/dshboard', fn() => Inertia::render('Dashboard'))->name('dshboard');
+Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
 Route::get('/watches', fn() => Inertia::render('WatchManagement'))->name('watches');
 Route::get('/sales', fn() => Inertia::render('SalesHistory'))->name('sales');
 Route::get('/batch', fn() => Inertia::render('BatchManagement'))->name('batch');

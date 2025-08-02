@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('test', function () {
-    return route('login');
+    return Auth::user()->getAllPermissions()->pluck('name');
 });
 
 
