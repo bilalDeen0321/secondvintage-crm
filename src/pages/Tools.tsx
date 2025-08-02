@@ -1,14 +1,15 @@
 
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { Database, Download, FileText, Image, Package, RefreshCw, Upload, Wrench } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Calculator, Database, FileText, Image, Wrench, Download, Upload, RefreshCw, Package } from 'lucide-react';
+import { Textarea } from '../components/ui/textarea';
 
 const Tools = () => {
   const [bulkText, setBulkText] = useState('');
@@ -45,6 +46,7 @@ const Tools = () => {
 
   return (
     <Layout>
+      <Head title="Tools & Utilities" />
       <div className="p-6 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Tools & Utilities</h1>

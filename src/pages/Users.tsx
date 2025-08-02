@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { Plus, RotateCcw, Search, Settings, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '../components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Label } from '../components/ui/label';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
-import { Plus, Search, Settings, RotateCcw, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 
 interface UserPermissions {
   dashboard: boolean;
@@ -196,11 +197,11 @@ const Users = () => {
       permissions: newUser.permissions
     };
     setUsers([...users, user]);
-    setNewUser({ 
-      name: '', 
-      email: '', 
-      role: 'viewer', 
-      country: '', 
+    setNewUser({
+      name: '',
+      email: '',
+      role: 'viewer',
+      country: '',
       currency: '',
       password: '',
       permissions: defaultPermissions
@@ -215,7 +216,7 @@ const Users = () => {
 
   const handleUpdateUser = () => {
     if (editingUser) {
-      setUsers(users.map(user => 
+      setUsers(users.map(user =>
         user.id === editingUser.id ? editingUser : user
       ));
       setIsEditDialogOpen(false);
@@ -258,7 +259,7 @@ const Users = () => {
               checked={permissions[key as keyof UserPermissions]}
               onCheckedChange={(checked) => onChange(key as keyof UserPermissions, checked as boolean)}
             />
-            <Label 
+            <Label
               htmlFor={`${isEdit ? 'edit-' : ''}permission-${key}`}
               className="text-sm font-normal cursor-pointer"
             >
@@ -275,6 +276,7 @@ const Users = () => {
 
   return (
     <Layout>
+      <Head title="User Management" />
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -300,20 +302,20 @@ const Users = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input 
-                        id="name" 
+                      <Input
+                        id="name"
                         value={newUser.name}
-                        onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                        onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                         placeholder="Enter full name"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
+                      <Input
+                        id="email"
+                        type="email"
                         value={newUser.email}
-                        onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                         placeholder="Enter email address"
                       />
                     </div>
@@ -321,21 +323,21 @@ const Users = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
-                      <Input 
-                        id="password" 
-                        type="password" 
+                      <Input
+                        id="password"
+                        type="password"
                         value={newUser.password}
-                        onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                         placeholder="Enter password"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="country">Country</Label>
-                      <select 
-                        id="country" 
+                      <select
+                        id="country"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={newUser.country}
-                        onChange={(e) => setNewUser({...newUser, country: e.target.value})}
+                        onChange={(e) => setNewUser({ ...newUser, country: e.target.value })}
                       >
                         <option value="">Select country...</option>
                         {countries.map((country) => (
@@ -345,11 +347,11 @@ const Users = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="currency">Currency</Label>
-                      <select 
-                        id="currency" 
+                      <select
+                        id="currency"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={newUser.currency}
-                        onChange={(e) => setNewUser({...newUser, currency: e.target.value})}
+                        onChange={(e) => setNewUser({ ...newUser, currency: e.target.value })}
                       >
                         <option value="">Select currency...</option>
                         {currencies.map((currency) => (
@@ -365,11 +367,11 @@ const Users = () => {
                   <h3 className="text-lg font-semibold border-b pb-2">Role & Access Level</h3>
                   <div className="space-y-2">
                     <Label htmlFor="role">User Role</Label>
-                    <select 
-                      id="role" 
+                    <select
+                      id="role"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={newUser.role}
-                      onChange={(e) => setNewUser({...newUser, role: e.target.value as User['role']})}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value as User['role'] })}
                     >
                       <option value="viewer">Viewer</option>
                       <option value="agent">Agent</option>
@@ -383,7 +385,7 @@ const Users = () => {
                 {/* Permissions Section */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold border-b pb-2">Menu Access Permissions</h3>
-                  <PermissionsSection 
+                  <PermissionsSection
                     permissions={newUser.permissions}
                     onChange={(permission, checked) => handlePermissionChange(permission, checked, false)}
                   />
@@ -519,30 +521,30 @@ const Users = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="edit-name">Full Name</Label>
-                      <Input 
-                        id="edit-name" 
+                      <Input
+                        id="edit-name"
                         value={editingUser.name}
-                        onChange={(e) => setEditingUser({...editingUser, name: e.target.value})}
+                        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="edit-email">Email Address</Label>
-                      <Input 
-                        id="edit-email" 
-                        type="email" 
+                      <Input
+                        id="edit-email"
+                        type="email"
                         value={editingUser.email}
-                        onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
+                        onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="edit-country">Country</Label>
-                      <select 
-                        id="edit-country" 
+                      <select
+                        id="edit-country"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={editingUser.country}
-                        onChange={(e) => setEditingUser({...editingUser, country: e.target.value})}
+                        onChange={(e) => setEditingUser({ ...editingUser, country: e.target.value })}
                       >
                         <option value="">Select country...</option>
                         {countries.map((country) => (
@@ -552,11 +554,11 @@ const Users = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="edit-currency">Currency</Label>
-                      <select 
-                        id="edit-currency" 
+                      <select
+                        id="edit-currency"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={editingUser.currency}
-                        onChange={(e) => setEditingUser({...editingUser, currency: e.target.value})}
+                        onChange={(e) => setEditingUser({ ...editingUser, currency: e.target.value })}
                       >
                         <option value="">Select currency...</option>
                         {currencies.map((currency) => (
@@ -573,11 +575,11 @@ const Users = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="edit-role">User Role</Label>
-                      <select 
-                        id="edit-role" 
+                      <select
+                        id="edit-role"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={editingUser.role}
-                        onChange={(e) => setEditingUser({...editingUser, role: e.target.value as User['role']})}
+                        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as User['role'] })}
                       >
                         <option value="viewer">Viewer</option>
                         <option value="agent">Agent</option>
@@ -588,11 +590,11 @@ const Users = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="edit-status">Account Status</Label>
-                      <select 
-                        id="edit-status" 
+                      <select
+                        id="edit-status"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={editingUser.status}
-                        onChange={(e) => setEditingUser({...editingUser, status: e.target.value as User['status']})}
+                        onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as User['status'] })}
                       >
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -604,7 +606,7 @@ const Users = () => {
                 {/* Permissions Section */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold border-b pb-2">Menu Access Permissions</h3>
-                  <PermissionsSection 
+                  <PermissionsSection
                     permissions={editingUser.permissions}
                     onChange={(permission, checked) => handlePermissionChange(permission, checked, true)}
                     isEdit={true}

@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Head } from '@inertiajs/react';
+import { Calendar, ChevronDown, ChevronUp, Edit, ExternalLink, FileText, Grid3x3, List, MapPin, Package, Plus, Receipt, Search, Truck, X } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
 import WatchDetailModal from '../components/WatchDetailModal';
 import { Batch } from '../types/Batch';
 import { Watch } from '../types/Watch';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Package, Plus, Truck, MapPin, Calendar, FileText, ExternalLink, Grid3x3, List, Edit, Receipt, Search, X, ChevronUp, ChevronDown } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const BatchManagement = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -26,18 +27,18 @@ const BatchManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [watchSearchTerm, setWatchSearchTerm] = useState('');
   const [watchStatusFilter, setWatchStatusFilter] = useState<string>('all');
-  
+
   // Sorting states for batch watches table
   const [batchWatchSortField, setBatchWatchSortField] = useState<string>('name');
   const [batchWatchSortDirection, setBatchWatchSortDirection] = useState<'asc' | 'desc'>('asc');
-  
+
   // Sorting states for add watch modal
   const [addWatchSortField, setAddWatchSortField] = useState<string>('name');
   const [addWatchSortDirection, setAddWatchSortDirection] = useState<'asc' | 'desc'>('asc');
-  
+
   // Multi-select states for add watch modal
   const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<string[]>([]);
-  
+
   // Mock watch database
   const [availableWatches] = useState<Watch[]>([
     { id: 'w1', name: 'Rolex Datejust', sku: 'ROL-DAT-001', brand: 'Rolex', status: 'Ready for listing', location: 'Hørning', description: 'Classic timepiece', images: [{ id: '1', url: '/lovable-uploads/0884f9b0-c02c-4735-9af7-ebe16f554fe8.png', useForAI: false }] },
@@ -46,7 +47,7 @@ const BatchManagement = () => {
     { id: 'w4', name: 'Breitling Avenger', sku: 'BRE-AVE-004', brand: 'Breitling', status: 'Review', location: 'Hørning', description: 'Aviation inspired', images: [{ id: '1', url: '/lovable-uploads/52231a31-d92b-4dc7-ab75-1e37c3104e6c.png', useForAI: false }] },
     { id: 'w5', name: 'IWC Da Vinci', sku: 'IWC-DAV-005', brand: 'IWC', status: 'Ready for listing', location: 'Hørning', description: 'Sophisticated design', images: [{ id: '1', url: '/lovable-uploads/5557d546-574f-45fb-bd5a-014ec53e5792.png', useForAI: false }] },
   ]);
-  
+
   const [batches, setBatches] = useState<Batch[]>([
     {
       id: '1',
@@ -222,31 +223,31 @@ const BatchManagement = () => {
 
   // Filter batches based on search and status
   const filteredBatches = batches.filter(batch => {
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = searchTerm === '' ||
       batch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       batch.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       batch.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
       batch.destination.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || batch.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
   // Filter and sort available watches for add modal
   const filteredAndSortedAvailableWatches = availableWatches.filter(watch => {
-    const matchesSearch = watchSearchTerm === '' || 
+    const matchesSearch = watchSearchTerm === '' ||
       watch.name.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
       watch.sku.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
       watch.brand.toLowerCase().includes(watchSearchTerm.toLowerCase());
-    
+
     const matchesStatus = watchStatusFilter === 'all' || watch.status === watchStatusFilter;
-    
+
     return matchesSearch && matchesStatus;
   }).sort((a, b) => {
     const aValue = a[addWatchSortField as keyof Watch] || '';
     const bValue = b[addWatchSortField as keyof Watch] || '';
-    
+
     if (addWatchSortDirection === 'asc') {
       return aValue.toString().localeCompare(bValue.toString());
     } else {
@@ -255,11 +256,12 @@ const BatchManagement = () => {
   });
 
   // Sort batch watches
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getSortedBatchWatches = (watches: any[]) => {
     return [...watches].sort((a, b) => {
       const aValue = a[batchWatchSortField] || '';
       const bValue = b[batchWatchSortField] || '';
-      
+
       if (batchWatchSortDirection === 'asc') {
         return aValue.toString().localeCompare(bValue.toString());
       } else {
@@ -289,8 +291,8 @@ const BatchManagement = () => {
 
   const getSortIcon = (field: string, currentSortField: string, currentSortDirection: 'asc' | 'desc') => {
     if (currentSortField !== field) return null;
-    return currentSortDirection === 'asc' ? 
-      <ChevronUp className="h-4 w-4 inline ml-1" /> : 
+    return currentSortDirection === 'asc' ?
+      <ChevronUp className="h-4 w-4 inline ml-1" /> :
       <ChevronDown className="h-4 w-4 inline ml-1" />;
   };
 
@@ -338,14 +340,14 @@ const BatchManagement = () => {
   };
 
   const updateBatchStatus = (batchId: string, status: Batch['status']) => {
-    setBatches(batches.map(batch => 
+    setBatches(batches.map(batch =>
       batch.id === batchId ? { ...batch, status } : batch
     ));
   };
 
   const updateBatchDetails = () => {
     if (editingBatch && editingBatchData) {
-      setBatches(batches.map(batch => 
+      setBatches(batches.map(batch =>
         batch.id === editingBatch ? { ...batch, ...editingBatchData } : batch
       ));
     }
@@ -379,7 +381,7 @@ const BatchManagement = () => {
 
   const handleWatchClick = (watchId: string) => {
     console.log('Watch clicked:', watchId);
-    
+
     // Find the watch from all batches
     let foundWatch: Watch | null = null;
     for (const batch of batches) {
@@ -399,7 +401,7 @@ const BatchManagement = () => {
         break;
       }
     }
-    
+
     if (foundWatch) {
       setSelectedWatch(foundWatch);
       setIsWatchModalOpen(true);
@@ -418,8 +420,8 @@ const BatchManagement = () => {
   };
 
   const removeWatchFromBatch = (batchId: string, watchId: string) => {
-    setBatches(batches.map(batch => 
-      batch.id === batchId 
+    setBatches(batches.map(batch =>
+      batch.id === batchId
         ? { ...batch, watches: batch.watches.filter(w => w.id !== watchId) }
         : batch
     ));
@@ -427,7 +429,7 @@ const BatchManagement = () => {
 
   const handleAddSelectedWatchesToBatch = () => {
     if (!selectedBatchForWatch || selectedWatchesToAdd.length === 0) return;
-    
+
     const watchesToAdd = availableWatches.filter(w => selectedWatchesToAdd.includes(w.id)).map(watch => ({
       id: watch.id,
       name: watch.name,
@@ -436,8 +438,8 @@ const BatchManagement = () => {
       image: watch.images?.[0]?.url || '/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png'
     }));
 
-    setBatches(batches.map(batch => 
-      batch.id === selectedBatchForWatch 
+    setBatches(batches.map(batch =>
+      batch.id === selectedBatchForWatch
         ? { ...batch, watches: [...batch.watches, ...watchesToAdd] }
         : batch
     ));
@@ -449,7 +451,7 @@ const BatchManagement = () => {
 
   const handleAddWatchToBatch = (watchId: string) => {
     if (!selectedBatchForWatch) return;
-    
+
     const watchToAdd = availableWatches.find(w => w.id === watchId);
     if (!watchToAdd) return;
 
@@ -461,8 +463,8 @@ const BatchManagement = () => {
       image: watchToAdd.images?.[0]?.url || '/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png'
     };
 
-    setBatches(batches.map(batch => 
-      batch.id === selectedBatchForWatch 
+    setBatches(batches.map(batch =>
+      batch.id === selectedBatchForWatch
         ? { ...batch, watches: [...batch.watches, batchWatch] }
         : batch
     ));
@@ -494,6 +496,7 @@ const BatchManagement = () => {
 
   return (
     <Layout>
+      <Head title="Batch Management" />
       <div className="p-8">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
@@ -568,7 +571,7 @@ const BatchManagement = () => {
                   <label className="block text-sm font-medium mb-1">Batch Name</label>
                   <Input
                     value={newBatch.name}
-                    onChange={(e) => setNewBatch({...newBatch, name: e.target.value})}
+                    onChange={(e) => setNewBatch({ ...newBatch, name: e.target.value })}
                     placeholder="Vietnam Batch #003"
                   />
                 </div>
@@ -576,32 +579,32 @@ const BatchManagement = () => {
                   <label className="block text-sm font-medium mb-1">Tracking Number</label>
                   <Input
                     value={newBatch.trackingNumber}
-                    onChange={(e) => setNewBatch({...newBatch, trackingNumber: e.target.value})}
+                    onChange={(e) => setNewBatch({ ...newBatch, trackingNumber: e.target.value })}
                     placeholder="VN2024001234569"
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Origin</label>
                   <Input
                     value={newBatch.origin}
-                    onChange={(e) => setNewBatch({...newBatch, origin: e.target.value})}
+                    onChange={(e) => setNewBatch({ ...newBatch, origin: e.target.value })}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Destination</label>
                   <Input
                     value={newBatch.destination}
-                    onChange={(e) => setNewBatch({...newBatch, destination: e.target.value})}
+                    onChange={(e) => setNewBatch({ ...newBatch, destination: e.target.value })}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">Status</label>
-                <Select value={newBatch.status} onValueChange={(value) => setNewBatch({...newBatch, status: value as Batch['status']})}>
+                <Select value={newBatch.status} onValueChange={(value) => setNewBatch({ ...newBatch, status: value as Batch['status'] })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -619,7 +622,7 @@ const BatchManagement = () => {
                 <label className="block text-sm font-medium mb-1">Notes</label>
                 <Textarea
                   value={newBatch.notes}
-                  onChange={(e) => setNewBatch({...newBatch, notes: e.target.value})}
+                  onChange={(e) => setNewBatch({ ...newBatch, notes: e.target.value })}
                   placeholder="Special handling instructions..."
                   rows={3}
                 />
@@ -647,9 +650,9 @@ const BatchManagement = () => {
                     <div className="flex items-center gap-4 text-sm text-slate-600 mt-2">
                       <div className="flex items-center gap-1">
                         <Truck className="h-4 w-4" />
-                        <a 
-                          href={getTrackingUrl(batch.trackingNumber)} 
-                          target="_blank" 
+                        <a
+                          href={getTrackingUrl(batch.trackingNumber)}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
                         >
@@ -682,7 +685,7 @@ const BatchManagement = () => {
                       <Edit className="h-3 w-3" />
                       Edit
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => handleCreateInvoice(batch.id)}
                       variant="outline"
                       className="flex items-center gap-2"
@@ -714,8 +717,8 @@ const BatchManagement = () => {
                     {viewMode === 'list' ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                         {batch.watches.map((watch) => (
-                          <div 
-                            key={watch.id} 
+                          <div
+                            key={watch.id}
                             className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
                             onClick={() => handleWatchClick(watch.id)}
                           >
@@ -730,8 +733,8 @@ const BatchManagement = () => {
                     ) : (
                       <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
                         {batch.watches.map((watch) => (
-                          <div 
-                            key={watch.id} 
+                          <div
+                            key={watch.id}
                             className="p-2 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
                             onClick={() => handleWatchClick(watch.id)}
                             title={`${watch.name} - ${watch.sku}`}
@@ -813,31 +816,31 @@ const BatchManagement = () => {
                       <label className="block text-sm font-medium mb-1">Batch Name</label>
                       <Input
                         value={editingBatchData.name || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, name: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, name: e.target.value })}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">Tracking Number</label>
                       <Input
                         value={editingBatchData.trackingNumber || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, trackingNumber: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, trackingNumber: e.target.value })}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">Origin</label>
                       <Input
                         value={editingBatchData.origin || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, origin: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, origin: e.target.value })}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1">Destination</label>
                       <Input
                         value={editingBatchData.destination || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, destination: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, destination: e.target.value })}
                       />
                     </div>
                   </div>
@@ -848,7 +851,7 @@ const BatchManagement = () => {
                       <Input
                         type="date"
                         value={editingBatchData.shippedDate || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, shippedDate: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, shippedDate: e.target.value })}
                       />
                     </div>
                     <div>
@@ -856,7 +859,7 @@ const BatchManagement = () => {
                       <Input
                         type="date"
                         value={editingBatchData.estimatedDelivery || ''}
-                        onChange={(e) => setEditingBatchData({...editingBatchData, estimatedDelivery: e.target.value})}
+                        onChange={(e) => setEditingBatchData({ ...editingBatchData, estimatedDelivery: e.target.value })}
                       />
                     </div>
                   </div>
@@ -865,7 +868,7 @@ const BatchManagement = () => {
                     <label className="block text-sm font-medium mb-1">Notes</label>
                     <Textarea
                       value={editingBatchData.notes || ''}
-                      onChange={(e) => setEditingBatchData({...editingBatchData, notes: e.target.value})}
+                      onChange={(e) => setEditingBatchData({ ...editingBatchData, notes: e.target.value })}
                       rows={3}
                     />
                   </div>
@@ -878,7 +881,7 @@ const BatchManagement = () => {
 
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Watches in this batch ({currentEditingBatch.watches.length})</h4>
-                  <Button 
+                  <Button
                     onClick={() => openAddWatchModal(currentEditingBatch.id)}
                     className="flex items-center gap-1"
                   >
@@ -886,25 +889,25 @@ const BatchManagement = () => {
                     Add Watch
                   </Button>
                 </div>
-                
+
                 <div className="border rounded-lg">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-16">Image</TableHead>
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer hover:bg-slate-100"
                           onClick={() => handleBatchWatchSort('name')}
                         >
                           Name {getSortIcon('name', batchWatchSortField, batchWatchSortDirection)}
                         </TableHead>
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer hover:bg-slate-100"
                           onClick={() => handleBatchWatchSort('sku')}
                         >
                           SKU {getSortIcon('sku', batchWatchSortField, batchWatchSortDirection)}
                         </TableHead>
-                        <TableHead 
+                        <TableHead
                           className="cursor-pointer hover:bg-slate-100"
                           onClick={() => handleBatchWatchSort('brand')}
                         >
@@ -1000,7 +1003,7 @@ const BatchManagement = () => {
                   <span className="text-sm text-blue-800">
                     {selectedWatchesToAdd.length} watch{selectedWatchesToAdd.length !== 1 ? 'es' : ''} selected
                   </span>
-                  <Button 
+                  <Button
                     onClick={handleAddSelectedWatchesToBatch}
                     className="flex items-center gap-1"
                     size="sm"
@@ -1008,7 +1011,7 @@ const BatchManagement = () => {
                     <Plus className="h-3 w-3" />
                     Add Selected
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => setSelectedWatchesToAdd([])}
                     variant="outline"
                     size="sm"
@@ -1029,31 +1032,31 @@ const BatchManagement = () => {
                         />
                       </TableHead>
                       <TableHead className="w-16">Image</TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-slate-100"
                         onClick={() => handleAddWatchSort('name')}
                       >
                         Name {getSortIcon('name', addWatchSortField, addWatchSortDirection)}
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-slate-100"
                         onClick={() => handleAddWatchSort('sku')}
                       >
                         SKU {getSortIcon('sku', addWatchSortField, addWatchSortDirection)}
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-slate-100"
                         onClick={() => handleAddWatchSort('brand')}
                       >
                         Brand {getSortIcon('brand', addWatchSortField, addWatchSortDirection)}
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-slate-100"
                         onClick={() => handleAddWatchSort('status')}
                       >
                         Status {getSortIcon('status', addWatchSortField, addWatchSortDirection)}
                       </TableHead>
-                      <TableHead 
+                      <TableHead
                         className="cursor-pointer hover:bg-slate-100"
                         onClick={() => handleAddWatchSort('location')}
                       >

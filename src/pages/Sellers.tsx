@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Upload, X, Edit, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
-import ImageManager from '../components/ImageManager';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import { Head } from '@inertiajs/react';
+import { ChevronDown, ChevronUp, Edit, Plus, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
 import CurrencyDisplay from '../components/CurrencyDisplay';
+import ImageManager from '../components/ImageManager';
+import Layout from '../components/Layout';
 import { WatchImage } from '../types/Watch';
 
 interface SellerWatch {
@@ -484,8 +485,8 @@ const Sellers = () => {
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
-    return sortDirection === 'asc' ? 
-      <ChevronUp className="h-4 w-4 inline ml-1" /> : 
+    return sortDirection === 'asc' ?
+      <ChevronUp className="h-4 w-4 inline ml-1" /> :
       <ChevronDown className="h-4 w-4 inline ml-1" />;
   };
 
@@ -513,7 +514,7 @@ const Sellers = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newWatch: SellerWatch = {
       id: Date.now().toString(),
       name: formData.name,
@@ -532,7 +533,7 @@ const Sellers = () => {
     };
 
     setWatches(prev => [newWatch, ...prev]);
-    
+
     // Reset form
     setFormData({
       name: '',
@@ -552,7 +553,7 @@ const Sellers = () => {
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedWatch) return;
 
     const updatedWatch: SellerWatch = {
@@ -570,10 +571,10 @@ const Sellers = () => {
       images: formImages,
     };
 
-    setWatches(prev => prev.map(watch => 
+    setWatches(prev => prev.map(watch =>
       watch.id === selectedWatch.id ? updatedWatch : watch
     ));
-    
+
     // Reset form
     setFormData({
       name: '',
@@ -606,13 +607,14 @@ const Sellers = () => {
 
   return (
     <Layout>
+      <Head title="Seller Watches" />
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Seller Watches</h1>
             <p className="text-slate-600 mt-1">Register and manage watch entries</p>
           </div>
-          
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -624,7 +626,7 @@ const Sellers = () => {
               <DialogHeader>
                 <DialogTitle>Register New Watch</DialogTitle>
               </DialogHeader>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -772,7 +774,7 @@ const Sellers = () => {
               <DialogHeader>
                 <DialogTitle>Edit Watch</DialogTitle>
               </DialogHeader>
-              
+
               <form onSubmit={handleEditSubmit} className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -999,38 +1001,38 @@ const Sellers = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Image</TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('name')}
                   >
                     Name {getSortIcon('name')}
                   </TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('brand')}
                   >
                     Brand {getSortIcon('brand')}
                   </TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('agent')}
                   >
                     Agent {getSortIcon('agent')}
                   </TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('seller')}
                   >
                     Seller {getSortIcon('seller')}
                   </TableHead>
                   <TableHead>Notes</TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('price')}
                   >
                     Price {getSortIcon('price')}
                   </TableHead>
-                  <TableHead 
+                  <TableHead
                     className="cursor-pointer hover:bg-slate-50"
                     onClick={() => handleSort('status')}
                   >
@@ -1043,7 +1045,7 @@ const Sellers = () => {
                 {filteredAndSortedWatches.map((watch) => (
                   <TableRow key={watch.id}>
                     <TableCell>
-                      <div 
+                      <div
                         className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 cursor-pointer hover:opacity-80 transition-opacity"
                         onClick={() => handleEditWatch(watch)}
                       >
@@ -1063,7 +1065,7 @@ const Sellers = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span 
+                      <span
                         className="font-medium cursor-pointer hover:text-blue-600 transition-colors"
                         onClick={() => handleEditWatch(watch)}
                       >

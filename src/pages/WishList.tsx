@@ -1,27 +1,22 @@
+import {
+  Edit,
+  Filter,
+  Grid3X3,
+  List,
+  Plus,
+  Search,
+  Trash2
+} from 'lucide-react';
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Grid3X3, 
-  List, 
-  Edit, 
-  Trash2, 
-  Eye,
-  Menu,
-  X,
-  Upload
-} from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 
 interface WishListItem {
@@ -127,11 +122,11 @@ const WishList = () => {
 
   const filteredWishList = wishList.filter(item => {
     const matchesSearch = item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+      item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesPriority = priorityFilter === 'all' || item.priority === priorityFilter;
-    
+
     let matchesBudget = true;
     if (budgetFilter !== 'all') {
       switch (budgetFilter) {
@@ -149,7 +144,7 @@ const WishList = () => {
           break;
       }
     }
-    
+
     return matchesSearch && matchesPriority && matchesBudget;
   }).sort((a, b) => {
     switch (sortBy) {
@@ -158,8 +153,10 @@ const WishList = () => {
       case 'budget':
         return b.maxBudget - a.maxBudget;
       case 'priority':
-        const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
+        {
+          const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
       case 'dateAdded':
       default:
         return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
@@ -205,7 +202,7 @@ const WishList = () => {
 
   const handleUpdateItem = () => {
     if (editingItem) {
-      setWishList(wishList.map(item => 
+      setWishList(wishList.map(item =>
         item.id === editingItem.id ? editingItem : item
       ));
       setIsEditDialogOpen(false);
@@ -224,9 +221,9 @@ const WishList = () => {
       reader.onload = (event) => {
         const imageUrl = event.target?.result as string;
         if (isEdit && editingItem) {
-          setEditingItem({...editingItem, image: imageUrl});
+          setEditingItem({ ...editingItem, image: imageUrl });
         } else {
-          setNewItem({...newItem, image: imageUrl});
+          setNewItem({ ...newItem, image: imageUrl });
         }
       };
       reader.readAsDataURL(file);
@@ -306,10 +303,11 @@ const WishList = () => {
     </div>
   );
 
-  const ItemFormContent = ({ item, setItem, isEdit = false }: { 
-    item: Omit<WishListItem, 'id' | 'dateAdded'> | WishListItem, 
-    setItem: (item: any) => void, 
-    isEdit?: boolean 
+  const ItemFormContent = ({ item, setItem, isEdit = false }: {
+    item: Omit<WishListItem, 'id' | 'dateAdded'> | WishListItem,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setItem: (item: any) => void,
+    isEdit?: boolean
   }) => (
     <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4"}>
       <div className="space-y-2">
@@ -317,7 +315,7 @@ const WishList = () => {
         <Input
           id="brand"
           value={item.brand}
-          onChange={(e) => setItem({...item, brand: e.target.value})}
+          onChange={(e) => setItem({ ...item, brand: e.target.value })}
         />
       </div>
       <div className="space-y-2">
@@ -325,7 +323,7 @@ const WishList = () => {
         <Input
           id="model"
           value={item.model}
-          onChange={(e) => setItem({...item, model: e.target.value})}
+          onChange={(e) => setItem({ ...item, model: e.target.value })}
         />
       </div>
       <div className={`space-y-2 ${isMobile ? '' : 'col-span-2'}`}>
@@ -333,7 +331,7 @@ const WishList = () => {
         <Input
           id="description"
           value={item.description}
-          onChange={(e) => setItem({...item, description: e.target.value})}
+          onChange={(e) => setItem({ ...item, description: e.target.value })}
         />
       </div>
       <div className="space-y-2">
@@ -342,7 +340,7 @@ const WishList = () => {
           id="minBudget"
           type="number"
           value={item.minBudget}
-          onChange={(e) => setItem({...item, minBudget: parseInt(e.target.value) || 0})}
+          onChange={(e) => setItem({ ...item, minBudget: parseInt(e.target.value) || 0 })}
         />
       </div>
       <div className="space-y-2">
@@ -351,12 +349,12 @@ const WishList = () => {
           id="maxBudget"
           type="number"
           value={item.maxBudget}
-          onChange={(e) => setItem({...item, maxBudget: parseInt(e.target.value) || 0})}
+          onChange={(e) => setItem({ ...item, maxBudget: parseInt(e.target.value) || 0 })}
         />
       </div>
       <div className="space-y-2">
         <Label>Priority</Label>
-        <Select value={item.priority} onValueChange={(value: 'High' | 'Medium' | 'Low') => setItem({...item, priority: value})}>
+        <Select value={item.priority} onValueChange={(value: 'High' | 'Medium' | 'Low') => setItem({ ...item, priority: value })}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -429,7 +427,7 @@ const WishList = () => {
                 </SheetContent>
               </Sheet>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
@@ -528,6 +526,7 @@ const WishList = () => {
                             <h3 className="font-semibold text-lg">{item.brand}</h3>
                             <p className="text-muted-foreground">{item.model}</p>
                           </div>
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                           <Badge variant={getPriorityColor(item.priority) as any}>
                             {item.priority}
                           </Badge>
@@ -545,8 +544,8 @@ const WishList = () => {
                             <Edit className="h-4 w-4 mr-1" />
                             Edit
                           </Button>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => handleDeleteItem(item.id)}
                           >
@@ -578,6 +577,7 @@ const WishList = () => {
                                 <h3 className="font-semibold text-lg">{item.brand} {item.model}</h3>
                                 <p className="text-sm text-muted-foreground">{item.description}</p>
                               </div>
+                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                               <Badge variant={getPriorityColor(item.priority) as any}>
                                 {item.priority}
                               </Badge>
@@ -593,8 +593,8 @@ const WishList = () => {
                                   <Edit className="h-4 w-4 mr-1" />
                                   Edit
                                 </Button>
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => handleDeleteItem(item.id)}
                                 >
@@ -638,6 +638,7 @@ const WishList = () => {
                         <h3 className="font-semibold text-base truncate">{item.brand}</h3>
                         <p className="text-muted-foreground text-sm truncate">{item.model}</p>
                       </div>
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <Badge variant={getPriorityColor(item.priority) as any} className="ml-2 text-xs">
                         {item.priority}
                       </Badge>
@@ -655,8 +656,8 @@ const WishList = () => {
                         <Edit className="h-3 w-3 mr-1" />
                         Edit
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDeleteItem(item.id)}
                         className="text-xs"
@@ -689,6 +690,7 @@ const WishList = () => {
                             <h3 className="font-semibold text-sm">{item.brand} {item.model}</h3>
                             <p className="text-xs text-muted-foreground line-clamp-1">{item.description}</p>
                           </div>
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                           <Badge variant={getPriorityColor(item.priority) as any} className="ml-2 text-xs">
                             {item.priority}
                           </Badge>
@@ -703,8 +705,8 @@ const WishList = () => {
                             <Button variant="outline" size="sm" className="text-xs px-2" onClick={() => handleEditItem(item)}>
                               <Edit className="h-3 w-3" />
                             </Button>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => handleDeleteItem(item.id)}
                               className="text-xs px-2"

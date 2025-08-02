@@ -1,4 +1,5 @@
 
+import config from '@/app/config';
 import { Link, usePage } from '@inertiajs/react';
 import {
   BadgeEuro,
@@ -53,10 +54,10 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     <>
       {/* Header */}
       <div className="p-6 border-b border-slate-700">
-        <Link href="/" onClick={onItemClick}>
+        <Link prefetch href="/" onClick={onItemClick}>
           <img
-            src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png"
-            alt="Second Vintage"
+            src={config.logo}
+            alt={config.name}
             className="max-h-12 max-w-full object-contain mb-2 cursor-pointer hover:opacity-80 transition-opacity"
           />
         </Link>
@@ -73,11 +74,12 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
             return (
               <li key={item.name} className={item.opacity || ''}>
                 <Link
+                  prefetch
                   href={item.path}
                   onClick={onItemClick}
                   className={`flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-slate-800 group ${isActive
-                      ? 'text-white shadow-lg'
-                      : 'text-slate-300 hover:text-white'
+                    ? 'text-white shadow-lg'
+                    : 'text-slate-300 hover:text-white'
                     }`}
                   style={{
                     backgroundColor: isActive ? `hsl(var(--theme-sidebar-active))` : undefined

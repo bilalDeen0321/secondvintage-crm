@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { Download, Eye, Mail, Plus, Search } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Plus, Search, Download, Eye, Mail } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 
 interface Invoice {
   id: string;
@@ -94,6 +95,7 @@ const Invoices = () => {
 
   return (
     <Layout>
+      <Head title="Invoices" />
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>

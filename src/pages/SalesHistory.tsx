@@ -1,14 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import Layout from '../components/Layout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Search, Download, TrendingUp, DollarSign, Package, Calendar, Upload, ArrowUpDown } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { ArrowUpDown, DollarSign, Download, Package, Search, TrendingUp, Upload } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import Layout from '../components/Layout';
 
 interface SaleRecord {
   id: string;
@@ -376,8 +377,8 @@ const SalesHistory = () => {
     const completedSales = sales.filter(sale => sale.status === 'Sold');
     const totalRevenue = completedSales.reduce((sum, sale) => sum + sale.salePrice, 0);
     const totalProfit = completedSales.reduce((sum, sale) => sum + sale.profit, 0);
-    const avgProfitMargin = completedSales.length > 0 
-      ? completedSales.reduce((sum, sale) => sum + sale.profitMargin, 0) / completedSales.length 
+    const avgProfitMargin = completedSales.length > 0
+      ? completedSales.reduce((sum, sale) => sum + sale.profitMargin, 0) / completedSales.length
       : 0;
 
     return {
@@ -411,8 +412,9 @@ const SalesHistory = () => {
   const profitPerPlatformData = useMemo(() => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     const platforms = ['Chrono24', 'eBay', 'Catawiki', 'Tradera'];
-    
+
     return months.map(month => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const monthData: any = { month };
       platforms.forEach(platform => {
         // Generate realistic profit data for each platform per month
@@ -427,14 +429,14 @@ const SalesHistory = () => {
   const platformData = useMemo(() => {
     const platforms = ['Chrono24', 'eBay', 'Catawiki', 'Tradera'];
     const totalSales = sales.filter(sale => sale.status === 'Sold').length;
-    
+
     return platforms.map(platform => {
       const platformSales = sales.filter(sale => sale.platform === platform && sale.status === 'Sold');
       const revenue = platformSales.reduce((sum, sale) => sum + sale.salePrice, 0);
       const profit = platformSales.reduce((sum, sale) => sum + sale.profit, 0);
       const count = platformSales.length;
       const percentage = totalSales > 0 ? Math.round((count / totalSales) * 100) : 0;
-      
+
       return {
         platform,
         sales: count,
@@ -455,19 +457,19 @@ const SalesHistory = () => {
   };
 
   const sortedAndFilteredSales = useMemo(() => {
-    let filtered = sales.filter(sale => {
+    const filtered = sales.filter(sale => {
       const matchesSearch = sale.watchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           sale.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
+        sale.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesPlatform = platformFilter === 'All' || sale.platform === platformFilter;
       const matchesStatus = statusFilter === 'All' || sale.status === statusFilter;
-      
+
       // Time range filtering
       let matchesTime = true;
       if (timeRange !== 'All Time') {
         const saleDate = new Date(sale.saleDate);
         const now = new Date();
-        
+
         switch (timeRange) {
           case 'Last 7 days':
             matchesTime = saleDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -489,12 +491,14 @@ const SalesHistory = () => {
             break;
         }
       }
-      
+
       return matchesSearch && matchesPlatform && matchesStatus && matchesTime;
     });
 
     return filtered.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let aValue: any = a[sortField];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let bValue: any = b[sortField];
 
       if (sortField === 'saleDate') {
@@ -530,7 +534,7 @@ const SalesHistory = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <TableHead 
+    <TableHead
       className="cursor-pointer hover:bg-slate-50 select-none"
       onClick={() => handleSort(field)}
     >
@@ -548,6 +552,7 @@ const SalesHistory = () => {
 
   return (
     <Layout>
+      <Head title="Sales History & Statistics" />
       <div className="p-8">
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
@@ -711,7 +716,7 @@ const SalesHistory = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <ChartTooltip 
+                    <ChartTooltip
                       formatter={(value, name, props) => [
                         `${value} watches`,
                         `Sales: ${value} | Profit: €${props.payload.profit.toLocaleString()} | ${props.payload.percentage}%`
@@ -720,13 +725,13 @@ const SalesHistory = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              
+
               {/* Platform Stats */}
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {platformData.map((platform, index) => (
                   <div key={platform.platform} className="flex items-center gap-2 p-2 rounded-lg border">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
                     <div className="flex-1">
@@ -789,7 +794,7 @@ const SalesHistory = () => {
                 <SelectItem value="Tradera">Tradera</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Status" />
@@ -843,11 +848,11 @@ const SalesHistory = () => {
                     <TableCell>{sale.buyer}</TableCell>
                     <TableCell>{sale.country}</TableCell>
                     <TableCell>
-                      <Badge 
+                      <Badge
                         className={
                           sale.status === 'Sold' ? 'bg-green-100 text-green-800' :
-                          sale.status === 'Reserved' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                            sale.status === 'Reserved' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
                         }
                       >
                         {sale.status}

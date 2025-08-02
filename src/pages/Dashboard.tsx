@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ScatterChart, Scatter, ComposedChart } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, Globe, Eye, Heart, DollarSign, Clock, Package, AlertTriangle, Target, Zap, Calendar, Crown, Filter } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Crown, DollarSign, Filter, Globe, Package } from 'lucide-react';
+import { useState } from 'react';
+import { Bar, CartesianGrid, Cell, ComposedChart, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import Layout from '../components/Layout';
 
 const Dashboard = () => {
   const [dateFilter, setDateFilter] = useState('all-time');
@@ -124,6 +124,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
+      <Head title="Dashboard" />
       <div className="p-8">
         <div className="mb-8 flex justify-between items-start">
           <div>
@@ -252,7 +253,7 @@ const Dashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis tickFormatter={formatYAxisEuro} />
-                    <ChartTooltip 
+                    <ChartTooltip
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
                           return (
@@ -302,7 +303,7 @@ const Dashboard = () => {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <ChartTooltip 
+                    <ChartTooltip
                       content={({ active, payload }) => {
                         if (active && payload && payload[0]) {
                           const data = payload[0].payload;
@@ -337,7 +338,7 @@ const Dashboard = () => {
                     <XAxis dataKey="month" />
                     <YAxis yAxisId="left" />
                     <YAxis yAxisId="right" orientation="right" tickFormatter={formatYAxisEuro} />
-                    <ChartTooltip 
+                    <ChartTooltip
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
                           return (

@@ -1,12 +1,13 @@
 
-import React, { useState, useMemo } from 'react';
-import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Trophy, TrendingUp, DollarSign, Target, Award, Star } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Head } from '@inertiajs/react';
+import { Award, Star, Target, TrendingUp, Trophy } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import Layout from '../components/Layout';
 
 interface PerformanceData {
   watchName: string;
@@ -105,7 +106,7 @@ const PerformanceTracking = () => {
   // Calculate brand performance
   const brandPerformance = useMemo(() => {
     const brandMap = new Map<string, BrandPerformance>();
-    
+
     watchPerformance.forEach(watch => {
       if (!brandMap.has(watch.brand)) {
         brandMap.set(watch.brand, {
@@ -118,7 +119,7 @@ const PerformanceTracking = () => {
           performanceScore: 0
         });
       }
-      
+
       const brand = brandMap.get(watch.brand)!;
       brand.totalWatchesSold += watch.totalSold;
       brand.totalRevenue += watch.totalRevenue;
@@ -174,6 +175,7 @@ const PerformanceTracking = () => {
 
   return (
     <Layout>
+      <Head title="Performance Tracking" />
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">

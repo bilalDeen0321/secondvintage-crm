@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSearchParams } from '@/hooks/useSearchParams';
+import { Head } from '@inertiajs/react';
 import { Edit, Grid, List, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import BatchSelector from '../components/BatchSelector';
@@ -639,6 +640,7 @@ If you have any questions, feel free to contact me after the auction ends.`,
 
   return (
     <Layout>
+      <Head title='Watch Management' />
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
@@ -684,8 +686,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
                   key={status}
                   onClick={() => handleStatusToggle(status)}
                   className={`w-[100px] h-16 p-2 rounded-lg border transition-all text-center ${statusFilters.includes(status)
-                      ? 'bg-primary/10 border-primary ring-2 ring-primary/30'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
+                    ? 'bg-primary/10 border-primary ring-2 ring-primary/30'
+                    : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                 >
                   <div className="text-lg font-bold text-slate-900">{count}</div>

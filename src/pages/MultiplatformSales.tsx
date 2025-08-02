@@ -1,18 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import { Watch } from '../types/Watch';
-import Layout from '../components/Layout';
-import PlatformDataModal from '../components/PlatformDataModal';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Download, Search, Filter, Eye, Edit, Package, MapPin, FileText, X, ChevronDown, ChevronUp, ChevronDown as SortIcon, AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Head } from '@inertiajs/react';
+import { AlertTriangle, ChevronDown, ChevronUp, Download, Edit, Eye, FileText, Filter, MapPin, Package, Search } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import Layout from '../components/Layout';
+import PlatformDataModal from '../components/PlatformDataModal';
+import { Watch } from '../types/Watch';
 
 type SortField = 'name' | 'sku' | 'brand' | 'acquisitionCost' | 'batchGroup' | 'status' | 'location';
 type SortDirection = 'asc' | 'desc';
@@ -613,35 +612,37 @@ const MultiplatformSales = () => {
 
   // Get unique batch groups for the batch filter
   const uniqueBatchGroups = ['All', ...Array.from(new Set(watches.map(w => w.batchGroup).filter(Boolean)))];
-  
+
   // Filter batch groups based on search term
-  const filteredBatchGroups = uniqueBatchGroups.filter(batch => 
+  const filteredBatchGroups = uniqueBatchGroups.filter(batch =>
     batch === 'All' || batch.toLowerCase().includes(batchSearchTerm.toLowerCase())
   );
 
   // Filter watches based on search and filters
   const filteredWatches = useMemo(() => {
-    let filtered = watches.filter(watch => {
+    const filtered = watches.filter(watch => {
       let matchesStatus = statusFilter === 'All';
       if (statusFilter === 'Approved & Platform Review') {
         matchesStatus = watch.status === 'Approved' || watch.status === 'Platform Review';
       } else if (statusFilter !== 'All') {
         matchesStatus = watch.status === statusFilter;
       }
-      
+
       const matchesBrand = brandFilter === 'All' || watch.brand === brandFilter;
       const matchesBatch = batchFilter === 'All' || watch.batchGroup === batchFilter;
       const watchPlatform = watchPlatforms[watch.id] || 'None';
       const matchesPlatform = platformFilter === 'All' || watchPlatform === platformFilter;
       const matchesSearch = watch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
+        watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesBrand && matchesBatch && matchesPlatform && matchesSearch;
     });
 
     // Sort the filtered results
     return filtered.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let aValue: any = a[sortField];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let bValue: any = b[sortField];
 
       if (typeof aValue === 'string') {
@@ -687,7 +688,7 @@ const MultiplatformSales = () => {
   const handlePlatformChange = (watchId: string, platform: string) => {
     // Add the watch to processing state
     setProcessingWatches(prev => new Set([...prev, watchId]));
-    
+
     // Update the platform immediately
     setWatchPlatforms(prev => ({
       ...prev,
@@ -705,24 +706,24 @@ const MultiplatformSales = () => {
   };
 
   const handleBulkStatusChange = (newStatus: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, status: newStatus as Watch['status'] }
         : watch
     ));
   };
 
   const handleBulkLocationChange = (newLocation: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, location: newLocation }
         : watch
     ));
   };
 
   const handleBulkBatchGroupChange = (newBatchGroup: string) => {
-    setWatches(prev => prev.map(watch => 
-      selectedWatches.includes(watch.id) 
+    setWatches(prev => prev.map(watch =>
+      selectedWatches.includes(watch.id)
         ? { ...watch, batchGroup: newBatchGroup }
         : watch
     ));
@@ -752,7 +753,7 @@ const MultiplatformSales = () => {
 
   const handleExport = (platform: string) => {
     const selectedWatchData = watches.filter(w => selectedWatches.includes(w.id));
-    
+
     // Create CSV content
     const headers = ['Name', 'SKU', 'Brand', 'Status', 'Acquisition Cost', 'Platform', 'Description'];
     const csvContent = [
@@ -797,12 +798,12 @@ const MultiplatformSales = () => {
   // Navigation functions for modal
   const handleModalNext = () => {
     if (!platformDataModal.watch) return;
-    
+
     const currentIndex = filteredWatches.findIndex(w => w.id === platformDataModal.watch!.id);
     const nextIndex = (currentIndex + 1) % filteredWatches.length;
     const nextWatch = filteredWatches[nextIndex];
     const nextPlatform = watchPlatforms[nextWatch.id] || 'None';
-    
+
     if (nextPlatform !== 'None') {
       setPlatformDataModal({
         isOpen: true,
@@ -814,12 +815,12 @@ const MultiplatformSales = () => {
 
   const handleModalPrevious = () => {
     if (!platformDataModal.watch) return;
-    
+
     const currentIndex = filteredWatches.findIndex(w => w.id === platformDataModal.watch!.id);
     const prevIndex = currentIndex === 0 ? filteredWatches.length - 1 : currentIndex - 1;
     const prevWatch = filteredWatches[prevIndex];
     const prevPlatform = watchPlatforms[prevWatch.id] || 'None';
-    
+
     if (prevPlatform !== 'None') {
       setPlatformDataModal({
         isOpen: true,
@@ -878,7 +879,7 @@ const MultiplatformSales = () => {
   };
 
   const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <th 
+    <th
       className="p-3 text-xs font-medium text-slate-700 cursor-pointer hover:bg-slate-100 select-none"
       onClick={() => handleSort(field)}
     >
@@ -902,6 +903,7 @@ const MultiplatformSales = () => {
 
   return (
     <Layout>
+      <Head title="Multi-platform Sales" />
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
@@ -964,7 +966,7 @@ const MultiplatformSales = () => {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              
+
               <Select value={brandFilter} onValueChange={setBrandFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Brand" />
@@ -995,29 +997,29 @@ const MultiplatformSales = () => {
               <Filter className="h-4 w-4 text-slate-600" />
               <span className="text-sm font-medium text-slate-700">Quick Select:</span>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => handleSelectAll(true)}
             >
               Select All ({filteredWatches.length})
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => handleSelectAll(false)}
             >
               Clear Selection
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => handleSelectByStatus('Approved')}
             >
               Select Approved
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => handleSelectByStatus('Platform Review')}
             >
@@ -1034,7 +1036,7 @@ const MultiplatformSales = () => {
                   {selectedWatches.length} watches selected - Bulk Actions:
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <span className="text-sm text-blue-700">Status:</span>
                 <Select onValueChange={handleBulkStatusChange}>
@@ -1085,8 +1087,8 @@ const MultiplatformSales = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {platforms.map(platform => (
-                      <SelectItem 
-                        key={platform} 
+                      <SelectItem
+                        key={platform}
                         value={platform}
                         className={isGreyedOutPlatform(platform) ? 'text-gray-400' : ''}
                       >
@@ -1108,24 +1110,24 @@ const MultiplatformSales = () => {
                   {selectedWatches.length} watches selected - Export to:
                 </span>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => handleExport('Catawiki')}
                 className="text-amber-600 border-amber-300 hover:bg-amber-100"
               >
                 Catawiki
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => handleExport('Tradera')}
                 className="text-amber-600 border-amber-300 hover:bg-amber-100"
               >
                 Tradera
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => handleExport('General')}
                 className="text-amber-600 border-amber-300 hover:bg-amber-100"
@@ -1163,8 +1165,8 @@ const MultiplatformSales = () => {
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
                 {filteredWatches.map((watch) => (
-                  <tr 
-                    key={watch.id} 
+                  <tr
+                    key={watch.id}
                     className={`hover:bg-slate-50 ${selectedWatches.includes(watch.id) ? 'bg-amber-50' : ''}`}
                   >
                     <td className="p-3">
@@ -1174,19 +1176,19 @@ const MultiplatformSales = () => {
                       />
                     </td>
                     <td className="p-3">
-                      <div 
+                      <div
                         className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80"
                         onClick={() => handleOpenSingleView(watch)}
                       >
                         {watch.images?.[0] ? (
-                          <img 
-                            src={watch.images[0].url} 
+                          <img
+                            src={watch.images[0].url}
                             alt={watch.name}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <img 
-                            src="/lovable-uploads/02bcd7a1-2bd6-4118-ac09-c5414b210a1f.png" 
+                          <img
+                            src="/lovable-uploads/02bcd7a1-2bd6-4118-ac09-c5414b210a1f.png"
                             alt="Watch placeholder"
                             className="w-6 h-6 opacity-40"
                           />
@@ -1194,7 +1196,7 @@ const MultiplatformSales = () => {
                       </div>
                     </td>
                     <td className="p-3">
-                      <div 
+                      <div
                         className="text-sm font-medium text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
                         onClick={() => handleOpenSingleView(watch)}
                       >
@@ -1202,7 +1204,7 @@ const MultiplatformSales = () => {
                       </div>
                     </td>
                     <td className="p-3">
-                      <div 
+                      <div
                         className="text-sm text-slate-600 cursor-pointer hover:text-blue-600 transition-colors"
                         onClick={() => handleOpenSingleView(watch)}
                       >
@@ -1226,8 +1228,8 @@ const MultiplatformSales = () => {
                       </span>
                     </td>
                     <td className="p-2">
-                      <Select 
-                        value={watchPlatforms[watch.id] || 'None'} 
+                      <Select
+                        value={watchPlatforms[watch.id] || 'None'}
                         onValueChange={(value) => handlePlatformChange(watch.id, value)}
                       >
                         <SelectTrigger className="w-48">
@@ -1235,8 +1237,8 @@ const MultiplatformSales = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {platforms.map(platform => (
-                            <SelectItem 
-                              key={platform} 
+                            <SelectItem
+                              key={platform}
                               value={platform}
                               className={isGreyedOutPlatform(platform) ? 'text-gray-400' : ''}
                             >
@@ -1293,7 +1295,7 @@ const MultiplatformSales = () => {
                       <div className="text-sm text-slate-600">{watch.location}</div>
                     </td>
                     <td className="p-2">
-                      <div 
+                      <div
                         className="text-xs text-slate-600 leading-tight line-clamp-2"
                         style={{
                           display: '-webkit-box',
@@ -1362,16 +1364,15 @@ const MultiplatformSales = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
+
                   {/* Thumbnail Images Grid - Show more images */}
                   {singleViewModal.watch.images && singleViewModal.watch.images.length > 1 && (
                     <div className="grid grid-cols-6 gap-3">
                       {singleViewModal.watch.images.map((image, index) => (
-                        <div 
-                          key={image.id} 
-                          className={`aspect-square bg-slate-100 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-200 ${
-                            index === singleViewModal.selectedImageIndex ? 'ring-3 ring-blue-500 ring-offset-2' : 'hover:ring-2 hover:ring-slate-300'
-                          }`}
+                        <div
+                          key={image.id}
+                          className={`aspect-square bg-slate-100 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-200 ${index === singleViewModal.selectedImageIndex ? 'ring-3 ring-blue-500 ring-offset-2' : 'hover:ring-2 hover:ring-slate-300'
+                            }`}
                           onClick={() => handleThumbnailClick(index)}
                         >
                           <img
@@ -1383,7 +1384,7 @@ const MultiplatformSales = () => {
                       ))}
                     </div>
                   )}
-                  
+
                   {/* Image Counter */}
                   {singleViewModal.watch.images && singleViewModal.watch.images.length > 1 && (
                     <div className="text-center mt-4 text-slate-600 text-sm">

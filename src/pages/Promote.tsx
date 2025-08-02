@@ -1,14 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { Watch } from '../types/Watch';
-import Layout from '../components/Layout';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, Image, Sparkles, Send, Calendar as CalendarIcon, ChevronUp, ChevronDown, X } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Head } from '@inertiajs/react';
+import { Calendar, Calendar as CalendarIcon, ChevronDown, ChevronUp, Clock, Image, Send, Sparkles, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import Layout from '../components/Layout';
+import { Watch } from '../types/Watch';
 
 // Sample watches data - in a real app this would come from the watch management system
 const sampleWatches: Watch[] = [
@@ -100,8 +101,8 @@ const Promote = () => {
     return sampleWatches.filter(watch => {
       const matchesStatus = statusFilter === 'All' || watch.status === statusFilter;
       const matchesSearch = watch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
+        watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesSearch;
     });
   }, [searchTerm, statusFilter]);
@@ -113,8 +114,8 @@ const Promote = () => {
   };
 
   const handlePlatformToggle = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
+    setSelectedPlatforms(prev =>
+      prev.includes(platformId)
         ? prev.filter(id => id !== platformId)
         : [...prev, platformId]
     );
@@ -143,9 +144,9 @@ const Promote = () => {
 
   const generateAIContent = async () => {
     if (!selectedWatch) return;
-    
+
     setIsGeneratingContent(true);
-    
+
     // Simulate AI content generation
     setTimeout(() => {
       const aiContent = `✨ Discover this stunning ${selectedWatch.brand} ${selectedWatch.name}! 
@@ -156,7 +157,7 @@ ${selectedWatch.description}
 Perfect for collectors and enthusiasts alike. 
 
 #LuxuryWatches #${selectedWatch.brand} #VintageWatches #WatchCollector #Timepieces #SecondVintage`;
-      
+
       setPostContent(aiContent);
       setIsGeneratingContent(false);
     }, 2000);
@@ -169,7 +170,7 @@ Perfect for collectors and enthusiasts alike.
     }
 
     const isScheduled = scheduleDate && scheduleTime;
-    
+
     if (isScheduled) {
       // Add to scheduled posts
       const newScheduledPost: ScheduledPost = {
@@ -186,9 +187,9 @@ Perfect for collectors and enthusiasts alike.
 
     const action = isScheduled ? 'scheduled' : 'posted';
     const when = isScheduled ? ` for ${scheduleDate} at ${scheduleTime}` : ' immediately';
-    
+
     alert(`Post ${action} successfully${when} on ${selectedPlatforms.map(id => socialPlatforms.find(p => p.id === id)?.name).join(', ')}!`);
-    
+
     // Reset form
     setSelectedWatch(null);
     setSelectedPlatforms([]);
@@ -204,6 +205,7 @@ Perfect for collectors and enthusiasts alike.
 
   return (
     <Layout>
+      <Head title="Promote / Social Media" />
       <div className="p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Promote / Social Media</h1>
@@ -248,17 +250,16 @@ Perfect for collectors and enthusiasts alike.
                     <div
                       key={watch.id}
                       onClick={() => handleWatchSelect(watch)}
-                      className={`p-3 border rounded-lg cursor-pointer transition-all hover:bg-slate-50 ${
-                        selectedWatch?.id === watch.id ? 'border-amber-500 bg-amber-50' : 'border-slate-200'
-                      }`}
+                      className={`p-3 border rounded-lg cursor-pointer transition-all hover:bg-slate-50 ${selectedWatch?.id === watch.id ? 'border-amber-500 bg-amber-50' : 'border-slate-200'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <HoverCard>
                           <HoverCardTrigger asChild>
                             <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden">
                               {watch.images?.[0] ? (
-                                <img 
-                                  src={watch.images[0].url} 
+                                <img
+                                  src={watch.images[0].url}
                                   alt={watch.name}
                                   className="w-full h-full object-cover"
                                 />
@@ -270,8 +271,8 @@ Perfect for collectors and enthusiasts alike.
                           <HoverCardContent className="w-80">
                             <div className="flex justify-center">
                               {watch.images?.[0] ? (
-                                <img 
-                                  src={watch.images[0].url} 
+                                <img
+                                  src={watch.images[0].url}
                                   alt={watch.name}
                                   className="w-64 h-64 object-cover rounded-lg"
                                 />
@@ -315,8 +316,8 @@ Perfect for collectors and enthusiasts alike.
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-white rounded-lg overflow-hidden">
                           {selectedWatch.images?.[0] ? (
-                            <img 
-                              src={selectedWatch.images[0].url} 
+                            <img
+                              src={selectedWatch.images[0].url}
                               alt={selectedWatch.name}
                               className="w-full h-full object-cover"
                             />
@@ -347,11 +348,10 @@ Perfect for collectors and enthusiasts alike.
                             <img
                               src={image.url}
                               alt="Watch"
-                              className={`w-full h-24 object-cover rounded-lg cursor-pointer border-2 transition-all ${
-                                selectedImages.includes(image.url)
+                              className={`w-full h-24 object-cover rounded-lg cursor-pointer border-2 transition-all ${selectedImages.includes(image.url)
                                   ? 'border-amber-500'
                                   : 'border-slate-200 hover:border-slate-300'
-                              }`}
+                                }`}
                               onClick={() => handleImageToggle(image.url)}
                             />
                             {selectedImages.includes(image.url) && (
@@ -424,11 +424,10 @@ Perfect for collectors and enthusiasts alike.
                           <button
                             key={platform.id}
                             onClick={() => handlePlatformToggle(platform.id)}
-                            className={`p-3 border rounded-lg text-left transition-all hover:bg-slate-50 ${
-                              selectedPlatforms.includes(platform.id)
+                            className={`p-3 border rounded-lg text-left transition-all hover:bg-slate-50 ${selectedPlatforms.includes(platform.id)
                                 ? 'border-amber-500 bg-amber-50'
                                 : 'border-slate-200'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-lg">{platform.icon}</span>
@@ -563,7 +562,7 @@ Perfect for collectors and enthusiasts alike.
                             <X className="h-3 w-3" />
                           </Button>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-1">
                           {post.platforms.map((platformId) => {
                             const platform = socialPlatforms.find(p => p.id === platformId);
@@ -574,7 +573,7 @@ Perfect for collectors and enthusiasts alike.
                             );
                           })}
                         </div>
-                        
+
                         {post.images.length > 0 && (
                           <div className="flex gap-1">
                             {post.images.slice(0, 3).map((imageUrl, index) => (
@@ -592,7 +591,7 @@ Perfect for collectors and enthusiasts alike.
                             )}
                           </div>
                         )}
-                        
+
                         <p className="text-xs text-slate-600 line-clamp-2">{post.content}</p>
                       </div>
                     ))

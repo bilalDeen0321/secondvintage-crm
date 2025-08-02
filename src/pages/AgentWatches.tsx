@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import Layout from '../components/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Upload, Eye, Edit, Trash2, Grid3X3, List, Filter, Search, Plus, CalendarIcon, Tag, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { WatchImage } from '../types/Watch';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import CurrencyDisplay from '../components/CurrencyDisplay';
-import ImageManager from '../components/ImageManager';
-import BrandSelector from '../components/BrandSelector';
-import { format } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { Head } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { ArrowDown, ArrowUp, CalendarIcon, Edit, Filter, Grid3X3, List, Plus, Search, Tag, Trash2, Upload } from 'lucide-react';
+import { useState } from 'react';
+import BrandSelector from '../components/BrandSelector';
+import ImageManager from '../components/ImageManager';
+import Layout from '../components/Layout';
+import { WatchImage } from '../types/Watch';
 
 interface AgentWatch {
   id: string;
@@ -476,7 +476,7 @@ const AgentWatches = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingWatch, setEditingWatch] = useState<AgentWatch | null>(null);
   const [showNewPaymentDialog, setShowNewPaymentDialog] = useState(false);
-  
+
   // Sample Payment IDs for assignment
   const availablePaymentIds = [
     'PAY-001', 'PAY-002', 'PAY-003', 'PAY-004', 'PAY-005',
@@ -488,7 +488,7 @@ const AgentWatches = () => {
 
   // Sample agents for the dropdown
   const availableAgents = [
-    'Agent Smith', 'Agent Johnson', 'Agent Brown', 'Agent Davis', 
+    'Agent Smith', 'Agent Johnson', 'Agent Brown', 'Agent Davis',
     'Agent Wilson', 'Agent Garcia', 'Agent Martinez', 'Agent Anderson'
   ];
 
@@ -598,14 +598,14 @@ const AgentWatches = () => {
   const handleSaveWatch = () => {
     if (editingWatch) {
       // Edit existing watch
-      setWatches(prev => prev.map(w => 
-        w.id === editingWatch.id 
+      setWatches(prev => prev.map(w =>
+        w.id === editingWatch.id
           ? {
-              ...w,
-              ...formData,
-              price: parseFloat(formData.price) || 0,
-              images: formImages
-            }
+            ...w,
+            ...formData,
+            price: parseFloat(formData.price) || 0,
+            images: formImages
+          }
           : w
       ));
     } else {
@@ -626,10 +626,10 @@ const AgentWatches = () => {
 
   const handleCreateNewPayment = () => {
     if (selectedWatches.length === 0) return;
-    
+
     // Generate a new payment ID
     const newPaymentId = `PAY-${String(Date.now()).slice(-6)}`;
-    
+
     // Create the payment with selected watches
     console.log('Creating new payment with:', {
       paymentId: newPaymentId,
@@ -642,14 +642,14 @@ const AgentWatches = () => {
     });
 
     // Update selected watches with the new payment ID
-    setWatches(prev => 
-      prev.map(watch => 
-        selectedWatches.includes(watch.id) 
-          ? { 
-              ...watch, 
-              paymentId: newPaymentId,
-              status: 'Paid (not received)' as AgentWatch['status']
-            }
+    setWatches(prev =>
+      prev.map(watch =>
+        selectedWatches.includes(watch.id)
+          ? {
+            ...watch,
+            paymentId: newPaymentId,
+            status: 'Paid (not received)' as AgentWatch['status']
+          }
           : watch
       )
     );
@@ -684,7 +684,7 @@ const AgentWatches = () => {
     if (sortField !== field) {
       return null; // Don't show any icon for inactive fields
     }
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <ArrowUp className="h-4 w-4 ml-2" />
       : <ArrowDown className="h-4 w-4 ml-2" />;
   };
@@ -737,8 +737,8 @@ const AgentWatches = () => {
   const DEFAULT_IMAGE = '/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png';
 
   const handleSelectWatch = (watchId: string, checked: boolean) => {
-    setSelectedWatches(prev => 
-      checked 
+    setSelectedWatches(prev =>
+      checked
         ? [...prev, watchId]
         : prev.filter(id => id !== watchId)
     );
@@ -750,10 +750,10 @@ const AgentWatches = () => {
 
   const handleStatusChange = (newStatus: string) => {
     if (selectedWatches.length === 0) return;
-    
-    setWatches(prev => 
-      prev.map(watch => 
-        selectedWatches.includes(watch.id) 
+
+    setWatches(prev =>
+      prev.map(watch =>
+        selectedWatches.includes(watch.id)
           ? { ...watch, status: newStatus as AgentWatch['status'] }
           : watch
       )
@@ -763,10 +763,10 @@ const AgentWatches = () => {
 
   const handlePaymentIdAssign = (paymentId: string) => {
     if (selectedWatches.length === 0) return;
-    
-    setWatches(prev => 
-      prev.map(watch => 
-        selectedWatches.includes(watch.id) 
+
+    setWatches(prev =>
+      prev.map(watch =>
+        selectedWatches.includes(watch.id)
           ? { ...watch, paymentId }
           : watch
       )
@@ -846,6 +846,7 @@ const AgentWatches = () => {
 
   return (
     <Layout>
+      <Head title="Agent Watches" />
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -942,7 +943,7 @@ const AgentWatches = () => {
                 </span>
                 <div className="flex gap-2">
                   {/* New Payment Button - Updated with theme color */}
-                  <Button 
+                  <Button
                     onClick={() => setShowNewPaymentDialog(true)}
                   >
                     New Payment
@@ -958,8 +959,8 @@ const AgentWatches = () => {
                     </PopoverTrigger>
                     <PopoverContent className="w-64 p-0" align="start">
                       <Command>
-                        <CommandInput 
-                          placeholder="Search Payment ID..." 
+                        <CommandInput
+                          placeholder="Search Payment ID..."
                           value={paymentIdSearch}
                           onValueChange={setPaymentIdSearch}
                         />
@@ -1202,7 +1203,7 @@ const AgentWatches = () => {
                       <div><span className="font-medium">Payment ID:</span> {watch.paymentId}</div>
                     )}
                   </div>
-                  
+
                   {/* Action Buttons */}
                   <div className="flex gap-2 mt-4">
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditWatch(watch)}>
@@ -1235,7 +1236,7 @@ const AgentWatches = () => {
             <DialogHeader>
               <DialogTitle>{editingWatch ? 'Edit Watch' : 'Add New Watch'}</DialogTitle>
             </DialogHeader>
-            
+
             <div className="grid gap-6">
               {/* Form Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1249,7 +1250,7 @@ const AgentWatches = () => {
                     placeholder="Enter seller name"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="agent">Agent</Label>
                   <Select value={formData.agent} onValueChange={(value) => setFormData(prev => ({ ...prev, agent: value }))}>
@@ -1273,7 +1274,7 @@ const AgentWatches = () => {
                     placeholder="Enter watch name"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="sku">SKU</Label>
                   <div className="flex items-center space-x-2">
@@ -1296,7 +1297,7 @@ const AgentWatches = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="brand">Brand</Label>
                   <BrandSelector
@@ -1306,7 +1307,7 @@ const AgentWatches = () => {
                     onEditBrands={handleEditBrands}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="serialNumber">Serial Number</Label>
                   <Input
@@ -1316,7 +1317,7 @@ const AgentWatches = () => {
                     placeholder="Enter serial number"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="referenceNumber">Reference Number</Label>
                   <Input
@@ -1326,7 +1327,7 @@ const AgentWatches = () => {
                     placeholder="Enter reference number"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="caseSize">Case Size</Label>
                   <Input
@@ -1336,7 +1337,7 @@ const AgentWatches = () => {
                     placeholder="Enter case size"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="price">Price</Label>
                   <Input
@@ -1347,7 +1348,7 @@ const AgentWatches = () => {
                     placeholder="Enter price"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="currency">Currency</Label>
                   <Select value={formData.currency} onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}>
@@ -1361,7 +1362,7 @@ const AgentWatches = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="status">Payment Status</Label>
                   <Select value={formData.status} onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as AgentWatch['status'] }))}>
@@ -1376,7 +1377,7 @@ const AgentWatches = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="paymentId">Payment ID</Label>
                   <Popover>
@@ -1412,7 +1413,7 @@ const AgentWatches = () => {
                   </Popover>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
@@ -1433,7 +1434,7 @@ const AgentWatches = () => {
                 />
               </div>
             </div>
-            
+
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowAddDialog(false)}>
                 Cancel
@@ -1451,7 +1452,7 @@ const AgentWatches = () => {
             <DialogHeader>
               <DialogTitle>Create New Payment</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div className="text-sm text-slate-600">
                 Creating payment for {selectedWatches.length} selected watch{selectedWatches.length !== 1 ? 'es' : ''}
@@ -1483,11 +1484,11 @@ const AgentWatches = () => {
                   </PopoverContent>
                 </Popover>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="agent">Agent</Label>
-                <Select 
-                  value={newPaymentData.agent} 
+                <Select
+                  value={newPaymentData.agent}
                   onValueChange={(value) => setNewPaymentData(prev => ({ ...prev, agent: value }))}
                 >
                   <SelectTrigger>
@@ -1503,8 +1504,8 @@ const AgentWatches = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="paymentMethod">Payment Method</Label>
-                <Select 
-                  value={newPaymentData.paymentMethod} 
+                <Select
+                  value={newPaymentData.paymentMethod}
                   onValueChange={(value) => setNewPaymentData(prev => ({ ...prev, paymentMethod: value }))}
                 >
                   <SelectTrigger>
@@ -1520,7 +1521,7 @@ const AgentWatches = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="paymentDescription">Payment Description</Label>
                 <Textarea
@@ -1543,7 +1544,7 @@ const AgentWatches = () => {
                 />
               </div>
             </div>
-            
+
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowNewPaymentDialog(false)}>
                 Cancel

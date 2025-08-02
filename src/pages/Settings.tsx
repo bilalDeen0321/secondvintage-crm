@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { Bell, Globe, Lock, Palette, Settings as SettingsIcon } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Switch } from '../components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Badge } from '../components/ui/badge';
-import { Settings as SettingsIcon, Bell, Lock, Globe, Mail, Palette } from 'lucide-react';
-import { useTheme, ColorTheme } from '../contexts/ThemeContext';
+import { ColorTheme, useTheme } from '../contexts/ThemeContext';
 
 const colorThemes = [
   { id: 'default' as ColorTheme, name: 'Default', color: '#d97706' },
@@ -36,6 +37,7 @@ const Settings = () => {
 
   return (
     <Layout>
+      <Head title="Settings" />
       <div className="p-6 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
@@ -113,14 +115,13 @@ const Settings = () => {
                         <button
                           key={theme.id}
                           onClick={() => setColorTheme(theme.id)}
-                          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-                            colorTheme === theme.id 
-                              ? 'border-primary bg-primary/5' 
+                          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${colorTheme === theme.id
+                              ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center space-x-3">
-                            <div 
+                            <div
                               className="w-6 h-6 rounded-full"
                               style={{ backgroundColor: theme.color }}
                             />
@@ -155,10 +156,10 @@ const Settings = () => {
                       <Label htmlFor="email-notifications">Email Notifications</Label>
                       <p className="text-sm text-muted-foreground">Receive notifications via email</p>
                     </div>
-                    <Switch 
-                      id="email-notifications" 
-                      checked={emailNotifications} 
-                      onCheckedChange={setEmailNotifications} 
+                    <Switch
+                      id="email-notifications"
+                      checked={emailNotifications}
+                      onCheckedChange={setEmailNotifications}
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -166,10 +167,10 @@ const Settings = () => {
                       <Label htmlFor="push-notifications">Push Notifications</Label>
                       <p className="text-sm text-muted-foreground">Receive browser push notifications</p>
                     </div>
-                    <Switch 
-                      id="push-notifications" 
-                      checked={pushNotifications} 
-                      onCheckedChange={setPushNotifications} 
+                    <Switch
+                      id="push-notifications"
+                      checked={pushNotifications}
+                      onCheckedChange={setPushNotifications}
                     />
                   </div>
                 </div>

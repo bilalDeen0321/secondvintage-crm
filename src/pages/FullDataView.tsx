@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Head } from '@inertiajs/react';
 import { Database, Download } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import BrandSelector from '../components/BrandSelector';
@@ -404,6 +405,7 @@ const FullDataView = () => {
 
   return (
     <Layout>
+      <Head title="Full Data View" />
       <div className="min-h-screen bg-slate-50">
         <div className="p-8">
           <div className="mb-8">
@@ -456,8 +458,8 @@ const FullDataView = () => {
                       key={status}
                       onClick={() => setStatusFilter(status)}
                       className={`p-4 rounded-lg border cursor-pointer transition-all ${statusFilter === status
-                          ? 'bg-amber-50 border-amber-200'
-                          : 'bg-white border-slate-200 hover:border-slate-300'
+                        ? 'bg-amber-50 border-amber-200'
+                        : 'bg-white border-slate-200 hover:border-slate-300'
                         }`}
                     >
                       <div className="text-2xl font-bold text-slate-900">{count}</div>
@@ -706,15 +708,15 @@ const FullDataView = () => {
                             {visibleFields.status && (
                               <TableCell className="p-2">
                                 <span className={`px-1 py-0.5 rounded text-xs font-medium ${watch.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
-                                    watch.status === 'Review' ? 'bg-yellow-100 text-yellow-800' :
-                                      watch.status === 'Platform Review' ? 'bg-orange-100 text-orange-800' :
-                                        watch.status === 'Ready for listing' ? 'bg-blue-100 text-blue-800' :
-                                          watch.status === 'Listed' ? 'bg-green-100 text-green-800' :
-                                            watch.status === 'Reserved' ? 'bg-purple-100 text-purple-800' :
-                                              watch.status === 'Sold' ? 'bg-slate-100 text-slate-800' :
-                                                watch.status === 'Defect/Problem' ? 'bg-red-100 text-red-800' :
-                                                  watch.status === 'Standby' ? 'bg-amber-100 text-amber-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                  watch.status === 'Review' ? 'bg-yellow-100 text-yellow-800' :
+                                    watch.status === 'Platform Review' ? 'bg-orange-100 text-orange-800' :
+                                      watch.status === 'Ready for listing' ? 'bg-blue-100 text-blue-800' :
+                                        watch.status === 'Listed' ? 'bg-green-100 text-green-800' :
+                                          watch.status === 'Reserved' ? 'bg-purple-100 text-purple-800' :
+                                            watch.status === 'Sold' ? 'bg-slate-100 text-slate-800' :
+                                              watch.status === 'Defect/Problem' ? 'bg-red-100 text-red-800' :
+                                                watch.status === 'Standby' ? 'bg-amber-100 text-amber-800' :
+                                                  'bg-gray-100 text-gray-800'
                                   }`}>
                                   {watch.status}
                                 </span>
@@ -796,10 +798,10 @@ const FullDataView = () => {
                             {visibleFields.apiStatus && (
                               <TableCell className="p-2 bg-blue-50">
                                 <span className={`px-1 py-0.5 rounded text-xs font-medium ${watch.apiStatus === 'Synced' ? 'bg-green-100 text-green-800' :
-                                    watch.apiStatus === 'Active' ? 'bg-blue-100 text-blue-800' :
-                                      watch.apiStatus === 'Error' ? 'bg-red-100 text-red-800' :
-                                        watch.apiStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                                          'bg-gray-100 text-gray-800'
+                                  watch.apiStatus === 'Active' ? 'bg-blue-100 text-blue-800' :
+                                    watch.apiStatus === 'Error' ? 'bg-red-100 text-red-800' :
+                                      watch.apiStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-gray-100 text-gray-800'
                                   }`}>
                                   {watch.apiStatus || 'N/A'}
                                 </span>

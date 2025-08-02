@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { AlertCircle, CheckCircle, Download, Filter, Info, Search, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Search, Download, AlertCircle, Info, CheckCircle, XCircle, Filter } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 
 interface LogEntry {
   id: string;
@@ -22,7 +23,7 @@ const Log = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  
+
   const [logs] = useState<LogEntry[]>([
     {
       id: 'LOG001',
@@ -141,12 +142,12 @@ const Log = () => {
 
   const filteredLogs = logs.filter(log => {
     const matchesSearch = log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (log.user && log.user.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+      log.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.user && log.user.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const matchesLevel = levelFilter === 'all' || log.level === levelFilter;
     const matchesCategory = categoryFilter === 'all' || log.category === categoryFilter;
-    
+
     return matchesSearch && matchesLevel && matchesCategory;
   });
 
@@ -181,6 +182,7 @@ const Log = () => {
 
   return (
     <Layout>
+      <Head title="System logs" />
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
