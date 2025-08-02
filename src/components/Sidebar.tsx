@@ -1,31 +1,30 @@
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, usePage } from '@inertiajs/react';
 import {
+  BadgeEuro,
+  Calendar,
   ChartArea,
-  Users,
-  Settings,
-  File,
+  ChartNoAxesColumnIncreasing,
   Clock,
+  Database,
+  File,
+  Gauge,
+  Hammer,
+  LayoutList,
+  List,
   LogOut,
   Menu,
-  X,
-  ChartNoAxesColumnIncreasing,
-  PackageOpen,
-  BadgeEuro,
-  Gauge,
-  LayoutList,
   Network,
-  Database,
-  List,
-  Calendar,
-  Watch,
+  PackageOpen,
+  Settings,
   Store,
-  Hammer
+  Users,
+  Watch
 } from 'lucide-react';
+import { useState } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 const menuItems = [
   { name: 'Dashboard', icon: ChartArea, path: '/' },
@@ -48,16 +47,16 @@ const menuItems = [
 ];
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
-  const location = useLocation();
+  const { url } = usePage();
 
   return (
     <>
       {/* Header */}
       <div className="p-6 border-b border-slate-700">
-        <Link to="/" onClick={onItemClick}>
-          <img 
-            src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png" 
-            alt="Second Vintage" 
+        <Link href="/" onClick={onItemClick}>
+          <img
+            src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png"
+            alt="Second Vintage"
             className="max-h-12 max-w-full object-contain mb-2 cursor-pointer hover:opacity-80 transition-opacity"
           />
         </Link>
@@ -69,25 +68,23 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
         <ul className="space-y-1 px-3">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            
+            const isActive = url === item.path;
+
             return (
               <li key={item.name} className={item.opacity || ''}>
                 <Link
-                  to={item.path}
+                  href={item.path}
                   onClick={onItemClick}
-                  className={`flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-slate-800 group ${
-                    isActive 
-                      ? 'text-white shadow-lg' 
+                  className={`flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-slate-800 group ${isActive
+                      ? 'text-white shadow-lg'
                       : 'text-slate-300 hover:text-white'
-                  }`}
+                    }`}
                   style={{
                     backgroundColor: isActive ? `hsl(var(--theme-sidebar-active))` : undefined
                   }}
                 >
-                  <Icon className={`mr-3 h-5 w-5 ${
-                    isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'
-                  }`} />
+                  <Icon className={`mr-3 h-5 w-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'
+                    }`} />
                   <span className="truncate">{item.name}</span>
                 </Link>
               </li>
@@ -98,7 +95,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
 
       {/* Logout */}
       <div className="p-4 border-t border-slate-700">
-        <button 
+        <button
           onClick={onItemClick}
           className="flex items-center w-full px-3 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all duration-200"
         >
@@ -121,8 +118,8 @@ const MobileSidebar = () => {
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent 
-        side="left" 
+      <SheetContent
+        side="left"
         className="w-64 text-white p-0 border-slate-700"
         style={{ backgroundColor: `hsl(var(--theme-sidebar-bg))` }}
       >
@@ -142,7 +139,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div 
+    <div
       className="w-64 text-white min-h-screen flex flex-col"
       style={{ backgroundColor: `hsl(var(--theme-sidebar-bg))` }}
     >
