@@ -21,8 +21,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'status',
         'password',
         'default_currency',
+        'currency',
+        'country',
     ];
 
     /**
@@ -77,5 +80,32 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(Log::class);
+    }
+
+    public function getPermissionsGrouped(): array
+    {
+        $defaults = [
+            'dashboard' => false,
+            'watchManagement' => false,
+            'multiplatformSales' => false,
+            'batchManagement' => false,
+            'promote' => false,
+            'salesHistory' => false,
+            'performanceTracking' => false,
+            'wishList' => false,
+            'agentsBalance' => false,
+            'invoices' => false,
+            'users' => false,
+            'tools' => false,
+            'fullDataView' => false,
+            'settings' => false,
+            'log' => false,
+        ];
+
+        foreach ($defaults as $key => &$value) {
+            $value = $this->hasPermissionTo($key);
+        }
+
+        return $defaults;
     }
 }

@@ -22,7 +22,9 @@ class RolePermissionSeeder extends Seeder
                 "name" => "John Admin",
                 "email" => "admin@secondvintage.com",
                 "role" => "admin",
-                "password" => 'password',
+                "status" => "active",
+                "country" => "USA",
+                "currency" => "USD",
                 "permissions" => [
                     "dashboard" => true,
                     "watchManagement" => true,
@@ -46,7 +48,9 @@ class RolePermissionSeeder extends Seeder
                 "name" => "Sarah Manager",
                 "email" => "sarah@secondvintage.com",
                 "role" => "manager",
-                "password" => 'password',
+                "status" => "active",
+                "country" => "Denmark",
+                "currency" => "EUR",
                 "permissions" => [
                     "dashboard" => true,
                     "watchManagement" => true,
@@ -70,7 +74,9 @@ class RolePermissionSeeder extends Seeder
                 "name" => "Mike Viewer",
                 "email" => "mike@secondvintage.com",
                 "role" => "viewer",
-                "password" => 'password',
+                "status" => "active",
+                "country" => "Vietnam",
+                "currency" => "VND",
                 "permissions" => [
                     "dashboard" => true,
                     "watchManagement" => false,
@@ -94,7 +100,9 @@ class RolePermissionSeeder extends Seeder
                 "name" => "Lisa Smith",
                 "email" => "lisa@secondvintage.com",
                 "role" => "manager",
-                "password" => 'password',
+                "status" => "inactive",
+                "country" => "Japan",
+                "currency" => "JPY",
                 "permissions" => [
                     "dashboard" => true,
                     "watchManagement" => true,
@@ -118,7 +126,9 @@ class RolePermissionSeeder extends Seeder
                 "name" => "Tom Agent",
                 "email" => "tom@secondvintage.com",
                 "role" => "agent",
-                "password" => 'password',
+                "status" => "active",
+                "country" => "USA",
+                "currency" => "USD",
                 "permissions" => [
                     "dashboard" => true,
                     "watchManagement" => false,
@@ -138,6 +148,7 @@ class RolePermissionSeeder extends Seeder
                 ]
             ]
         ];
+
 
         // Collect all unique permission names
         $allPermissions = collect($users)
@@ -176,7 +187,10 @@ class RolePermissionSeeder extends Seeder
                 'email' => $userData['email']
             ], [
                 'name' => $userData['name'],
-                'password' => Hash::make($userData['password'])
+                'status' => $userData['status'],
+                'country' => $userData['country'],
+                'currency' => $userData['currency'],
+                'password' => Hash::make('7890')
             ]);
 
             $user->assignRole($userData['role']);

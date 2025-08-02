@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -9,7 +10,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('test', function () {
-    return Auth::user()->getAllPermissions()->pluck('name');
+    $users = User::with('roles', 'permissions')->get();
+
+    return UserResource::collection($users);
 });
 
 

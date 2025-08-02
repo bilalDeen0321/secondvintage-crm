@@ -78,7 +78,7 @@ const permissionLabels = {
   log: 'Log'
 };
 
-const Users = () => {
+const Users = ({ users: _users }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -96,68 +96,7 @@ const Users = () => {
   const countries = ['Vietnam', 'USA', 'Denmark', 'Japan'];
   const currencies = ['USD', 'EUR', 'VND', 'JPY', 'GBP', 'CAD', 'AUD'];
 
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 'USR001',
-      name: 'John Admin',
-      email: 'admin@secondvintage.com',
-      role: 'admin',
-      status: 'active',
-      country: 'USA',
-      currency: 'USD',
-      lastLogin: '2024-06-06 14:30',
-      joinDate: '2023-01-15',
-      permissions: { ...defaultPermissions, watchManagement: true, multiplatformSales: true, users: true, settings: true }
-    },
-    {
-      id: 'USR002',
-      name: 'Sarah Manager',
-      email: 'sarah@secondvintage.com',
-      role: 'manager',
-      status: 'active',
-      country: 'Denmark',
-      currency: 'EUR',
-      lastLogin: '2024-06-05 16:45',
-      joinDate: '2023-03-20',
-      permissions: { ...defaultPermissions, watchManagement: true, salesHistory: true }
-    },
-    {
-      id: 'USR003',
-      name: 'Mike Viewer',
-      email: 'mike@secondvintage.com',
-      role: 'viewer',
-      status: 'active',
-      country: 'Vietnam',
-      currency: 'VND',
-      lastLogin: '2024-06-04 09:15',
-      joinDate: '2023-06-10',
-      permissions: defaultPermissions
-    },
-    {
-      id: 'USR004',
-      name: 'Lisa Smith',
-      email: 'lisa@secondvintage.com',
-      role: 'manager',
-      status: 'inactive',
-      country: 'Japan',
-      currency: 'JPY',
-      lastLogin: '2024-05-20 11:20',
-      joinDate: '2023-08-05',
-      permissions: { ...defaultPermissions, watchManagement: true, salesHistory: true }
-    },
-    {
-      id: 'USR005',
-      name: 'Tom Agent',
-      email: 'tom@secondvintage.com',
-      role: 'agent',
-      status: 'active',
-      country: 'USA',
-      currency: 'USD',
-      lastLogin: '2024-06-05 10:15',
-      joinDate: '2023-09-12',
-      permissions: { ...defaultPermissions, multiplatformSales: true, agentsBalance: true }
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>(_users);
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

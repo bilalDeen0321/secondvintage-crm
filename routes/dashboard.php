@@ -4,6 +4,7 @@
  * Web dashboard routes
  */
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -20,8 +21,12 @@ Route::get('/payments', fn() => Inertia::render('VendorPayments'))->name('paymen
 Route::get('/agent-watches', fn() => Inertia::render('AgentWatches'))->name('agent-watches');
 Route::get('/sellers', fn() => Inertia::render('Sellers'))->name('sellers');
 Route::get('/invoices', fn() => Inertia::render('Invoices'))->name('invoices');
-Route::get('/users', fn() => Inertia::render('Users'))->name('users');
+// Route::get('/users', fn() => Inertia::render('Users'))->name('users');
 Route::get('/tools', fn() => Inertia::render('Tools'))->name('tools');
 Route::get('/data', fn() => Inertia::render('FullDataView'))->name('data');
 Route::get('/settings', fn() => Inertia::render('Settings'))->name('settings');
 Route::get('/log', fn() => Inertia::render('Log'))->name('log');
+
+
+//full routes
+Route::resource('users', UserController::class);
