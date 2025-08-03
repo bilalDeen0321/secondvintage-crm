@@ -1,6 +1,8 @@
-import { Head } from '@inertiajs/react';
+import { getRoleColor, getStatusColor } from '@/app/utils';
+import InputError from '@/components/InputError';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { Plus, RotateCcw, Search, Settings, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -10,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+
 
 interface UserPermissions {
   dashboard: boolean;
@@ -79,73 +82,48 @@ const permissionLabels = {
 };
 
 const Users = ({ users: _users }) => {
+
+  const { props } = usePage();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const flash = props.flash as any;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [newUser, setNewUser] = useState({
-    name: '',
-    email: '',
-    role: 'viewer' as User['role'],
-    country: '',
-    currency: '',
-    password: '',
-    permissions: defaultPermissions
-  });
 
   const countries = ['Vietnam', 'USA', 'Denmark', 'Japan'];
   const currencies = ['USD', 'EUR', 'VND', 'JPY', 'GBP', 'CAD', 'AUD'];
 
   const [users, setUsers] = useState<User[]>(_users);
 
+  const { data, setData, post, processing, errors, reset } = useForm({
+    name: '', email: '', role: '', country: 'USA', currency: 'USD', password: ''
+  });
+
+  useEffect(() => {
+    if (flash.data) {
+      setUsers(prev => [...prev, flash.data]);
+      setIsAddDialogOpen(false); // close modal
+    }
+  }, [flash.data]);
+
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800';
-      case 'manager': return 'bg-blue-100 text-blue-800';
-      case 'viewer': return 'bg-gray-100 text-gray-800';
-      case 'agent': return 'bg-green-100 text-green-800';
-      case 'seller': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
-  const handleAddUser = () => {
-    const user: User = {
-      id: `USR${String(users.length + 1).padStart(3, '0')}`,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-      status: 'active',
-      country: newUser.country,
-      currency: newUser.currency,
-      lastLogin: 'Never',
-      joinDate: new Date().toISOString().split('T')[0],
-      permissions: newUser.permissions
-    };
-    setUsers([...users, user]);
-    setNewUser({
-      name: '',
-      email: '',
-      role: 'viewer',
-      country: '',
-      currency: '',
-      password: '',
-      permissions: defaultPermissions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleAddUser = (e: any) => {
+    e.preventDefault();
+    post(route('users.store'), {
+      onFinish: () => reset('password'),
     });
-    setIsAddDialogOpen(false);
+
+    // setUsers([...users, user]);
+    //setIsAddDialogOpen(false);
   };
 
   const handleEditUser = (user: User) => {
@@ -163,6 +141,8 @@ const Users = ({ users: _users }) => {
     }
   };
 
+
+
   const handlePermissionChange = (permission: keyof UserPermissions, checked: boolean, isEdit: boolean = false) => {
     if (isEdit && editingUser) {
       setEditingUser({
@@ -173,13 +153,13 @@ const Users = ({ users: _users }) => {
         }
       });
     } else {
-      setNewUser({
-        ...newUser,
-        permissions: {
-          ...newUser.permissions,
-          [permission]: checked
-        }
-      });
+      // setNewUser({
+      //   ...newUser,
+      //   permissions: {
+      //     ...newUser.permissions,
+      //     [permission]: checked
+      //   }
+      // });
     }
   };
 
@@ -243,20 +223,24 @@ const Users = ({ users: _users }) => {
                       <Label htmlFor="name">Full Name</Label>
                       <Input
                         id="name"
-                        value={newUser.name}
-                        onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                        name='name'
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
                         placeholder="Enter full name"
                       />
+                      <InputError message={errors.name} className="mt-2" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
                       <Input
                         id="email"
                         type="email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        name='email'
+                        value={data.email}
+                        onChange={(e) => setData('email', e.target.value)}
                         placeholder="Enter email address"
                       />
+                      <InputError message={errors.email} className="mt-2" />
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
@@ -265,38 +249,44 @@ const Users = ({ users: _users }) => {
                       <Input
                         id="password"
                         type="password"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        name='password'
+                        value={data.password}
+                        onChange={(e) => setData('password', e.target.value)}
                         placeholder="Enter password"
                       />
+                      <InputError message={errors.password} className="mt-2" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="country">Country</Label>
                       <select
+                        name='country'
                         id="country"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={newUser.country}
-                        onChange={(e) => setNewUser({ ...newUser, country: e.target.value })}
+                        value={data.country}
+                        onChange={(e) => setData('country', e.target.value)}
                       >
                         <option value="">Select country...</option>
                         {countries.map((country) => (
                           <option key={country} value={country}>{country}</option>
                         ))}
                       </select>
+                      <InputError message={errors.country} className="mt-2" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="currency">Currency</Label>
                       <select
+                        name='currency'
                         id="currency"
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={newUser.currency}
-                        onChange={(e) => setNewUser({ ...newUser, currency: e.target.value })}
+                        value={data.currency}
+                        onChange={(e) => setData('currency', e.target.value)}
                       >
                         <option value="">Select currency...</option>
                         {currencies.map((currency) => (
                           <option key={currency} value={currency}>{currency}</option>
                         ))}
                       </select>
+                      <InputError message={errors.currency} className="mt-2" />
                     </div>
                   </div>
                 </div>
@@ -307,10 +297,11 @@ const Users = ({ users: _users }) => {
                   <div className="space-y-2">
                     <Label htmlFor="role">User Role</Label>
                     <select
+                      name='role'
                       id="role"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={newUser.role}
-                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value as User['role'] })}
+                      value={data.role}
+                      onChange={(e) => setData('role', e.target.value)}
                     >
                       <option value="viewer">Viewer</option>
                       <option value="agent">Agent</option>
@@ -318,6 +309,7 @@ const Users = ({ users: _users }) => {
                       <option value="manager">Manager</option>
                       <option value="admin">Admin</option>
                     </select>
+                    <InputError message={errors.role} className="mt-2" />
                   </div>
                 </div>
 
@@ -325,13 +317,13 @@ const Users = ({ users: _users }) => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold border-b pb-2">Menu Access Permissions</h3>
                   <PermissionsSection
-                    permissions={newUser.permissions}
+                    permissions={defaultPermissions}
                     onChange={(permission, checked) => handlePermissionChange(permission, checked, false)}
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={handleAddUser}>Create User</Button>
+                <Button type="submit" disabled={processing} onClick={handleAddUser}>{processing ? 'Loading..' : 'Create User'}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

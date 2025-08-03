@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('country')->default('USA');
             $table->string('currency')->default('DKK');
             $table->dateTime('last_login_at')->nullable();
+            $table->string('last_login_ip')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

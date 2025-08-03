@@ -11,7 +11,7 @@ const Provider = ({ children }: { children: React.ReactNode }) => (
         <ThemeProvider>
             <TooltipProvider>
                 <Toaster />
-                <Sonner />
+                <Sonner position="top-right" />
                 {children}
             </TooltipProvider>
         </ThemeProvider>

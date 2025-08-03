@@ -97,13 +97,13 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
 
       {/* Logout */}
       <div className="p-4 border-t border-slate-700">
-        <button
-          onClick={onItemClick}
+        <Link
+          href={route('logout')}
           className="flex items-center w-full px-3 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all duration-200"
         >
           <LogOut className="mr-3 h-5 w-5" />
           <span>Logout</span>
-        </button>
+        </Link>
       </div>
     </>
   );

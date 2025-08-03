@@ -26,6 +26,8 @@ class User extends Authenticatable
         'default_currency',
         'currency',
         'country',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -46,6 +48,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'last_login_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
