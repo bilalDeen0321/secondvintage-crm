@@ -29,4 +29,5 @@ Route::get('/log', fn() => Inertia::render('Log'))->name('log');
 
 
 //full routes
+Route::get('users/all', [UserController::class, 'all'])->name('users.all');
 Route::resource('users', UserController::class);

@@ -1,8 +1,9 @@
-import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+import * as React from "react"
 
-import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { InertiaLinkProps, Link } from "@inertiajs/react"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -34,18 +35,13 @@ const PaginationItem = React.forwardRef<
 ))
 PaginationItem.displayName = "PaginationItem"
 
-type PaginationLinkProps = {
-  isActive?: boolean
-} & Pick<ButtonProps, "size"> &
-  React.ComponentProps<"a">
+interface PaginationLinkProps extends Omit<InertiaLinkProps, "size"> {
+  isActive: boolean;
+  size?: ButtonProps['size'];
+}
 
-const PaginationLink = ({
-  className,
-  isActive,
-  size = "icon",
-  ...props
-}: PaginationLinkProps) => (
-  <a
+const PaginationLink = ({ className, isActive, size = "icon", ...props }: PaginationLinkProps) => (
+  <Link
     aria-current={isActive ? "page" : undefined}
     className={cn(
       buttonVariants({
@@ -113,5 +109,6 @@ export {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious,
+  PaginationPrevious
 }
+

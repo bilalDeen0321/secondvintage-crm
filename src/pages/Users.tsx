@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { getRoleColor, getStatusColor } from '@/app/utils';
+import TablePaginate from '@/components/ui/table/TablePaginate';
 import AddNewUser from '@/components/users/AddUserDialog';
 import EditUserDialog from '@/components/users/EditUserDialog';
 import { User } from '@/components/users/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { PaginateData } from '@/types/laravel';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { RotateCcw, Search, Settings, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import Layout from '../components/Layout';
@@ -12,32 +16,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 
+const Users = () => {
+  const pageProps = usePage().props as any;
+  const data = pageProps.users as PaginateData<User>;
 
-
-
-const Users = ({ users: _users }) => {
-
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(pageProps?.search || '');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const page = usePage().props;
-  const users: User[] = page.users || _users;
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setIsEditDialogOpen(true);
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = data.data.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const activeUsers = users.filter(u => u.status === 'active').length;
-  const adminUsers = users.filter(u => u.role === 'admin').length;
-
-  const { delete: destroy, processing, wasSuccessful } = useForm({});
+  const { delete: destroy, processing } = useForm({});
 
   const handleDeleteUser = (user: User) => {
     if (!confirm(`Are you sure you want to delete ${user.name}?`)) return;
@@ -50,6 +48,17 @@ const Users = ({ users: _users }) => {
     });
   };
 
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchTerm(value);
+
+    // Delay search (debounce)
+    clearTimeout((window as any).searchTimer)
+      ; (window as any).searchTimer = setTimeout(() => {
+        router.get(route("users.index"), { search: value }, { preserveState: true })
+      }, 300)
+  }
 
 
   return (
@@ -73,7 +82,7 @@ const Users = ({ users: _users }) => {
               <CardTitle>Total Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{users.length}</div>
+              <div className="text-2xl font-bold">{pageProps?.total_users}</div>
               <p className="text-sm text-muted-foreground">Registered users</p>
             </CardContent>
           </Card>
@@ -82,7 +91,7 @@ const Users = ({ users: _users }) => {
               <CardTitle>Active Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{activeUsers}</div>
+              <div className="text-2xl font-bold text-green-600">{pageProps?.active_users}</div>
               <p className="text-sm text-muted-foreground">Currently active</p>
             </CardContent>
           </Card>
@@ -91,7 +100,7 @@ const Users = ({ users: _users }) => {
               <CardTitle>Administrators</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{adminUsers}</div>
+              <div className="text-2xl font-bold">{pageProps?.admin_users}</div>
               <p className="text-sm text-muted-foreground">Admin access</p>
             </CardContent>
           </Card>
@@ -100,7 +109,7 @@ const Users = ({ users: _users }) => {
               <CardTitle>New This Month</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2</div>
+              <div className="text-2xl font-bold">{pageProps?.monthly_users}</div>
               <p className="text-sm text-muted-foreground">Recent signups</p>
             </CardContent>
           </Card>
@@ -118,7 +127,7 @@ const Users = ({ users: _users }) => {
                 <Input
                   placeholder="Search users..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                   className="pl-8"
                 />
               </div>
@@ -172,6 +181,8 @@ const Users = ({ users: _users }) => {
                 ))}
               </TableBody>
             </Table>
+            {/* Laravel Pagination */}
+            <TablePaginate links={data.meta.links} />
           </CardContent>
         </Card>
 
