@@ -1,197 +1,56 @@
 import { getRoleColor, getStatusColor } from '@/app/utils';
-import InputError from '@/components/InputError';
+import AddNewUser from '@/components/users/AddUserDialog';
+import EditUserDialog from '@/components/users/EditUserDialog';
+import { User } from '@/components/users/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { Plus, RotateCcw, Search, Settings, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { RotateCcw, Search, Settings, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Checkbox } from '../components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 
 
-interface UserPermissions {
-  dashboard: boolean;
-  watchManagement: boolean;
-  multiplatformSales: boolean;
-  batchManagement: boolean;
-  promote: boolean;
-  salesHistory: boolean;
-  performanceTracking: boolean;
-  wishList: boolean;
-  agentsBalance: boolean;
-  invoices: boolean;
-  users: boolean;
-  tools: boolean;
-  fullDataView: boolean;
-  settings: boolean;
-  log: boolean;
-}
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'manager' | 'viewer' | 'agent' | 'seller';
-  status: 'active' | 'inactive';
-  country: string;
-  currency: string;
-  lastLogin: string;
-  joinDate: string;
-  permissions: UserPermissions;
-}
-
-const defaultPermissions: UserPermissions = {
-  dashboard: true,
-  watchManagement: false,
-  multiplatformSales: false,
-  batchManagement: false,
-  promote: false,
-  salesHistory: false,
-  performanceTracking: false,
-  wishList: false,
-  agentsBalance: false,
-  invoices: false,
-  users: false,
-  tools: false,
-  fullDataView: false,
-  settings: false,
-  log: false
-};
-
-const permissionLabels = {
-  dashboard: 'Dashboard',
-  watchManagement: 'Watch Management',
-  multiplatformSales: 'Multi-platform Sales',
-  batchManagement: 'Batch Management',
-  promote: 'Promote / Social Media',
-  salesHistory: 'Sales History / Stats',
-  performanceTracking: 'Performance Tracking',
-  wishList: 'Wish List',
-  agentsBalance: 'Agents Balance',
-  invoices: 'Invoices',
-  users: 'Users',
-  tools: 'Tools',
-  fullDataView: 'Full Data View',
-  settings: 'Settings',
-  log: 'Log'
-};
 
 const Users = ({ users: _users }) => {
-
-  const { props } = usePage();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const flash = props.flash as any;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-
-  const countries = ['Vietnam', 'USA', 'Denmark', 'Japan'];
-  const currencies = ['USD', 'EUR', 'VND', 'JPY', 'GBP', 'CAD', 'AUD'];
-
-  const [users, setUsers] = useState<User[]>(_users);
-
-  const { data, setData, post, processing, errors, reset } = useForm({
-    name: '', email: '', role: '', country: 'USA', currency: 'USD', password: ''
-  });
-
-  useEffect(() => {
-    if (flash.data) {
-      setUsers(prev => [...prev, flash.data]);
-      setIsAddDialogOpen(false); // close modal
-    }
-  }, [flash.data]);
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAddUser = (e: any) => {
-    e.preventDefault();
-    post(route('users.store'), {
-      onFinish: () => reset('password'),
-    });
-
-    // setUsers([...users, user]);
-    //setIsAddDialogOpen(false);
-  };
+  const page = usePage().props;
+  const users: User[] = page.users || _users;
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdateUser = () => {
-    if (editingUser) {
-      setUsers(users.map(user =>
-        user.id === editingUser.id ? editingUser : user
-      ));
-      setIsEditDialogOpen(false);
-      setEditingUser(null);
-    }
-  };
-
-
-
-  const handlePermissionChange = (permission: keyof UserPermissions, checked: boolean, isEdit: boolean = false) => {
-    if (isEdit && editingUser) {
-      setEditingUser({
-        ...editingUser,
-        permissions: {
-          ...editingUser.permissions,
-          [permission]: checked
-        }
-      });
-    } else {
-      // setNewUser({
-      //   ...newUser,
-      //   permissions: {
-      //     ...newUser.permissions,
-      //     [permission]: checked
-      //   }
-      // });
-    }
-  };
-
-  const PermissionsSection = ({ permissions, onChange, isEdit = false }: {
-    permissions: UserPermissions,
-    onChange: (permission: keyof UserPermissions, checked: boolean) => void,
-    isEdit?: boolean
-  }) => (
-    <div className="space-y-4">
-      <Label className="text-base font-semibold">Menu Permissions</Label>
-      <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
-        {Object.entries(permissionLabels).map(([key, label]) => (
-          <div key={key} className="flex items-center space-x-2">
-            <Checkbox
-              id={`${isEdit ? 'edit-' : ''}permission-${key}`}
-              checked={permissions[key as keyof UserPermissions]}
-              onCheckedChange={(checked) => onChange(key as keyof UserPermissions, checked as boolean)}
-            />
-            <Label
-              htmlFor={`${isEdit ? 'edit-' : ''}permission-${key}`}
-              className="text-sm font-normal cursor-pointer"
-            >
-              {label}
-            </Label>
-          </div>
-        ))}
-      </div>
-    </div>
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const activeUsers = users.filter(u => u.status === 'active').length;
   const adminUsers = users.filter(u => u.role === 'admin').length;
+
+  const { delete: destroy, processing, wasSuccessful } = useForm({});
+
+  const handleDeleteUser = (user: User) => {
+    if (!confirm(`Are you sure you want to delete ${user.name}?`)) return;
+
+    destroy(route('users.destroy', user.id), {
+      preserveScroll: true,
+      onSuccess(response) {
+
+      }
+    });
+  };
+
+
 
   return (
     <Layout>
@@ -202,131 +61,10 @@ const Users = ({ users: _users }) => {
             <h1 className="text-3xl font-bold">User Management</h1>
             <p className="text-muted-foreground">Manage system users and their permissions</p>
           </div>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add User
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Add New User</DialogTitle>
-                <DialogDescription>Create a new user account for the system.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-6 py-4">
-                {/* Basic Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        name='name'
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        placeholder="Enter full name"
-                      />
-                      <InputError message={errors.name} className="mt-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        name='email'
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        placeholder="Enter email address"
-                      />
-                      <InputError message={errors.email} className="mt-2" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        name='password'
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        placeholder="Enter password"
-                      />
-                      <InputError message={errors.password} className="mt-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="country">Country</Label>
-                      <select
-                        name='country'
-                        id="country"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={data.country}
-                        onChange={(e) => setData('country', e.target.value)}
-                      >
-                        <option value="">Select country...</option>
-                        {countries.map((country) => (
-                          <option key={country} value={country}>{country}</option>
-                        ))}
-                      </select>
-                      <InputError message={errors.country} className="mt-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="currency">Currency</Label>
-                      <select
-                        name='currency'
-                        id="currency"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={data.currency}
-                        onChange={(e) => setData('currency', e.target.value)}
-                      >
-                        <option value="">Select currency...</option>
-                        {currencies.map((currency) => (
-                          <option key={currency} value={currency}>{currency}</option>
-                        ))}
-                      </select>
-                      <InputError message={errors.currency} className="mt-2" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Role & Access Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Role & Access Level</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">User Role</Label>
-                    <select
-                      name='role'
-                      id="role"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={data.role}
-                      onChange={(e) => setData('role', e.target.value)}
-                    >
-                      <option value="viewer">Viewer</option>
-                      <option value="agent">Agent</option>
-                      <option value="seller">Seller</option>
-                      <option value="manager">Manager</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                    <InputError message={errors.role} className="mt-2" />
-                  </div>
-                </div>
-
-                {/* Permissions Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Menu Access Permissions</h3>
-                  <PermissionsSection
-                    permissions={defaultPermissions}
-                    onChange={(permission, checked) => handlePermissionChange(permission, checked, false)}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" disabled={processing} onClick={handleAddUser}>{processing ? 'Loading..' : 'Create User'}</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {<AddNewUser
+            isAddDialogOpen={isAddDialogOpen}
+            setIsAddDialogOpen={setIsAddDialogOpen}
+          />}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -425,7 +163,7 @@ const Users = ({ users: _users }) => {
                         <Button size="sm" variant="outline" title="Reset Password">
                           <RotateCcw className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => handleDeleteUser(user)} disabled={processing}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -438,118 +176,11 @@ const Users = ({ users: _users }) => {
         </Card>
 
         {/* Edit User Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>Update user information and permissions.</DialogDescription>
-            </DialogHeader>
-            {editingUser && (
-              <div className="grid gap-6 py-4">
-                {/* Basic Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-name">Full Name</Label>
-                      <Input
-                        id="edit-name"
-                        value={editingUser.name}
-                        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-email">Email Address</Label>
-                      <Input
-                        id="edit-email"
-                        type="email"
-                        value={editingUser.email}
-                        onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-country">Country</Label>
-                      <select
-                        id="edit-country"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={editingUser.country}
-                        onChange={(e) => setEditingUser({ ...editingUser, country: e.target.value })}
-                      >
-                        <option value="">Select country...</option>
-                        {countries.map((country) => (
-                          <option key={country} value={country}>{country}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-currency">Currency</Label>
-                      <select
-                        id="edit-currency"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={editingUser.currency}
-                        onChange={(e) => setEditingUser({ ...editingUser, currency: e.target.value })}
-                      >
-                        <option value="">Select currency...</option>
-                        {currencies.map((currency) => (
-                          <option key={currency} value={currency}>{currency}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Role & Status Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Role & Status</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-role">User Role</Label>
-                      <select
-                        id="edit-role"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={editingUser.role}
-                        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as User['role'] })}
-                      >
-                        <option value="viewer">Viewer</option>
-                        <option value="agent">Agent</option>
-                        <option value="seller">Seller</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-status">Account Status</Label>
-                      <select
-                        id="edit-status"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={editingUser.status}
-                        onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as User['status'] })}
-                      >
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Permissions Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold border-b pb-2">Menu Access Permissions</h3>
-                  <PermissionsSection
-                    permissions={editingUser.permissions}
-                    onChange={(permission, checked) => handlePermissionChange(permission, checked, true)}
-                    isEdit={true}
-                  />
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button type="submit" onClick={handleUpdateUser}>Update User</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {isEditDialogOpen && <EditUserDialog
+          user={editingUser}
+          isEditDialogOpen={isEditDialogOpen}
+          setIsEditDialogOpen={setIsEditDialogOpen}
+        />}
       </div>
     </Layout>
   );
