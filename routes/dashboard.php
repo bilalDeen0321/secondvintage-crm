@@ -4,6 +4,7 @@
  * Web dashboard routes
  */
 
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,5 +30,5 @@ Route::get('/log', fn() => Inertia::render('Log'))->name('log');
 
 
 //full routes
-Route::get('users/all', [UserController::class, 'all'])->name('users.all');
+Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);

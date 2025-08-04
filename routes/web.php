@@ -8,11 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 Route::get('test', function () {
-    $users = User::with('roles', 'permissions')->get();
+    $users = Role::with('permissions')->get();
 
-    return UserResource::collection($users);
+    return $users;
 });
 
 

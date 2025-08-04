@@ -43,3 +43,13 @@ export type Auth = {
     user: User;
     permissions: string[];
 };
+
+
+export type Role = {
+    created_at: string;
+    updated_at: string;
+    guard_name: "web" | 'api';
+    id: 2;
+    name: string;
+}
+export type RolePermissions = Role & { permissions: string[] }

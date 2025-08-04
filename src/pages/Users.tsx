@@ -6,8 +6,8 @@ import AddNewUser from "@/components/users/AddUserDialog";
 import EditUserDialog from "@/components/users/EditUserDialog";
 import { User } from "@/components/users/types";
 import { PaginateData } from "@/types/laravel";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { RotateCcw, Search, Settings, Trash2 } from "lucide-react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
+import { Plus, RotateCcw, Search, Settings, Trash2 } from "lucide-react";
 import { useState } from "react";
 import Layout from "../components/Layout";
 import { Badge } from "../components/ui/badge";
@@ -56,7 +56,7 @@ const Users = () => {
 
         destroy(route("users.destroy", user.id), {
             preserveScroll: true,
-            onSuccess(response) {},
+            onSuccess(response) { },
         });
     };
 
@@ -86,12 +86,16 @@ const Users = () => {
                             Manage system users and their permissions
                         </p>
                     </div>
-                    {
-                        <AddNewUser
-                            isAddDialogOpen={isAddDialogOpen}
-                            setIsAddDialogOpen={setIsAddDialogOpen}
-                        />
-                    }
+                    <Button>
+                        <Link href={route("roles.index")} className="flex">
+                            <Plus className="mr-2 h-4" />
+                            Manage roles
+                        </Link>
+                    </Button>
+                    <AddNewUser
+                        isAddDialogOpen={isAddDialogOpen}
+                        setIsAddDialogOpen={setIsAddDialogOpen}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-4">

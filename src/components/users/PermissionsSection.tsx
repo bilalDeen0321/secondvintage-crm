@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { UserPermissions } from "./types";
 
 export const defaultPermissions = {
@@ -39,7 +40,9 @@ export const permissionLabels = {
     log: "Log",
 };
 
-export function PermissionsSection({ permissions, onChange, isEdit = false }) {
+type Props = { permissions: string[], onChange: (key: string, checked: CheckedState) => void, isEdit?: boolean };
+
+export function PermissionsSection({ permissions, onChange, isEdit = false }: Props) {
     return (
         <div className="space-y-4">
             <Label className="text-base font-semibold">Menu Permissions</Label>
@@ -48,7 +51,7 @@ export function PermissionsSection({ permissions, onChange, isEdit = false }) {
                     <div key={key} className="flex items-center space-x-2">
                         <Checkbox
                             id={`${isEdit ? "edit-" : ""}permission-${key}`}
-                            checked={permissions[key]}
+                            checked={permissions.includes(key)}
                             onCheckedChange={(checked) =>
                                 onChange(key, checked)
                             }
