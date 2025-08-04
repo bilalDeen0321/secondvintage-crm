@@ -40,6 +40,7 @@ A complete technical architecture and step-by-step order of implementation based
 ## 🧾 3. Role & Permission System
 
 ### Roles:
+
 - Admin
 - Manager
 - Finance
@@ -47,6 +48,7 @@ A complete technical architecture and step-by-step order of implementation based
 - Seller
 
 Use `spatie/laravel-permission`:
+
 ```php
 Role::create(['name' => 'Admin']);
 Permission::create(['name' => 'view watches']);
@@ -54,6 +56,7 @@ $user->assignRole('Admin');
 ```
 
 Control menu visibility and route access using:
+
 ```php
 @can('edit watches') ... @endcan
 ```
@@ -63,6 +66,7 @@ Control menu visibility and route access using:
 ## 🧩 4. Core Features by Module (Implementation Order)
 
 ### 1. Watch Management
+
 - CRUD
 - Image uploads (`SKU_001.jpg`, etc.)
 - AI Webhook integration
@@ -71,6 +75,7 @@ Control menu visibility and route access using:
 - Pagination + Search (Scout recommended)
 
 ### 2. Multi-platform Sales
+
 - Platform selector
 - Per-platform fields
 - Catawiki CSV Export
@@ -78,45 +83,53 @@ Control menu visibility and route access using:
 - “Fill out with AI” + Status change
 
 ### 3. Batch Management
+
 - Create/Edit Batches
 - Location auto-update for watches
 - DHL tracking integration
 - Grid/List toggle
 
 ### 4. Sales History
+
 - Import Catawiki Excel
 - Match on SKU
 - Buyer info import
 - Search/Pagination
 
 ### 5. Wish List
+
 - Create/Edit/Delete
 - Dropdowns: Brand, Price, Images
 - Resize images to 1024x1024
 - Grid/List toggle
 
 ### 6. Agent Balance
+
 - Add Payment/Deposit
 - Watch linkage
 - Balance summary
 - Status updates: Paid, Refunded, etc.
 
 ### 7. Agent/Seller Watches
+
 - Access based on role
 - Max 40 images
 - Default currency auto-select
 
 ### 8. Full Data View
+
 - Filter by all fields
 - CSV Export
 - Admin-only view
 
 ### 9. Logs
+
 - Watch logs, AI errors, actions
 - Indexed
 - Linked to user/watch
 
 ### 10. Settings
+
 - General config
 - Integrations (Make.com, DHL)
 - Dark mode color fix
@@ -127,27 +140,32 @@ Control menu visibility and route access using:
 ## 🌐 5. APIs & Webhooks
 
 ### Webhooks to Make.com
+
 POST JSON with fields:
+
 ```json
 {
-  "Id": "123",
-  "WatchName": "SEIKO LM",
-  "SKU": "SEI-LMX-0001",
-  "Thread_ID": "abc123",
-  "AI_Instruction": "Describe watch"
+    "Id": "123",
+    "WatchName": "SEIKO LM",
+    "SKU": "SEI-LMX-0001",
+    "Thread_ID": "abc123",
+    "AI_Instruction": "Describe watch"
 }
 ```
 
 ### Receive AI response:
+
 - Match with `watch_id` or `thread_id`
 - Update description
 - Mark job as complete
 
 ### DHL API (Batch Tracking)
+
 - On batch status change → Send DHL webhook
 - Poll for delivery status
 
 ### Tradera/eBay APIs
+
 - Send watch data
 - Get response status
 - Update platform_data and log
@@ -166,13 +184,17 @@ POST JSON with fields:
 ## 🗂️ 7. File Storage Structure
 
 - Store watch images in:
+
 ```
 storage/app/public/WatchImages/SKU/001.jpg
 ```
+
 - Auto-generate thumbnails:
+
 ```
 001_s.jpg
 ```
+
 - Public URL access enabled via symbolic link (`php artisan storage:link`)
 
 ---

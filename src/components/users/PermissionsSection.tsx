@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { UserPermissions } from './types';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { UserPermissions } from "./types";
 
 export const defaultPermissions = {
     dashboard: true,
@@ -22,36 +22,41 @@ export const defaultPermissions = {
 };
 
 export const permissionLabels = {
-    dashboard: 'Dashboard',
-    watchManagement: 'Watch Management',
-    multiplatformSales: 'Multi-platform Sales',
-    batchManagement: 'Batch Management',
-    promote: 'Promote / Social Media',
-    salesHistory: 'Sales History / Stats',
-    performanceTracking: 'Performance Tracking',
-    wishList: 'Wish List',
-    agentsBalance: 'Agents Balance',
-    invoices: 'Invoices',
-    users: 'Users',
-    tools: 'Tools',
-    fullDataView: 'Full Data View',
-    settings: 'Settings',
-    log: 'Log',
+    dashboard: "Dashboard",
+    watchManagement: "Watch Management",
+    multiplatformSales: "Multi-platform Sales",
+    batchManagement: "Batch Management",
+    promote: "Promote / Social Media",
+    salesHistory: "Sales History / Stats",
+    performanceTracking: "Performance Tracking",
+    wishList: "Wish List",
+    agentsBalance: "Agents Balance",
+    invoices: "Invoices",
+    users: "Users",
+    tools: "Tools",
+    fullDataView: "Full Data View",
+    settings: "Settings",
+    log: "Log",
 };
 
 export function PermissionsSection({ permissions, onChange, isEdit = false }) {
     return (
         <div className="space-y-4">
             <Label className="text-base font-semibold">Menu Permissions</Label>
-            <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+            <div className="grid max-h-60 grid-cols-2 gap-3 overflow-y-auto">
                 {Object.entries(permissionLabels).map(([key, label]) => (
                     <div key={key} className="flex items-center space-x-2">
                         <Checkbox
-                            id={`${isEdit ? 'edit-' : ''}permission-${key}`}
+                            id={`${isEdit ? "edit-" : ""}permission-${key}`}
                             checked={permissions[key]}
-                            onCheckedChange={(checked) => onChange(key, checked)}
+                            onCheckedChange={(checked) =>
+                                onChange(key, checked)
+                            }
                         />
-                        <Label htmlFor={`${isEdit ? 'edit-' : ''}permission-${key}`} className="text-sm font-normal cursor-pointer">
+                        <Label
+                            htmlFor={`${isEdit ? "edit-" : ""}permission-${key}`}
+                            className="cursor-pointer text-sm font-normal"
+                        >
                             {label}
                         </Label>
                     </div>
@@ -61,8 +66,11 @@ export function PermissionsSection({ permissions, onChange, isEdit = false }) {
     );
 }
 
-
-export const handlePermissionChange = (permission: keyof UserPermissions, checked: boolean, isEdit: boolean = false) => {
+export const handlePermissionChange = (
+    permission: keyof UserPermissions,
+    checked: boolean,
+    isEdit: boolean = false,
+) => {
     // if (isEdit && editingUser) {
     //   setEditingUser({
     //     ...editingUser,

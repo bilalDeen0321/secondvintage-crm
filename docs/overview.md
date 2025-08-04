@@ -30,36 +30,38 @@
 
 ## 📁 Project Modules
 
-| Module               | Frontend (React)              | Backend (Laravel)                        | Special Notes                                    |
-|----------------------|-------------------------------|------------------------------------------|--------------------------------------------------|
-| Dashboard            | Visual overview, stats        | Authenticated API, stats endpoints       | Role-based metrics                               |
-| Watch Management     | List/Edit/Add/Delete watches  | CRUD + AI generation + validation        | Async AI + image naming + SKU gen               |
-| Multi-platform Sales | Per-platform interface        | Platform-specific schema/API integration | CSV/Excel, API triggers, status handling         |
-| Batch Management     | List/Edit/Add batches         | CRUD + DHL webhook                       | Updates location of all watches in batch        |
-| Sales History        | Sales records + stats         | Import + Map from CSV                    | 10K+ record performance                          |
-| Wish List            | List/Create/Edit wishes       | CRUD                                     | Image resize + price conversion                 |
-| Agent/Seller Views   | Filtered views based on role  | Filtered queries                         | Access control, image counters, default currency |
-| Users & Roles        | Admin management panel        | CRUD + RBAC                             | Laravel Policies/Gates + role-specific menus     |
-| Logs                 | Activity/Error logs           | Laravel logs + custom events             | Include AI error responses                       |
-| Settings             | App config UI                 | CRUD + JSON configs                      | Appearance, Webhook URLs, currency               |
+| Module               | Frontend (React)             | Backend (Laravel)                        | Special Notes                                    |
+| -------------------- | ---------------------------- | ---------------------------------------- | ------------------------------------------------ |
+| Dashboard            | Visual overview, stats       | Authenticated API, stats endpoints       | Role-based metrics                               |
+| Watch Management     | List/Edit/Add/Delete watches | CRUD + AI generation + validation        | Async AI + image naming + SKU gen                |
+| Multi-platform Sales | Per-platform interface       | Platform-specific schema/API integration | CSV/Excel, API triggers, status handling         |
+| Batch Management     | List/Edit/Add batches        | CRUD + DHL webhook                       | Updates location of all watches in batch         |
+| Sales History        | Sales records + stats        | Import + Map from CSV                    | 10K+ record performance                          |
+| Wish List            | List/Create/Edit wishes      | CRUD                                     | Image resize + price conversion                  |
+| Agent/Seller Views   | Filtered views based on role | Filtered queries                         | Access control, image counters, default currency |
+| Users & Roles        | Admin management panel       | CRUD + RBAC                              | Laravel Policies/Gates + role-specific menus     |
+| Logs                 | Activity/Error logs          | Laravel logs + custom events             | Include AI error responses                       |
+| Settings             | App config UI                | CRUD + JSON configs                      | Appearance, Webhook URLs, currency               |
 
 ---
 
 ## 🧠 Key Features & Techniques
 
 ### 🔄 Async AI Description Generation
-- **Frontend:** 
-  - Queue jobs with a `pendingJobs` map.
-  - Use `watchId` or `threadId` to track.
-  - Show loading indicators per watch.
+
+- **Frontend:**
+    - Queue jobs with a `pendingJobs` map.
+    - Use `watchId` or `threadId` to track.
+    - Show loading indicators per watch.
 - **Backend (Optional):**
-  - Laravel Job Dispatch with `pending_jobs` table.
-  - Store status/result per watch entry.
+    - Laravel Job Dispatch with `pending_jobs` table.
+    - Store status/result per watch entry.
 - **Make.com:**
-  - Handles AI text creation.
-  - Sends POST response to webhook or waits for polling.
+    - Handles AI text creation.
+    - Sends POST response to webhook or waits for polling.
 
 ### 🔐 Role-Based Access (RBAC)
+
 - **Laravel Gates/Policies**
 - User roles: Admin, Manager, Finance, Agent, Seller
 - Permission-based menu + endpoint access
@@ -118,13 +120,13 @@ storage/
 
 ## 🔌 Third-party Integrations
 
-| Service      | Use Case                         | Method          |
-|--------------|----------------------------------|-----------------|
-| Make.com     | AI Description generation        | Webhook (POST)  |
-| Catawiki     | CSV export/import                | Manual/Automated|
-| Tradera      | Listing via API                  | API POST        |
-| DHL          | Batch location tracking          | Webhook/API     |
-| Chrono24     | (Optional) Listing (deferred)    | TBD             |
+| Service  | Use Case                      | Method           |
+| -------- | ----------------------------- | ---------------- |
+| Make.com | AI Description generation     | Webhook (POST)   |
+| Catawiki | CSV export/import             | Manual/Automated |
+| Tradera  | Listing via API               | API POST         |
+| DHL      | Batch location tracking       | Webhook/API      |
+| Chrono24 | (Optional) Listing (deferred) | TBD              |
 
 ---
 
@@ -140,14 +142,14 @@ storage/
 
 ## ✅ Tech Stack Summary
 
-| Layer       | Technology            |
-|-------------|------------------------|
-| Frontend    | React + TailwindCSS    |
-| Backend     | Laravel 11             |
-| Auth        | Laravel Sanctum        |
-| Database    | MySQL / MariaDB        |
-| File Store  | Laravel Storage (public) |
-| Queue       | Laravel Horizon + Redis|
-| AI          | Make.com Webhooks      |
-| Hosting     | Laravel Forge / Docker |
-| Monitoring  | Sentry, Laravel Telescope |
+| Layer      | Technology                |
+| ---------- | ------------------------- |
+| Frontend   | React + TailwindCSS       |
+| Backend    | Laravel 11                |
+| Auth       | Laravel Sanctum           |
+| Database   | MySQL / MariaDB           |
+| File Store | Laravel Storage (public)  |
+| Queue      | Laravel Horizon + Redis   |
+| AI         | Make.com Webhooks         |
+| Hosting    | Laravel Forge / Docker    |
+| Monitoring | Sentry, Laravel Telescope |

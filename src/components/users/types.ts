@@ -20,8 +20,8 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    role: 'admin' | 'manager' | 'viewer' | 'agent' | 'seller';
-    status: 'active' | 'inactive';
+    role: "admin" | "manager" | "viewer" | "agent" | "seller";
+    status: "active" | "inactive";
     country: string;
     currency: string;
     lastLogin: string;
