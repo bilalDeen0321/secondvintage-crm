@@ -1,4 +1,5 @@
 import config from "@/app/config";
+import Checkbox from "@/components/built-in/Checkbox";
 import InputError from "@/components/InputError";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { FormEventHandler, useState } from "react";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const canResetPassword = true;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
@@ -99,22 +101,31 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <label className="flex items-center space-x-2 text-sm">
-                            <input
-                                type="checkbox"
-                                className="rounded border-input"
+                    <div className="mt-4  flex justify-between">
+                        <label className="flex items-center">
+                            <Checkbox
+                                name="remember"
+                                checked={data.remember}
+                                onChange={(e) =>
+                                    setData(
+                                        "remember",
+                                        (e.target.checked || false) as false,
+                                    )
+                                }
                             />
-                            <span className="text-muted-foreground">
+                            <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
                                 Remember me
                             </span>
                         </label>
-                        <Link
-                            href={route("password.request")}
-                            className="text-sm text-primary hover:underline"
-                        >
-                            Forgot password?
-                        </Link>
+
+                        {canResetPassword && (
+                            <Link
+                                href={route("password.request")}
+                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                            >
+                                Forgot your password?
+                            </Link>
+                        )}
                     </div>
 
                     <Button

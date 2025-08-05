@@ -1,8 +1,6 @@
 <?php
 
-/**
- * Web dashboard routes
- */
+
 
 use App\Http\Controllers\AgentWatchController;
 use App\Http\Controllers\BatchController;
@@ -25,8 +23,12 @@ use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [DashboardController::class, 'index'])->name('home');
-Route::resource('dashboard', DashboardController::class)->only(['index']);
+
+/**
+ * Web dashboard routes
+ */
+
+
 Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);
 Route::resource('watches', WatchController::class);
@@ -44,6 +46,10 @@ Route::resource('tools', ToolController::class);
 Route::resource('data', PlatformDataController::class);
 Route::resource('settings', SettingController::class);
 Route::resource('log', LogController::class);
+
+//other routes
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 //fallback route
 Route::fallback(fn() => Inertia::render('NotFound'));
