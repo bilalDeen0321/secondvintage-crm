@@ -23,7 +23,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WatchController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
-
+use Inertia\Inertia;
 
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 Route::resource('dashboard', DashboardController::class)->only(['index']);
@@ -44,3 +44,6 @@ Route::resource('tools', ToolController::class);
 Route::resource('data', PlatformDataController::class);
 Route::resource('settings', SettingController::class);
 Route::resource('log', LogController::class);
+
+//fallback route
+Route::fallback(fn() => Inertia::render('NotFound'));

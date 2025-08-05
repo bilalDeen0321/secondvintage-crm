@@ -1,5 +1,5 @@
 import { useLocation } from "@/hooks/useLocation";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { useEffect } from "react";
 
 const NotFound = () => {
@@ -20,12 +20,12 @@ const NotFound = () => {
                 <p className="mb-4 text-xl text-gray-600">
                     Oops! Page not found
                 </p>
-                <a
+                <Link
                     href="/"
                     className="text-blue-500 underline hover:text-blue-700"
                 >
                     Return to Home
-                </a>
+                </Link>
             </div>
         </div>
     );
