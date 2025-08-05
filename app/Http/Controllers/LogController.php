@@ -10,6 +10,14 @@ use Inertia\Inertia;
 class LogController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:log');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

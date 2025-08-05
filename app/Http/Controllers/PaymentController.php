@@ -8,6 +8,14 @@ use Inertia\Inertia;
 class PaymentController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:agentsBalance');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

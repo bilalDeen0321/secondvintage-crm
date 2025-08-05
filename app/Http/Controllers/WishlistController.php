@@ -10,6 +10,14 @@ use Inertia\Inertia;
 class WishlistController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:wishList');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

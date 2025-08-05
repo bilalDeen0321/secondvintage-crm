@@ -13,6 +13,15 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
+
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:users');
+    }
+
     /**
      * Display a listing of the resource.
      */

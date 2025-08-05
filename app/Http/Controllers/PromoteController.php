@@ -8,6 +8,14 @@ use Inertia\Inertia;
 class PromoteController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:promote');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

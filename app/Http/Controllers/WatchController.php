@@ -9,6 +9,15 @@ use Inertia\Inertia;
 
 class WatchController extends Controller
 {
+
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:watchManagement');
+    }
+
     /**
      * Display a listing of the resource.
      */

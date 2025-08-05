@@ -8,6 +8,14 @@ use Inertia\Inertia;
 class ToolController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:fullDataView');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

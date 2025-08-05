@@ -10,6 +10,14 @@ use Inertia\Inertia;
 class SettingController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:settings');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

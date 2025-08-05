@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [DashboardController::class, 'index'])->name('home');
-Route::resource('dashboard', DashboardController::class);
+Route::resource('dashboard', DashboardController::class)->only(['index']);
 Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);
 Route::resource('watches', WatchController::class);

@@ -9,6 +9,14 @@ use Spatie\Permission\Models\Role;
 class RoleController extends Controller
 {
     /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:users');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
