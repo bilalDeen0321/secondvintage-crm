@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePlatformDataRequest;
 use App\Http\Requests\UpdatePlatformDataRequest;
 use App\Models\PlatformData;
+use Inertia\Inertia;
 
 class PlatformDataController extends Controller
 {
@@ -13,7 +14,7 @@ class PlatformDataController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('FullDataView');
     }
 
     /**

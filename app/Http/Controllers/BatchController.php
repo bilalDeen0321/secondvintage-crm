@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBatchRequest;
 use App\Http\Requests\UpdateBatchRequest;
 use App\Models\Batch;
+use Inertia\Inertia;
 
 class BatchController extends Controller
 {
@@ -13,7 +14,7 @@ class BatchController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('BatchManagement');
     }
 
     /**

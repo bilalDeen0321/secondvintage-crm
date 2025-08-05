@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSellerRequest;
 use App\Http\Requests\UpdateSellerRequest;
 use App\Models\Seller;
+use App\Models\User;
+use Inertia\Inertia;
 
 class SellerController extends Controller
 {
@@ -13,7 +15,7 @@ class SellerController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Sellers');
     }
 
     /**
@@ -35,7 +37,7 @@ class SellerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Seller $seller)
+    public function show(User $seller)
     {
         //
     }
@@ -43,7 +45,7 @@ class SellerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Seller $seller)
+    public function edit(User $seller)
     {
         //
     }
@@ -51,7 +53,7 @@ class SellerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSellerRequest $request, Seller $seller)
+    public function update(UpdateSellerRequest $request, User $seller)
     {
         //
     }
@@ -59,7 +61,7 @@ class SellerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Seller $seller)
+    public function destroy(User $seller)
     {
         //
     }

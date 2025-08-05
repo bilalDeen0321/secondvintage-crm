@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreAgentRequest;
-use App\Http\Requests\UpdateAgentRequest;
-use App\Models\Agent;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class AgentController extends Controller
+class ToolController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Inertia::render('Tools');
     }
 
     /**
@@ -28,7 +26,7 @@ class AgentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAgentRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -36,7 +34,7 @@ class AgentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Agent $agent)
+    public function show(string $id)
     {
         //
     }
@@ -44,7 +42,7 @@ class AgentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Agent $agent)
+    public function edit(string $id)
     {
         //
     }
@@ -52,7 +50,7 @@ class AgentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAgentRequest $request, Agent $agent)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -60,7 +58,7 @@ class AgentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Agent $agent)
+    public function destroy(string $id)
     {
         //
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Models\Watch;
+use Inertia\Inertia;
 
 class WatchController extends Controller
 {
@@ -13,7 +14,7 @@ class WatchController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('WatchManagement');
     }
 
     /**

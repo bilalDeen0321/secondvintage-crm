@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLogRequest;
 use App\Http\Requests\UpdateLogRequest;
 use App\Models\Log;
+use Inertia\Inertia;
 
 class LogController extends Controller
 {
@@ -13,7 +14,7 @@ class LogController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Log');
     }
 
     /**

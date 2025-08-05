@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWishlistRequest;
 use App\Http\Requests\UpdateWishlistRequest;
 use App\Models\Wishlist;
+use Inertia\Inertia;
 
 class WishlistController extends Controller
 {
@@ -13,7 +14,7 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('WishList');
     }
 
     /**
