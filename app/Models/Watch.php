@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Sku;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -44,6 +45,24 @@ class Watch extends Model
     protected function casts(): array
     {
         return [];
+    }
+
+    /**
+     * get route key by slug
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
+     * Boot the model and attach event listeners.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // static::creating(function (self $model) {});
     }
 
 

@@ -1,0 +1,413 @@
+Mockup Link
+https://second-vintage-compass.lovable.app/
+
+General Notes
+All watches should have a dataset with all the different information, and then based on status or
+stage it can be placed on different pages (Watch Management, Multi-platform Sales, Batch
+Management, Sales History, Agent Balance, Agent Watches, Seller, Watches, Full Data View)
+only the watches on Wish List are on its own
+API & Webhooks especially from “Multi Platform Sales”, will be furtherly described on a
+meeting.
+Ensure performance stability, and focus on building a robust setup, ready to handle a lot
+of data.
+
+Database Notes
+We are not experts on Databases but we think datasets should be something like this
+Watches (Core dataset, not sure if PlatformData should be part of Watches or its own, Catawiki
+will have about 40 fields)
+Batches
+Wish List
+Users
+Transactions (Payments/Deposits)
+Brands
+Locations
+Statuses​
+Stage
+Logs (or WatchLog / ActivityLog)
+
+API / Webhook notes
+For Generate Description it should send something like this (Reset AI should just clear
+Thread_ID)
+
+JSON-formatted POST request
+Id,
+WatchName,
+SKU,
+Brand,
+WatchSerial,
+WatchRef,
+WatchCaseSize,
+WatchCaliber,
+WatchTimegrapher,
+Platform,
+imageIds, url1 url2 url3…
+AI_Instruction: aiInstruction,
+Thread_ID: threadId,
+Status_Selected: statusSelected
+
+Tradera
+https://api.tradera.com/v3/DocAddItem.aspx
+Make.com / webhook
+POST request from website
+fetch("https://hook.us1.make.com/abc123...", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+Id: "123",
+WatchName: "SEIKO LM"​
+SKU: "SEI-LMX-0001"
+})
+});
+
+Then update Description & Status & add to log with result
+
+Main Menu (version 1.0)
+Layout & icon just like on mockup, the ones greyed out should not be there in version 1.0
+
+Dashboard
+Watch Management
+Multi-platform Sales
+Batch Management
+Sales History / Stats
+Wish List
+Agent Balance
+Agent Watches
+Seller Watches
+Users
+Full Data View
+Settings
+Log
+Logout
+
+Dashboard
+Layout just like the mockup.
+- Clean up sample data and connect with the database.
+
+Watch Management
+Layout just like the mockup.(add original cost in the Cost field also, like on Agent Watches).
+- There should be an edit/add function on Brand, Batch, Location dropdown at the top right
+when you click on the edit icon in dropdowns.
+- In Edit/New watch window, working image upload - that also names the files to
+<SKU>_001.jpg, <SKU>_002.jpg… those files should have a public url for third-party AI
+software to read.
+- In Edit/New watch window - Reset AI - should delete Description_Thread_ID​
+- In Edit/New watch window - Generate Description - should send JSON-formatted POST
+request (check API notes).
+- In Edit/New watch window - AI functions should also handle error messages.​
+- In Edit/New watch window - ensure next/previous watch function works.
+- SKU Generation. (check SKU Generation notes)
+- When making a new watch make sure SKU is unique
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+
+NOTE
+The UI and all visuals (form fields, AI image selector, loading state, queue indicators)
+are already fully designed in the mockup.
+What we need now is just to connect that button to our existing Make.com webhook.
+What It Should Do
+When we press “Generate Description”, the form data (Name, Brand, Serial, etc.) and
+uploaded images (especially the ones selected for AI) should be sent as a POST
+request to our Make.com webhook.
+Make.com will process the request and return the AI-generated description —
+sometimes with a delay of 30–60 seconds.
+The CRM should handle this asynchronously:
+The user should not be blocked — they can move on to the next watch entry
+immediately.
+It should be possible to queue multiple watches for generation, each showing a loading
+state until done.
+When the Make.com response arrives, just update the description field of the relevant
+watch.
+Recommended Technical Approach
+Option 1: Basic Async + Job Tracking (Recommended)
+When sending the POST, attach a watchId or timestamp in the payload
+Store a local job map in the frontend (pendingJobs)
+When a response comes back from Make.com:
+Match it to the correct watchId
+Fill the description field
+Clear the loading state for that job
+This allows queuing multiple watches and works entirely within the frontend logic — no
+backend needed.
+
+Option 2: Async Polling (if Make doesn’t return immediately)
+If the Make.com scenario can’t return a direct response (some setups store it
+elsewhere), then:
+On initial POST, return a jobId
+Poll Make.com every 10–15 seconds using jobId to check status
+When the result is ready, update the description field
+This works too, but Option 1 is simpler if direct responses are available.
+
+Multi-platform Sales
+Layout just like the mockup. (add original cost in the Cost field also, like on Agent Watches also
+in the View Data window).
+- Each Platform will have unique fields and handling, some will have CSV export others with
+API.
+- Platform priority (Catawiki & Tradera and eBay. Chrono24 can wait if too completed.
+- When you select platform I will already start sending it to AI (and you can also generate it by
+clicking “Fill out data with AI”).
+- In the View Data window - ensure next/previous watch platform data function works.
+- In the View Data window - Approve - Go Next - should set the status to “Ready for listing” and
+go to the next watch with platform data.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+NOTE: Catawiki (CSV) Upload feature.
+NOTE: Ebay + Tradera API integrations. (API keys ready)
+NOTE: Chrono24 can wait if too complicated.
+
+Batch Management
+Layout just like the mockup.
+- When creating a new Batch it should take location based on the user's country & default
+destination should be Denmark.
+- When the status for a batch is set to “In Transit” or “Delivered” it should update the location of all
+watches in that batch.
+
+- Change List/Grid selector in top right corner to the same buttons as on Watch Management.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Batches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+NOTE: API Integration with DHL for tracking information (status updating)
+
+Sales History & Statistics
+Layout just like the mockup.
+- When importing Catawiki CSV / excel file it should update all the matching SKU watches with
+buyer data (Buyer name, Country, Sales Price etc…)
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+
+Wish List
+Layout just like the mockup.
+- It should show the price range in big for the users default currency and small € price under.
+- Add New Wish List Item - Brand should be a dropdown
+- Add New Wish List Item - Image upload - maybe it should have a resizer for a smaller size like
+1024x1024
+- Change List/Grid selector in top right corner to the same buttons as on Watch Management.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watch Wishes data, add load more function or maybe pages in the
+table. But the search bar should still look in full database / index.
+
+Agent Balance
+Layout just like the mockup.
+- Only Admin users see Agent Balances with multiple Agents.
+- Only Admin users can add New Deposits.
+- New Payment will automatically select Agent if viewed as Agent. (without a dropdown).
+- New Payment should have a Payment Type dropdown with Watches, Shipping, Watchmaker,
+Fee, Bonus, Other.
+- New Payment - only if Watches type is selected it will show Payment Items below where you
+can link to Watches.
+- New Payment - a dynamic “Total Amount” should be added like it is on Edit Payment.
+- Watches have these statuses “Unpaid, Paid (not received), Paid (received), Refunded)
+
+- Non-Watches types have these statuses “Unpaid, Paid)
+- When Watches have Refunded Payment Status it should not deduct from balance.
+- When making a new payment or deposit make sure ID is unique
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Payments & Deposits data, add load more function or maybe pages in
+the table. But the search bar should still look in full database / index.
+
+Agent Watches
+Layout just like the mockup.
+- Add Watch - Agent dropdown should only be a dropdown for Admin users.
+- Edit Watch - If it's a watch created by a Seller user, it should not be possible to edit Seller.
+- Add/Edit Watch - Images should be max 40 with a counter like on Watch Management.
+- Change List/Grid selector in top right corner to the same buttons as on Watch Management.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+
+Seller Watches
+Layout just like the mockup.
+- Add/Edit Watch - Agent dropdown should only show assigned Agent(s).
+- Seller is only a dropdown if Admin user.
+- Add/Edit Watch - Images should be max 40 with a counter like on Watch Management.
+- Currency should not be a dropdown it should be based on Seller default currency.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Watches data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+
+Users
+Layout just like the mockup.
+- Only Admins have access to Users.
+- Clean up sample data and connect with the database.
+- Stress test with 10000 Users data, add load more function or maybe pages in the table. But
+the search bar should still look in full database / index.
+Admins - Full Access to all pages
+Managers - Almost full edit access (except changing other users / resetting password for users)
+
+Finance - Almost full view access (cant edit, but can export CSV)​
+Agents - Wish List, Agent Balance, Agent Watches, Settings - (not able to see other agents in
+balance and in dropdowns)
+Sellers - Wish List, Seller Watches, Settings - (not able to see other sellers & agents in balance
+and in dropdowns)
+
+Full Data View
+Layout just like the mockup. (maybe with more simple Status dropdown)
+- Only Admins have access to Full Data View.
+- Database dropdown should match database.
+- Add Title in front of Brands & Location dropdown.
+- Remove sorting dropdown, have each header as sorting if you click them.
+- Add an Export Filtered Data CSV button.
+- Clean up sample data and connect with the database.
+- Stress test with lots of data, add load more function or maybe pages in the table. But the
+search bar should still look in full database / index.
+
+Settings
+Layout just like the mockup. (maybe with more simple Status dropdown)
+- In General Settings it just be Name instead of Company name so other users can use this.
+- Only Admins have access to Integrations.
+- Appearance settings - Some colors not working in Dark themes.(like on Watch Management checkboxes, Name, Cost, Images in Edit Watch…)
+- Notifications are still a work in progress (not sure how complicated it is to have) This can wait,
+or we can trigger it from log later.
+- You can change Integrations / API / Webhook layouts so it makes more sense.
+- Integrations tab/layout is just a placeholder, it do not need to be anything like on mockup - also
+PayPal and Stripe are not being used at all, payments on platform are just numbers and status
+no actual payments
+- Clean up sample data and connect with the database.
+
+Log
+Layout something like the mockup.
+- Should also have AI error messages.
+- Clean up sample data and connect with the database.
+
+- Stress test with lots of data, add load more function or maybe pages in the table. But the
+search bar should still look in full database / index.
+
+Login Page
+Simple login page in style of the CRM system (there is a file from lovable)
+
+Access / Permissions
+Admins
+Full Access to all pages / features
+Managers
+Menu: Everything
+Almost full edit access (except changing other users / resetting password for users)
+Finance
+Menu: Everything
+Almost full view access (cant edit, but can export CSV)
+Agents
+Menu: Wish List, Agent Balance, Agent Watches, Settings, Logout
+(not able to see other agents in balance and in dropdowns)
+Sellers
+Menu: Wish List, Seller Watches, Settings
+(not able to see other sellers & agents in balance and in dropdowns)
+
+SKU Generation
+[BrandCode]-[Name/ModelCode]-[Serial]
+e.g. SEI-LMX-0001
+function generateSKU(brand, model, existingSKUs = []) {
+if (!brand || !model) return "";
+// BrandCode: first 3 letters
+
+const brandCode = brand.slice(0, 3).toUpperCase();
+// ModelCode: first letter of up to 3 words (excluding numbers), padded if needed
+const modelCode = model
+.split(" ")
+.filter(w => isNaN(w))
+.slice(0, 3)
+.map(w => w[0]?.toUpperCase() || "X")
+.join("")
+.padEnd(3, "X");
+const base = `${brandCode}-${modelCode}`;
+// Serial: start from 0001 and find next available
+let serial = 1;
+let sku = `${base}-${serial.toString().padStart(4, "0")}`;
+while (existingSKUs.includes(sku)) {
+serial++;
+sku = `${base}-${serial.toString().padStart(4, "0")}`;
+}
+return sku;
+}​
+​
+​
+​
+const skus = ["SEI-LMX-0001", "SEI-LMX-0002"];
+const newSKU = generateSKU("Seiko", "Lord Matic 3N1791", skus);
+// newSKU = "SEI-LMX-0003"
+​
+
+CSV Export
+Catawiki should have these exact fields as platform data when we export CSV, and the interface
+dropdown options from this
+https://drive.google.com/file/d/1Xq5OcqFJkdggBu_GjBmTCefIYa3x7ku3/view?usp=sharing
+Almost everything will be filled out from AI and most logic from make.com
+Template CSV
+https://drive.google.com/file/d/1DNqczyXabXgkBiG-S5Q1_QrU2gaZCEf-/view?usp=sharing
+Your Reference Number (optional) (SKU should be here)
+Your Reference Colour (optional)
+Auction Type (333) (optional)
+Object type (18127)
+Language
+Description (The normal main Watch Description should be here)
+
+D: Brand​
+D: Model (optional)
+D: Reference Number (optional)
+D: Shipped Insured
+D: Period
+D: Movement
+D: Case material
+D: Case diameter​
+D: Condition
+D: Gender
+D: Band material
+D: Band length (optional)
+D: Repainted dial​
+D: Dial colour (optional)
+D: Original box included
+D: Original papers included
+D: Original warranty included
+D: Year (optional)​D: Weight
+D: Width lug/ watch band
+D: In working order (optional)
+Public photo URL​(all the image urls separated with ; without space)
+Estimated lot value
+Reserve price (optional)
+Start bidding from (optional)
+Pick up (optional)​
+Combined shipping (optional)
+Shipping costs Shipping costs - Europe
+Shipping costs - Rest of World
+Country specific shipping price (optional)
+Shipping profile (optional)​
+Message to Expert (optional)
+
+CSV / xlsx Import
+Catawiki Sales Report Import
+Save data from buyer
+​
+Match data from file like
+“Reference label” should match up with our “SKU”​
+Payment → SalesPrice​
+Payment Date → SoldDate​
+Name → Buyer​
+Buyer email → BuyerEmail
+Address line 1 → BuyerAdr1​
+Address line 2 & Address line 3 → BuyerAdr2​
+
+Postal Code → BuyerPostCode​
+Town/city → BuyerCity
+Country → BuyerContury​
+ISO Country code → BuyerIsoCode
+
+Watch Image Files Structure
+They should be public urls with no access restrictions
+<sku>\<file number added>
+WatchImages\SEI-LMX-0001\001.jpg​
+WatchImages\SEI-LMX-0001\002.jpg​
+WatchImages\SEI-LMX-0001\003.jpg
+​
+Small / thumbnail version (256x256px)
+WatchImages\SEI-LMX-0001\001_s.jpg
+WatchImages\SEI-LMX-0001\002_s.jpg
+WatchImages\SEI-LMX-0001\003_s.jpg
+
+Currency handing
+We need to keep the original purchase price in the local / bought currency - Also with sales data
+we need to have the currency its sold in for audits (at the moment its € most of the time)​
+Some tips for structure here maybe
+https://chatgpt.com/share/6862851d-6480-800e-8753-3cf6dc9010a9
+
+
