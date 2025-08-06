@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\{Brand, Status, Stage, Batch, Location, User};
+use App\Models\{Brand, Status, Stage, Batch, Location, User, Watch};
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Watch>
@@ -17,10 +17,13 @@ class WatchFactory extends Factory
      */
     public function definition(): array
     {
+        $name  = fake()->sentence(rand(2, 4));
+        $brand = Brand::factory()->create();
+
         return [
-            'sku' => strtoupper(fake()->unique()->bothify('SKU-#####')),
-            'name' => fake()->sentence(2),
-            'brand_id' => Brand::factory(),
+            'sku' => generateSKU($brand->name, $name, Watch::class),
+            'name' => $name,
+            'brand_id' => $brand->id,
             'serial_number' => fake()->uuid,
             'reference' => strtoupper(fake()->bothify('REF-###')),
             'case_size' => fake()->numberBetween(34, 46) . 'mm',
@@ -30,7 +33,7 @@ class WatchFactory extends Factory
             'current_cost' => fake()->randomFloat(2, 500, 3000),
             'status_id' => Status::factory(),
             'stage_id' => Stage::factory(),
-            'batch_id' => null, // can be set dynamically
+            'batch_id' => Batch::factory(), // can be set dynamically
             'location_id' => Location::factory(),
             'agent_id' => User::factory(),
             'seller_id' => User::factory(),

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\Watch;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ use Spatie\Permission\Models\Role;
 Route::get('test', function () {
     $users = Role::with('permissions')->get();
 
-    return $users;
+    return Watch::with(['images', 'brand', 'status', 'stage', 'batch'])->get();
 });
 
 
