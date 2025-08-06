@@ -66,56 +66,89 @@ class Watch extends Model
     }
 
 
+    /**
+     * Get the brand for this watch
+     */
     public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
 
+    /**
+     * Get the status for this watch
+     */
     public function status()
     {
         return $this->belongsTo(Status::class);
     }
 
+    /**
+     * Get the stage for this watch
+     */
     public function stage()
     {
         return $this->belongsTo(Stage::class);
     }
 
+    /**
+     * Get the batch for this watch
+     */
     public function batch()
     {
         return $this->belongsTo(Batch::class);
     }
 
+    /**
+     * Get the location for this watch
+     */
     public function location()
     {
         return $this->belongsTo(Location::class);
     }
 
+    /**
+     * Get the agent for this watch
+     */
     public function agent()
     {
         return $this->belongsTo(User::class, 'agent_id');
     }
 
+    /**
+     * Get the seller for this watch
+     */
     public function seller()
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
 
-    public function watchImages()
+    /**
+     * Get the images for this model
+     */
+    public function images()
     {
         return $this->hasMany(WatchImage::class);
     }
 
-    public function watchLogs()
+    /**
+     * Get the logs for this model
+     */
+    public function logs()
     {
         return $this->hasMany(WatchLog::class);
     }
 
+    /**
+     * Get the platform data for this model
+     */
     public function platformData()
     {
         return $this->hasMany(PlatformData::class);
     }
 
+    /**
+     * Get the transactions for this model
+     */
     public function transactions()
     {
         return $this->hasMany(Transaction::class);

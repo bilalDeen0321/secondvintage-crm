@@ -55,36 +55,58 @@ class User extends Authenticatable
     }
 
 
+    /**
+     * Get the watches as agent that owns this user
+     */
     public function watchesAsAgent()
     {
         return $this->hasMany(Watch::class, 'agent_id');
     }
 
+    /**
+     * Get the watches as seller that owns this user
+     */
     public function watchesAsSeller()
     {
         return $this->hasMany(Watch::class, 'seller_id');
     }
 
+
+    /**
+     * Get the transactions that owns this user
+     */
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function wishLists()
+    /**
+     * Get the wishlists that owns this user
+     */
+    public function wishlists()
     {
         return $this->hasMany(WishList::class);
     }
 
+    /**
+     * Get the created batches that owns this user
+     */
     public function createdBatches()
     {
         return $this->hasMany(Batch::class, 'created_by');
     }
 
+    /**
+     * Get the logs that owns this user
+     */
     public function logs()
     {
         return $this->hasMany(Log::class);
     }
 
+    /**
+     * Get permissions by grouded for the instance
+     */
     public function getPermissionsGrouped(): array
     {
         $defaults = [
