@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
+use App\Http\Resources\WatchResource;
 use App\Models\Watch;
 use Inertia\Inertia;
 
@@ -23,7 +24,11 @@ class WatchController extends Controller
      */
     public function index()
     {
-        return Inertia::render('WatchManagement');
+        $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->take(2)->get();
+
+        return Inertia::render('Watchs/Index', [
+            'watches' => WatchResource::collection($watches)
+        ]);
     }
 
     /**

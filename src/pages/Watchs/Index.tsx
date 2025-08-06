@@ -20,7 +20,7 @@ import { Head } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-const WatchManagement = () => {
+const WatchManagement = ({ watches: data }) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const [watches, setWatches] = useState<Watch[]>([
@@ -985,8 +985,8 @@ If you have any questions, feel free to contact me after the auction ends.`,
                                             handleStatusToggle(status)
                                         }
                                         className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${statusFilters.includes(status)
-                                                ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                                                : "border-slate-200 bg-white hover:border-slate-300"
+                                            ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                            : "border-slate-200 bg-white hover:border-slate-300"
                                             }`}
                                     >
                                         <div className="text-lg font-bold text-slate-900">

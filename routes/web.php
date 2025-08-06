@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WatchResource;
 use App\Models\User;
 use App\Models\Watch;
 use Illuminate\Foundation\Application;
@@ -12,9 +13,8 @@ use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
 Route::get('test', function () {
-    $users = Role::with('permissions')->get();
-
-    return Watch::with(['images', 'brand', 'status', 'stage', 'batch'])->get();
+    $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->take(2)->get();
+    return WatchResource::collection($watches);
 });
 
 
