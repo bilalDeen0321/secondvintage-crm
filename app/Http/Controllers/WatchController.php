@@ -24,7 +24,7 @@ class WatchController extends Controller
      */
     public function index()
     {
-        $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->take(2)->get();
+        $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->get();
 
         return Inertia::render('Watchs/Index', [
             'watches' => WatchResource::collection($watches)

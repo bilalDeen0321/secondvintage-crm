@@ -41,7 +41,7 @@ class AuthenticatedSessionController extends Controller
             'last_login_ip' => $request->getClientIp()
         ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('home');
     }
 
     /**

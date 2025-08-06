@@ -20,6 +20,7 @@ class WatchImage extends Model
         'filename',
         'public_url',
         'order',
+        'user_for_ai'
     ];
 
     /**

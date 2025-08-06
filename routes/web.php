@@ -13,7 +13,7 @@ use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
 Route::get('test', function () {
-    $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->take(2)->get();
+    $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->get();
     return WatchResource::collection($watches);
 });
 

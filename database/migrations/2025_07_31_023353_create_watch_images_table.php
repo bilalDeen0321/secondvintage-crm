@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('watch_id')->constrained('watches')->onDelete('cascade');
             $table->string('filename');
             $table->string('public_url');
+            $table->boolean('use_for_ai')->default(false);
             $table->integer('order')->default(0);
             $table->timestamps();
         });

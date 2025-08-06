@@ -34,7 +34,9 @@ class Watch extends Model
         'agent_id',
         'seller_id',
         'description',
+        'ai_instructions',
         'description_thread_id',
+        'notes'
     ];
 
     /**

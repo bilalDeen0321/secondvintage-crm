@@ -30,7 +30,9 @@ return new class extends Migration
             $table->foreignId('agent_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('seller_id')->nullable()->constrained('users')->onDelete('set null');
             $table->text('description')->nullable();
+            $table->text('ai_instructions')->nullable();
             $table->string('description_thread_id')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->index(['sku', 'status_id', 'stage_id']);

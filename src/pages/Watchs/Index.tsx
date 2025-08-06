@@ -23,7 +23,7 @@ import { useEffect, useMemo, useState } from "react";
 const WatchManagement = ({ watches: data }) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const [watches, setWatches] = useState<Watch[]>([
+    const [watches, setWatches] = useState<Watch[]>(data ?? [
         {
             id: "1",
             name: "SEIKO LM SPECIAL",
