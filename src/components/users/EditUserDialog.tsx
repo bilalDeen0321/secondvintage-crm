@@ -11,19 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { countries, currencies } from "@/app/data";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import InputError from "../InputError";
-import {
-    defaultPermissions,
-    handlePermissionChange,
-    PermissionsSection,
-} from "./PermissionsSection";
 
 export default function EditUserDialog({
     isEditDialogOpen,
     setIsEditDialogOpen,
     user,
 }) {
+    const pageProps = usePage().props;
+    const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
+
     const { data, setData, put, processing, errors } = useForm({
         name: user?.name ?? "",
         email: user?.email ?? "",
@@ -188,17 +186,11 @@ export default function EditUserDialog({
                                                 setData("role", e.target.value)
                                             }
                                         >
-                                            <option value="viewer">
-                                                Viewer
-                                            </option>
-                                            <option value="agent">Agent</option>
-                                            <option value="seller">
-                                                Seller
-                                            </option>
-                                            <option value="manager">
-                                                Manager
-                                            </option>
-                                            <option value="admin">Admin</option>
+                                            {roles.map((role, index) => (
+                                                <option key={index} value={role}>
+                                                    {role}
+                                                </option>
+                                            ))}
                                         </select>
                                         <InputError
                                             message={errors.role}
@@ -236,23 +228,6 @@ export default function EditUserDialog({
                                 </div>
                             </div>
 
-                            {/* Permissions Section */}
-                            <div className="space-y-4">
-                                <h3 className="border-b pb-2 text-lg font-semibold">
-                                    Menu Access Permissions
-                                </h3>
-                                <PermissionsSection
-                                    permissions={defaultPermissions}
-                                    onChange={(permission, checked) =>
-                                        handlePermissionChange(
-                                            permission,
-                                            checked,
-                                            true,
-                                        )
-                                    }
-                                    isEdit={true}
-                                />
-                            </div>
                         </div>
                     )}
                     <DialogFooter>

@@ -43,6 +43,9 @@ export const permissionLabels = {
 type Props = { permissions: string[], onChange: (key: string, checked: CheckedState) => void, isEdit?: boolean };
 
 export function PermissionsSection({ permissions, onChange, isEdit = false }: Props) {
+
+    console.log(permissions);
+
     return (
         <div className="space-y-4">
             <Label className="text-base font-semibold">Menu Permissions</Label>

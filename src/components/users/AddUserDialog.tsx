@@ -12,16 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
-import {
-    defaultPermissions,
-    handlePermissionChange,
-    PermissionsSection,
-} from "./PermissionsSection";
-import { UserPermissions } from "./types";
 
 export default function AddNewUser({ isAddDialogOpen, setIsAddDialogOpen }) {
+    const pageProps = usePage().props;
+    const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
@@ -192,43 +189,23 @@ export default function AddNewUser({ isAddDialogOpen, setIsAddDialogOpen }) {
                                 <select
                                     name="role"
                                     id="role"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm capitalize"
                                     value={data.role}
                                     onChange={(e) =>
                                         setData("role", e.target.value)
                                     }
                                 >
-                                    <option value="viewer">Viewer</option>
-                                    <option value="agent">Agent</option>
-                                    <option value="seller">Seller</option>
-                                    <option value="manager">Manager</option>
-                                    <option value="admin">Admin</option>
+                                    {roles.map((role, index) => (
+                                        <option key={index} value={role}>
+                                            {role}
+                                        </option>
+                                    ))}
                                 </select>
                                 <InputError
                                     message={errors.role}
                                     className="mt-2"
                                 />
                             </div>
-                        </div>
-
-                        {/* Permissions Section */}
-                        <div className="space-y-4">
-                            <h3 className="border-b pb-2 text-lg font-semibold">
-                                Menu Access Permissions
-                            </h3>
-                            <PermissionsSection
-                                permissions={defaultPermissions}
-                                onChange={(
-                                    permissionKey: keyof UserPermissions,
-                                    checked: boolean,
-                                ) =>
-                                    handlePermissionChange(
-                                        permissionKey,
-                                        checked,
-                                        false,
-                                    )
-                                }
-                            />
                         </div>
                     </div>
                     <DialogFooter>

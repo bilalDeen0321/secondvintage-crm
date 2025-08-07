@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -40,6 +41,7 @@ class UserController extends Controller
 
         return Inertia::render('Users', [
             'search' => $request->input('search'),
+            'roles'  => Role::query()->pluck('name'),
             'total_users' => $query->count(),
             'active_users' => (clone $query)->where('status', 'active')->count(),
             'admin_users' => (clone $query)->whereRelation('roles', 'name', 'admin')->count(),

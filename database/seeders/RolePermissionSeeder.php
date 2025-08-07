@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
         $users = [
             [
                 "id" => "USR001",
-                "name" => "John Admin",
+                "name" => "Super Admin",
                 "email" => "admin@secondvintage.com",
                 "role" => "admin",
                 "status" => "active",
