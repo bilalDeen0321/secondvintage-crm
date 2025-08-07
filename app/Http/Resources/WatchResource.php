@@ -15,22 +15,10 @@ class WatchResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => (string) $this->id,
-            'name' => $this->name,
-            'sku' => $this->sku,
-            'brand' => optional($this->brand)->name,
-            'acquisitionCost' => $this->original_cost,
-            'status' => optional($this->status)->name,
-            'location' => optional($this->location)->name,
-            'batchGroup' => optional($this->batch)->batch_code ?? optional($this->batch)->name,
-            'serial' => $this->serial_number,
-            'ref' => $this->reference,
-            'caseSize' => $this->case_size,
-            'caliber' => $this->caliber,
-            'timegrapher' => $this->timegrapher,
-            'aiInstructions' => $this->ai_instructions ?? '',
-            'notes' => $this->notes ?? '',
-            'description' => $this->description,
+            ...$this->resource->toArray(),
+            'brand' => $this->brand->name,
+            'status' => $this->status->name,
+            'location' => $this->location->name,
             'images' => WatchImageResource::collection($this->images()->orderBy('order')->get()),
         ];
     }

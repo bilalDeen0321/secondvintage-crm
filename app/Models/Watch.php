@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Support\Sku;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,6 +38,16 @@ class Watch extends Model
         'description_thread_id',
         'notes'
     ];
+
+    /**
+     * Scope a query to filter watches by status name (case insensitive).
+     *
+     * Usage: Watch::whereStatus('draft')->get();
+     */
+    public function scopeWhereStatus(Builder $query, string $status): Builder
+    {
+        return $query->whereHas('status', fn(Builder $q) => $q->where('name', $status));
+    }
 
     /**
      * Get the attributes that should be cast.
