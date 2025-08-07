@@ -1,0 +1,52 @@
+name: 🚀 Deploy Laravel application
+
+on:
+  push:
+    branches:
+      - test_deploy
+
+jobs:
+  app-laravel:
+    name: 🎉 Test Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Specify your Node.js version heres
+
+      # - name: Install and build with npm
+      #   run: |
+      #     npm install
+      #     npm run build
+
+      # - name: Install PHP and Composer
+      #   uses: shivammathur/setup-php@v2
+      #   with:
+      #     php-version: "8.3" # Specify your PHP version here
+      #     extensions: mbstring, xml, bcmath, gd, curl
+      #     coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install
+      - name: Deploy to server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFI3iaGGWvHp6tInQ3i4xCPWr6VAYpEeRH3Y1apJsfA0zggtnoJ4iwu9pAkbN9/tjRchs4Z068N+d4+fi5i3B7uJH7HGbU6OKmxmwbfi+VK16OXB0/cMvG4pQ3WsQIewycT5O8bYv0dnnk42c5Oh/6sv6mIEBLanVHmDpCcQ3Ypw6Wii+d8AAFg93UUEaIze6Yw4CBWyq5KhRUPl0zuQX6tqzd4y1991qIuxfkDPc3TPFfDl8PU9bq0eBUKlMS8utCEDiEQiz5NCQ3V5QC5n3lUjTNYJIQrGIPF79z9/MmWsoBPpGQV4cQ+FZ4BUbQbR5b+4BZZ4YrrfG2Jp1y5TDihw8OVcRmSt+uHmI3b4z2z32pDnW6RhG39OHHRewybs2lQJJeHTbvPtZafx6AjXaSdWm6hSUVWfEjI9TaoaSaMWiPMY74WSoxZlR8Z+KpjtTUYj3hExpYwYiYfoIj9/jsH7siEpYqFOQHeuqtI3XpQxLwHgkUreG+OhkM1LaLoFRLL9zmpzdcJiFXp80zN5fIBTYsWf5WFqdAIpufkNGlz4Elzl9XZJf19BA86TYp0P9+5OMENS49JtRqNDAle3iGi/Flck2QeIGnSTaQPagkSeBowuML/ZmCtr0u3L+Xqc3s4nW0L/ytOF8i8MjXhG1hV8GXSjyAO+7jjevBByOrDQ== u495568265@de-fra-web1816.main-hosting.eu"
+          ARGS: "-rlgoDzvc -i"
+          SOURCE: "./"
+          REMOTE_HOST: 46.202.158.95
+          REMOTE_USER: u495568265
+          TARGET: /home/u495568265/domains/test.secondvintage.com/public_html
+          EXCLUDE: "/node_modules/, /.github/, /.git/, /README.md, /templates, /.vscode, /.editorconfig, ./gitattributes, /.gitignore /docs /docs/"
+          SCRIPT_BEFORE: |
+            rm -rf /home/u495568265/domains/test.secondvintage.com/public_html/database/migrations /home/u495568265/domains/test.secondvintage.com/public_html/app/Console/Commands
+          SCRIPT_AFTER: |
+            echo "Run after script"
+            cd /home/u495568265/domains/test.secondvintage.com/public_html
+            rm -rf *.sh
+            php artisan migrate
+            php artisan storage:link &> /dev/null
