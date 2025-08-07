@@ -36,7 +36,7 @@ const PaginationItem = React.forwardRef<
 PaginationItem.displayName = "PaginationItem";
 
 interface PaginationLinkProps extends Omit<InertiaLinkProps, "size"> {
-    isActive: boolean;
+    isActive?: boolean;
     size?: ButtonProps["size"];
 }
 
@@ -114,5 +114,6 @@ export {
     PaginationItem,
     PaginationLink,
     PaginationNext,
-    PaginationPrevious,
+    PaginationPrevious
 };
+

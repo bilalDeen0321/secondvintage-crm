@@ -11,7 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import TablePaginate from "@/components/ui/table/TablePaginate";
+import LaravelPaginate from "@/components/ui/table/LaravelPaginate";
 import WatchCard from "@/components/WatchCard";
 import WatchForm from "@/components/WatchForm";
 import WatchListView from "@/components/WatchListView";
@@ -288,39 +288,18 @@ const WatchManagement = () => {
     ];
 
     const statusCounts = {
-        All: watches.length,
-        Draft: watches.filter((w) => w.status === "Draft").length,
-        Review: watches.filter((w) => w.status === "Review").length,
-        Approved: watches.filter((w) => w.status === "Approved").length,
-        "Platform Review": watches.filter((w) => w.status === "Platform Review")
-            .length,
-        "Ready for listing": watches.filter(
-            (w) => w.status === "Ready for listing",
-        ).length,
-        Listed: watches.filter((w) => w.status === "Listed").length,
-        Reserved: watches.filter((w) => w.status === "Reserved").length,
-        Sold: watches.filter((w) => w.status === "Sold").length,
-        "Defect/Problem": watches.filter((w) => w.status === "Defect/Problem")
-            .length,
-        Standby: watches.filter((w) => w.status === "Standby").length,
+        All: pageProps?.watch_count_total || 0,
+        Draft: pageProps?.watch_count_draft || 0,
+        Review: pageProps?.watch_count_review || 0,
+        Approved: pageProps?.watch_count_approved || 0,
+        "Platform Review": pageProps?.watch_count_platform || 0,
+        "Ready for listing": pageProps?.watch_count_listing || 0,
+        Listed: pageProps?.watch_count_listed || 0,
+        Reserved: pageProps?.watch_count_reserved || 0,
+        Sold: pageProps?.watch_count_sold || 0,
+        "Defect/Problem": pageProps?.watch_count_problem || 0,
+        Standby: pageProps?.watch_count_standby || 0,
     };
-
-    // Split status counts into two rows
-    const firstRowStatuses = [
-        "All",
-        "Draft",
-        "Review",
-        "Approved",
-        "Platform Review",
-        "Ready for listing",
-    ];
-    const secondRowStatuses = [
-        "Listed",
-        "Reserved",
-        "Sold",
-        "Defect/Problem",
-        "Standby",
-    ];
 
     const handleEditBrands = () => {
         alert(
@@ -468,7 +447,8 @@ const WatchManagement = () => {
                                             }`}
                                     >
                                         <div className="text-lg font-bold text-slate-900">
-                                            {count}
+                                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                            {count as any}
                                         </div>
                                         <div className="truncate text-xs leading-tight text-slate-600">
                                             {status}
@@ -646,47 +626,7 @@ const WatchManagement = () => {
                     )}
 
                     {/* Results info and pagination controls */}
-                    <div className="mb-4 flex items-center justify-between">
-                        <div className="text-sm text-slate-600">
-                            Showing {(currentPage - 1) * itemsPerPage + 1}-
-                            {Math.min(
-                                currentPage * itemsPerPage,
-                                filteredAndSortedWatches.length,
-                            )}{" "}
-                            of {filteredAndSortedWatches.length} watches
-                        </div>
-                        {totalPages > 1 && (
-                            <div className="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.max(1, prev - 1),
-                                        )
-                                    }
-                                    disabled={currentPage === 1}
-                                >
-                                    Previous
-                                </Button>
-                                <span className="px-3 py-1 text-sm text-slate-600">
-                                    Page {currentPage} of {totalPages}
-                                </span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.min(totalPages, prev + 1),
-                                        )
-                                    }
-                                    disabled={currentPage === totalPages}
-                                >
-                                    Next
-                                </Button>
-                            </div>
-                        )}
-                    </div>
+                    <LaravelPaginate meta={watche_response.meta} />
                 </div>
 
                 {/* Content */}
@@ -727,7 +667,6 @@ const WatchManagement = () => {
                     </div>
                 )}
 
-                <TablePaginate links={watche_response.meta.links} />
 
                 {/* Form Modal */}
                 {showForm && (

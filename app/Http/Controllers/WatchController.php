@@ -32,12 +32,13 @@ class WatchController extends Controller
             'watch_count_draft' => Watch::query()->whereStatus(Status::DRAFT)->count(),
             'watch_count_review' => Watch::query()->whereStatus(Status::REVIEW)->count(),
             'watch_count_approved' => Watch::query()->whereStatus(Status::APPROVED)->count(),
-            'watch_count_approved' => Watch::query()->whereStatus(Status::APPROVED)->count(),
+            'watch_count_platform' => Watch::query()->whereStatus(Status::PLATFORM_REVIEW)->count(),
             'watch_count_listed' => Watch::query()->whereStatus(Status::LISTED)->count(),
             'watch_count_reserved' => Watch::query()->whereStatus(Status::RESERVED)->count(),
             'watch_count_sold' => Watch::query()->whereStatus(Status::SOLD)->count(),
             'watch_count_problem' => Watch::query()->whereStatus(Status::DEFECT_PROBLEM)->count(),
             'watch_count_listing' => Watch::query()->whereStatus(Status::READY_FOR_LISTING)->count(),
+            'watch_count_standby' => Watch::query()->whereStatus(Status::STANDBY)->count(),
             'watches' => WatchResource::collection($watches)
         ]);
     }
