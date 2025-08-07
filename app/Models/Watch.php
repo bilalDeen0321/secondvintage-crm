@@ -62,10 +62,10 @@ class Watch extends Model
     /**
      * get route key by slug
      */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName(): string
+    // {
+    //     return 'slug';
+    // }
 
     /**
      * Boot the model and attach event listeners.

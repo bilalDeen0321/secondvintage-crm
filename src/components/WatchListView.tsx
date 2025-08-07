@@ -144,7 +144,7 @@ const WatchListView = ({
                                     <Checkbox
                                         checked={
                                             selectedWatches.length ===
-                                                watches.length &&
+                                            watches.length &&
                                             watches.length > 0
                                         }
                                         onCheckedChange={onSelectAll}
@@ -233,7 +233,7 @@ const WatchListView = ({
                                             }
                                         >
                                             {watch.images &&
-                                            watch.images.length > 0 ? (
+                                                watch.images.length > 0 ? (
                                                 <img
                                                     src={watch.images[0].url}
                                                     alt={watch.name}

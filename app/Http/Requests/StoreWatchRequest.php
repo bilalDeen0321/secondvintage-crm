@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreWatchRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreWatchRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check();
     }
 
     /**
@@ -22,7 +23,24 @@ class StoreWatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'sku' => ['required', 'string', 'max:255', 'unique:watches,sku'],
+            'brand' => ['required', 'string'],
+            'acquisitionCost' => ['nullable', 'numeric'],
+            'status' => ['required', 'exists:statuses,name'],
+            'location' => ['nullable', 'exists:locations,id'],
+            'batch' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
+            'serial' => ['nullable', 'string'],
+            'ref' => ['nullable', 'string'],
+            'caseSize' => ['nullable', 'string'],
+            'caliber' => ['nullable', 'string'],
+            'timegrapher' => ['nullable', 'string'],
+            'aiInstructions' => ['nullable', 'string'],
+            'currency' => ['nullable', 'string'],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['file', 'image'],
         ];
     }
 }

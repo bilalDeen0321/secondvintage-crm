@@ -13,10 +13,8 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = ['Unpaid', 'Paid', 'Refunded', 'Delivered'];
-
-        foreach ($statuses as $status) {
-            Status::firstOrCreate(['name' => $status]);
+        foreach (Status::allStatuses() as $stauts) {
+            Status::query()->create(['name' => $stauts]);
         }
     }
 }

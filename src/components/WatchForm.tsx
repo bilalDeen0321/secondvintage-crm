@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -18,11 +19,16 @@ import {
     Tag,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Watch } from "../types/Watch";
+import { Status, Watch as TWatch } from "../types/watch";
 import BatchSelector from "./BatchSelector";
 import BrandSelector from "./BrandSelector";
 import ImageManager from "./ImageManager";
 import LocationSelector from "./LocationSelector";
+
+type Watch = TWatch & {
+    brand: string, status: Status['name'], location: string,
+    images: ({ id: string, url: string, useForAI: boolean })[]
+}
 
 interface WatchFormProps {
     watch?: Watch;
@@ -113,6 +119,7 @@ const WatchForm = ({
     ];
 
     // Exchange rates relative to EUR
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const exchangeRates: Record<string, number> = {
         EUR: 1.0,
         USD: 1.1,
@@ -172,7 +179,7 @@ const WatchForm = ({
         } else {
             setDisplayCostValue("");
         }
-    }, [formData.acquisitionCost, selectedCurrency]);
+    }, [exchangeRates, formData.acquisitionCost, selectedCurrency]);
 
     useEffect(() => {
         if (watch) {
@@ -181,7 +188,7 @@ const WatchForm = ({
                 name: watch.name || "",
                 sku: watch.sku || "",
                 brand: watch.brand || "",
-                acquisitionCost: watch.acquisitionCost?.toString() || "",
+                acquisitionCost: watch.ai_instructions?.toString() || "",
                 status: watch.status || "Draft",
                 location: watch.location || "",
                 batch: (watch as any).batchGroup || "",
@@ -192,7 +199,7 @@ const WatchForm = ({
                 caseSize: (watch as any).caseSize || "",
                 caliber: (watch as any).caliber || "",
                 timegrapher: (watch as any).timegrapher || "",
-                aiInstructions: watch.aiInstructions || "",
+                aiInstructions: watch.ai_instructions || "",
                 images: watch.images || [],
             };
             console.log("Initial form data:", initialData);

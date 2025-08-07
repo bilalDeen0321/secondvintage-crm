@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "@/components/ui/Link";
 import {
     Select,
     SelectContent,
@@ -18,7 +19,7 @@ import WatchListView from "@/components/WatchListView";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { PaginateData } from "@/types/laravel";
 import { Status, Watch as Twatch } from "@/types/watch";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -29,13 +30,14 @@ type Watch = Twatch & {
 
 const WatchManagement = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-
+    const { delete: destroy } = useForm();
     const pageProps = usePage().props;
 
     // If pageProps.watches is null or undefined, watche_response is null
     const watche_response = (pageProps.watches as PaginateData<Watch> | null) ?? null;
 
-    const [watches, setWatches] = useState<Watch[]>(watche_response.data || []);
+    const [, setWatches] = useState<Watch[]>(watche_response.data || []);
+    const watches = watche_response.data;
 
     const [showForm, setShowForm] = useState(false);
     const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
@@ -111,7 +113,9 @@ const WatchManagement = () => {
 
     const handleDeleteWatch = (id: string) => {
         if (window.confirm("Are you sure you want to delete this watch?")) {
-            setWatches(watches.filter((w) => w.id !== id));
+            destroy(route("watches.destroy", id), {
+                preserveScroll: true,
+            });
         }
     };
 
@@ -421,13 +425,20 @@ const WatchManagement = () => {
                                     <List className="h-4 w-4" />
                                 </Button>
                             </div>
-                            <Button
+                            {/* <Button
                                 onClick={handleAddWatch}
                                 className="flex items-center gap-2"
                             >
                                 <span className="text-lg">+</span>
                                 Add New Watch
-                            </Button>
+                            </Button> */}
+                            <Link
+                                href={route('watches.create')}
+                                className="flex items-center gap-2"
+                            >
+                                <span className="text-lg">+</span>
+                                Add New Watch
+                            </Link>
                         </div>
                     </div>
 

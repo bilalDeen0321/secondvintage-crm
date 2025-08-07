@@ -25,3 +25,35 @@ export const getStatusColor = (status: string) => {
             return "bg-gray-100 text-gray-800";
     }
 };
+
+/**
+ * Generate a unique SKU based on brand, model, and existing SKUs
+ */
+export function generateSKU(brand: string, model: string, existingSKUs = []) {
+    if (!brand || !model) return "";
+
+    // BrandCode: first 3 letters
+    const brandCode = brand.slice(0, 3).toUpperCase();
+
+    // ModelCode: first letter of up to 3 words (excluding numbers), padded if needed
+    const modelCode = model
+        .split(" ")
+        .filter((w) => isNaN(w as unknown as number))
+        .slice(0, 3)
+        .map((w) => w[0]?.toUpperCase() || "X")
+        .join("")
+        .padEnd(3, "X");
+
+    const base = `${brandCode}-${modelCode}`;
+
+    // Serial: start from 0001 and find next available
+    let serial = 1;
+    let sku = `${base}-${serial.toString().padStart(4, "0")}`;
+
+    while (existingSKUs.includes(sku)) {
+        serial++;
+        sku = `${base}-${serial.toString().padStart(4, "0")}`;
+    }
+
+    return sku;
+}
