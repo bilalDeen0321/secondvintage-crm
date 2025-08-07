@@ -1,0 +1,40 @@
+<IfModule mod_setenvif.c>
+    # If the load‑balancer/CDN tells us the original request was HTTPS,
+    # mark the PHP $_SERVER['HTTPS'] var as “on”
+    SetEnvIf X-Forwarded-Proto https HTTPS=on
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # --- START: Force HTTPS ---
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # --- END: Force HTTPS ---
+
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ ^$1 [N]
+
+    RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
+    RewriteRule ^(.*)$ public/$1 
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ server.php
+
+    <Files ~ "^.*\.([Ee][Nn][Vv])">
+     order allow,deny
+     deny from all
+     satisfy all
+    </Files>
+
+</IfModule>
