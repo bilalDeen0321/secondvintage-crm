@@ -1,5 +1,5 @@
 
-import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
+import Layout from '@/components/Layout';
 import { PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
 import DeleteUserForm from './Partials/DeleteUserForm';
@@ -11,14 +11,22 @@ export default function Edit({
     status,
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Profile
-                </h2>
-            }
+        <Layout
+
         >
             <Head title="Profile" />
+
+            <div className="space-y-6 p-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold">Profile</h1>
+                        <p className="text-muted-foreground">
+                            Manage your profile
+                        </p>
+                    </div>
+
+                </div>
+            </div>
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
@@ -39,6 +47,6 @@ export default function Edit({
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }
