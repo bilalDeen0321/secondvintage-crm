@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { countries, currencies } from "@/app/data";
+import RawSelect from "@/components/mixed/RawSelect";
 import { useForm, usePage } from "@inertiajs/react";
 import InputError from "../../../components/InputError";
 
@@ -98,39 +99,16 @@ export default function EditUserDialog({
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit-country">
-                                            Country
-                                        </Label>
-                                        <select
-                                            name="country"
-                                            id="edit-country"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            value={data.country}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "country",
-                                                    e.target.value,
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                Select country...
-                                            </option>
-                                            {countries.map((country) => (
-                                                <option
-                                                    key={country}
-                                                    value={country}
-                                                >
-                                                    {country}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <InputError
-                                            message={errors.country}
-                                            className="mt-2"
-                                        />
-                                    </div>
+
+                                    <RawSelect
+                                        data={countries}
+                                        name="country"
+                                        label="Country"
+                                        value={data.country}
+                                        error={errors.country}
+                                        onChange={(e) => setData("country", e.target.value)}
+                                    />
+
                                     <div className="space-y-2">
                                         <Label htmlFor="edit-currency">
                                             Currency

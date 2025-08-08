@@ -62,8 +62,8 @@ import { useState } from "react";
 import BrandSelector from "../components/BrandSelector";
 import ImageManager from "../components/ImageManager";
 import Layout from "../components/Layout";
-import { WatchImage } from "../types/Watch";
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WatchImage = any;
 interface AgentWatch {
     id: string;
     name: string;
@@ -699,11 +699,11 @@ const AgentWatches = () => {
                 prev.map((w) =>
                     w.id === editingWatch.id
                         ? {
-                              ...w,
-                              ...formData,
-                              price: parseFloat(formData.price) || 0,
-                              images: formImages,
-                          }
+                            ...w,
+                            ...formData,
+                            price: parseFloat(formData.price) || 0,
+                            images: formImages,
+                        }
                         : w,
                 ),
             );
@@ -745,10 +745,10 @@ const AgentWatches = () => {
             prev.map((watch) =>
                 selectedWatches.includes(watch.id)
                     ? {
-                          ...watch,
-                          paymentId: newPaymentId,
-                          status: "Paid (not received)" as AgentWatch["status"],
-                      }
+                        ...watch,
+                        paymentId: newPaymentId,
+                        status: "Paid (not received)" as AgentWatch["status"],
+                    }
                     : watch,
             ),
         );
@@ -1287,7 +1287,7 @@ const AgentWatches = () => {
                                             <Checkbox
                                                 checked={
                                                     selectedWatches.length ===
-                                                        filteredWatches.length &&
+                                                    filteredWatches.length &&
                                                     filteredWatches.length > 0
                                                 }
                                                 onCheckedChange={
@@ -1396,8 +1396,8 @@ const AgentWatches = () => {
                                                             watch.images
                                                                 .length > 0
                                                                 ? watch
-                                                                      .images[0]
-                                                                      .url
+                                                                    .images[0]
+                                                                    .url
                                                                 : DEFAULT_IMAGE
                                                         }
                                                         alt={watch.name}
@@ -1960,7 +1960,7 @@ const AgentWatches = () => {
                                             className={cn(
                                                 "w-full justify-start text-left font-normal",
                                                 !newPaymentData.date &&
-                                                    "text-muted-foreground",
+                                                "text-muted-foreground",
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />

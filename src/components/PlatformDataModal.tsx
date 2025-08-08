@@ -31,7 +31,9 @@ import {
     Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Watch } from "../types/Watch";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Watch = any;
 
 interface PlatformDataModalProps {
     watch: Watch | null;
@@ -496,15 +498,17 @@ const getPlatformData = (watch: Watch, platform: string): PlatformField[] => {
                 },
             ];
         default:
-            const baseData: PlatformField[] = [
-                statusField,
-                descriptionField,
-                { field: "Name", value: watch.name, type: "input" },
-                { field: "SKU", value: watch.sku, type: "input" },
-                { field: "Brand", value: watch.brand, type: "input" },
-                { field: "Location", value: watch.location, type: "input" },
-            ];
-            return baseData;
+            {
+                const baseData: PlatformField[] = [
+                    statusField,
+                    descriptionField,
+                    { field: "Name", value: watch.name, type: "input" },
+                    { field: "SKU", value: watch.sku, type: "input" },
+                    { field: "Brand", value: watch.brand, type: "input" },
+                    { field: "Location", value: watch.location, type: "input" },
+                ];
+                return baseData;
+            }
     }
 };
 
@@ -747,11 +751,10 @@ const PlatformDataModal = ({
                                                 onClick={() =>
                                                     setSelectedImageIndex(index)
                                                 }
-                                                className={`aspect-square overflow-hidden rounded-md border-2 bg-gray-100 transition-colors ${
-                                                    selectedImageIndex === index
+                                                className={`aspect-square overflow-hidden rounded-md border-2 bg-gray-100 transition-colors ${selectedImageIndex === index
                                                         ? "border-blue-500"
                                                         : "border-transparent hover:border-gray-300"
-                                                }`}
+                                                    }`}
                                             >
                                                 <img
                                                     src={image.url}
@@ -910,36 +913,36 @@ const PlatformDataModal = ({
                         <div className="text-sm text-slate-600">
                             {(platform === "Catawiki" ||
                                 platform === "Catawiki (Auction)") && (
-                                <p>
-                                    • Catawiki specializes in luxury auctions.
-                                    Ensure high-quality photos and detailed
-                                    condition reports. All fields marked with
-                                    "D:" are required for Catawiki's detailed
-                                    specifications.
-                                </p>
-                            )}
+                                    <p>
+                                        • Catawiki specializes in luxury auctions.
+                                        Ensure high-quality photos and detailed
+                                        condition reports. All fields marked with
+                                        "D:" are required for Catawiki's detailed
+                                        specifications.
+                                    </p>
+                                )}
                             {(platform === "Tradera" ||
                                 platform === "Tradera (Auction)") && (
-                                <p>
-                                    • Tradera is popular in Sweden. Consider
-                                    local preferences and Swedish krona pricing.
-                                </p>
-                            )}
+                                    <p>
+                                        • Tradera is popular in Sweden. Consider
+                                        local preferences and Swedish krona pricing.
+                                    </p>
+                                )}
                             {(platform === "eBay" ||
                                 platform.includes("ebay")) && (
-                                <p>
-                                    • eBay requires detailed item specifics.
-                                    Ensure all technical details are accurate.
-                                </p>
-                            )}
+                                    <p>
+                                        • eBay requires detailed item specifics.
+                                        Ensure all technical details are accurate.
+                                    </p>
+                                )}
                             {(platform === "Chrono24" ||
                                 platform === "Chrono24 (Fixed Price)") && (
-                                <p>
-                                    • Chrono24 is watch-specific. Include all
-                                    technical specifications and authentication
-                                    details.
-                                </p>
-                            )}
+                                    <p>
+                                        • Chrono24 is watch-specific. Include all
+                                        technical specifications and authentication
+                                        details.
+                                    </p>
+                                )}
                             {![
                                 "Catawiki",
                                 "Catawiki (Auction)",
@@ -951,11 +954,11 @@ const PlatformDataModal = ({
                                 "Chrono24",
                                 "Chrono24 (Fixed Price)",
                             ].includes(platform) && (
-                                <p>
-                                    • General platform data. Customize fields
-                                    based on platform requirements.
-                                </p>
-                            )}
+                                    <p>
+                                        • General platform data. Customize fields
+                                        based on platform requirements.
+                                    </p>
+                                )}
                         </div>
                     </div>
 

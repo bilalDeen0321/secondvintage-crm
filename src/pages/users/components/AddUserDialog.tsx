@@ -1,5 +1,6 @@
-import { currencies } from "@/app/data";
+import { countries, currencies } from "@/app/data";
 import InputError from "@/components/InputError";
+import RawSelect from "@/components/mixed/RawSelect";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -12,15 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import countries from '@/data/countries.json';
 import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 
-//get all countries list
-const all_countries = countries.map(i => i.name);
 
 export default function AddNewUser({ show, setShow }) {
-
     const pageProps = usePage().props;
     const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
 
@@ -47,9 +44,8 @@ export default function AddNewUser({ show, setShow }) {
                     "role",
                     "currency",
                 );
-                setShow(false)
-            }
-
+                setShow(false);
+            },
         });
     };
 
@@ -128,34 +124,16 @@ export default function AddNewUser({ show, setShow }) {
                                         className="mt-2"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="country">Country</Label>
-                                    <select
-                                        name="country"
-                                        id="country"
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        value={data.country}
-                                        onChange={(e) =>
-                                            setData("country", e.target.value)
-                                        }
-                                    >
-                                        <option value="">
-                                            Select country...
-                                        </option>
-                                        {all_countries.map((country) => (
-                                            <option
-                                                key={country}
-                                                value={country}
-                                            >
-                                                {country}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <InputError
-                                        message={errors.country}
-                                        className="mt-2"
-                                    />
-                                </div>
+
+                                <RawSelect
+                                    data={countries}
+                                    name="country"
+                                    label="Country"
+                                    value={data.country}
+                                    error={errors.country}
+                                    onChange={(e) => setData("country", e.target.value)}
+                                />
+
                                 <div className="space-y-2">
                                     <Label htmlFor="currency">Currency</Label>
                                     <select
@@ -203,7 +181,7 @@ export default function AddNewUser({ show, setShow }) {
                                         setData("role", e.target.value)
                                     }
                                 >
-                                    <option value="">Selete a role</option>
+                                    <option value="">Select option</option>
                                     {roles.map((role, index) => (
                                         <option key={index} value={role}>
                                             {role}
