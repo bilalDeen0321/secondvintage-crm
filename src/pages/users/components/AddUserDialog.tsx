@@ -1,4 +1,4 @@
-import { countries, currencies, currencies_with_lebel } from "@/app/data";
+import { countries, currencies_with_lebel } from "@/app/data";
 import InputError from "@/components/InputError";
 import RawSelect from "@/components/mixed/RawSelect";
 import { Button } from "@/components/ui/button";
@@ -149,35 +149,6 @@ export default function AddNewUser({ show, setShow }) {
                                         </option>
                                     ))}
                                 </RawSelect>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="currency">Currency</Label>
-                                    <select
-                                        name="currency"
-                                        id="currency"
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        value={data.currency}
-                                        onChange={(e) =>
-                                            setData("currency", e.target.value)
-                                        }
-                                    >
-                                        <option value="">
-                                            Select currency...
-                                        </option>
-                                        {currencies.map((currency) => (
-                                            <option
-                                                key={currency}
-                                                value={currency}
-                                            >
-                                                {currency}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <InputError
-                                        message={errors.currency}
-                                        className="mt-2"
-                                    />
-                                </div>
                             </div>
                         </div>
 
