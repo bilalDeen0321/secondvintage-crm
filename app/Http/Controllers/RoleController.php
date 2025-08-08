@@ -32,7 +32,7 @@ class RoleController extends Controller
             ];
         });
 
-        return Inertia::render('Users/Roles', ['roles' => $roles]);
+        return Inertia::render('users/roles/index', ['roles' => $roles]);
     }
 
     /**

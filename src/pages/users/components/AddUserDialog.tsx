@@ -1,4 +1,4 @@
-import { countries, currencies } from "@/app/data";
+import { currencies } from "@/app/data";
 import InputError from "@/components/InputError";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +12,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import countries from '@/data/countries.json';
 import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 
+//get all countries list
+const all_countries = countries.map(i => i.name);
+
 export default function AddNewUser({ show, setShow }) {
+
     const pageProps = usePage().props;
     const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
 
@@ -23,7 +28,7 @@ export default function AddNewUser({ show, setShow }) {
         name: "",
         email: "",
         role: "",
-        country: "USA",
+        country: "Denmark",
         currency: "USD",
         password: "",
     });
@@ -137,7 +142,7 @@ export default function AddNewUser({ show, setShow }) {
                                         <option value="">
                                             Select country...
                                         </option>
-                                        {countries.map((country) => (
+                                        {all_countries.map((country) => (
                                             <option
                                                 key={country}
                                                 value={country}
@@ -198,6 +203,7 @@ export default function AddNewUser({ show, setShow }) {
                                         setData("role", e.target.value)
                                     }
                                 >
+                                    <option value="">Selete a role</option>
                                     {roles.map((role, index) => (
                                         <option key={index} value={role}>
                                             {role}
