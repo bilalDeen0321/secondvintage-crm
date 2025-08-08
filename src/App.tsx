@@ -23,7 +23,7 @@ import SalesHistory from "./pages/SalesHistory";
 import Sellers from "./pages/Sellers";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
-import Users from "./pages/Users";
+import Users from "./pages/users";
 import VendorPayments from "./pages/VendorPayments";
 import WatchManagement from "./pages/WatchManagement";
 import WishList from "./pages/WishList";

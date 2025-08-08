@@ -18,8 +18,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import AddRoleDialog from "@/components/users/roles/AddRoleDialog";
-import UpdateRoleDialog from "@/components/users/roles/UpdateRoleDialog";
+import AddRoleDialog from "@/pages/users/roles/AddRoleDialog";
+import UpdateRoleDialog from "@/pages/users/roles/UpdateRoleDialog";
 import { RolePermissions } from "@/types/auth";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { Search, Settings, Trash2 } from "lucide-react";

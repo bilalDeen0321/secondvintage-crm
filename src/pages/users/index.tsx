@@ -1,25 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { getRoleColor, getStatusColor } from "@/app/utils";
-import TablePaginate from "@/components/ui/table/TablePaginate";
-import AddNewUser from "@/components/users/AddUserDialog";
-import EditUserDialog from "@/components/users/EditUserDialog";
-import { User } from "@/components/users/types";
-import { PaginateData } from "@/types/laravel";
-import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
-import { Plus, RotateCcw, Search, Settings, Trash2 } from "lucide-react";
-import { useState } from "react";
-import Layout from "../components/Layout";
-import { Badge } from "../components/ui/badge";
-import { Button } from "../components/ui/button";
+import Layout from "@/components/Layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -27,7 +19,15 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../components/ui/table";
+} from "@/components/ui/table";
+import TablePaginate from "@/components/ui/table/TablePaginate";
+import AddNewUser from "@/pages/users/components/AddUserDialog";
+import EditUserDialog from "@/pages/users/components/EditUserDialog";
+import { User } from "@/pages/users/components/types";
+import { PaginateData } from "@/types/laravel";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
+import { Plus, RotateCcw, Search, Settings, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 const Users = () => {
     const pageProps = usePage().props as any;
@@ -93,8 +93,8 @@ const Users = () => {
                         </Link>
                     </Button>
                     <AddNewUser
-                        isAddDialogOpen={isAddDialogOpen}
-                        setIsAddDialogOpen={setIsAddDialogOpen}
+                        show={isAddDialogOpen}
+                        setShow={setIsAddDialogOpen}
                     />
                 </div>
 
@@ -165,7 +165,7 @@ const Users = () => {
                             <div className="relative flex-1">
                                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
-                                    placeholder="Search users..."
+                                    placeholder="Search users@."
                                     value={searchTerm}
                                     onChange={handleSearchChange}
                                     className="pl-8"

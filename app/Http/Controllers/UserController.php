@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -39,7 +40,7 @@ class UserController extends Controller
             })
             ->paginate($request->input('per_page', 10));
 
-        return Inertia::render('Users', [
+        return Inertia::render('users/index', [
             'search' => $request->input('search'),
             'roles'  => Role::query()->pluck('name'),
             'total_users' => $query->count(),
@@ -58,6 +59,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'             => ['required', 'string', 'max:255'],
             'email'            => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'role'             => ['required', 'string', Rule::exists(Role::class, 'name')],
             // 'status'           => ['required', 'in:active,inactive'],
             'password'         => ['required', 'string', 'min:6'], // expects password_confirmation
             'currency'         => ['nullable', 'string', 'max:10'],
@@ -72,6 +74,11 @@ class UserController extends Controller
             'currency'         => $validated['currency'] ?? null,
             'country'          => $validated['country'] ?? null,
         ]);
+
+        // Update role (if using Spatie)
+        if (!empty($validated['role'])) {
+            $user->syncRoles([$validated['role']]);
+        }
 
         return redirect()
             ->back()
@@ -96,7 +103,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'status'   => ['required', 'in:active,inactive'],
-            'role'     => ['required', 'string'], // Only if role changes from frontend
+            'role'     => ['required', 'string', Rule::exists(Role::class, 'name')],
             'password' => ['nullable', 'string', 'min:6'], // Optional password change
             'country'  => ['nullable', 'string', 'max:100'],
             'currency' => ['nullable', 'string', 'max:10'],

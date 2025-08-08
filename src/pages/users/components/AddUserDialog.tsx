@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 
-export default function AddNewUser({ isAddDialogOpen, setIsAddDialogOpen }) {
+export default function AddNewUser({ show, setShow }) {
     const pageProps = usePage().props;
     const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
 
@@ -33,7 +33,7 @@ export default function AddNewUser({ isAddDialogOpen, setIsAddDialogOpen }) {
         e.preventDefault();
         post(route("users.store"), {
             onFinish: () => reset("password"),
-            onSuccess: () =>
+            onSuccess: () => {
                 reset(
                     "name",
                     "email",
@@ -41,13 +41,16 @@ export default function AddNewUser({ isAddDialogOpen, setIsAddDialogOpen }) {
                     "country",
                     "role",
                     "currency",
-                ),
+                );
+                setShow(false)
+            }
+
         });
     };
 
     return (
         <>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={show} onOpenChange={setShow}>
                 <DialogTrigger asChild>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />

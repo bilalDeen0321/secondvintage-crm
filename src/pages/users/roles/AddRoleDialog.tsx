@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { PermissionsSection } from "../PermissionsSection";
+import { PermissionsSection } from "../components/PermissionsSection";
 
 export default function AddRoleDialog() {
 

@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { RolePermissions } from "@/types/auth";
 import { useForm } from "@inertiajs/react";
 import { Plus } from "lucide-react";
-import { PermissionsSection } from "../PermissionsSection";
+import { PermissionsSection } from "../components/PermissionsSection";
 
 type Props = { role: RolePermissions, isDialog: boolean, setDialog: React.Dispatch<React.SetStateAction<boolean>> }
 

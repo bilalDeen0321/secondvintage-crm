@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 
 import { countries, currencies } from "@/app/data";
 import { useForm, usePage } from "@inertiajs/react";
-import InputError from "../InputError";
+import InputError from "../../../components/InputError";
 
 export default function EditUserDialog({
     isEditDialogOpen,
