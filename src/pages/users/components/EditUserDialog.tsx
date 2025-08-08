@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { countries, currencies } from "@/app/data";
+import { countries, currencies_with_lebel } from "@/app/data";
 import RawSelect from "@/components/mixed/RawSelect";
 import { useForm, usePage } from "@inertiajs/react";
 import InputError from "../../../components/InputError";
@@ -35,6 +35,7 @@ export default function EditUserDialog({
 
     const handleUpdateUser = (e: { preventDefault: () => void }) => {
         e.preventDefault();
+        console.log(data)
         put(route("users.update", user.id), {
             preserveScroll: true,
             onSuccess: (response) => {
@@ -109,39 +110,22 @@ export default function EditUserDialog({
                                         onChange={(e) => setData("country", e.target.value)}
                                     />
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit-currency">
-                                            Currency
-                                        </Label>
-                                        <select
-                                            name="currency"
-                                            id="edit-currency"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            value={data.currency}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "currency",
-                                                    e.target.value,
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                Select currency...
+                                    <RawSelect
+                                        data={currencies_with_lebel}
+                                        name="currency"
+                                        label="Currency"
+                                        value={data.currency}
+                                        error={errors.currency}
+                                        onChange={(e) =>
+                                            setData("currency", e.target.value)
+                                        }
+                                    >
+                                        {currencies_with_lebel.map((currency, index) => (
+                                            <option key={index} value={currency.id}>
+                                                {currency.id} - {currency.name}
                                             </option>
-                                            {currencies.map((currency) => (
-                                                <option
-                                                    key={currency}
-                                                    value={currency}
-                                                >
-                                                    {currency}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <InputError
-                                            message={errors.currency}
-                                            className="mt-2"
-                                        />
-                                    </div>
+                                        ))}
+                                    </RawSelect>
                                 </div>
                             </div>
 

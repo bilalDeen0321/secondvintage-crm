@@ -2,7 +2,7 @@ import InputError from "@/components/InputError";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-type Option = string | { id: string | number; label: string };
+type Option = string | { id: string | number; name: string };
 
 type Props = {
     label?: string;
@@ -12,7 +12,7 @@ type Props = {
 
 export default function RawSelect(props: Props) {
 
-    const { data, label, error, className, name, multiple = false, ...params } = props;
+    const { data, label, error, className, name, multiple = false, children, ...params } = props;
 
     return (
         <div className="space-y-2">
@@ -31,14 +31,14 @@ export default function RawSelect(props: Props) {
                         Select {multiple ? "options" : "option"}
                     </option>
                 )}
-                {data.map((option, index) =>
+                {children || data.map((option, index) =>
                     typeof option === "string" ? (
                         <option key={`${option}-${index}`} value={option}>
                             {option}
                         </option>
                     ) : (
                         <option key={`${option.id}-${index}`} value={option.id}>
-                            {option.label}
+                            {option.name}
                         </option>
                     ),
                 )}

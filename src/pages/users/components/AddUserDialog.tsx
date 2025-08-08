@@ -1,4 +1,4 @@
-import { countries, currencies } from "@/app/data";
+import { countries, currencies, currencies_with_lebel } from "@/app/data";
 import InputError from "@/components/InputError";
 import RawSelect from "@/components/mixed/RawSelect";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
-
 
 export default function AddNewUser({ show, setShow }) {
     const pageProps = usePage().props;
@@ -131,8 +130,25 @@ export default function AddNewUser({ show, setShow }) {
                                     label="Country"
                                     value={data.country}
                                     error={errors.country}
-                                    onChange={(e) => setData("country", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("country", e.target.value)
+                                    }
                                 />
+
+                                <RawSelect
+                                    data={currencies_with_lebel}
+                                    name="currency"
+                                    label="Currency"
+                                    value={data.currency}
+                                    error={errors.currency}
+                                    onChange={(e) => setData("currency", e.target.value)}
+                                >
+                                    {currencies_with_lebel.map((currency, index) => (
+                                        <option key={index} value={currency.id}>
+                                            {currency.id} - {currency.name}
+                                        </option>
+                                    ))}
+                                </RawSelect>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="currency">Currency</Label>
