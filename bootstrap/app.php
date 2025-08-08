@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         then: function () {
             Route::middleware('web')->group(function () {
                 Route::group([], base_path('routes/auth.php'));
-                Route::middleware('auth')->group(base_path('routes/dashboard.php'));
+                Route::middleware('auth')->group(function () {
+                    Route::group([], base_path('routes/user.php'));
+                    Route::group([], base_path('routes/dashboard.php'));
+                });
             });
         }
     )->withMiddleware(function (Middleware $middleware) {
