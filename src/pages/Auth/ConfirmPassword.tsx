@@ -1,7 +1,7 @@
 import InputError from "@/components/built-in/InputError";
 import InputLabel from "@/components/built-in/InputLabel";
-import PrimaryButton from "@/components/built-in/PrimaryButton";
-import TextInput from "@/components/built-in/TextInput";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import GuestLayout from "@/layouts/GuestLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
@@ -32,13 +32,11 @@ export default function ConfirmPassword() {
                 <div className="mt-4">
                     <InputLabel htmlFor="password" value="Password" />
 
-                    <TextInput
+                    <Input
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        isFocused={true}
                         onChange={(e) => setData("password", e.target.value)}
                     />
 
@@ -46,9 +44,13 @@ export default function ConfirmPassword() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={processing}
+                    >
                         Confirm
-                    </PrimaryButton>
+                    </Button>
                 </div>
             </form>
         </GuestLayout>

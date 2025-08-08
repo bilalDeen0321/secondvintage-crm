@@ -1,7 +1,7 @@
 import config from "@/app/config";
 import { menus } from "@/app/menus";
 import { Link, usePage } from "@inertiajs/react";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut, Menu, User } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Button } from "./ui/button";
@@ -41,11 +41,10 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                                     prefetch
                                     href={item.path}
                                     onClick={onItemClick}
-                                    className={`group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200 hover:bg-slate-800 ${
-                                        isActive
-                                            ? "text-white shadow-lg"
-                                            : "text-slate-300 hover:text-white"
-                                    }`}
+                                    className={`group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200 hover:bg-slate-800 ${isActive
+                                        ? "text-white shadow-lg"
+                                        : "text-slate-300 hover:text-white"
+                                        }`}
                                     style={{
                                         backgroundColor: isActive
                                             ? `hsl(var(--theme-sidebar-active))`
@@ -53,11 +52,10 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                                     }}
                                 >
                                     <Icon
-                                        className={`mr-3 h-5 w-5 ${
-                                            isActive
-                                                ? "text-white"
-                                                : "text-slate-400 group-hover:text-slate-300"
-                                        }`}
+                                        className={`mr-3 h-5 w-5 ${isActive
+                                            ? "text-white"
+                                            : "text-slate-400 group-hover:text-slate-300"
+                                            }`}
                                     />
                                     <span className="truncate">
                                         {item.name}
@@ -69,8 +67,15 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                 </ul>
             </nav>
 
-            {/* Logout */}
+            {/* Profile */}
             <div className="border-t border-slate-700 p-4">
+                <Link
+                    href={route("profile.edit")}
+                    className="flex w-full items-center rounded-lg px-3 py-3 text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+                >
+                    <User className="mr-3 h-5 w-5" />
+                    <span>Profile</span>
+                </Link>
                 <Link
                     href={route("logout")}
                     className="flex w-full items-center rounded-lg px-3 py-3 text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
