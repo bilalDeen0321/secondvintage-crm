@@ -1,3 +1,4 @@
+import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import Layout from "@/components/Layout";
@@ -12,32 +13,36 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import LaravelPaginate from "@/components/ui/table/LaravelPaginate";
+import TablePaginate from "@/components/ui/table/TablePaginate";
 import WatchCard from "@/components/WatchCard";
 import WatchForm from "@/components/WatchForm";
 import WatchListView from "@/components/WatchListView";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { PaginateData } from "@/types/laravel";
-import { Status, Watch as Twatch } from "@/types/watch";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { WatchWith } from "@/types/watch";
+import { Head, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-type Watch = Twatch & {
-    brand: string, status: Status['name'], location: string,
-    images: ({ id: string, url: string, useForAI: boolean })[]
+type Watch = WatchWith & {
+    brand: string;
+    status: string;
+    location: string;
+    images: Array<{ id: string | number, url: string, order_index?: number, useForAI: boolean }>
 }
 
+type StatusKey = typeof Status.statuses[number];
+type WatchCount = Record<StatusKey, number>;
+
+
 const WatchManagement = () => {
+    const page = usePage();
+    const { data = [], meta } = page.props.watches as PaginateData<Watch>
+    const watch_count: Partial<WatchCount> = page.props.watch_count || {};
+
+
     const [searchParams, setSearchParams] = useSearchParams();
-    const { delete: destroy } = useForm();
-    const pageProps = usePage().props;
-
-    // If pageProps.watches is null or undefined, watche_response is null
-    const watche_response = (pageProps.watches as PaginateData<Watch> | null) ?? null;
-
-    const [, setWatches] = useState<Watch[]>(watche_response.data || []);
-    const watches = watche_response.data;
+    const [watches, setWatches] = useState<Watch[]>(data || []);
 
     const [showForm, setShowForm] = useState(false);
     const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
@@ -113,9 +118,7 @@ const WatchManagement = () => {
 
     const handleDeleteWatch = (id: string) => {
         if (window.confirm("Are you sure you want to delete this watch?")) {
-            destroy(route("watches.destroy", id), {
-                preserveScroll: true,
-            });
+            setWatches(watches.filter((w) => w.id !== id));
         }
     };
 
@@ -291,19 +294,6 @@ const WatchManagement = () => {
         ),
     ];
 
-    const statusCounts = {
-        All: pageProps?.watch_count_total || 0,
-        Draft: pageProps?.watch_count_draft || 0,
-        Review: pageProps?.watch_count_review || 0,
-        Approved: pageProps?.watch_count_approved || 0,
-        "Platform Review": pageProps?.watch_count_platform || 0,
-        "Ready for listing": pageProps?.watch_count_listing || 0,
-        Listed: pageProps?.watch_count_listed || 0,
-        Reserved: pageProps?.watch_count_reserved || 0,
-        Sold: pageProps?.watch_count_sold || 0,
-        "Defect/Problem": pageProps?.watch_count_problem || 0,
-        Standby: pageProps?.watch_count_standby || 0,
-    };
 
     const handleEditBrands = () => {
         alert(
@@ -401,11 +391,7 @@ const WatchManagement = () => {
                         <div className="flex gap-4">
                             <div className="flex h-[42px] rounded-lg border border-slate-300">
                                 <Button
-                                    variant={
-                                        viewMode === "grid"
-                                            ? "default"
-                                            : "ghost"
-                                    }
+                                    variant={viewMode === "grid" ? "default" : "ghost"}
                                     size="sm"
                                     onClick={() => setViewMode("grid")}
                                     className="h-full rounded-r-none"
@@ -413,11 +399,7 @@ const WatchManagement = () => {
                                     <Grid className="h-4 w-4" />
                                 </Button>
                                 <Button
-                                    variant={
-                                        viewMode === "list"
-                                            ? "default"
-                                            : "ghost"
-                                    }
+                                    variant={viewMode === "list" ? "default" : "ghost"}
                                     size="sm"
                                     onClick={() => setViewMode("list")}
                                     className="h-full rounded-l-none"
@@ -425,13 +407,6 @@ const WatchManagement = () => {
                                     <List className="h-4 w-4" />
                                 </Button>
                             </div>
-                            {/* <Button
-                                onClick={handleAddWatch}
-                                className="flex items-center gap-2"
-                            >
-                                <span className="text-lg">+</span>
-                                Add New Watch
-                            </Button> */}
                             <Link
                                 href={route('watches.create')}
                                 className="flex items-center gap-2"
@@ -445,7 +420,7 @@ const WatchManagement = () => {
                     {/* Multi-select Status Filter */}
                     <div className="mb-6">
                         <div className="flex flex-wrap gap-2">
-                            {Object.entries(statusCounts).map(
+                            {Object.entries(watch_count).map(
                                 ([status, count]) => (
                                     <button
                                         key={status}
@@ -458,11 +433,10 @@ const WatchManagement = () => {
                                             }`}
                                     >
                                         <div className="text-lg font-bold text-slate-900">
-                                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                            {count as any}
+                                            {count}
                                         </div>
                                         <div className="truncate text-xs leading-tight text-slate-600">
-                                            {status}
+                                            {Status.toHuman(status)}
                                         </div>
                                     </button>
                                 ),
@@ -637,7 +611,12 @@ const WatchManagement = () => {
                     )}
 
                     {/* Results info and pagination controls */}
-                    <LaravelPaginate meta={watche_response.meta} />
+                    <div className="mb-4 flex items-center justify-between">
+                        <div className="text-sm text-slate-600 w-full">
+                            Showing {meta.from ?? 0}-{meta.to ?? 0} of {meta.total} watches
+                        </div>
+                        <TablePaginate links={meta.links} className="block w-full" />
+                    </div>
                 </div>
 
                 {/* Content */}
@@ -677,7 +656,6 @@ const WatchManagement = () => {
                         </p>
                     </div>
                 )}
-
 
                 {/* Form Modal */}
                 {showForm && (

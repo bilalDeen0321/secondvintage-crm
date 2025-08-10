@@ -7,6 +7,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
 import React from "react";
 
 type LaravelPaginationLink = {
@@ -17,6 +18,7 @@ type LaravelPaginationLink = {
 
 type TablePaginateProps = {
     links: LaravelPaginationLink[];
+    className?: string;
 };
 
 /**
@@ -26,11 +28,11 @@ type TablePaginateProps = {
  *
  * Uses <a href="..."> links that Inertia will intercept.
  */
-const TablePaginate: React.FC<TablePaginateProps> = ({ links }) => {
+const TablePaginate: React.FC<TablePaginateProps> = ({ links, className }) => {
     if (!links || links.length === 0) return null;
 
     return (
-        <Pagination className="mt-4">
+        <Pagination className={cn("mt-4", className)}>
             <PaginationContent>
                 {links.map((link, index) => {
                     // Normalize label to lowercase string for checks

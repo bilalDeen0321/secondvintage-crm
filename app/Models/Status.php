@@ -15,11 +15,11 @@ class Status extends Model
     public const REVIEW = 'review';
     public const APPROVED = 'approved';
     public const PLATFORM_REVIEW = 'platform_review';
-    public const READY_FOR_LISTING = 'ready_for_listing';
+    public const LISTING = 'ready_for_listing';
     public const LISTED = 'listed';
     public const RESERVED = 'reserved';
     public const SOLD = 'sold';
-    public const DEFECT_PROBLEM = 'defect_problem';
+    public const PROBLEM = 'defect_problem';
     public const STANDBY = 'standby';
 
     // Optionally, a static method or property for all statuses:
@@ -30,11 +30,11 @@ class Status extends Model
             self::REVIEW,
             self::APPROVED,
             self::PLATFORM_REVIEW,
-            self::READY_FOR_LISTING,
+            self::LISTING,
             self::LISTED,
             self::RESERVED,
             self::SOLD,
-            self::DEFECT_PROBLEM,
+            self::PROBLEM,
             self::STANDBY,
         ];
     }

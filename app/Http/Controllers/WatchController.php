@@ -6,6 +6,7 @@ use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Resources\WatchResource;
 use App\Models\Brand;
+use App\Models\Location;
 use App\Models\Stage;
 use App\Models\Status;
 use App\Models\Watch;
@@ -29,18 +30,22 @@ class WatchController extends Controller
     {
         $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->paginate();
 
-        return Inertia::render('Watchs/Index', [
-            'watch_count_sold' => Watch::query()->whereStatus(Status::SOLD)->count(),
-            'watch_count_total' => Watch::query()->count(),
-            'watch_count_draft' => Watch::query()->whereStatus(Status::DRAFT)->count(),
-            'watch_count_listed' => Watch::query()->whereStatus(Status::LISTED)->count(),
-            'watch_count_review' => Watch::query()->whereStatus(Status::REVIEW)->count(),
-            'watch_count_reserved' => Watch::query()->whereStatus(Status::RESERVED)->count(),
-            'watch_count_problem' => Watch::query()->whereStatus(Status::DEFECT_PROBLEM)->count(),
-            'watch_count_listing' => Watch::query()->whereStatus(Status::READY_FOR_LISTING)->count(),
-            'watch_count_standby' => Watch::query()->whereStatus(Status::STANDBY)->count(),
-            'watch_count_approved' => Watch::query()->whereStatus(Status::APPROVED)->count(),
-            'watch_count_platform' => Watch::query()->whereStatus(Status::PLATFORM_REVIEW)->count(),
+        $watch_count = [
+            'all' => Watch::query()->count(),
+            Status::SOLD => Watch::query()->whereStatus(Status::SOLD)->count(),
+            Status::DRAFT => Watch::query()->whereStatus(Status::DRAFT)->count(),
+            Status::LISTED => Watch::query()->whereStatus(Status::LISTED)->count(),
+            Status::REVIEW => Watch::query()->whereStatus(Status::REVIEW)->count(),
+            Status::RESERVED => Watch::query()->whereStatus(Status::RESERVED)->count(),
+            Status::PROBLEM => Watch::query()->whereStatus(Status::PROBLEM)->count(),
+            Status::LISTING => Watch::query()->whereStatus(Status::LISTING)->count(),
+            Status::STANDBY => Watch::query()->whereStatus(Status::STANDBY)->count(),
+            Status::APPROVED => Watch::query()->whereStatus(Status::APPROVED)->count(),
+            Status::PLATFORM_REVIEW => Watch::query()->whereStatus(Status::PLATFORM_REVIEW)->count(),
+        ];
+
+        return Inertia::render('watches/index', [
+            'watch_count' => $watch_count,
             'watches' => WatchResource::collection($watches)
         ]);
     }
@@ -50,8 +55,15 @@ class WatchController extends Controller
      */
     public function create()
     {
+        $locations = Location::query()->pluck('name');
+        $statuses  = Status::query()->pluck('name');
+        $brands    = Brand::query()->pluck('name');
 
-        return Inertia::render('Watchs/Create', []);
+        return Inertia::render('watches/create', [
+            'locations' => $locations,
+            'statuses' => $statuses,
+            'brands' => $brands,
+        ]);
     }
 
     /**

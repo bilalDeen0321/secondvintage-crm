@@ -19,15 +19,15 @@ import {
     Tag,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Status, Watch as TWatch } from "../types/watch";
+import { Watch as TWatch } from "../types/watch";
 import BatchSelector from "./BatchSelector";
 import BrandSelector from "./BrandSelector";
 import ImageManager from "./ImageManager";
 import LocationSelector from "./LocationSelector";
 
 type Watch = TWatch & {
-    brand: string, status: Status['name'], location: string,
-    images: ({ id: string, url: string, useForAI: boolean })[]
+    brand: string, status: any, location: string,
+    images: (any)[]
 }
 
 interface WatchFormProps {
