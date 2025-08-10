@@ -13,6 +13,15 @@ class LocationSeeder extends Seeder
      */
     public function run(): void
     {
-        Location::factory()->count(5)->create();
+        foreach (json_decode(file_get_contents(base_path('src/data/countries.json')), true) as $item) {
+            Location::query()->updateOrCreate(
+                [
+                    'country_code' => $item['alpha2']
+                ],
+                [
+                    'name' => $item['name']
+                ]
+            );
+        }
     }
 }

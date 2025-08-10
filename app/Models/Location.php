@@ -17,7 +17,7 @@ class Location extends Model
      */
     protected $fillable = [
         'name',
-        'country'
+        'country_code'
     ];
 
     /**

@@ -18,7 +18,7 @@ class BrandFactory extends Factory
     {
         return [
             'name' => fake()->unique()->company,
-            'brand_code' => strtoupper(fake()->unique()->lexify('???')),
+            'code' => rand(1, 100),
         ];
     }
 }

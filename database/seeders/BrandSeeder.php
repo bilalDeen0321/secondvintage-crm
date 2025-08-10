@@ -13,6 +13,36 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        Brand::factory()->count(10)->create();
+        foreach ($this->items() as $name) {
+            Brand::query()->updateOrCreate(['name' => $name]);
+        }
+    }
+
+    /**
+     * 
+     */
+    public function items()
+    {
+        return [
+            "Seiko",
+            "Rolex",
+            "Omega",
+            "TAG Heuer",
+            "Breitling",
+            "IWC",
+            "Seiko",
+            "Tudor",
+            "Cartier",
+            "Longines",
+            "Omega",
+            "Seiko",
+            "Longines",
+            "Omega",
+            "Seiko",
+            "Longines",
+            "Omega",
+            "Seiko",
+            "Longines"
+        ];
     }
 }

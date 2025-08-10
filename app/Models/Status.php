@@ -14,12 +14,12 @@ class Status extends Model
     public const DRAFT = 'draft';
     public const REVIEW = 'review';
     public const APPROVED = 'approved';
-    public const PLATFORM_REVIEW = 'platform review';
-    public const READY_FOR_LISTING = 'ready for listing';
+    public const PLATFORM_REVIEW = 'platform_review';
+    public const READY_FOR_LISTING = 'ready_for_listing';
     public const LISTED = 'listed';
     public const RESERVED = 'reserved';
     public const SOLD = 'sold';
-    public const DEFECT_PROBLEM = 'defect/problem';
+    public const DEFECT_PROBLEM = 'defect_problem';
     public const STANDBY = 'standby';
 
     // Optionally, a static method or property for all statuses:

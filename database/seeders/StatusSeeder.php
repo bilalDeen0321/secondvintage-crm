@@ -14,7 +14,7 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         foreach (Status::allStatuses() as $stauts) {
-            Status::query()->create(['name' => $stauts]);
+            Status::query()->updateOrCreate(['name' => $stauts]);
         }
     }
 }
