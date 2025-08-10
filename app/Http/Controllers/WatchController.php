@@ -11,6 +11,7 @@ use App\Models\Location;
 use App\Models\Stage;
 use App\Models\Status;
 use App\Models\Watch;
+use App\Models\WatchImage;
 use App\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -134,30 +135,13 @@ class WatchController extends Controller
 
         // 3. Handle Base64 Images
         if (!empty($validated['images']) && is_array($validated['images'])) {
-
             foreach ($validated['images'] as $imageData) {
-
-                if (isset($imageData['url']) && Str::startsWith($imageData['url'], 'data:image')) {
-                    // Extract base64
-                    [$type, $data] = explode(';', $imageData['url']);
-                    [, $data] = explode(',', $data);
-                    $data = base64_decode($data);
-
-                    // Detect extension
-                    $extension = Str::contains($type, 'jpeg') ? 'jpg' : (Str::contains($type, 'png') ? 'png' : 'jpg');
-
-                    // Store file
-                    $fileName = 'watches/images/' . Str::uuid() . '.' . $extension;
-
-                    Storage::disk('public')->put($fileName, $data);
-
-                    // Save record
-                    $watch->images()->create([
-                        'path' => $fileName,
-                    ]);
+                if (!empty($imageData['url'])) {
+                    WatchImage::storeBase64Image($watch, $imageData['url']);
                 }
             }
         }
+
 
         return redirect()->route('watches.index')
             ->with('success', 'Watch created successfully.');

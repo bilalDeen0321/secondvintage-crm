@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class WatchImageResource extends JsonResource
 {
@@ -16,7 +17,7 @@ class WatchImageResource extends JsonResource
     {
         return [
             'id' => (string) $this->id,
-            'url' => $this->public_url,
+            'url' => url(Storage::url($this->public_url)),
             'order_index' => $this->order_index,
             'useForAI' => $this->use_for_ai, // or use another logic if you prefer
         ];
