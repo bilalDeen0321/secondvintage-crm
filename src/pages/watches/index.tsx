@@ -252,8 +252,8 @@ const WatchManagement = () => {
                                 </span>
                                 <BatchSelector
                                     value={data.batch}
-                                    onValueChange={(value) => setData('brand', value)}
-                                    batches={brands}
+                                    onValueChange={(value) => setData('batch', value)}
+                                    batches={batchGroups}
                                     onEditBatches={handleEditBatches}
                                 />
                             </div>
