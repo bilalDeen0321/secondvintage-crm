@@ -34,6 +34,9 @@ class WatchImage extends Model
         return [];
     }
 
+    /**
+     * Get the watch that owns this image
+     */
     public function watch()
     {
         return $this->belongsTo(Watch::class);

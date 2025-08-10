@@ -23,7 +23,6 @@ class User extends Authenticatable
         'email',
         'status',
         'password',
-        'default_currency',
         'currency',
         'country',
         'last_login_at',

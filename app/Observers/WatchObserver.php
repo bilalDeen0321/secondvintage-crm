@@ -12,8 +12,8 @@ class WatchObserver
      */
     public function creating(Watch $watch)
     {
-        if (empty($watch->user_id) && Auth::user()->id) {
-            $watch->user_id = Auth::user()->id;
+        if (empty($watch->user_id) && Auth::check()) {
+            $watch->user_id = Auth::id();
         }
     }
     /**

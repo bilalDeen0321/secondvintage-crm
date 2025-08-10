@@ -19,7 +19,7 @@ class WatchResource extends JsonResource
             'brand' => $this->brand->name,
             'status' => $this->status?->name,
             'location' => $this->location?->name,
-            'images' => WatchImageResource::collection($this->images()->orderBy('order')->get()),
+            'images' => WatchImageResource::collection($this->images()->orderBy('order_index')->get()),
         ];
     }
 }

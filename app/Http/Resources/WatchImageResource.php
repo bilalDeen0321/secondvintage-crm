@@ -17,7 +17,7 @@ class WatchImageResource extends JsonResource
         return [
             'id' => (string) $this->id,
             'url' => $this->public_url,
-            'order' => $this->order,
+            'order_index' => $this->order_index,
             'useForAI' => $this->use_for_ai, // or use another logic if you prefer
         ];
     }

@@ -18,11 +18,12 @@ class WatchFactory extends Factory
     public function definition(): array
     {
         $name  = fake()->sentence(rand(2, 4));
-        $brand = Brand::factory()->create();
+        $brand = Brand::inRandomOrder()->first() ?? Brand::factory()->create();
 
         return [
             'sku' => generateSKU($brand->name, $name, Watch::class),
             'name' => $name,
+            'user_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'brand_id' => $brand->id,
             'serial_number' => fake()->uuid,
             'reference' => strtoupper(fake()->bothify('REF-###')),
@@ -31,12 +32,12 @@ class WatchFactory extends Factory
             'timegrapher' => fake()->randomFloat(2, 0.1, 1.0),
             'original_cost' => fake()->randomFloat(2, 1000, 5000),
             'current_cost' => fake()->randomFloat(2, 500, 3000),
-            'status_id' => Status::factory(),
-            'stage_id' => Stage::factory(),
-            'batch_id' => Batch::factory(), // can be set dynamically
-            'location_id' => Location::factory(),
-            'agent_id' => User::factory(),
-            'seller_id' => User::factory(),
+            'status_id' => Status::inRandomOrder()->first()->id ?? Status::factory()->create(),
+            'stage_id' => Stage::inRandomOrder()->first()->id ?? Stage::factory()->create(),
+            'batch_id' => Batch::inRandomOrder()->first()->id ?? Batch::factory()->create(),
+            'location_id' => Location::inRandomOrder()->first()->id ?? Location::factory()->create(),
+            'agent_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
+            'seller_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'description' => fake()->paragraph,
             'description_thread_id' => fake()->uuid,
         ];

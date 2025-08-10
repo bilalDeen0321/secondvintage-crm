@@ -18,7 +18,7 @@ class LocationFactory extends Factory
     {
         return [
             'name' => fake()->city,
-            'country' => fake()->country,
+            'country_code' => fake()->country,
         ];
     }
 }

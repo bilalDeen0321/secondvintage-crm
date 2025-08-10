@@ -28,16 +28,16 @@
 
 ### users
 
-| Column           | Type       | Notes  |
-| ---------------- | ---------- | ------ |
-| id               | PK         |        |
-| name             | string     |        |
-| email            | string     | unique |
-| password         | string     |        |
-| role_id          | FK → roles |        |
-| default_currency | string     |        |
-| created_at       | timestamp  |        |
-| updated_at       | timestamp  |        |
+| Column     | Type       | Notes  |
+| ---------- | ---------- | ------ |
+| id         | PK         |        |
+| name       | string     |        |
+| email      | string     | unique |
+| password   | string     |        |
+| role_id    | FK → roles |        |
+| currency   | string     |        |
+| created_at | timestamp  |        |
+| updated_at | timestamp  |        |
 
 **Relationships:**
 
