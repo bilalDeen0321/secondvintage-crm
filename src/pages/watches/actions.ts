@@ -20,31 +20,12 @@ type Watch = TWatch & {
     images: (any)[]
 }
 
-export const handleApprove = (data: typeof initData, setData: SetData<'status', string>, onSave: (watch: Omit<Watch, "id">) => void) => {
+export const handleApprove = (data: typeof initData, setData: SetData<'status', string>) => {
 
     setData('status', 'Approved')
 
     // Auto-save after approval
-    setTimeout(() => {
-        onSave({
-            name: data.name,
-            sku: data.sku,
-            brand: data.brand,
-            acquisitionCost: parseFloat(data.acquisitionCost) || 0,
-            status: "Approved",
-            location: data.location,
-            description: data.description,
-            notes: data.notes,
-            aiInstructions: data.aiInstructions,
-            images: data.images,
-            batchGroup: data.batch,
-            serial: data.serial,
-            ref: data.ref,
-            caseSize: data.caseSize,
-            caliber: data.caliber,
-            timegrapher: data.timegrapher,
-        } as any);
-    }, 100);
+
 };
 
 

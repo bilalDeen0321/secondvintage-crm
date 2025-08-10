@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { brands, countries, currencies, exchangeRates } from "@/app/data";
+import { brands, currencies, exchangeRates } from "@/app/data";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
@@ -18,11 +18,13 @@ import { Watch as TWatch } from "@/types/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import {
     CheckCircle,
+    ChevronLeft,
+    ChevronRight,
     Loader2,
     Plus,
     RotateCcw,
     Sparkles,
-    Tag
+    Tag,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { handleAddBatchGroup, handleApprove, handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
@@ -60,20 +62,21 @@ export const initData = {
     images: [] as Watch["images"],
 }
 
-export default function AddNewWatch({ watch }: Props) {
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const [batchGroups, setBatchGroups] = useState(["B001", "B002", "B003", "B020"]);
-    const formRef = useRef<HTMLDivElement>(null);
-
+export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext, hasPrevious }: Props) {
     const { data, setData } = useForm(initData);
 
     const [originalData, setOriginalData] = useState<any>(null);
     const [hasChanges, setHasChanges] = useState(false);
-
+    const [batchGroups, setBatchGroups] = useState(["B001", "B002", "B003", "B020"]);
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [pendingNavigation, setPendingNavigation] = useState<"next" | "previous" | null>(null);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState("EUR");
     const [displayCostValue, setDisplayCostValue] = useState(""); // New state for display value
+    const formRef = useRef<HTMLDivElement>(null);
 
+
+    const locations = ["Denmark", "Vietnam", "Japan", "In Transit"];
 
     // Helper function to create a comparable version of form data
     const createComparableData = (data: any) => {
@@ -145,8 +148,18 @@ export default function AddNewWatch({ watch }: Props) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
-                router.visit(route('watches.index'));
+                if (!hasChanges) {
+                    router.visit(route('watches.index'))
+                }
                 return;
+            }
+
+            if (e.key === "ArrowLeft" && hasPrevious && onPrevious) {
+                e.preventDefault();
+                handleNavigation("previous");
+            } else if (e.key === "ArrowRight" && hasNext && onNext) {
+                e.preventDefault();
+                handleNavigation("next");
             }
         };
 
@@ -160,15 +173,44 @@ export default function AddNewWatch({ watch }: Props) {
                 formRef.current.removeEventListener("keydown", handleKeyDown);
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasNext, hasPrevious, onNext, onPrevious, hasChanges]);
 
-    }, []);
-
-
+    const handleNavigation = (direction: "next" | "previous") => {
+        if (hasChanges) {
+            setPendingNavigation(direction);
+            setShowSaveDialog(true);
+        } else {
+            if (direction === "next" && onNext) {
+                onNext();
+            } else if (direction === "previous" && onPrevious) {
+                onPrevious();
+            }
+        }
+    };
 
 
 
     const handleSave = () => {
-        //save the data to server
+        onSave({
+            name: data.name,
+            sku: data.sku,
+            brand: data.brand,
+            acquisitionCost: parseFloat(data.acquisitionCost) || 0,
+            status: data.status,
+            location: data.location,
+            description: data.description,
+            notes: data.notes,
+            aiInstructions: data.aiInstructions,
+            images: data.images,
+            batchGroup: data.batch,
+            serial: data.serial,
+            ref: data.ref,
+            caseSize: data.caseSize,
+            caliber: data.caliber,
+            timegrapher: data.timegrapher,
+        } as any);
+
         // Update original data after successful save
         const newOriginalData = createComparableData(data);
         setOriginalData(newOriginalData);
@@ -186,10 +228,6 @@ export default function AddNewWatch({ watch }: Props) {
         e.preventDefault();
         handleSave();
     };
-
-    const handleSaveAndNavigate = (e) => {
-
-    }
 
 
     const handleResetAI = () => {
@@ -247,8 +285,29 @@ export default function AddNewWatch({ watch }: Props) {
         (img) => img.useForAI,
     ).length;
 
+    const handleSaveAndNavigate = () => {
+        handleSave();
+        setShowSaveDialog(false);
 
+        setTimeout(() => {
+            if (pendingNavigation === "next" && onNext) {
+                onNext();
+            } else if (pendingNavigation === "previous" && onPrevious) {
+                onPrevious();
+            }
+            setPendingNavigation(null);
+        }, 100);
+    };
 
+    const handleDiscardAndNavigate = () => {
+        setShowSaveDialog(false);
+        if (pendingNavigation === "next" && onNext) {
+            onNext();
+        } else if (pendingNavigation === "previous" && onPrevious) {
+            onPrevious();
+        }
+        setPendingNavigation(null);
+    };
 
     const handlePrintSKULabel = () => {
         if (!data.sku) {
@@ -314,8 +373,30 @@ export default function AddNewWatch({ watch }: Props) {
         <>
             <Head title="Add New Watch" />
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                {/* Navigation Arrows - Outside the box */}
+                {hasPrevious && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleNavigation("previous")}
+                        className="absolute left-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                )}
 
-
+                {hasNext && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleNavigation("next")}
+                        className="absolute right-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                )}
 
                 <div
                     ref={formRef}
@@ -473,7 +554,7 @@ export default function AddNewWatch({ watch }: Props) {
                                     <LocationSelector
                                         value={data.location}
                                         onValueChange={(value) => setData('location', value)}
-                                        locations={["All", ...countries]}
+                                        locations={["All", ...locations]}
                                         onEditLocations={handleEditLocations}
                                     />
                                 </div>
@@ -710,7 +791,7 @@ export default function AddNewWatch({ watch }: Props) {
                         <div className="flex flex-shrink-0 gap-3 border-t border-slate-200 p-6 pt-4">
                             <Button
                                 type="button"
-                                onClick={() => handleApprove(data, setData)}
+                                onClick={() => handleApprove(data, setData, onSave)}
                                 className="flex-1 bg-green-600 text-white hover:bg-green-700"
                             >
                                 <CheckCircle className="mr-2 h-4 w-4" />
@@ -763,7 +844,7 @@ export default function AddNewWatch({ watch }: Props) {
                                 Save & Continue
                             </Button>
                             <Button
-                                onClick={handleSaveAndClose}
+                                onClick={handleDiscardAndNavigate}
                                 variant="outline"
                                 className="flex-1"
                             >
