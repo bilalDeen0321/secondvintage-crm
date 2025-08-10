@@ -1,6 +1,5 @@
 import { batchGroups, brands, countries } from "@/app/data";
 import Status from "@/app/models/Status";
-import { debounce } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import Layout from "@/components/Layout";
@@ -22,10 +21,11 @@ import WatchListView from "@/components/WatchListView";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
 import { WatchWith } from "@/types/watch";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleDeleteWatch, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch } from "./actions";
+import { useState } from "react";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleDeleteWatch, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch, handleSort } from "./actions";
+import { getSearchStatus, getSelectSearch, watcheSearch } from "./searchActions";
 
 
 type Watch = WatchWith & {
@@ -61,37 +61,8 @@ const WatchManagement = () => {
         brand: 'All',
         batch: 'All',
         location: 'All',
-        direction: '',
+        direction: 'asc',
     });
-
-
-    useEffect(() => {
-        debounce(() => {
-            const params = Object.fromEntries(
-                Object.entries(data).filter(([_, v]) => {
-                    if (!v) return false; // skip empty values
-
-                    if (typeof v === 'string') {
-                        return v !== 'All' && v !== 'all';
-                    }
-
-                    if (Array.isArray(v)) {
-                        // exclude if array contains "All" (case insensitive)
-                        return !v.every(item => item.toLowerCase() === 'all');
-                    }
-
-                    return true; // keep all other types
-                })
-            );
-            if (Object.keys(params).length) {
-                router.get(route("watches.index"), params, {
-                    preserveState: true,
-                    replace: true,
-                });
-            }
-        })();
-    }, [data]);
-
 
 
 
@@ -105,18 +76,6 @@ const WatchManagement = () => {
             hasNext: currentIndex < watches.length - 1,
             hasPrevious: currentIndex > 0,
         };
-    };
-
-
-
-
-    const handleSort = (field: string) => {
-        if (data.sort === field) {
-            setData('direction', data.direction === "asc" ? "desc" : "asc");
-        } else {
-            setData('sort', field);
-            setData('direction', "asc");
-        }
     };
 
     const handleSelectWatch = (watchId: string, checked: boolean) => {
@@ -187,7 +146,10 @@ const WatchManagement = () => {
                                 ([status, count]) => (
                                     <button
                                         key={status}
-                                        onClick={() => setData('status', [...data.status, status])}
+                                        onClick={() => {
+                                            setData('status', [...data.status, status]);
+                                            watcheSearch('status', getSearchStatus([...data.status, status]))
+                                        }}
                                         className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
                                             ? "border-primary bg-primary/10 ring-2 ring-primary/30"
                                             : "border-slate-200 bg-white hover:border-slate-300"
@@ -212,7 +174,10 @@ const WatchManagement = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setData('status', ["All"])}
+                                    onClick={() => {
+                                        setData('status', ["All"]);
+                                        watcheSearch('status', null)
+                                    }}
                                     className="border-slate-300 text-slate-600 hover:bg-slate-100"
                                 >
                                     <X className="mr-1 h-3 w-3" />
@@ -229,7 +194,10 @@ const WatchManagement = () => {
                                 type="text"
                                 placeholder="Search watches by name, brand, or SKU..."
                                 value={data.search}
-                                onChange={(e) => setData('search', e.target.value)}
+                                onChange={(e) => {
+                                    watcheSearch('search', e.target.value);
+                                    setData('search', e.target.value);
+                                }}
                                 className="w-full"
                             />
                         </div>
@@ -240,8 +208,11 @@ const WatchManagement = () => {
                                 </span>
                                 <BrandSelector
                                     value={data.brand}
-                                    onValueChange={(value) => setData('brand', value)}
-                                    brands={brands}
+                                    onValueChange={(value) => {
+                                        setData('brand', value);
+                                        watcheSearch('brand', getSelectSearch(value))
+                                    }}
+                                    brands={['All', ...brands]}
                                     onEditBrands={handleEditBrands}
                                 />
                             </div>
@@ -252,8 +223,11 @@ const WatchManagement = () => {
                                 </span>
                                 <BatchSelector
                                     value={data.batch}
-                                    onValueChange={(value) => setData('batch', value)}
-                                    batches={batchGroups}
+                                    onValueChange={(value) => {
+                                        setData('batch', value);
+                                        watcheSearch('batch', getSelectSearch(value));
+                                    }}
+                                    batches={['All', ...batchGroups]}
                                     onEditBatches={handleEditBatches}
                                 />
                             </div>
@@ -264,8 +238,11 @@ const WatchManagement = () => {
                                 </span>
                                 <LocationSelector
                                     value={data.location}
-                                    onValueChange={(value) => setData('location', value)}
-                                    locations={countries}
+                                    onValueChange={(value) => {
+                                        setData('location', value);
+                                        watcheSearch('location', getSelectSearch(value));
+                                    }}
+                                    locations={['All', ...countries]}
                                     onEditLocations={handleEditLocations}
                                 />
                             </div>
@@ -389,7 +366,7 @@ const WatchManagement = () => {
                         watches={watches}
                         onEdit={handleEditWatch}
                         onDelete={handleDeleteWatch}
-                        onSort={handleSort}
+                        onSort={(field) => handleSort(field, data, setData)}
                         sortField={data.sort}
                         sortDirection={data.direction as 'asc'}
                         selectedWatches={selectedWatches}

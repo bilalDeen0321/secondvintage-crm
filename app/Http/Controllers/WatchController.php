@@ -43,7 +43,7 @@ class WatchController extends Controller
                 $q->whereHas(
                     'status',
                     fn($statusQuery) =>
-                    $statusQuery->where('name', $value)
+                    $statusQuery->whereIn('name', is_array($value) ? $value : $value)
                 );
             })
             ->when($request->input('brand'), function (Builder $q, $value) {
@@ -62,7 +62,7 @@ class WatchController extends Controller
             })
             ->orderBy($request->input('sortField', 'id'), $request->input('sortDirection', 'asc'));
 
-        $watches = $query->paginate(50)->withQueryString();
+        $watches = $query->paginate()->withQueryString();
 
         $watchCount = Status::whereHas('watches')
             ->withCount('watches')

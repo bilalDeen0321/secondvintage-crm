@@ -201,32 +201,26 @@ export const handleStatusToggle = (status: string, setStatusFilters) => {
     }
 };
 
+export const handleSort = (field: string, data, setData) => {
+    if (data.sort === field) {
+        setData('direction', data.direction === "asc" ? "desc" : "asc");
+    } else {
+        setData('sort', field);
+        setData('direction', "asc");
+    }
 
-
-
-export function searching(key: string, value: any) {
-
-    const val = String(typeof value === "string" ? value.trim() : value)
-        .replace('All', '')
-        .replace('all', '')
-        .replace('asc', '');
-
-    // Skip value field empty
-    if (!val) return;
-
-    // Get current query params from the URL
-    const currentParams = Object.fromEntries(
-        new URLSearchParams(window.location.search)
-    );
-
-    const params = {
-        ...currentParams,
-        [key]: val && val !== "All" ? val : null,
-        page: 1,
-    };
-
-    router.get(route("watches.index"), params, {
+    router.get(route("watches.index"), withQuery('direction', data.direction), {
         preserveState: true,
         replace: true,
     });
+};
+
+
+
+export function withQuery(key: string, value: any) {
+    const search = (new URLSearchParams(window.location.search)).get('search');
+    return {
+        search,
+        [key]: value,
+    }
 }
