@@ -24,8 +24,8 @@ import { WatchWith } from "@/types/watch";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleDeleteWatch, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch, handleSort } from "./actions";
-import { getSearchStatus, getSelectSearch, watcheSearch } from "./searchActions";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch, handleSort } from "./actions";
+import { getSearchStatus, getSelectSearch, getSelectStatus, watcheSearch } from "./searchActions";
 
 
 type Watch = WatchWith & {
@@ -54,10 +54,10 @@ const WatchManagement = () => {
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
     const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
 
-    const { data, setData } = useForm({
+    const { data, setData, delete: destroy } = useForm({
         sort: '',
         search: '',
-        status: ['All'],
+        status: ['all'],
         brand: 'All',
         batch: 'All',
         location: 'All',
@@ -93,6 +93,20 @@ const WatchManagement = () => {
             setSelectedWatches([]);
         }
     };
+
+
+    /**
+     * Server actions
+     */
+    const handleDelete = (watch_id: string | number) => {
+        const confirmed = window.confirm("Are you sure you want to delete the Watch?");
+        if (watch_id && confirmed) {
+            destroy(route("watches.destroy", watch_id), {
+                preserveScroll: true,
+                onSuccess(response) { },
+            });
+        }
+    }
 
 
     return (
@@ -142,27 +156,31 @@ const WatchManagement = () => {
                     {/* Multi-select Status Filter */}
                     <div className="mb-6">
                         <div className="flex flex-wrap gap-2">
-                            {Object.entries(watch_count).map(
-                                ([status, count]) => (
-                                    <button
-                                        key={status}
-                                        onClick={() => {
-                                            setData('status', [...data.status, status]);
-                                            watcheSearch('status', getSearchStatus([...data.status, status]))
-                                        }}
-                                        className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
-                                            ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                                            : "border-slate-200 bg-white hover:border-slate-300"
-                                            }`}
-                                    >
-                                        <div className="text-lg font-bold text-slate-900">
-                                            {count}
-                                        </div>
-                                        <div className="truncate text-xs leading-tight text-slate-600">
-                                            {Status.toHuman(status)}
-                                        </div>
-                                    </button>
-                                ),
+                            {['all', ...Status.allStatuses()].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => {
+                                        if (status == 'all') {
+                                            setData('status', ['all']);
+                                            watcheSearch('status', getSearchStatus(['all']))
+                                            return;
+                                        }
+                                        setData('status', getSelectStatus([...data.status, status]));
+                                        watcheSearch('status', getSearchStatus([...data.status, status]))
+                                    }}
+                                    className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
+                                        ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                        : "border-slate-200 bg-white hover:border-slate-300"
+                                        }`}
+                                >
+                                    <div className="text-lg font-bold text-slate-900">
+                                        {watch_count[status] || 0}
+                                    </div>
+                                    <div className="truncate text-xs leading-tight text-slate-600">
+                                        {Status.toHuman(status)}
+                                    </div>
+                                </button>
+                            ),
                             )}
                         </div>
 
@@ -357,7 +375,7 @@ const WatchManagement = () => {
                                 key={watch.id}
                                 watch={watch}
                                 onEdit={handleEditWatch}
-                                onDelete={handleDeleteWatch}
+                                onDelete={handleDelete}
                             />
                         ))}
                     </div>
@@ -365,7 +383,7 @@ const WatchManagement = () => {
                     <WatchListView
                         watches={watches}
                         onEdit={handleEditWatch}
-                        onDelete={handleDeleteWatch}
+                        onDelete={handleDelete}
                         onSort={(field) => handleSort(field, data, setData)}
                         sortField={data.sort}
                         sortDirection={data.direction as 'asc'}

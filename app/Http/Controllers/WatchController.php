@@ -68,9 +68,13 @@ class WatchController extends Controller
 
         $watches = $query->paginate()->withQueryString();
 
-        $watchCount = Status::whereHas('watches')
-            ->withCount('watches')
-            ->pluck('watches_count', 'name');
+        $watchCount = [
+            'all' => Watch::count(),
+        ];
+
+        foreach (Status::allStatuses() as $status) {
+            $watchCount[$status] = Watch::query()->whereHas('status', fn($q) => $q->where('name', $status))->count();
+        }
 
 
         return Inertia::render('watches/index', [

@@ -67,3 +67,7 @@ export const getSearchStatus = (data: string[]) => {
 export const getSelectSearch = (value: string) => {
     return String(value).toLowerCase().replace('all', '');
 };
+
+export const getSelectStatus = (arr: string[]) => {
+    return arr.filter(s => String(s) != 'all').filter(Boolean);
+};

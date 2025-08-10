@@ -44,6 +44,23 @@ class WatchImage extends Model
         return $this->belongsTo(Watch::class);
     }
 
+    /**
+     * Get public url 
+     */
+    public function scopeUrl()
+    {
+
+        if (Str::contains($this->public_url, 'lovable')) {
+            return $this->public_url;
+        }
+
+        if (Str::contains($this->public_url, 'http')) {
+            return $this->public_url;
+        }
+
+        return  url(Storage::url($this->public_url));
+    }
+
 
     /**
      * Save a base64 image for a given watch
