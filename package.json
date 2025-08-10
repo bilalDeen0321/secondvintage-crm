@@ -55,6 +55,7 @@
         "i": "^0.3.7",
         "input-otp": "^1.2.4",
         "laravel-vite-plugin": "^1.2.0",
+        "lodash": "^4.17.21",
         "lucide-react": "^0.462.0",
         "next-themes": "^0.3.0",
         "npm": "^11.5.2",

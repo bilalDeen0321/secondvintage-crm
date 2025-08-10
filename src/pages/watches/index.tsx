@@ -1,4 +1,6 @@
+import { batchGroups, brands, countries } from "@/app/data";
 import Status from "@/app/models/Status";
+import { debounce } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import Layout from "@/components/Layout";
@@ -17,12 +19,14 @@ import TablePaginate from "@/components/ui/table/TablePaginate";
 import WatchCard from "@/components/WatchCard";
 import WatchForm from "@/components/WatchForm";
 import WatchListView from "@/components/WatchListView";
-import { useSearchParams } from "@/hooks/useSearchParams";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
 import { WatchWith } from "@/types/watch";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleDeleteWatch, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch } from "./actions";
+
 
 type Watch = WatchWith & {
     brand: string;
@@ -35,99 +39,83 @@ type StatusKey = typeof Status.statuses[number];
 type WatchCount = Record<StatusKey, number>;
 
 
+
+
 const WatchManagement = () => {
+
+    //complete state and consts list
+    const [viewMode, setViewMode] = useLocalStorage<'list' | 'grid'>('watch_view_mode', "list");
+
     const page = usePage();
-    const { data = [], meta } = page.props.watches as PaginateData<Watch>
+    const { data: watches = [], meta } = page.props.watches as PaginateData<Watch>
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
 
-
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [watches, setWatches] = useState<Watch[]>(data || []);
-
     const [showForm, setShowForm] = useState(false);
-    const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
-    const [statusFilters, setStatusFilters] = useState<string[]>(["All"]);
-    const [brandFilter, setBrandFilter] = useState<string>("All");
-    const [batchFilter, setBatchFilter] = useState<string>("All");
-    const [locationFilter, setLocationFilter] = useState<string>("All");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [viewMode, setViewMode] = useState<"grid" | "list">("list");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [showBrandEditor, setShowBrandEditor] = useState(false);
-    const [sortField, setSortField] = useState<string>("");
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
+    const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
 
-    const itemsPerPage = 50;
+    const { data, setData } = useForm({
+        sort: '',
+        search: '',
+        status: ['All'],
+        brand: 'All',
+        batch: 'All',
+        location: 'All',
+        direction: '',
+    });
 
-    const getBatchGroup = (watchId: string) => {
-        // Simple logic to assign batch groups based on watch ID
-        const batchNumber = (parseInt(watchId) % 4) + 1;
-        return `B00${batchNumber}`;
-    };
+
+    useEffect(() => {
+        debounce(() => {
+            const params = Object.fromEntries(
+                Object.entries(data).filter(([_, v]) => {
+                    if (!v) return false; // skip empty values
+
+                    if (typeof v === 'string') {
+                        return v !== 'All' && v !== 'all';
+                    }
+
+                    if (Array.isArray(v)) {
+                        // exclude if array contains "All" (case insensitive)
+                        return !v.every(item => item.toLowerCase() === 'all');
+                    }
+
+                    return true; // keep all other types
+                })
+            );
+            if (Object.keys(params).length) {
+                router.get(route("watches.index"), params, {
+                    preserveState: true,
+                    replace: true,
+                });
+            }
+        })();
+    }, [data]);
+
+
+
 
     const getNavigationInfo = () => {
         if (!editingWatch) return { hasNext: false, hasPrevious: false };
 
-        const currentIndex = filteredAndSortedWatches.findIndex(
+        const currentIndex = watches.findIndex(
             (w) => w.id === editingWatch.id,
         );
         return {
-            hasNext: currentIndex < filteredAndSortedWatches.length - 1,
+            hasNext: currentIndex < watches.length - 1,
             hasPrevious: currentIndex > 0,
         };
     };
 
-    const handleAddWatch = () => {
-        setEditingWatch(undefined);
-        setShowForm(true);
-    };
 
-    const handleEditWatch = (watch: Watch) => {
-        setEditingWatch(watch);
-        setShowForm(true);
-        // Update URL with SKU parameter for easy sharing
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set("sku", watch.sku);
-        setSearchParams(newSearchParams, { replace: true });
-    };
 
-    const handleSaveWatch = (watchData: Omit<Watch, "id">) => {
-        if (editingWatch) {
-            setWatches(
-                watches.map((w) =>
-                    w.id === editingWatch.id
-                        ? { ...watchData, id: editingWatch.id }
-                        : w,
-                ),
-            );
-        } else {
-            const newWatch: Watch = {
-                ...watchData,
-                id: Date.now().toString(),
-            };
-            setWatches([...watches, newWatch]);
-        }
-        setShowForm(false);
-        setEditingWatch(undefined);
-        // Clean up URL when closing form
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete("sku");
-        setSearchParams(newSearchParams, { replace: true });
-    };
-
-    const handleDeleteWatch = (id: string) => {
-        if (window.confirm("Are you sure you want to delete this watch?")) {
-            setWatches(watches.filter((w) => w.id !== id));
-        }
-    };
 
     const handleSort = (field: string) => {
-        if (sortField === field) {
-            setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+        if (data.sort === field) {
+            setData('direction', data.direction === "asc" ? "desc" : "asc");
         } else {
-            setSortField(field);
-            setSortDirection("asc");
+            setData('sort', field);
+            setData('direction', "asc");
         }
     };
 
@@ -141,237 +129,12 @@ const WatchManagement = () => {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedWatches(filteredAndSortedWatches.map((w) => w.id));
+            setSelectedWatches(watches.map((w) => w.id));
         } else {
             setSelectedWatches([]);
         }
     };
 
-    const handleBulkStatusChange = (newStatus: string) => {
-        setWatches((prev) =>
-            prev.map((watch) =>
-                selectedWatches.includes(watch.id)
-                    ? { ...watch, status: newStatus as Watch["status"] }
-                    : watch,
-            ),
-        );
-        setSelectedWatches([]);
-    };
-
-    const handleBulkLocationChange = (newLocation: string) => {
-        setWatches((prev) =>
-            prev.map((watch) =>
-                selectedWatches.includes(watch.id)
-                    ? { ...watch, location: newLocation }
-                    : watch,
-            ),
-        );
-        setSelectedWatches([]);
-    };
-
-    const handleBulkBatchChange = (batchGroup: string) => {
-        setWatches((prev) =>
-            prev.map((watch) =>
-                selectedWatches.includes(watch.id)
-                    ? { ...watch, batchGroup }
-                    : watch,
-            ),
-        );
-        setSelectedWatches([]);
-    };
-
-    const handleStatusToggle = (status: string) => {
-        if (status === "All") {
-            setStatusFilters(["All"]);
-        } else {
-            setStatusFilters((prev) => {
-                // Remove 'All' if it's selected and we're selecting another status
-                const newFilters = prev.filter((s) => s !== "All");
-
-                if (newFilters.includes(status)) {
-                    // Remove the status if it's already selected
-                    const filtered = newFilters.filter((s) => s !== status);
-                    return filtered.length === 0 ? ["All"] : filtered;
-                } else {
-                    // Add the status
-                    return [...newFilters, status];
-                }
-            });
-        }
-        setCurrentPage(1);
-    };
-
-    const filteredAndSortedWatches = useMemo(() => {
-        let filtered = watches.filter((watch) => {
-            const matchesStatus =
-                statusFilters.includes("All") ||
-                statusFilters.includes(watch.status);
-            const matchesBrand =
-                brandFilter === "All" || watch.brand === brandFilter;
-            const matchesBatch =
-                batchFilter === "All" ||
-                getBatchGroup(watch.id) === batchFilter;
-            const matchesLocation =
-                locationFilter === "All" || watch.location === locationFilter;
-            const matchesSearch =
-                watch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                watch.sku.toLowerCase().includes(searchTerm.toLowerCase());
-            return (
-                matchesStatus &&
-                matchesBrand &&
-                matchesBatch &&
-                matchesLocation &&
-                matchesSearch
-            );
-        });
-
-        if (sortField) {
-            filtered = [...filtered].sort((a, b) => {
-                let aValue = a[sortField as keyof Watch];
-                let bValue = b[sortField as keyof Watch];
-
-                if (typeof aValue === "string") {
-                    aValue = aValue.toLowerCase();
-                }
-                if (typeof bValue === "string") {
-                    bValue = bValue.toLowerCase();
-                }
-
-                if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-                if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-                return 0;
-            });
-        }
-
-        return filtered;
-    }, [
-        watches,
-        statusFilters,
-        brandFilter,
-        batchFilter,
-        locationFilter,
-        searchTerm,
-        sortField,
-        sortDirection,
-    ]);
-
-    const paginatedWatches = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return filteredAndSortedWatches.slice(
-            startIndex,
-            startIndex + itemsPerPage,
-        );
-    }, [filteredAndSortedWatches, currentPage, itemsPerPage]);
-
-    const totalPages = Math.ceil(
-        filteredAndSortedWatches.length / itemsPerPage,
-    );
-
-    // Fix: Filter out empty strings when creating unique brands, batches, and locations
-    const uniqueBrands = [
-        "All",
-        ...Array.from(
-            new Set(
-                watches
-                    .map((w) => w.brand)
-                    .filter((brand) => brand && brand.trim() !== ""),
-            ),
-        ),
-    ];
-    const uniqueBatches = [
-        "All",
-        ...Array.from(new Set(watches.map((w) => getBatchGroup(w.id)))),
-    ];
-    const uniqueLocations = [
-        "All",
-        ...Array.from(
-            new Set(
-                watches
-                    .map((w) => w.location)
-                    .filter((location) => location && location.trim() !== ""),
-            ),
-        ),
-    ];
-
-
-    const handleEditBrands = () => {
-        alert(
-            "Brand editing feature would be implemented here. This would open a modal to add, edit, or remove brands from the list.",
-        );
-    };
-
-    const handleEditBatches = () => {
-        alert(
-            "Batch editing feature would be implemented here. This would open a modal to add, edit, or remove batch groups from the list.",
-        );
-    };
-
-    const handleEditLocations = () => {
-        alert(
-            "Location editing feature would be implemented here. This would open a modal to add, edit, or remove locations from the list.",
-        );
-    };
-
-    const statuses = [
-        "Draft",
-        "Review",
-        "Approved",
-        "Platform Review",
-        "Ready for listing",
-        "Listed",
-        "Reserved",
-        "Sold",
-        "Defect/Problem",
-        "Standby",
-    ];
-    const locations = ["Denmark", "Vietnam", "Japan", "In Transit"];
-    const batchGroups = ["B001", "B002", "B003", "B004"];
-
-    const handleNextWatch = () => {
-        if (editingWatch) {
-            const currentIndex = filteredAndSortedWatches.findIndex(
-                (w) => w.id === editingWatch.id,
-            );
-            if (currentIndex < filteredAndSortedWatches.length - 1) {
-                const nextWatch = filteredAndSortedWatches[currentIndex + 1];
-                setEditingWatch(nextWatch);
-                // Update URL with new SKU
-                const newSearchParams = new URLSearchParams(searchParams);
-                newSearchParams.set("sku", nextWatch.sku);
-                setSearchParams(newSearchParams, { replace: true });
-            }
-        }
-    };
-
-    const handlePreviousWatch = () => {
-        if (editingWatch) {
-            const currentIndex = filteredAndSortedWatches.findIndex(
-                (w) => w.id === editingWatch.id,
-            );
-            if (currentIndex > 0) {
-                const previousWatch =
-                    filteredAndSortedWatches[currentIndex - 1];
-                setEditingWatch(previousWatch);
-                // Update URL with new SKU
-                const newSearchParams = new URLSearchParams(searchParams);
-                newSearchParams.set("sku", previousWatch.sku);
-                setSearchParams(newSearchParams, { replace: true });
-            }
-        }
-    };
-
-    // Handle SKU query parameter
-    useEffect(() => {
-        const skuParam = searchParams.get("sku");
-        if (skuParam && !showForm) {
-            const watchToEdit = watches.find((watch) => watch.sku === skuParam);
-            if (watchToEdit) {
-                setEditingWatch(watchToEdit);
-                setShowForm(true);
-            }
-        }
-    }, [searchParams, watches, showForm]);
 
     return (
         <Layout>
@@ -424,10 +187,8 @@ const WatchManagement = () => {
                                 ([status, count]) => (
                                     <button
                                         key={status}
-                                        onClick={() =>
-                                            handleStatusToggle(status)
-                                        }
-                                        className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${statusFilters.includes(status)
+                                        onClick={() => setData('status', [...data.status, status])}
+                                        className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
                                             ? "border-primary bg-primary/10 ring-2 ring-primary/30"
                                             : "border-slate-200 bg-white hover:border-slate-300"
                                             }`}
@@ -444,14 +205,14 @@ const WatchManagement = () => {
                         </div>
 
                         {/* Clear status filters button */}
-                        {statusFilters.length > 1 ||
-                            (statusFilters.length === 1 &&
-                                !statusFilters.includes("All")) ? (
+                        {data.status.length > 1 ||
+                            (data.status.length === 1 &&
+                                !data.status.includes("All")) ? (
                             <div className="mt-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setStatusFilters(["All"])}
+                                    onClick={() => setData('status', ["All"])}
                                     className="border-slate-300 text-slate-600 hover:bg-slate-100"
                                 >
                                     <X className="mr-1 h-3 w-3" />
@@ -467,11 +228,8 @@ const WatchManagement = () => {
                             <Input
                                 type="text"
                                 placeholder="Search watches by name, brand, or SKU..."
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setCurrentPage(1);
-                                }}
+                                value={data.search}
+                                onChange={(e) => setData('search', e.target.value)}
                                 className="w-full"
                             />
                         </div>
@@ -481,12 +239,9 @@ const WatchManagement = () => {
                                     Brand:
                                 </span>
                                 <BrandSelector
-                                    value={brandFilter}
-                                    onValueChange={(value) => {
-                                        setBrandFilter(value);
-                                        setCurrentPage(1);
-                                    }}
-                                    brands={uniqueBrands}
+                                    value={data.brand}
+                                    onValueChange={(value) => setData('brand', value)}
+                                    brands={brands}
                                     onEditBrands={handleEditBrands}
                                 />
                             </div>
@@ -496,12 +251,9 @@ const WatchManagement = () => {
                                     Batch:
                                 </span>
                                 <BatchSelector
-                                    value={batchFilter}
-                                    onValueChange={(value) => {
-                                        setBatchFilter(value);
-                                        setCurrentPage(1);
-                                    }}
-                                    batches={uniqueBatches}
+                                    value={data.batch}
+                                    onValueChange={(value) => setData('brand', value)}
+                                    batches={brands}
                                     onEditBatches={handleEditBatches}
                                 />
                             </div>
@@ -511,12 +263,9 @@ const WatchManagement = () => {
                                     Location:
                                 </span>
                                 <LocationSelector
-                                    value={locationFilter}
-                                    onValueChange={(value) => {
-                                        setLocationFilter(value);
-                                        setCurrentPage(1);
-                                    }}
-                                    locations={uniqueLocations}
+                                    value={data.location}
+                                    onValueChange={(value) => setData('location', value)}
+                                    locations={countries}
                                     onEditLocations={handleEditLocations}
                                 />
                             </div>
@@ -538,17 +287,19 @@ const WatchManagement = () => {
                                 <span className="text-sm text-blue-700">
                                     Status:
                                 </span>
-                                <Select onValueChange={handleBulkStatusChange}>
+                                <Select onValueChange={(value) => {
+                                    handleBulkStatusChange(setSelectedWatches, value)
+                                }}>
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {statuses.map((status) => (
+                                        {Object.keys(watch_count).map((status) => (
                                             <SelectItem
                                                 key={status}
                                                 value={status}
                                             >
-                                                {status}
+                                                {Status.toHuman(status)}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -560,13 +311,15 @@ const WatchManagement = () => {
                                     Location:
                                 </span>
                                 <Select
-                                    onValueChange={handleBulkLocationChange}
+                                    onValueChange={(value) => {
+                                        handleBulkLocationChange(setSelectedWatches, value)
+                                    }}
                                 >
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Location" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {locations.map((location) => (
+                                        {countries.map((location) => (
                                             <SelectItem
                                                 key={location}
                                                 value={location}
@@ -582,7 +335,7 @@ const WatchManagement = () => {
                                 <span className="text-sm text-blue-700">
                                     Batch Group:
                                 </span>
-                                <Select onValueChange={handleBulkBatchChange}>
+                                <Select onValueChange={(value) => handleBulkBatchChange(setSelectedWatches, value)}>
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Batch" />
                                     </SelectTrigger>
@@ -622,7 +375,7 @@ const WatchManagement = () => {
                 {/* Content */}
                 {viewMode === "grid" ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {paginatedWatches.map((watch) => (
+                        {watches.map((watch) => (
                             <WatchCard
                                 key={watch.id}
                                 watch={watch}
@@ -633,19 +386,19 @@ const WatchManagement = () => {
                     </div>
                 ) : (
                     <WatchListView
-                        watches={paginatedWatches}
+                        watches={watches}
                         onEdit={handleEditWatch}
                         onDelete={handleDeleteWatch}
                         onSort={handleSort}
-                        sortField={sortField}
-                        sortDirection={sortDirection}
+                        sortField={data.sort}
+                        sortDirection={data.direction as 'asc'}
                         selectedWatches={selectedWatches}
                         onSelectWatch={handleSelectWatch}
                         onSelectAll={handleSelectAll}
                     />
                 )}
 
-                {filteredAndSortedWatches.length === 0 && (
+                {watches.length === 0 && (
                     <div className="py-12 text-center">
                         <div className="mb-4 text-6xl">⌚</div>
                         <h3 className="mb-2 text-xl font-medium text-slate-900">
@@ -665,12 +418,6 @@ const WatchManagement = () => {
                         onCancel={() => {
                             setShowForm(false);
                             setEditingWatch(undefined);
-                            // Clean up URL when canceling
-                            const newSearchParams = new URLSearchParams(
-                                searchParams,
-                            );
-                            newSearchParams.delete("sku");
-                            setSearchParams(newSearchParams, { replace: true });
                         }}
                         onNext={
                             getNavigationInfo().hasNext

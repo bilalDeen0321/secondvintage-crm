@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Status extends Model
 {
@@ -56,5 +57,13 @@ class Status extends Model
     protected function casts(): array
     {
         return [];
+    }
+
+    /**
+     * Get all watches that belong to this status.
+     */
+    public function watches(): HasMany
+    {
+        return $this->hasMany(Watch::class);
     }
 }

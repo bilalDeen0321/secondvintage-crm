@@ -1,5 +1,6 @@
 import all_countries from '@/data/countries.json';
 export const countries = all_countries.map(i => i.name);
+export const batchGroups = ["B001", "B002", "B003", "B004"];
 export const currencies = [
     { code: "EUR", name: "Euro", symbol: "€" },
     { code: "USD", name: "US Dollar", symbol: "$" },

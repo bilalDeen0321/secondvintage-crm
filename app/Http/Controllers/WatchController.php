@@ -10,6 +10,8 @@ use App\Models\Location;
 use App\Models\Stage;
 use App\Models\Status;
 use App\Models\Watch;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class WatchController extends Controller
@@ -26,27 +28,51 @@ class WatchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $watches = Watch::with(['brand', 'status', 'batch', 'location', 'images'])->paginate();
+        $query = Watch::query()
+            ->with(['brand', 'location', 'status'])
+            ->when($request->input('search'), function (Builder $q, $search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%")
+                        ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->when($request->input('status'), function (Builder $q, $value) {
+                $q->whereHas(
+                    'status',
+                    fn($statusQuery) =>
+                    $statusQuery->where('name', $value)
+                );
+            })
+            ->when($request->input('brand'), function (Builder $q, $value) {
+                $q->whereHas(
+                    'brand',
+                    fn($brandQuery) =>
+                    $brandQuery->where('name', $value)
+                );
+            })
+            ->when($request->input('location'), function (Builder $q, $value) {
+                $q->whereHas(
+                    'location',
+                    fn($locationQuery) =>
+                    $locationQuery->where('name', $value)
+                );
+            })
+            ->orderBy($request->input('sortField', 'id'), $request->input('sortDirection', 'asc'));
 
-        $watch_count = [
-            'all' => Watch::query()->count(),
-            Status::SOLD => Watch::query()->whereStatus(Status::SOLD)->count(),
-            Status::DRAFT => Watch::query()->whereStatus(Status::DRAFT)->count(),
-            Status::LISTED => Watch::query()->whereStatus(Status::LISTED)->count(),
-            Status::REVIEW => Watch::query()->whereStatus(Status::REVIEW)->count(),
-            Status::RESERVED => Watch::query()->whereStatus(Status::RESERVED)->count(),
-            Status::PROBLEM => Watch::query()->whereStatus(Status::PROBLEM)->count(),
-            Status::LISTING => Watch::query()->whereStatus(Status::LISTING)->count(),
-            Status::STANDBY => Watch::query()->whereStatus(Status::STANDBY)->count(),
-            Status::APPROVED => Watch::query()->whereStatus(Status::APPROVED)->count(),
-            Status::PLATFORM_REVIEW => Watch::query()->whereStatus(Status::PLATFORM_REVIEW)->count(),
-        ];
+        $watches = $query->paginate(50)->withQueryString();
+
+        $watchCount = Status::whereHas('watches')
+            ->withCount('watches')
+            ->pluck('watches_count', 'name');
+
 
         return Inertia::render('watches/index', [
-            'watch_count' => $watch_count,
-            'watches' => WatchResource::collection($watches)
+            'watches' => WatchResource::collection($watches)->response()->getData(true),
+            'watch_count' => $watchCount,
+            'filters' => request()->only(['search', 'status', 'brand', 'location', 'sortField', 'sortDirection']),
         ]);
     }
 
