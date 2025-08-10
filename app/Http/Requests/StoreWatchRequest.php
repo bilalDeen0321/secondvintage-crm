@@ -23,24 +23,35 @@ class StoreWatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:255', 'unique:watches,sku'],
-            'brand' => ['required', 'string'],
-            'acquisitionCost' => ['nullable', 'numeric'],
-            'status' => ['required', 'exists:statuses,name'],
-            'location' => ['nullable', 'exists:locations,id'],
-            'batch' => ['nullable', 'string'],
-            'description' => ['nullable', 'string'],
-            'notes' => ['nullable', 'string'],
-            'serial' => ['nullable', 'string'],
-            'ref' => ['nullable', 'string'],
-            'caseSize' => ['nullable', 'string'],
-            'caliber' => ['nullable', 'string'],
-            'timegrapher' => ['nullable', 'string'],
-            'aiInstructions' => ['nullable', 'string'],
-            'currency' => ['nullable', 'string'],
-            'images' => ['nullable', 'array'],
-            'images.*' => ['file', 'image'],
+            'name'            => ['required', 'string', 'max:255'],
+            'sku'             => ['required', 'string', 'max:255', 'unique:watches,sku'],
+            'brand'           => ['required', 'string', 'max:255'],
+            'status'          => ['required', 'string', 'max:255'],
+            'serial_number'   => ['nullable', 'string', 'max:255'],
+            'reference'       => ['nullable', 'string', 'max:255'],
+            'case_size'       => ['nullable', 'string', 'max:255'],
+            'caliber'         => ['nullable', 'string', 'max:255'],
+            'timegrapher'     => ['nullable', 'string', 'max:255'],
+            'original_cost'   => ['nullable', 'numeric'],
+            'current_cost'    => ['nullable', 'numeric'],
+            'ai_instructions' => ['nullable', 'string'],
+            'location'        => ['nullable', 'string', 'max:255'],
+            'batch'           => ['nullable', 'string', 'max:255'],
+            'description'     => ['nullable', 'string'],
+            'currency'        => ['nullable', 'string', 'max:3'],
+            'notes'           => ['nullable', 'string'],
+
+            // images is an array of base64 strings inside objects
+            'images'          => ['nullable', 'array'],
+            'images.*.url'    => ['required_with:images', 'string'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'sku.unique'          => 'This SKU already exists in the database.',
+            'images.*.url.regex'  => 'Each image must be a valid base64 encoded PNG or JPEG.',
         ];
     }
 }

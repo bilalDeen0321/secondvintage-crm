@@ -39,7 +39,7 @@ class Watch extends Model
         'seller_id',
         'description',
         'ai_instructions',
-        'description_thread_id',
+        'ai_thread_id',
         'notes'
     ];
 

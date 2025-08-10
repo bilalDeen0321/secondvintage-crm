@@ -39,7 +39,7 @@ class WatchFactory extends Factory
             'agent_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'seller_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'description' => fake()->paragraph,
-            'description_thread_id' => fake()->uuid,
+            'ai_thread_id' => fake()->uuid,
         ];
     }
 }

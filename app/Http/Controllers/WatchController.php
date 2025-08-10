@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Resources\WatchResource;
+use App\Models\Batch;
 use App\Models\Brand;
 use App\Models\Location;
 use App\Models\Stage;
 use App\Models\Status;
 use App\Models\Watch;
+use App\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class WatchController extends Controller
@@ -94,51 +97,70 @@ class WatchController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * @param \Illuminate\Http\Request $request
      */
     public function store(StoreWatchRequest $request)
     {
 
         $validated = $request->validated();
 
-        // Get status ID by name (e.g. 'draft')
-        $status = Status::where('name', $validated['status'])->firstOrFail();
+        // 1. Get or create related records
+        $status = Status::firstOrCreate(['name' => $validated['status']]);
+        $brand = Brand::firstOrCreate(['name' => $validated['brand']]);
+        $batch = Batch::firstOrCreate(['name' => $validated['batch']]);
+        $location = Location::firstOrCreate(['name' => $validated['location']]);
 
-
-        $brand = Brand::query()->updateOrCreate(
-            ['name' => $validated['brand']],
-            ['brand_code' => rand(1, 100)]
-        );
-
+        // 2. Create Watch
         $watch = Watch::create([
-            'sku' => $validated['sku'],
-            'name' => $validated['name'],
-            'brand_id' => $brand->id,
-            'serial_number' => $validated['serial'],
-            'reference' => $validated['ref'],
-            'case_size' => $validated['caseSize'],
-            'caliber' => $validated['caliber'],
-            'timegrapher' => $validated['timegrapher'],
-            'original_cost' => $validated['acquisitionCost'],
-            'status_id' => $status->id,
-            'stage_id' => Stage::factory()->create()->id,
-            'description' => $validated['description'],
-            'notes' => $validated['notes'],
-            'ai_instructions' => $validated['aiInstructions'],
+            'sku'             => $validated['sku'],
+            'name'            => $validated['name'],
+            'serial_number'   => $validated['serial_number'],
+            'reference'       => $validated['reference'],
+            'case_size'       => $validated['case_size'],
+            'caliber'         => $validated['caliber'],
+            'timegrapher'     => $validated['timegrapher'],
+            'original_cost'   => $validated['original_cost'],
+            'current_cost'    => $validated['current_cost'],
+            'description'     => $validated['description'] ?? '',
+            'notes'           => $validated['notes'] ?? '',
+            'ai_instructions' => $validated['ai_instructions'] ?? '',
+            'brand_id'        => $brand->id,
+            'status_id'       => $status->id,
+            'batch_id'        => $batch->id,
+            'location_id'     => $location->id,
+            'stage_id'        => Stage::factory()->create()->id, // or find a default stage
         ]);
 
-        // Handle uploaded images (if any)
-        if (!empty($validated['images'])) {
-            foreach ($validated['images'] as $image) {
+        // 3. Handle Base64 Images
+        if (!empty($validated['images']) && is_array($validated['images'])) {
 
-                $path = $image->store('watches/images', 'public');
+            foreach ($validated['images'] as $imageData) {
 
-                $watch->images()->create([
-                    'path' => $path,
-                ]);
+                if (isset($imageData['url']) && Str::startsWith($imageData['url'], 'data:image')) {
+                    // Extract base64
+                    [$type, $data] = explode(';', $imageData['url']);
+                    [, $data] = explode(',', $data);
+                    $data = base64_decode($data);
+
+                    // Detect extension
+                    $extension = Str::contains($type, 'jpeg') ? 'jpg' : (Str::contains($type, 'png') ? 'png' : 'jpg');
+
+                    // Store file
+                    $fileName = 'watches/images/' . Str::uuid() . '.' . $extension;
+
+                    Storage::disk('public')->put($fileName, $data);
+
+                    // Save record
+                    $watch->images()->create([
+                        'path' => $fileName,
+                    ]);
+                }
             }
         }
 
-        return redirect()->route('watches.index')->with('success', 'Watch created successfully.');
+        return redirect()->route('watches.index')
+            ->with('success', 'Watch created successfully.');
     }
 
     /**

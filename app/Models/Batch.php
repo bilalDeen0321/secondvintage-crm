@@ -20,7 +20,7 @@ class Batch extends Model
         'location_id',
         'status_id',
         'created_by',
-        'default_destination',
+        'destination',
     ];
 
     /**

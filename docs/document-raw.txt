@@ -92,7 +92,7 @@ when you click on the edit icon in dropdowns.
 - In Edit/New watch window, working image upload - that also names the files to
 <SKU>_001.jpg, <SKU>_002.jpg… those files should have a public url for third-party AI
 software to read.
-- In Edit/New watch window - Reset AI - should delete Description_Thread_ID​
+- In Edit/New watch window - Reset AI - should delete ai_thread_id​
 - In Edit/New watch window - Generate Description - should send JSON-formatted POST
 request (check API notes).
 - In Edit/New watch window - AI functions should also handle error messages.​

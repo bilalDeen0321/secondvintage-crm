@@ -106,29 +106,29 @@
 
 ### watches
 
-| Column                | Type                    | Notes        |
-| --------------------- | ----------------------- | ------------ |
-| id                    | PK                      |              |
-| sku                   | string                  | unique       |
-| name                  | string                  |              |
-| brand_id              | FK → brands             |              |
-| serial_number         | string                  |              |
-| reference             | string                  |              |
-| case_size             | string                  |              |
-| caliber               | string                  |              |
-| timegrapher           | string                  |              |
-| original_cost         | decimal                 |              |
-| current_cost          | decimal                 |              |
-| status_id             | FK → statuses           |              |
-| stage_id              | FK → stages             |              |
-| batch_id              | FK → batches (nullable) |
-| location_id           | FK → locations          |
-| agent_id              | FK → users (nullable)   |
-| seller_id             | FK → users (nullable)   |
-| description           | text                    |              |
-| description_thread_id | string                  | AI thread ID |
-| created_at            | timestamp               |              |
-| updated_at            | timestamp               |              |
+| Column        | Type                    | Notes        |
+| ------------- | ----------------------- | ------------ |
+| id            | PK                      |              |
+| sku           | string                  | unique       |
+| name          | string                  |              |
+| brand_id      | FK → brands             |              |
+| serial_number | string                  |              |
+| reference     | string                  |              |
+| case_size     | string                  |              |
+| caliber       | string                  |              |
+| timegrapher   | string                  |              |
+| original_cost | decimal                 |              |
+| current_cost  | decimal                 |              |
+| status_id     | FK → statuses           |              |
+| stage_id      | FK → stages             |              |
+| batch_id      | FK → batches (nullable) |
+| location_id   | FK → locations          |
+| agent_id      | FK → users (nullable)   |
+| seller_id     | FK → users (nullable)   |
+| description   | text                    |              |
+| ai_thread_id  | string                  | AI thread ID |
+| created_at    | timestamp               |              |
+| updated_at    | timestamp               |              |
 
 **Relationships:**
 

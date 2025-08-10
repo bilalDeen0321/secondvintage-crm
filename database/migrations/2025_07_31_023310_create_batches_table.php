@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('batches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('location_id')->constrained('locations')->onDelete('restrict');
-            $table->foreignId('status_id')->constrained('statuses')->onDelete('restrict');
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->string('default_destination')->default('Denmark');
+            // $table->foreignId('location_id')->constrained('locations')->onDelete('restrict');
+            // $table->foreignId('status_id')->constrained('statuses')->onDelete('restrict');
+            // $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->string('destination')->default('Denmark');
             $table->timestamps();
         });
     }
