@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')->unique();
-            $table->string('brand_code', 3); // 3-letter code
+            $table->string('code', 3); // 3-letter code
 
             $table->timestamps();
         });

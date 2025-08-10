@@ -17,7 +17,7 @@ class Brand extends Model
      */
     protected $fillable = [
         'name',
-        'brand_code'
+        'code'
     ];
 
     /**
@@ -28,5 +28,18 @@ class Brand extends Model
     protected function casts(): array
     {
         return [];
+    }
+
+    /**
+     * Boot the model and attach event listeners.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        //auto generate brand code
+        static::creating(function (self $brand) {
+            $brand->code = rand(0, 100);
+        });
     }
 }

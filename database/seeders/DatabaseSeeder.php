@@ -15,19 +15,19 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolePermissionSeeder::class,
-            UserSeeder::class,
-            BrandSeeder::class,
-            LocationSeeder::class,
-            StatusSeeder::class,
-            StageSeeder::class,
-            BatchSeeder::class,
-            WatchSeeder::class,
-            WatchImageSeeder::class,
-            WishlistSeeder::class,
-            TransactionSeeder::class,
-            LogSeeder::class,
-            WatchLogSeeder::class,
-            PlatformDataSeeder::class,
+            // UserSeeder::class,
+            // BrandSeeder::class,
+            // LocationSeeder::class,
+            // StatusSeeder::class,
+            // StageSeeder::class,
+            // BatchSeeder::class,
+            // WatchSeeder::class,
+            // WatchImageSeeder::class,
+            // WishlistSeeder::class,
+            // TransactionSeeder::class,
+            // LogSeeder::class,
+            // WatchLogSeeder::class,
+            // PlatformDataSeeder::class,
         ]);
 
         // User::factory()->count(10)->create();

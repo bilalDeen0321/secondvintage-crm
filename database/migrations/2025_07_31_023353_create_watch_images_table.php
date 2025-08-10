@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('watch_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('watch_id')->constrained('watches')->onDelete('cascade');
-            $table->string('filename');
-            $table->string('public_url');
+            $table->text('filename')->nullable();
+            $table->text('public_url')->nullable();
+            $table->text('thumbnail')->nullable();
+            $table->integer('order_index')->default(0);
             $table->boolean('use_for_ai')->default(false);
-            $table->integer('order')->default(0);
             $table->timestamps();
         });
     }

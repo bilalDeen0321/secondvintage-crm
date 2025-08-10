@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\WatchObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(WatchObserver::class)]
 class Watch extends Model
 {
     /** @use HasFactory<\Database\Factories\WatchFactory> */
@@ -19,6 +22,7 @@ class Watch extends Model
     protected $fillable = [
         'sku',
         'name',
+        'user_id',
         'brand_id',
         'serial_number',
         'reference',
@@ -73,8 +77,22 @@ class Watch extends Model
     protected static function boot()
     {
         parent::boot();
+    }
 
-        // static::creating(function (self $model) {});
+    /**
+     * Get the user who owns this watch
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the owner who owns this watch
+     */
+    public function created_by()
+    {
+        return $this->belongsTo(User::class);
     }
 
 

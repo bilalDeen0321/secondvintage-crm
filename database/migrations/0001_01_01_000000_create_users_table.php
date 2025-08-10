@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('default_currency')->default('DKK');
             $table->string('status')->default('inactive');
             $table->string('country')->default('USA');
             $table->string('currency')->default('DKK');

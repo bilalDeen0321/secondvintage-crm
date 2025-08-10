@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('watches', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('sku')->unique();
             $table->string('name');
             $table->foreignId('brand_id')->constrained()->onDelete('cascade');

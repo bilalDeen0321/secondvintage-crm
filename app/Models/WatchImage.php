@@ -19,7 +19,8 @@ class WatchImage extends Model
         'watch_id',
         'filename',
         'public_url',
-        'order',
+        'thumbnail',
+        'order_index',
         'user_for_ai'
     ];
 
