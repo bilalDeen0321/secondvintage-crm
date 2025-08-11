@@ -31,6 +31,7 @@ class Watch extends Model
         'timegrapher',
         'original_cost',
         'current_cost',
+        'currency',
         'status_id',
         'stage_id',
         'batch_id',

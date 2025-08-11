@@ -56,7 +56,7 @@ export const initData = {
     original_cost: "",
     current_cost: "",
     ai_instructions: "",
-    location: "All",
+    location: "",
     batch: "",
     description: "",
     currency: "DKK",
@@ -252,10 +252,8 @@ export default function AddNewWatch() {
                                     </label>
                                     <BrandSelector
                                         value={data.brand}
-                                        onValueChange={(value) =>
-                                            setData("brand", value)
-                                        }
-                                        brands={[...brands]}
+                                        onValueChange={(value) => setData("brand", value)}
+                                        brands={brands}
                                         onEditBrands={handleEditBrands}
                                     />
                                 </div>
@@ -343,7 +341,7 @@ export default function AddNewWatch() {
                                         onValueChange={(value) =>
                                             setData("location", value)
                                         }
-                                        locations={["All", ...locations]}
+                                        locations={locations}
                                         onEditLocations={handleEditLocations}
                                     />
                                 </div>
@@ -365,9 +363,7 @@ export default function AddNewWatch() {
                                     </div>
                                     <BatchSelector
                                         value={data.batch}
-                                        onValueChange={(value) =>
-                                            setData("batch", value)
-                                        }
+                                        onValueChange={(value) => setData("batch", value)}
                                         batches={batches}
                                         onEditBatches={hanldeBatchAction}
                                     />

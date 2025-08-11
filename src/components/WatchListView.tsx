@@ -1,9 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { WatchWith } from "@/types/watch";
 import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Watch } from "../types/Watch";
 import ImageViewer from "./ImageViewer";
+
+type Watch = WatchWith & {
+    brand: string;
+    batch?: string;
+    status: string;
+    location: string;
+    images: Array<{ id: string | number, url: string, order_index?: number, useForAI: boolean }>
+}
 
 interface WatchListViewProps {
     watches: Watch[];
@@ -30,6 +38,7 @@ const WatchListView = ({
 }: WatchListViewProps) => {
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         images: any[];
         currentIndex: number;
     }>({
@@ -241,7 +250,7 @@ const WatchListView = ({
                                                 />
                                             ) : (
                                                 <img
-                                                    src="/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
+                                                    src="/assests/watch-placeholder.png"
                                                     alt="Watch placeholder"
                                                     className="h-full w-full object-cover opacity-50"
                                                 />
@@ -272,22 +281,20 @@ const WatchListView = ({
                                     </td>
                                     <td className="p-2">
                                         <div className="text-sm text-slate-900">
-                                            {watch.acquisitionCost
-                                                ? `€${watch.acquisitionCost.toLocaleString()}`
+                                            {watch.current_cost
+                                                ? `€${watch.current_cost.toLocaleString()}`
                                                 : "-"}
                                         </div>
                                     </td>
                                     <td className="p-2">
                                         <div className="text-sm text-slate-600">
-                                            {getLocalCurrency(
-                                                watch.acquisitionCost,
-                                                watch.location,
-                                            )}
+                                            {watch.currency}
                                         </div>
                                     </td>
                                     <td className="p-2">
                                         <div className="text-sm text-slate-600">
-                                            {getBatchGroup(watch.id)}
+                                            {/* {getBatchGroup(watch.id)} */}
+                                            {watch?.batch}
                                         </div>
                                     </td>
                                     <td className="p-2">

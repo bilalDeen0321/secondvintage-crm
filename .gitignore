@@ -26,4 +26,4 @@ yarn-error.log
 #custom
 
 app/Console/Commands/Playground.php
-docs/data
+/docs

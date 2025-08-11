@@ -17,6 +17,7 @@ class WatchResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'brand' => $this->brand->name,
+            'batch' => $this->batch?->name ?? null,
             'status' => $this->status?->name,
             'location' => $this->location?->name,
             'images' => WatchImageResource::collection($this->images()->orderBy('order_index')->get()),

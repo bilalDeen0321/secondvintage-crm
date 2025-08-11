@@ -4,6 +4,7 @@ export interface Watch {
     id: string;
     sku: string;
     name: string;
+    currency?: string;
     brand_id: number;
     serial_number: string | null;
     reference: string | null;

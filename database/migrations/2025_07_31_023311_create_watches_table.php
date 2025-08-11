@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('case_size')->nullable();
             $table->string('caliber')->nullable();
             $table->string('timegrapher')->nullable();
+            $table->string('currency')->nullable();
             $table->decimal('original_cost', 12, 2)->nullable();
             $table->decimal('current_cost', 12, 2)->nullable();
             $table->foreignId('status_id')->constrained()->onDelete('cascade');

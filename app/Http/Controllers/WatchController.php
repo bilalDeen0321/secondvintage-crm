@@ -89,10 +89,10 @@ class WatchController extends Controller
      */
     public function create()
     {
-        $locations = Location::query()->pluck('name');
-        $statuses  = Status::query()->pluck('name');
-        $batches   = Batch::query()->pluck('name');
-        $brands    = Brand::query()->pluck('name');
+        $locations = Location::query()->pluck('name')->unique()->values();
+        $statuses  = Status::query()->pluck('name')->unique()->values();
+        $batches   = Batch::query()->pluck('name')->unique()->values();
+        $brands    = Brand::query()->pluck('name')->unique()->values();
 
         return Inertia::render('watches/create', [
             'locations' => $locations,
@@ -109,17 +109,14 @@ class WatchController extends Controller
      */
     public function store(StoreWatchRequest $request)
     {
-
         $validated = $request->validated();
 
         // 1. Get or create related records
         $status = Status::firstOrCreate(['name' => $validated['status']]);
         $brand = Brand::firstOrCreate(['name' => $validated['brand']]);
-        $batch = Batch::firstOrCreate(['name' => $validated['batch']]);
-        $location = Location::firstOrCreate(['name' => $validated['location']]);
 
         // 2. Create Watch
-        $watch = Watch::create([
+        $watch = Watch::query()->create([
             'sku'             => $validated['sku'],
             'name'            => $validated['name'],
             'serial_number'   => $validated['serial_number'],
@@ -129,15 +126,31 @@ class WatchController extends Controller
             'timegrapher'     => $validated['timegrapher'],
             'original_cost'   => $validated['original_cost'],
             'current_cost'    => $validated['current_cost'],
+            'currency'        => $validated['currency'],
             'description'     => $validated['description'] ?? '',
             'notes'           => $validated['notes'] ?? '',
             'ai_instructions' => $validated['ai_instructions'] ?? '',
             'brand_id'        => $brand->id,
             'status_id'       => $status->id,
-            'batch_id'        => $batch->id,
-            'location_id'     => $location->id,
             'stage_id'        => Stage::factory()->create()->id, // or find a default stage
         ]);
+
+        // 3. Handle batch
+        if ($batchName = $request->input('batch')) {
+            $batch = Batch::firstOrCreate(['name' => $batchName]);
+            $watch->batch_id = $batch->id;
+        }
+
+        // 4. Handle location
+        if ($locationName = $request->input('location')) {
+            $location = Location::firstOrCreate(['name' => $locationName]);
+            $watch->location_id = $location->id;
+        }
+
+        // Save watch again if batch or location assigned
+        if (isset($batch) || isset($location)) {
+            $watch->save();
+        }
 
         // 3. Handle Base64 Images
         if (!empty($validated['images']) && is_array($validated['images'])) {
