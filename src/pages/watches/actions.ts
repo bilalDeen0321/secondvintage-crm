@@ -25,6 +25,8 @@ export const hanldeBatchAction = () => {
     }
 };
 
+export const handleEditBatches = hanldeBatchAction;
+
 
 type Watch = TWatch & {
     brand: string, status: any, location: string,
