@@ -5,13 +5,23 @@ import { initData } from "./create";
 
 type SetData<K, V> = (key: K, value: V) => void;
 
-export const handleEditBatches = () => {
-    const newBatch = prompt("Enter new batch group name:");
+export const hanldeBatchAction = () => {
+
+    const newBatch = prompt("Enter new batch name:");
+
     if (newBatch && newBatch.trim()) {
-        console.log("Adding new batch group:", newBatch.trim());
-        alert(
-            `Batch group "${newBatch.trim()}" would be added to the list. This would be implemented with a proper modal in the real application.`,
-        );
+        // Direct Inertia POST request without page reload
+        Inertia.post(route('batch.store'), { name: newBatch.trim() }, {
+            onSuccess: () => {
+                alert(`Batch "${newBatch.trim()}" added successfully.`);
+            },
+            onError: (errors) => {
+                alert('Failed: ' + JSON.stringify(errors));
+            },
+            // Keep the current page, don't reload or redirect
+            preserveScroll: true,
+            preserveState: true,
+        });
     }
 };
 
@@ -55,6 +65,7 @@ import { Inertia } from '@inertiajs/inertia';
 
 
 export const handleEditLocations = () => {
+    return alert('Action disabled');
     const newLocation = prompt("Enter new location name:");
     if (newLocation && newLocation.trim()) {
         console.log("Adding new location:", newLocation.trim());

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBatchRequest;
 use App\Http\Requests\UpdateBatchRequest;
 use App\Models\Batch;
+use App\Models\Brand;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BatchController extends Controller
@@ -36,9 +38,17 @@ class BatchController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBatchRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:100|min:2',
+        ]);
+
+        // Create the new brand
+        Batch::query()->updateOrCreate(['name' => $request->input('name')]);
+
+        // Redirect back with flash message
+        return redirect()->back()->with('success', sprintf('Batch successfully saved.'));
     }
 
     /**

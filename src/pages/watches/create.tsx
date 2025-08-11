@@ -30,11 +30,10 @@ import {
 import React, { useEffect, useState } from "react";
 import { handlePrintSKULabel } from "./_create-actions";
 import {
-    handleAddBatchGroup,
     handleApprove,
-    handleEditBatches,
     handleEditBrands,
     handleEditLocations,
+    hanldeBatchAction
 } from "./actions";
 
 type Watch = TWatch & {
@@ -358,12 +357,7 @@ export default function AddNewWatch() {
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() =>
-                                                handleAddBatchGroup(
-                                                    batches,
-                                                    setData,
-                                                )
-                                            }
+                                            onClick={hanldeBatchAction}
                                             className="h-6 w-6 p-0"
                                         >
                                             <Plus className="h-3 w-3" />
@@ -375,7 +369,7 @@ export default function AddNewWatch() {
                                             setData("batch", value)
                                         }
                                         batches={batches}
-                                        onEditBatches={handleEditBatches}
+                                        onEditBatches={hanldeBatchAction}
                                     />
                                 </div>
 
