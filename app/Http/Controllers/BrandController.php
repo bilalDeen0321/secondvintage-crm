@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BrandController extends Controller
@@ -36,9 +37,18 @@ class BrandController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBrandRequest $request)
+    public function store(Request $request)
     {
-        //
+
+        $request->validate([
+            'name' => 'required|string|max:100|min:2',
+        ]);
+
+        // Create the new brand
+        Brand::query()->updateOrCreate(['name' => $request->input('name')]);
+
+        // Redirect back with flash message
+        return redirect()->back()->with('success', sprintf('Brand successfully saved.'));
     }
 
     /**

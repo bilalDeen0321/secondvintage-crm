@@ -87,11 +87,9 @@ export default function AddNewWatch() {
         errors,
     } = useForm(initData);
 
-    const [savedData, setSavedData] = useState<any>(null);
-    const [hasChanges, setHasChanges] = useState(true);
-
-    const [isGeneratingDescription, setIsGeneratingDescription] =
-        useState(false);
+    const [savedData, setSavedData] = useState<any>(initData);
+    const [hasChanges, setHasChanges] = useState(false);
+    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
     //generate sku and display
     useEffect(() => {
@@ -118,7 +116,9 @@ export default function AddNewWatch() {
      * unimproved scripts
      */
     useEffect(() => {
-        if (JSON.stringify(data) != JSON.stringify(savedData)) {
+        const savedDataString = JSON.stringify(savedData);
+        const formDataString = JSON.stringify(data);
+        if (!(formDataString === savedDataString)) {
             setHasChanges(true);
         }
     }, [data, savedData]);
@@ -237,11 +237,7 @@ export default function AddNewWatch() {
                                             variant="outline"
                                             size="sm"
                                             onClick={() =>
-                                                handlePrintSKULabel(
-                                                    data.name,
-                                                    data.brand,
-                                                    data.sku,
-                                                )
+                                                handlePrintSKULabel(data.name, data.brand, data.sku)
                                             }
                                             className="p-2"
                                             title="Print SKU Label"

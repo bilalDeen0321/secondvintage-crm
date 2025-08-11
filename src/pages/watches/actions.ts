@@ -31,14 +31,27 @@ export const handleApprove = (data: typeof initData, setData: SetData<'status', 
 
 
 export const handleEditBrands = () => {
+
     const newBrand = prompt("Enter new brand name:");
+
     if (newBrand && newBrand.trim()) {
-        console.log("Adding new brand:", newBrand.trim());
-        alert(
-            `Brand "${newBrand.trim()}" would be added to the list. This would be implemented with a proper modal in the real application.`,
-        );
+        // Direct Inertia POST request without page reload
+        Inertia.post(route('brands.store'), { name: newBrand.trim() }, {
+            onSuccess: () => {
+                alert(`Brand "${newBrand.trim()}" added successfully.`);
+            },
+            onError: (errors) => {
+                alert('Failed to add brand. ' + JSON.stringify(errors));
+            },
+            // Keep the current page, don't reload or redirect
+            preserveScroll: true,
+            preserveState: true,
+        });
     }
 };
+
+
+import { Inertia } from '@inertiajs/inertia';
 
 
 export const handleEditLocations = () => {

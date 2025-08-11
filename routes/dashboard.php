@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\AgentWatchController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\InvoiceController;
@@ -32,6 +33,7 @@ use Inertia\Inertia;
 Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);
 Route::resource('watches', WatchController::class);
+Route::resource('brands', BrandController::class);
 Route::resource('sales', SaleController::class);
 Route::resource('batch', BatchController::class);
 Route::resource('promote', PromoteController::class);
