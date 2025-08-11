@@ -91,11 +91,13 @@ class WatchController extends Controller
     {
         $locations = Location::query()->pluck('name');
         $statuses  = Status::query()->pluck('name');
+        $batches   = Batch::query()->pluck('name');
         $brands    = Brand::query()->pluck('name');
 
         return Inertia::render('watches/create', [
             'locations' => $locations,
             'statuses' => $statuses,
+            'batches' => $batches,
             'brands' => $brands,
         ]);
     }

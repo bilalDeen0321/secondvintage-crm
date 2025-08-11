@@ -52,12 +52,11 @@ export const handleEditLocations = () => {
 };
 
 
-export const handleAddBatchGroup = (batchGroups: string[], setBatchGroups, setData: SetData<'batch', string>) => {
+export const handleAddBatchGroup = (batchGroups: string[], setData: SetData<'batch', string>) => {
     const newBatchGroup = prompt("Enter new batch group name:");
     if (newBatchGroup && newBatchGroup.trim()) {
         const trimmedBatch = newBatchGroup.trim();
         if (!batchGroups.includes(trimmedBatch)) {
-            setBatchGroups([...batchGroups, trimmedBatch]);
             setData('batch', trimmedBatch)
             console.log("Added new batch group:", trimmedBatch);
         } else {

@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { batchGroups, brands, countries, currencies, exchangeRates } from "@/app/data";
+import { countries, currencies, exchangeRates } from "@/app/data";
 import Status from "@/app/models/Status";
 import { generateSKU } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
@@ -16,8 +16,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { Watch as TWatch } from "@/types/watch";
-import { Head, router, useForm } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import {
     CheckCircle,
     Loader2,
@@ -26,7 +27,7 @@ import {
     Sparkles,
     Tag,
 } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { handlePrintSKULabel } from "./_create-actions";
 import {
     handleAddBatchGroup,
@@ -43,15 +44,6 @@ type Watch = TWatch & {
     images: any[];
 };
 
-interface Props {
-    watch?: Watch;
-    onSave: (watch: Omit<Watch, "id">) => void;
-    onNext?: () => void;
-    onPrevious?: () => void;
-    hasNext?: boolean;
-    hasPrevious?: boolean;
-}
-
 export const initData = {
     name: "",
     sku: "",
@@ -65,38 +57,48 @@ export const initData = {
     original_cost: "",
     current_cost: "",
     ai_instructions: "",
-    location: countries[0],
-    batch: batchGroups[0],
+    location: "All",
+    batch: "",
     description: "",
     currency: "DKK",
     notes: "",
     images: [] as Watch["images"],
 };
 
-export default function AddNewWatch({ watch }: Props) {
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const [batchGroups, setBatchGroups] = useState([
-        "B001",
-        "B002",
-        "B003",
-        "B020",
-    ]);
-    const formRef = useRef<HTMLDivElement>(null);
+export default function AddNewWatch() {
 
-    const { data, setData, post: storeServer, processing, errors } = useForm(initData);
+    const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
+
+    const {
+        locations = countries,
+        batches = [],
+        brands = [],
+        statuses = [],
+    } = (usePage().props as any) || {};
+
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+
+    const {
+        data,
+        setData,
+        post: storeServer,
+        processing,
+        errors,
+    } = useForm(initData);
 
     const [savedData, setSavedData] = useState<any>(null);
     const [hasChanges, setHasChanges] = useState(true);
 
-    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+    const [isGeneratingDescription, setIsGeneratingDescription] =
+        useState(false);
 
     //generate sku and display
     useEffect(() => {
         if (data.name && data.brand) {
-            setData('sku', generateSKU(data.brand, data.name))
+            setData("sku", generateSKU(data.brand, data.name));
         }
-    }, [data.name, data.brand, setData])
-
+    }, [data.name, data.brand, setData]);
 
     // Update display value when form data or currency changes
     useEffect(() => {
@@ -105,13 +107,12 @@ export default function AddNewWatch({ watch }: Props) {
 
         if (!isNaN(originalCost) && !isNaN(rate)) {
             // Store as string for form state
-            setData('current_cost', (originalCost * rate).toFixed(2));
+            setData("current_cost", (originalCost * rate).toFixed(2));
         } else {
             // Fallback to original cost as string (2 decimals)
-            setData('current_cost', originalCost.toFixed(2));
+            setData("current_cost", originalCost.toFixed(2));
         }
     }, [data.currency, data.original_cost, setData]);
-
 
     /**
      * unimproved scripts
@@ -120,39 +121,16 @@ export default function AddNewWatch({ watch }: Props) {
         if (JSON.stringify(data) != JSON.stringify(savedData)) {
             setHasChanges(true);
         }
-    }, [data, savedData])
+    }, [data, savedData]);
 
-
-
-    // Keyboard navigation and ESC handling
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                router.visit(route("watches.index"));
-                return;
-            }
-        };
-
-        if (formRef.current) {
-            formRef.current.addEventListener("keydown", handleKeyDown);
-        }
-
-        return () => {
-            if (formRef.current) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                formRef.current.removeEventListener("keydown", handleKeyDown);
-            }
-        };
-    }, []);
 
     const handleSave = () => {
         //save the data to server
-        storeServer(route('watches.store'), {
+        storeServer(route("watches.store"), {
             onSuccess: () => {
                 // reset();
-            }
-        })
-
+            },
+        });
 
         setSavedData(data);
         // setHasChanges(false);
@@ -202,7 +180,6 @@ export default function AddNewWatch({ watch }: Props) {
         }, 2000);
     };
 
-
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
     return (
@@ -216,7 +193,7 @@ export default function AddNewWatch({ watch }: Props) {
                 >
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
                         <h2 className="text-lg font-bold text-slate-900">
-                            {watch ? "Edit Watch" : "Add New Watch"}
+                            {"Add New Watch"}
                         </h2>
                     </div>
 
@@ -283,7 +260,7 @@ export default function AddNewWatch({ watch }: Props) {
                                         onValueChange={(value) =>
                                             setData("brand", value)
                                         }
-                                        brands={["All", ...brands]}
+                                        brands={[...brands]}
                                         onEditBrands={handleEditBrands}
                                     />
                                 </div>
@@ -301,9 +278,11 @@ export default function AddNewWatch({ watch }: Props) {
                                         <input
                                             type="number"
                                             value={data.original_cost}
-                                            onChange={(e) => setData("original_cost",
-                                                e.target.value,
-                                            )
+                                            onChange={(e) =>
+                                                setData(
+                                                    "original_cost",
+                                                    e.target.value,
+                                                )
                                             }
                                             placeholder="1.00"
                                             className="w-36 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -320,7 +299,6 @@ export default function AddNewWatch({ watch }: Props) {
                                             <SelectContent>
                                                 {currencies.map((currency) => (
                                                     <SelectItem
-
                                                         key={currency.code}
                                                         value={currency.code}
                                                     >
@@ -349,11 +327,15 @@ export default function AddNewWatch({ watch }: Props) {
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     >
-                                        {Status.allStatuses().map((status, index) => (
-                                            <option key={index} value={status}>
+                                        {(statuses).map((status, index) => (
+                                            <option
+                                                key={index}
+                                                value={status}
+                                            >
                                                 {Status.toHuman(status)}
                                             </option>
-                                        ))}
+                                        ),
+                                        )}
                                     </select>
                                 </div>
 
@@ -366,7 +348,7 @@ export default function AddNewWatch({ watch }: Props) {
                                         onValueChange={(value) =>
                                             setData("location", value)
                                         }
-                                        locations={["All", ...countries]}
+                                        locations={["All", ...locations]}
                                         onEditLocations={handleEditLocations}
                                     />
                                 </div>
@@ -382,8 +364,7 @@ export default function AddNewWatch({ watch }: Props) {
                                             size="sm"
                                             onClick={() =>
                                                 handleAddBatchGroup(
-                                                    batchGroups,
-                                                    setBatchGroups,
+                                                    batches,
                                                     setData,
                                                 )
                                             }
@@ -397,7 +378,7 @@ export default function AddNewWatch({ watch }: Props) {
                                         onValueChange={(value) =>
                                             setData("batch", value)
                                         }
-                                        batches={batchGroups}
+                                        batches={batches}
                                         onEditBatches={handleEditBatches}
                                     />
                                 </div>
