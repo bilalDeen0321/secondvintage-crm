@@ -341,7 +341,7 @@ const WatchListView = ({
                                     <td className="p-2">
                                         <div className="flex gap-1">
                                             <Link
-                                                href={route('watches.edit', watch.id)}
+                                                href={route('watches.show', watch.id)}
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-7 w-7 p-0"

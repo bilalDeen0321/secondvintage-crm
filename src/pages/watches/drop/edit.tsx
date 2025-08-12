@@ -1,12 +1,9 @@
-
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { countries, currencies, exchangeRates } from "@/app/data";
-import Status from "@/app/models/Status";
-import { generateSKU } from "@/app/utils";
+import { brands, currencies, exchangeRates } from "@/app/data";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
-import InputError from "@/components/InputError";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +14,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { Watch as TWatch } from "@/types/watch";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { Head, router, useForm } from "@inertiajs/react";
 import {
     CheckCircle,
     ChevronLeft,
@@ -30,118 +26,201 @@ import {
     Sparkles,
     Tag,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { handlePrintSKULabel } from "./_create-actions";
-import {
-    handleApprove,
-    handleEditBrands,
-    handleEditLocations,
-    hanldeBatchAction
-} from "./actions";
+import React, { useEffect, useRef, useState } from "react";
+import { handleAddBatchGroup, handleApprove, handleEditBatches, handleEditBrands, handleEditLocations } from "../actions";
 
 type Watch = TWatch & {
-    brand: string;
-    status: any;
-    location: string;
-    images: any[];
-};
-
-type Props = {
-    watch: Watch, nextItem: Watch, previousItem: Watch;
+    brand: string, status: any, location: string,
+    images: (any)[]
 }
 
-export default function AddNewWatch() {
+interface Props {
+    watch?: Watch;
+    onSave: (watch: Omit<Watch, "id">) => void;
+    onNext?: () => void;
+    onPrevious?: () => void;
+    hasNext?: boolean;
+    hasPrevious?: boolean;
+}
 
-    const serverProps = usePage().props as any;
+export const initData = {
+    name: "",
+    sku: "",
+    brand: "",
+    acquisitionCost: "",
+    status: "Draft" as Watch["status"],
+    location: "",
+    batch: "",
+    description: "",
+    notes: "",
+    serial: "",
+    ref: "",
+    caseSize: "",
+    caliber: "",
+    timegrapher: "",
+    aiInstructions: "",
+    images: [] as Watch["images"],
+}
 
-    const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
-    const { locations = countries, batches = [], brands = [], statuses = [], } = (serverProps as any) || {};
-    const { watch, nextItem, previousItem } = (serverProps as Props) || {};
+export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext, hasPrevious }: Props) {
+    const { data, setData } = useForm(initData);
 
-    const initData = {
-        name: watch.name || '',
-        sku: watch.sku || '',
-        brand: watch.brand || "",
-        status: watch.status || Status.DRAFT,
-        serial_number: watch.serial_number || "",
-        reference: watch.reference || "",
-        case_size: watch.case_size || "",
-        caliber: watch.caliber || "",
-        timegrapher: watch.timegrapher || "",
-        original_cost: watch.original_cost || "",
-        current_cost: watch.current_cost || "",
-        ai_instructions: watch.ai_instructions || "",
-        location: watch.location || "",
-        batch: "",
-        description: watch.description || '',
-        currency: watch.currency || "DKK",
-        notes: watch.notes || "",
-        images: watch.images || [] as Watch["images"],
-    }
-
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
-
-    const {
-        data,
-        setData,
-        post: storeServer,
-        processing,
-        errors,
-    } = useForm(initData);
-
-    const [savedData, setSavedData] = useState<any>(initData);
+    const [originalData, setOriginalData] = useState<any>(null);
     const [hasChanges, setHasChanges] = useState(false);
+    const [batchGroups, setBatchGroups] = useState(["B001", "B002", "B003", "B020"]);
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [pendingNavigation, setPendingNavigation] = useState<"next" | "previous" | null>(null);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState("EUR");
+    const [displayCostValue, setDisplayCostValue] = useState(""); // New state for display value
+    const formRef = useRef<HTMLDivElement>(null);
 
-    //generate sku and display
-    useEffect(() => {
-        if (data.name && data.brand) {
-            setData("sku", generateSKU(data.brand, data.name));
-        }
-    }, [data.name, data.brand, setData]);
+
+    const locations = ["Denmark", "Vietnam", "Japan", "In Transit"];
+
+    // Helper function to create a comparable version of form data
+    const createComparableData = (data: any) => {
+        return {
+            name: data.name || "",
+            sku: data.sku || "",
+            brand: data.brand || "",
+            acquisitionCost: data.acquisitionCost?.toString() || "",
+            status: data.status || "Draft",
+            location: data.location || "",
+            description: data.description || "",
+            notes: data.notes || "",
+            serial: data.serial || "",
+            ref: data.ref || "",
+            caseSize: data.caseSize || "",
+            caliber: data.caliber || "",
+            timegrapher: data.timegrapher || "",
+            aiInstructions: data.aiInstructions || "",
+            images: (data.images || [])
+                .map((img: any) => ({
+                    id: img.id,
+                    url: img.url,
+                    useForAI: Boolean(img.useForAI),
+                }))
+                .sort((a: any, b: any) => a.id.localeCompare(b.id)),
+        };
+    };
 
     // Update display value when form data or currency changes
     useEffect(() => {
-        const originalCost = Number(data.original_cost);
-        const rate = Number(exchangeRates[data.currency]);
-
-        if (!isNaN(originalCost) && !isNaN(rate)) {
-            // Store as string for form state
-            setData("current_cost", (originalCost * rate).toFixed(2));
+        if (data.acquisitionCost) {
+            const eurValue = parseFloat(data.acquisitionCost);
+            if (selectedCurrency === "EUR") {
+                setDisplayCostValue(data.acquisitionCost);
+            } else {
+                const convertedValue = (
+                    eurValue * exchangeRates[selectedCurrency]
+                ).toFixed(2);
+                setDisplayCostValue(convertedValue);
+            }
         } else {
-            // Fallback to original cost as string (2 decimals)
-            setData("current_cost", originalCost.toFixed(2));
+            setDisplayCostValue("");
         }
-    }, [data.currency, data.original_cost, setData]);
+    }, [data.acquisitionCost, selectedCurrency]);
 
-    /**
-     * unimproved scripts
-     */
+
+
+    // Check for changes with improved comparison
     useEffect(() => {
-        const savedDataString = JSON.stringify(savedData);
-        const formDataString = JSON.stringify(data);
-        if (!(formDataString === savedDataString)) {
-            setHasChanges(true);
+        if (originalData) {
+            const currentComparable = createComparableData(data);
+            const hasDataChanged =
+                JSON.stringify(currentComparable) !==
+                JSON.stringify(originalData);
+            setHasChanges(hasDataChanged);
+
+            // Debug logging to help identify comparison issues
+            console.log("Change detection:", {
+                watchId: watch?.id,
+                watchName: watch?.name,
+                hasDataChanged,
+                originalData,
+                currentComparable,
+            });
         }
-    }, [data, savedData]);
+    }, [data, originalData, watch?.id, watch?.name]);
+
+    // Keyboard navigation and ESC handling
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                if (!hasChanges) {
+                    router.visit(route('watches.index'))
+                }
+                return;
+            }
+
+            if (e.key === "ArrowLeft" && hasPrevious && onPrevious) {
+                e.preventDefault();
+                handleNavigation("previous");
+            } else if (e.key === "ArrowRight" && hasNext && onNext) {
+                e.preventDefault();
+                handleNavigation("next");
+            }
+        };
+
+        if (formRef.current) {
+            formRef.current.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            if (formRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                formRef.current.removeEventListener("keydown", handleKeyDown);
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasNext, hasPrevious, onNext, onPrevious, hasChanges]);
+
+    const handleNavigation = (direction: "next" | "previous") => {
+        if (hasChanges) {
+            setPendingNavigation(direction);
+            setShowSaveDialog(true);
+        } else {
+            if (direction === "next" && onNext) {
+                onNext();
+            } else if (direction === "previous" && onPrevious) {
+                onPrevious();
+            }
+        }
+    };
+
 
 
     const handleSave = () => {
-        //save the data to server
-        storeServer(route("watches.store"), {
-            onSuccess: () => {
-                // reset();
-            },
-        });
+        onSave({
+            name: data.name,
+            sku: data.sku,
+            brand: data.brand,
+            acquisitionCost: parseFloat(data.acquisitionCost) || 0,
+            status: data.status,
+            location: data.location,
+            description: data.description,
+            notes: data.notes,
+            aiInstructions: data.aiInstructions,
+            images: data.images,
+            batchGroup: data.batch,
+            serial: data.serial,
+            ref: data.ref,
+            caseSize: data.caseSize,
+            caliber: data.caliber,
+            timegrapher: data.timegrapher,
+        } as any);
 
-        setSavedData(data);
-        // setHasChanges(false);
+        // Update original data after successful save
+        const newOriginalData = createComparableData(data);
+        setOriginalData(newOriginalData);
+        setHasChanges(false);
     };
 
     const handleSaveAndClose = () => {
         handleSave();
         setTimeout(() => {
-            router.visit(route("watches.index"));
+            router.visit(route('watches.index'))
         }, 100);
     };
 
@@ -150,7 +229,6 @@ export default function AddNewWatch() {
         handleSave();
     };
 
-    const handleSaveAndNavigate = (e) => { };
 
     const handleResetAI = () => {
         if (
@@ -158,7 +236,8 @@ export default function AddNewWatch() {
                 "Are you sure you want to reset the AI instructions? This action cannot be undone.",
             )
         ) {
-            setData("ai_instructions", "");
+
+            setData('aiInstructions', '')
 
             alert("AI thread reset for watch:" + data.name);
         }
@@ -167,7 +246,7 @@ export default function AddNewWatch() {
     const handleGenerateDescription = async () => {
         setIsGeneratingDescription(true);
         console.log("Generating description for watch:", data.name);
-        console.log("Using AI instructions:", data.ai_instructions);
+        console.log("Using AI instructions:", data.aiInstructions);
         console.log(
             "Using images marked for AI:",
             data.images.filter((img) => img.useForAI),
@@ -182,14 +261,142 @@ export default function AddNewWatch() {
         }, 2000);
     };
 
-    const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
+    const handleCurrencyConversion = (newValue: string) => {
+        setDisplayCostValue(newValue);
+
+        if (selectedCurrency === "EUR") {
+            setData('acquisitionCost', newValue)
+        } else {
+            // Convert from selected currency to EUR
+            const eurValue =
+                parseFloat(newValue) / exchangeRates[selectedCurrency];
+
+            setData('acquisitionCost', eurValue.toFixed(2))
+        }
+    };
+
+
+
+
+
+
+
+    const aiSelectedCount = data.images.filter(
+        (img) => img.useForAI,
+    ).length;
+
+    const handleSaveAndNavigate = () => {
+        handleSave();
+        setShowSaveDialog(false);
+
+        setTimeout(() => {
+            if (pendingNavigation === "next" && onNext) {
+                onNext();
+            } else if (pendingNavigation === "previous" && onPrevious) {
+                onPrevious();
+            }
+            setPendingNavigation(null);
+        }, 100);
+    };
+
+    const handleDiscardAndNavigate = () => {
+        setShowSaveDialog(false);
+        if (pendingNavigation === "next" && onNext) {
+            onNext();
+        } else if (pendingNavigation === "previous" && onPrevious) {
+            onPrevious();
+        }
+        setPendingNavigation(null);
+    };
+
+    const handlePrintSKULabel = () => {
+        if (!data.sku) {
+            alert("No SKU available to print");
+            return;
+        }
+
+        // Create a simple print dialog with formatted SKU label
+        const printWindow = window.open("", "_blank", "width=400,height=300");
+        if (printWindow) {
+            printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>SKU Label - ${data.sku}</title>
+            <style>
+              body { 
+                font-family: Arial, sans-serif; 
+                margin: 20px; 
+                text-align: center;
+                background: white;
+              }
+              .label {
+                border: 2px solid #000;
+                padding: 20px;
+                margin: 20px auto;
+                width: 300px;
+                background: white;
+              }
+              .sku {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 10px 0;
+              }
+              .watch-name {
+                font-size: 16px;
+                margin: 10px 0;
+              }
+              @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="label">
+              <div class="sku">${data.sku}</div>
+              <div class="watch-name">${data.name || "Watch"}</div>
+              <div>${data.brand || ""}</div>
+            </div>
+            <div class="no-print">
+              <button onclick="window.print()">Print</button>
+              <button onclick="window.close()">Close</button>
+            </div>
+          </body>
+        </html>
+      `);
+            printWindow.document.close();
+        }
+    };
 
     return (
         <>
             <Head title="Add New Watch" />
-
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                {/* Navigation Arrows - Outside the box */}
+                {hasPrevious && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleNavigation("previous")}
+                        className="absolute left-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                )}
 
+                {hasNext && (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleNavigation("next")}
+                        className="absolute right-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                )}
 
                 <div
                     ref={formRef}
@@ -198,37 +405,9 @@ export default function AddNewWatch() {
                 >
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
                         <h2 className="text-lg font-bold text-slate-900">
-                            {"Add New Watch"}
+                            {watch ? "Edit Watch" : "Add New Watch"}
                         </h2>
                     </div>
-                    <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        {Object.entries(errors).map(([, error]) => <InputError message={String(error)} />)}
-                    </div>
-
-                    {/* Navigation Arrows - Outside the box */}
-                    {previousItem && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.visit(route('watches.show', previousItem.id))}
-                            className="absolute left-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                    )}
-
-                    {nextItem && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.visit(route('watches.show', nextItem.id))}
-                            className="absolute right-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
-                        >
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                    )}
 
                     <form
                         onSubmit={handleSubmit}
@@ -245,9 +424,7 @@ export default function AddNewWatch() {
                                         type="text"
                                         name="name"
                                         value={data.name}
-                                        onChange={(e) =>
-                                            setData("name", e.target.value)
-                                        }
+                                        onChange={(e) => setData('name', e.target.value)}
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     />
@@ -269,9 +446,7 @@ export default function AddNewWatch() {
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() =>
-                                                handlePrintSKULabel(data.name, data.brand, data.sku)
-                                            }
+                                            onClick={handlePrintSKULabel}
                                             className="p-2"
                                             title="Print SKU Label"
                                         >
@@ -286,8 +461,8 @@ export default function AddNewWatch() {
                                     </label>
                                     <BrandSelector
                                         value={data.brand}
-                                        onValueChange={(value) => setData("brand", value)}
-                                        brands={brands}
+                                        onValueChange={(value) => setData('brand', value)}
+                                        brands={["All", ...brands]}
                                         onEditBrands={handleEditBrands}
                                     />
                                 </div>
@@ -304,21 +479,18 @@ export default function AddNewWatch() {
                                     <div className="flex items-center space-x-2">
                                         <input
                                             type="number"
-                                            value={data.original_cost}
+                                            value={displayCostValue}
                                             onChange={(e) =>
-                                                setData(
-                                                    "original_cost",
+                                                handleCurrencyConversion(
                                                     e.target.value,
                                                 )
                                             }
-                                            placeholder="1.00"
+                                            placeholder="0.00"
                                             className="w-36 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                         />
                                         <Select
-                                            value={data.currency}
-                                            onValueChange={(value) =>
-                                                setData("currency", value)
-                                            }
+                                            value={selectedCurrency}
+                                            onValueChange={setSelectedCurrency}
                                         >
                                             <SelectTrigger className="w-40">
                                                 <SelectValue />
@@ -348,21 +520,30 @@ export default function AddNewWatch() {
                                     <select
                                         name="status"
                                         value={data.status}
-                                        onChange={(e) =>
-                                            setData("status", e.target.value)
-                                        }
+                                        onChange={(e) => setData('status', e.target.value)}
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     >
-                                        {(statuses).map((status, index) => (
-                                            <option
-                                                key={index}
-                                                value={status}
-                                            >
-                                                {Status.toHuman(status)}
-                                            </option>
-                                        ),
-                                        )}
+                                        <option value="Draft">Draft</option>
+                                        <option value="Review">Review</option>
+                                        <option value="Approved">
+                                            Approved
+                                        </option>
+                                        <option value="Platform Review">
+                                            Platform Review
+                                        </option>
+                                        <option value="Ready for listing">
+                                            Ready for listing
+                                        </option>
+                                        <option value="Listed">Listed</option>
+                                        <option value="Reserved">
+                                            Reserved
+                                        </option>
+                                        <option value="Sold">Sold</option>
+                                        <option value="Defect/Problem">
+                                            Defect/Problem
+                                        </option>
+                                        <option value="Standby">Standby</option>
                                     </select>
                                 </div>
 
@@ -372,10 +553,8 @@ export default function AddNewWatch() {
                                     </label>
                                     <LocationSelector
                                         value={data.location}
-                                        onValueChange={(value) =>
-                                            setData("location", value)
-                                        }
-                                        locations={locations}
+                                        onValueChange={(value) => setData('location', value)}
+                                        locations={["All", ...locations]}
                                         onEditLocations={handleEditLocations}
                                     />
                                 </div>
@@ -389,7 +568,7 @@ export default function AddNewWatch() {
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={hanldeBatchAction}
+                                            onClick={() => handleAddBatchGroup(batchGroups, setBatchGroups, setData)}
                                             className="h-6 w-6 p-0"
                                         >
                                             <Plus className="h-3 w-3" />
@@ -397,9 +576,9 @@ export default function AddNewWatch() {
                                     </div>
                                     <BatchSelector
                                         value={data.batch}
-                                        onValueChange={(value) => setData("batch", value)}
-                                        batches={batches}
-                                        onEditBatches={hanldeBatchAction}
+                                        onValueChange={(value) => setData('batch', value)}
+                                        batches={batchGroups}
+                                        onEditBatches={handleEditBatches}
                                     />
                                 </div>
 
@@ -408,8 +587,8 @@ export default function AddNewWatch() {
                                         Cost (€)
                                     </label>
                                     <div className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-medium text-slate-900">
-                                        {data.current_cost
-                                            ? `€${parseFloat(data.current_cost).toFixed(2)}`
+                                        {data.acquisitionCost
+                                            ? `€${parseFloat(data.acquisitionCost).toFixed(2)}`
                                             : "€0.00"}
                                     </div>
                                 </div>
@@ -439,9 +618,7 @@ export default function AddNewWatch() {
                                         <div className="min-h-[200px] flex-1">
                                             <ImageManager
                                                 images={data.images}
-                                                onChange={(images) =>
-                                                    setData("images", images)
-                                                }
+                                                onChange={(images) => setData('images', images)}
                                             />
                                         </div>
                                         {/* Created by line */}
@@ -464,13 +641,8 @@ export default function AddNewWatch() {
                                             <input
                                                 type="text"
                                                 name="serial"
-                                                value={data.serial_number}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "serial_number",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                value={data.serial}
+                                                onChange={(e) => setData('serial', e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -482,13 +654,8 @@ export default function AddNewWatch() {
                                             <input
                                                 type="text"
                                                 name="ref"
-                                                value={data.reference}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "reference",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                value={data.ref}
+                                                onChange={(e) => setData('ref', e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -499,14 +666,9 @@ export default function AddNewWatch() {
                                             </label>
                                             <input
                                                 type="text"
-                                                name="case_size"
-                                                value={data.case_size}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "case_size",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                name="caseSize"
+                                                value={data.caseSize}
+                                                onChange={(e) => setData('caseSize', e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -519,12 +681,7 @@ export default function AddNewWatch() {
                                                 type="text"
                                                 name="caliber"
                                                 value={data.caliber}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "caliber",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                onChange={(e) => setData('caliber', e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -537,12 +694,7 @@ export default function AddNewWatch() {
                                                 type="text"
                                                 name="timegrapher"
                                                 value={data.timegrapher}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "timegrapher",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                onChange={(e) => setData('timegrapher', e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -565,14 +717,9 @@ export default function AddNewWatch() {
                                             </Button>
                                         </div>
                                         <Textarea
-                                            name="ai_instructions"
-                                            value={data.ai_instructions}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "ai_instructions",
-                                                    e.target.value,
-                                                )
-                                            }
+                                            name="aiInstructions"
+                                            value={data.aiInstructions}
+                                            onChange={(e) => setData('aiInstructions', e.target.value)}
                                             rows={1}
                                             placeholder=""
                                             className="min-h-[40px] w-full resize-y"
@@ -619,12 +766,7 @@ export default function AddNewWatch() {
                                         <Textarea
                                             name="description"
                                             value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value,
-                                                )
-                                            }
+                                            onChange={(e) => setData('description', e.target.value)}
                                             className="min-h-[320px] w-full resize-y"
                                             disabled={isGeneratingDescription}
                                         />
@@ -637,9 +779,7 @@ export default function AddNewWatch() {
                                         <Textarea
                                             name="notes"
                                             value={data.notes}
-                                            onChange={(e) =>
-                                                setData("notes", e.target.value)
-                                            }
+                                            onChange={(e) => setData('notes', e.target.value)}
                                             rows={2}
                                             className="w-full resize-y"
                                         />
@@ -651,7 +791,7 @@ export default function AddNewWatch() {
                         <div className="flex flex-shrink-0 gap-3 border-t border-slate-200 p-6 pt-4">
                             <Button
                                 type="button"
-                                onClick={() => handleApprove(data, setData)}
+                                onClick={() => handleApprove(data, setData, onSave)}
                                 className="flex-1 bg-green-600 text-white hover:bg-green-700"
                             >
                                 <CheckCircle className="mr-2 h-4 w-4" />
@@ -660,7 +800,7 @@ export default function AddNewWatch() {
                             <Button
                                 type="submit"
                                 className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
-                                disabled={processing || !hasChanges}
+                                disabled={!hasChanges}
                             >
                                 {hasChanges ? "Save" : "Saved"}
                             </Button>
@@ -674,9 +814,7 @@ export default function AddNewWatch() {
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() =>
-                                    router.visit(route("watches.index"))
-                                }
+                                onClick={() => router.visit(route('watches.index'))}
                                 variant="outline"
                                 className="flex-1"
                             >
@@ -706,7 +844,7 @@ export default function AddNewWatch() {
                                 Save & Continue
                             </Button>
                             <Button
-                                onClick={handleSaveAndClose}
+                                onClick={handleDiscardAndNavigate}
                                 variant="outline"
                                 className="flex-1"
                             >
@@ -725,4 +863,4 @@ export default function AddNewWatch() {
             )}
         </>
     );
-}
+};

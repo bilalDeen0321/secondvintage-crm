@@ -12,7 +12,7 @@ export interface Watch {
     caliber: string | null;
     timegrapher: string | null;
     original_cost: string | number;
-    current_cost: string | null | number;
+    current_cost: string | null;
     status: number | string | null;
     stage: string | null;
     batch_id: number | string | null;

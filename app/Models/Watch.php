@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\WatchObserver;
+use App\Traits\Models\ModelHelpers;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class Watch extends Model
 {
     /** @use HasFactory<\Database\Factories\WatchFactory> */
-    use HasFactory;
+    use HasFactory, ModelHelpers;
 
     /**
      * The attributes that are mass assignable.
@@ -77,10 +78,10 @@ class Watch extends Model
     /**
      * get route key by slug
      */
-    // public function getRouteKeyName(): string
-    // {
-    //     return 'slug';
-    // }
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
 
     /**
      * Boot the model and attach event listeners.

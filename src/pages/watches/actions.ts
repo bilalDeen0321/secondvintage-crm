@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Watch as TWatch } from "@/types/watch";
 import { router } from "@inertiajs/react";
-import { initData } from "./create";
 
 type SetData<K, V> = (key: K, value: V) => void;
 
@@ -33,7 +32,7 @@ type Watch = TWatch & {
     images: (any)[]
 }
 
-export const handleApprove = (data: typeof initData, setData: SetData<'status', string>) => {
+export const handleApprove = (data, setData: SetData<'status', string>) => {
 
     setData('status', 'Approved')
 

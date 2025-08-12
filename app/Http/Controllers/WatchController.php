@@ -83,16 +83,12 @@ class WatchController extends Controller
      */
     public function create()
     {
-        $locations = Location::query()->pluck('name')->unique()->values();
-        $statuses  = Status::query()->pluck('name')->unique()->values();
-        $batches   = Batch::query()->pluck('name')->unique()->values();
-        $brands    = Brand::query()->pluck('name')->unique()->values();
 
         return Inertia::render('watches/create', [
-            'locations' => $locations,
-            'statuses' => $statuses,
-            'batches' => $batches,
-            'brands' => $brands,
+            'locations' => Location::query()->pluck('name')->unique()->values(),
+            'statuses' => Status::query()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->pluck('name')->unique()->values(),
         ]);
     }
 
@@ -122,7 +118,7 @@ class WatchController extends Controller
      */
     public function show(Watch $watch)
     {
-        //
+        return $this->edit($watch);
     }
 
     /**
@@ -130,7 +126,26 @@ class WatchController extends Controller
      */
     public function edit(Watch $watch)
     {
-        return Inertia::render('watches/edit');
+
+        $nextItem = Watch::where('id', '<', $watch->id) // smaller id for next in latest-first
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $previousItem = Watch::where('id', '>', $watch->id) // larger id for previous in latest-first
+            ->orderBy('id', 'asc')
+            ->first();
+
+        return Inertia::render('watches/edit', [
+            'watch' => new WatchResource($watch),  // single model resource, not collection
+            'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
+            'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
+
+            //form data
+            'locations' => Location::query()->pluck('name')->unique()->values(),
+            'statuses' => Status::query()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->pluck('name')->unique()->values(),
+        ]);
     }
 
     /**
