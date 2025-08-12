@@ -35,6 +35,7 @@ class WatchController extends Controller
     public function index(Request $request)
     {
         $query = Watch::query()
+            ->latest()
             ->with(['brand', 'location', 'status'])
             ->when($request->input('search'), function (Builder $q, $search) {
                 $q->where(function ($sub) use ($search) {
@@ -44,11 +45,7 @@ class WatchController extends Controller
                 });
             })
             ->when($request->input('status'), function (Builder $q, $value) {
-                $q->whereHas(
-                    'status',
-                    fn($statusQuery) =>
-                    $statusQuery->whereIn('name', is_array($value) ? $value : $value)
-                );
+                $q->whereIn('status', is_array($value) ? $value : $value);
             })
             ->when($request->input('brand'), function (Builder $q, $value) {
                 $q->whereHas(
@@ -58,11 +55,7 @@ class WatchController extends Controller
                 );
             })
             ->when($request->input('location'), function (Builder $q, $value) {
-                $q->whereHas(
-                    'location',
-                    fn($locationQuery) =>
-                    $locationQuery->where('name', $value)
-                );
+                $q->where('location', $value);
             })
             ->orderBy($request->input('sortField', 'id'), $request->input('sortDirection', 'asc'));
 
@@ -73,7 +66,7 @@ class WatchController extends Controller
         ];
 
         foreach (Status::allStatuses() as $status) {
-            $watchCount[$status] = Watch::query()->whereHas('status', fn($q) => $q->where('name', $status))->count();
+            $watchCount[$status] = Watch::query()->where('status', $status)->count();
         }
 
 
@@ -111,9 +104,8 @@ class WatchController extends Controller
     {
         $validated = $request->validated();
 
-        // 1. Get or create related records
-        $status = Status::firstOrCreate(['name' => $validated['status']]);
         $brand = Brand::firstOrCreate(['name' => $validated['brand']]);
+        $batch = Batch::firstOrCreate(['name' => $validated['batch']]);
 
         // 2. Create Watch
         $watch = Watch::query()->create([
@@ -130,27 +122,11 @@ class WatchController extends Controller
             'description'     => $validated['description'] ?? '',
             'notes'           => $validated['notes'] ?? '',
             'ai_instructions' => $validated['ai_instructions'] ?? '',
+            'status'          => $validated['status'],
+            'location'        => $validated['location'],
             'brand_id'        => $brand->id,
-            'status_id'       => $status->id,
-            'stage_id'        => Stage::factory()->create()->id, // or find a default stage
+            'batch_id'        => $batch->id,
         ]);
-
-        // 3. Handle batch
-        if ($batchName = $request->input('batch')) {
-            $batch = Batch::firstOrCreate(['name' => $batchName]);
-            $watch->batch_id = $batch->id;
-        }
-
-        // 4. Handle location
-        if ($locationName = $request->input('location')) {
-            $location = Location::firstOrCreate(['name' => $locationName]);
-            $watch->location_id = $location->id;
-        }
-
-        // Save watch again if batch or location assigned
-        if (isset($batch) || isset($location)) {
-            $watch->save();
-        }
 
         // 3. Handle Base64 Images
         if (!empty($validated['images']) && is_array($validated['images'])) {

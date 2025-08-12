@@ -13,10 +13,10 @@ export interface Watch {
     timegrapher: string | null;
     original_cost: string | number;
     current_cost: string | null | number;
-    status_id: number | string | null;
-    stage_id: number | string | null;
+    status: number | string | null;
+    stage: string | null;
     batch_id: number | string | null;
-    location_id: number | string | null;
+    location: number | string | null;
     agent_id: number | string | null;
     seller_id: number | string | null;
     description: string;

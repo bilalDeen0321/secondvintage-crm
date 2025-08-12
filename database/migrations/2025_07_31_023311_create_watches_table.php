@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Location;
+use App\Models\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,31 +15,34 @@ return new class extends Migration
     {
         Schema::create('watches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
             $table->string('sku')->unique();
             $table->string('name');
-            $table->foreignId('brand_id')->constrained()->onDelete('cascade');
+            $table->text('description')->nullable();
             $table->string('serial_number')->nullable();
             $table->string('reference')->nullable();
             $table->string('case_size')->nullable();
             $table->string('caliber')->nullable();
             $table->string('timegrapher')->nullable();
-            $table->string('currency')->nullable();
+
             $table->decimal('original_cost', 12, 2)->nullable();
             $table->decimal('current_cost', 12, 2)->nullable();
-            $table->foreignId('status_id')->constrained()->onDelete('cascade');
-            $table->foreignId('stage_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('batch_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('location_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('agent_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('seller_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->text('description')->nullable();
+            $table->string('currency')->nullable();
+
             $table->text('ai_instructions')->nullable();
             $table->string('ai_thread_id')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->json('ai_selected_images')->nullable(); // Images selected for AI processing
 
-            $table->index(['sku', 'status_id', 'stage_id']);
+            $table->string('status')->default(Status::DRAFT);
+            $table->text('notes')->nullable();
+            $table->string('stage')->nullable();
+            $table->string('location')->default(Location::DEFAULT_COUNTRY);
+
+            $table->foreignId('user_id')->constrained(); // Owner/Creator
+            $table->foreignId('batch_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('agent_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('seller_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
         });
     }
 

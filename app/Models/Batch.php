@@ -17,8 +17,8 @@ class Batch extends Model
      */
     protected $fillable = [
         'name',
+        'status',
         'location_id',
-        'status_id',
         'created_by',
         'destination',
     ];

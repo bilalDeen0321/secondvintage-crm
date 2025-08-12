@@ -18,8 +18,8 @@ class WatchResource extends JsonResource
             ...$this->resource->toArray(),
             'brand' => $this->brand->name,
             'batch' => $this->batch?->name ?? null,
-            'status' => $this->status?->name,
-            'location' => $this->location?->name,
+            'status' => $this->status,
+            'location' => $this->location,
             'images' => WatchImageResource::collection($this->images()->orderBy('order_index')->get()),
         ];
     }

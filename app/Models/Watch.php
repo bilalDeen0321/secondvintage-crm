@@ -22,8 +22,6 @@ class Watch extends Model
     protected $fillable = [
         'sku',
         'name',
-        'user_id',
-        'brand_id',
         'serial_number',
         'reference',
         'case_size',
@@ -32,16 +30,22 @@ class Watch extends Model
         'original_cost',
         'current_cost',
         'currency',
-        'status_id',
-        'stage_id',
-        'batch_id',
-        'location_id',
-        'agent_id',
-        'seller_id',
-        'description',
+        'status',
+        'stage',
+
         'ai_instructions',
         'ai_thread_id',
-        'notes'
+
+        'notes',
+        'description',
+
+        'location',
+
+        'seller_id',
+        'agent_id',
+        'brand_id',
+        'user_id',
+        'batch_id',
     ];
 
     /**

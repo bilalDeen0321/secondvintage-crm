@@ -28,4 +28,11 @@ class Stage extends Model
     {
         return [];
     }
+
+
+    // Optionally, a static method or property for all statuses:
+    public static function allStages(): array
+    {
+        return ['Watch Management', 'Multi-Platform Sales', 'Shipping'];
+    }
 }

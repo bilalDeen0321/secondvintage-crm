@@ -10,6 +10,9 @@ class Location extends Model
     /** @use HasFactory<\Database\Factories\LocationFactory> */
     use HasFactory;
 
+    // Define statuses as lowercase constants
+    const DEFAULT_COUNTRY = 'Denmark';
+
     /**
      * The attributes that are mass assignable.
      *

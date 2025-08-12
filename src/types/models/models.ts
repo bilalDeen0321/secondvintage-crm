@@ -6,13 +6,11 @@ export interface Batch {
   created_by: number;
   default_destination: string;
   id: number;
-  location_id: number;
   name: string;
-  status_id: number;
+  status: string;
   updated_at: string | null;
   createdBy?: User;
   location?: Location;
-  status?: Status;
   watches?: Watch[];
 }
 
@@ -274,7 +272,6 @@ export interface Watch {
   description: string | null;
   description_thread_id: string | null;
   id: number;
-  location_id: number | null;
   name: string;
   notes: string | null;
   original_cost: number | null;
@@ -282,8 +279,7 @@ export interface Watch {
   seller_id: number | null;
   serial_number: string | null;
   sku: string;
-  stage_id: number;
-  status_id: number;
+  stage: number;
   timegrapher: string | null;
   updated_at: string | null;
   user_id: number;
@@ -292,7 +288,6 @@ export interface Watch {
   brand?: Brand;
   location?: Location;
   seller?: User;
-  stage?: Stage;
   status?: Status;
   user?: User;
   platformDatas?: PlatformDatum[];

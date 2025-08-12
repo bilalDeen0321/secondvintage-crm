@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('batches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('status')->default('shipped');
             // $table->foreignId('location_id')->constrained('locations')->onDelete('restrict');
             // $table->foreignId('status_id')->constrained('statuses')->onDelete('restrict');
             // $table->foreignId('created_by')->constrained('users')->onDelete('cascade');

@@ -44,13 +44,18 @@ class WatchSeeder extends Seeder
                 'name'              => $item['name'],
                 'brand_id'          => $brand->id,
                 'user_id'           => $user_id,
-                'stage_id'          => Stage::factory()->create()->id,
                 'original_cost'     => $item['acquisitionCost'],
-                'status_id'         => $status->id,
-                'location_id'       => $location->id,
+                'current_cost'      => $item['acquisitionCost'],
+                'status'            => $status->name,
+                'location'          => $location->name,
                 'description'       => $item['description'],
                 'ai_instructions'   => $item['aiInstructions'],
                 'notes'             => $item['notes'],
+                'stage'          => fake()->randomElement([
+                    'Watch Management',
+                    'Multi-Platform Sales',
+                    'Shipping'
+                ]),
             ]);
 
             foreach ($item['images'] as $image) {

@@ -34,12 +34,12 @@ class StoreWatchRequest extends FormRequest
             'timegrapher'     => ['nullable', 'string', 'max:255'],
             'original_cost'   => ['nullable', 'numeric'],
             'current_cost'    => ['nullable', 'numeric'],
-            'ai_instructions' => ['nullable', 'string'],
             'location'        => ['nullable', 'string', 'max:255'],
             'batch'           => ['nullable', 'string', 'max:255'],
             'description'     => ['nullable', 'string'],
             'currency'        => ['nullable', 'string', 'max:3'],
             'notes'           => ['nullable', 'string'],
+            'ai_instructions' => ['nullable', 'string'],
 
             // images is an array of base64 strings inside objects
             'images'          => ['nullable', 'array'],
