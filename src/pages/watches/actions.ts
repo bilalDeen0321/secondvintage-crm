@@ -117,12 +117,8 @@ export const handlePreviousWatch = () => {
 };
 
 export const handleEditWatch = (watch: Watch) => {
-    // setEditingWatch(watch);
-    // setShowForm(true);
-    // // Update URL with SKU parameter for easy sharing
-    // const newSearchParams = new URLSearchParams(searchParams);
-    // newSearchParams.set("sku", watch.sku);
-    // setSearchParams(newSearchParams, { replace: true });
+    alert('on edit handler');
+    return route('watches.edit');
 };
 
 export const handleSaveWatch = (watchData: Omit<Watch, "id">) => {

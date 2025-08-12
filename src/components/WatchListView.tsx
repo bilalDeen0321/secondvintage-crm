@@ -4,6 +4,7 @@ import { WatchWith } from "@/types/watch";
 import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ImageViewer from "./ImageViewer";
+import Link from "./ui/Link";
 
 type Watch = WatchWith & {
     brand: string;
@@ -339,14 +340,14 @@ const WatchListView = ({
                                     </td>
                                     <td className="p-2">
                                         <div className="flex gap-1">
-                                            <Button
+                                            <Link
+                                                href={route('watches.edit', watch.id)}
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => onEdit(watch)}
                                                 className="h-7 w-7 p-0"
                                             >
                                                 <Edit className="h-3 w-3" />
-                                            </Button>
+                                            </Link>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"

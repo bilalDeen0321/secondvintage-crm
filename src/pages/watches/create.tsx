@@ -6,6 +6,7 @@ import { generateSKU } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
+import InputError from "@/components/InputError";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -194,6 +195,9 @@ export default function AddNewWatch() {
                         <h2 className="text-lg font-bold text-slate-900">
                             {"Add New Watch"}
                         </h2>
+                    </div>
+                    <div className="flex-shrink-0 border-b border-slate-200 p-3">
+                        {Object.entries(errors).map(([, error]) => <InputError message={String(error)} />)}
                     </div>
 
                     <form

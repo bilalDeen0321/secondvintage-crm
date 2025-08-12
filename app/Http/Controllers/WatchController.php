@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Watch\AddNewWatch;
 use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Resources\WatchResource;
@@ -100,46 +101,20 @@ class WatchController extends Controller
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function store(StoreWatchRequest $request)
+    public function store(StoreWatchRequest $request, AddNewWatch $action)
     {
         $validated = $request->validated();
 
-        $brand = Brand::firstOrCreate(['name' => $validated['brand']]);
-        $batch = Batch::firstOrCreate(['name' => $validated['batch']]);
+        try {
 
-        // 2. Create Watch
-        $watch = Watch::query()->create([
-            'sku'             => $validated['sku'],
-            'name'            => $validated['name'],
-            'serial_number'   => $validated['serial_number'],
-            'reference'       => $validated['reference'],
-            'case_size'       => $validated['case_size'],
-            'caliber'         => $validated['caliber'],
-            'timegrapher'     => $validated['timegrapher'],
-            'original_cost'   => $validated['original_cost'],
-            'current_cost'    => $validated['current_cost'],
-            'currency'        => $validated['currency'],
-            'description'     => $validated['description'] ?? '',
-            'notes'           => $validated['notes'] ?? '',
-            'ai_instructions' => $validated['ai_instructions'] ?? '',
-            'status'          => $validated['status'],
-            'location'        => $validated['location'],
-            'brand_id'        => $brand->id,
-            'batch_id'        => $batch->id,
-        ]);
+            $action($validated);
 
-        // 3. Handle Base64 Images
-        if (!empty($validated['images']) && is_array($validated['images'])) {
-            foreach ($validated['images'] as $imageData) {
-                if (!empty($imageData['url'])) {
-                    WatchImage::storeBase64Image($watch, $imageData['url']);
-                }
-            }
+            //successfully response
+            return redirect()->route('watches.index')
+                ->with('success', 'Watch created successfully.');
+        } catch (\Throwable $th) {
+            return redirect()->back()->withErrors($th->getMessage());
         }
-
-
-        return redirect()->route('watches.index')
-            ->with('success', 'Watch created successfully.');
     }
 
     /**
@@ -155,7 +130,7 @@ class WatchController extends Controller
      */
     public function edit(Watch $watch)
     {
-        //
+        return Inertia::render('watches/edit');
     }
 
     /**
