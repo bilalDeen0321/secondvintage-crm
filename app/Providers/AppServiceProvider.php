@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Model::automaticallyEagerLoadRelationships();
+        Model::automaticallyEagerLoadRelationships();
 
         Vite::prefetch(concurrency: 3);
 
