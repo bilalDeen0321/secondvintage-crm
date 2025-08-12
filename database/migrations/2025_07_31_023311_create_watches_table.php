@@ -26,7 +26,7 @@ return new class extends Migration
 
             $table->decimal('original_cost', 12, 2)->nullable();
             $table->decimal('current_cost', 12, 2)->nullable();
-            $table->string('currency')->nullable();
+            $table->string('currency')->default('DKK');
 
             $table->text('ai_instructions')->nullable();
             $table->string('ai_thread_id')->nullable();

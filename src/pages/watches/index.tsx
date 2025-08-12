@@ -24,8 +24,8 @@ import { WatchWith } from "@/types/watch";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
+import { getSearchStatus, getSelectSearch, getSelectStatus, watcheSearch } from "./_searchActions";
 import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch, handleSort } from "./actions";
-import { getSearchStatus, getSelectSearch, getSelectStatus, watcheSearch } from "./searchActions";
 
 
 type Watch = WatchWith & {

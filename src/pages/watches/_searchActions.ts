@@ -37,12 +37,15 @@ const debouncedNavigate = debounce((params: Record<string, any>) => {
     });
 }, 300);
 
-export function watcheSearch(key: string, value: any, query: Record<string, any> = {}) {
-    const search = new URLSearchParams(window.location.search).get('search') || '';
+export function watchFilters(key: string, value: any, query: Record<string, any> = {}) {
+    const searchParams = new URLSearchParams(window.location.search);
 
     // Merge params
     const params = {
-        search,
+        batch: searchParams.get('batch'),
+        brand: searchParams.get('brand'),
+        search: searchParams.get('search'),
+        location: searchParams.get('location'),
         ...query,
         [key]: value,
     };
@@ -52,6 +55,25 @@ export function watcheSearch(key: string, value: any, query: Record<string, any>
 
     debouncedNavigate(cleanedParams);
 }
+
+
+export const watcheSearch = watchFilters;
+// export function watcheSearch(key: string, value: any, query: Record<string, any> = {}) {
+//     const search = new URLSearchParams(window.location.search).get('search') || '';
+
+//     // Merge params
+//     const params = {
+//         search,
+//         ...query,
+//         [key]: value,
+//     };
+
+//     // Clean params by removing empty keys
+//     const cleanedParams = cleanParams(params);
+
+//     debouncedNavigate(cleanedParams);
+// }
+
 
 
 export const getSearchStatus = (data: string[]) => {

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor('sold_by', User::class)->constrained();
-            $table->foreignIdFor('watch_id', Watch::class)->constrained();
+            $table->foreignIdFor(User::class, 'sold_by')->constrained();
+            $table->foreignIdFor(Watch::class, 'watch_id')->constrained();
 
             $table->decimal('original_price', 10, 2)->nullable();
             $table->string('currency', 3)->default('EUR');

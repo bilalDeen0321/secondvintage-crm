@@ -37,11 +37,9 @@ class WatchController extends Controller
     {
         $query = Watch::query()
             ->latest()
-            ->with(['brand', 'location', 'status'])
             ->when($request->input('search'), function (Builder $q, $search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%")
                         ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$search}%"));
                 });
             })

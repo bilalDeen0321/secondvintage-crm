@@ -67,7 +67,10 @@ class Watch extends Model
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'original_cost' => 'decimal:2',
+            'current_cost'  => 'decimal:2',
+        ];
     }
 
     /**
