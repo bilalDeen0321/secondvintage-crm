@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use App\Models\Watch;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained(); // sold by
-            $table->foreignId('watch_id')->constrained(); // Watches
+            $table->foreignIdFor('sold_by', User::class)->constrained();
+            $table->foreignIdFor('watch_id', Watch::class)->constrained();
 
             $table->decimal('original_price', 10, 2)->nullable();
             $table->string('currency', 3)->default('EUR');
