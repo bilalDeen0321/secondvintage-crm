@@ -37,6 +37,11 @@ class WatchImage extends Model
     }
 
     /**
+     * Append attributes
+     */
+    protected $appends = ['full_url'];
+
+    /**
      * Get the watch that owns this image
      */
     public function watch()
@@ -56,6 +61,22 @@ class WatchImage extends Model
 
         if (Str::contains($this->public_url, 'http')) {
             return $this->public_url;
+        }
+
+        return  url(Storage::url($this->public_url));
+    }
+
+    /**
+     * Get full public url
+     */
+    public function getFullUrlAttribute()
+    {
+        if (Str::contains($this->public_url, 'http')) {
+            return $this->public_url;
+        }
+
+        if (Str::contains($this->public_url, 'lovable')) {
+            return url($this->public_url);
         }
 
         return  url(Storage::url($this->public_url));

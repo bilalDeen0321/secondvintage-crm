@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy(WatchObserver::class)]
 class Watch extends Model
@@ -67,6 +68,11 @@ class Watch extends Model
     {
         return [];
     }
+
+    /**
+     * Append attributes
+     */
+    protected $appends = ['image_urls'];
 
     /**
      * get route key by slug
@@ -187,5 +193,13 @@ class Watch extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Get the watch image URLs as absolute paths
+     */
+    public function getImageUrlsAttribute(): array
+    {
+        return $this->images->pluck('full_url')->all();
     }
 }

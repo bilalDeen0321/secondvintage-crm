@@ -9,7 +9,22 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+Route::get('login-now', function (Request $request) {
+
+    if (app()->environment('production')) return;
+
+    abort_if($request->ip() != '127.0.0.1', 403);
+
+    Auth::login(User::query()->first(), true);
+
+    return redirect()->route('home');
+});
+
 
 Route::middleware('guest')->group(function () {
 

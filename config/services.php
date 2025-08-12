@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    /**
+     * Make.com config
+     */
+    'make_hook' => [
+        'url' => env('MAKE_HOOK_URL', 'https://hook.eu2.make.com/hryg6tsac65fa8ad15b0yap6pw7vhtn2'),
+        'key' => env('MAKE_HOOK_KEY', 'phm_4h9s8fdA27kLmEwQPz3XvYtB60NcUgT1'),
+    ]
+
 ];

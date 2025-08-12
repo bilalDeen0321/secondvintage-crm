@@ -39,11 +39,4 @@ class Sale extends Model
         'working_order',
         'repainted_dial',
     ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected array $casts =  [];
 }

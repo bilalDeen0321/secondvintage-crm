@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 Route::middleware('auth')->group(function () {
                     Route::group([], base_path('routes/user.php'));
                     Route::group([], base_path('routes/dashboard.php'));
+                    Route::name('api.')->prefix('api')->group(base_path('routes/api.php'));
                 });
             });
         }
