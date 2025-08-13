@@ -56,7 +56,7 @@ export default function AddNewWatch() {
     const serverProps = usePage().props as any;
 
     const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
-    const { locations = countries, batches = [], brands = [], statuses = [], } = (serverProps as any) || {};
+    const { locations = countries, batches = [], brands = [], statuses = [], watch_skus = [] } = (serverProps as any) || {};
     const { watch, nextItem, previousItem } = (serverProps as Props) || {};
 
     const initData = {
@@ -97,9 +97,9 @@ export default function AddNewWatch() {
     //generate sku and display
     useEffect(() => {
         if (data.name && data.brand) {
-            setData("sku", generateSKU(data.brand, data.name));
+            setData("sku", generateSKU(data.brand, data.name, watch_skus));
         }
-    }, [data.name, data.brand, setData]);
+    }, [data.name, data.brand, setData, watch_skus]);
 
     // Update display value when form data or currency changes
     useEffect(() => {

@@ -21,7 +21,6 @@ class WatchFactory extends Factory
         $brand = Brand::inRandomOrder()->first() ?? Brand::factory()->create();
 
         return [
-            'sku' => generateSKU($brand->name, $name, Watch::class),
             'name' => $name,
             'user_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'brand_id' => $brand->id,
@@ -34,8 +33,9 @@ class WatchFactory extends Factory
             'current_cost' => fake()->randomFloat(2, 500, 3000),
             'status' => fake()->randomElement(Status::allStatuses()),
             'stage' => fake()->randomElement(Stage::allStages()),
-            'batch_id' => Batch::inRandomOrder()->first()->id ?? Batch::factory()->create(),
-            'location' => Location::inRandomOrder()->first()->name ?? Location::factory()->create()->name,
+            'batch_id' => Batch::inRandomOrder()->first()->id ?? Batch::factory()->create()->id,
+            'location' => fake()->country,
+            'currency' => fake()->currencyCode,
             'agent_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'seller_id' => User::inRandomOrder()->first()->id ?? User::factory()->create()->id,
             'description' => fake()->paragraph,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Watch\AddNewWatch;
+use App\Actions\Watch\UpdateWatchAction;
 use App\Http\Requests\StoreWatchRequest;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Resources\WatchResource;
@@ -17,6 +18,7 @@ use App\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class WatchController extends Controller
@@ -83,6 +85,7 @@ class WatchController extends Controller
     {
 
         return Inertia::render('watches/create', [
+            'watch_skus' => Watch::query()->pluck('sku')->toArray(),
             'locations' => Location::query()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->pluck('name')->unique()->values(),
@@ -135,6 +138,7 @@ class WatchController extends Controller
 
         return Inertia::render('watches/edit', [
             'watch' => new WatchResource($watch),  // single model resource, not collection
+            'watch_skus' => Watch::query()->pluck('sku')->toArray(),
             'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
             'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
 
@@ -149,9 +153,42 @@ class WatchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateWatchRequest $request, Watch $watch)
+    public function update(Request $request, Watch $watch, UpdateWatchAction $action)
     {
-        //
+        $input = $request->validate([
+            'name'            => ['required', 'string', 'max:255'],
+            'sku'             => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('watches', 'sku')->ignore($watch->id),
+            ],
+            'brand'           => ['required', 'string', 'max:255'],
+            'status'          => ['required', 'string', 'max:255'],
+            'serial_number'   => ['nullable', 'string', 'max:255'],
+            'reference'       => ['nullable', 'string', 'max:255'],
+            'case_size'       => ['nullable', 'string', 'max:255'],
+            'caliber'         => ['nullable', 'string', 'max:255'],
+            'timegrapher'     => ['nullable', 'string', 'max:255'],
+            'original_cost'   => ['required', 'numeric'],
+            'current_cost'    => ['nullable', 'numeric'],
+            'location'        => ['nullable', 'string', 'max:255'],
+            'batch'           => ['nullable', 'string', 'max:255'],
+            'description'     => ['nullable', 'string'],
+            'currency'        => ['nullable', 'string', 'max:3'],
+            'notes'           => ['nullable', 'string'],
+            'ai_instructions' => ['nullable', 'string'],
+
+            'images'          => ['nullable', 'array'],
+            'images.*.url'    => ['required_with:images', 'string'],
+        ], [
+            'sku.unique'         => 'This SKU already exists in the database.',
+            'images.*.url.regex' => 'Each image must be a valid base64 encoded PNG or JPEG.',
+        ]);
+
+        $action($watch, $input);
+
+        return redirect()->back()->with('success', 'Watch updated successfully.');
     }
 
     /**

@@ -15,6 +15,12 @@ class WatchObserver
         if (empty($watch->user_id) && Auth::check()) {
             $watch->user_id = Auth::id();
         }
+
+        // Ensure SKU is generated if not provided
+        if (empty($watch->sku) && $watch->name && $watch->brand) {
+            $brand_name = $watch->brand?->name ?? $watch->brand;
+            $watch->sku = generateSKU($brand_name, $watch->name, Watch::class);
+        }
     }
     /**
      * Handle the Watch "created" event.
@@ -22,6 +28,22 @@ class WatchObserver
     public function created(Watch $watch): void
     {
         //
+    }
+
+    /**
+     * Handle the Watch "updating" event.
+     */
+    public function updating(Watch $watch)
+    {
+        // If name or brand changes → regenerate SKU
+        if (
+            ($watch->isDirty('name') || $watch->isDirty('brand_id')) &&
+            $watch->name &&
+            $watch->brand
+        ) {
+            $brand_name = $watch->brand?->name ?? $watch->brand;
+            $watch->sku = Watch::generateSKU($brand_name, $watch->name, Watch::class);
+        }
     }
 
     /**

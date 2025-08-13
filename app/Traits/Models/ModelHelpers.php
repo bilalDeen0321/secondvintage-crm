@@ -13,6 +13,14 @@ trait ModelHelpers
 {
 
     /**
+     * Create a new model instance
+     */
+    public static function instance(): static
+    {
+        return app(static::class);
+    }
+
+    /**
      * Get the table name statically from the model.
      */
     public static function tableName(): string
@@ -40,8 +48,8 @@ trait ModelHelpers
     /**
      * Get the fillable attributes statically from the model.
      */
-    public static function fillableColumns(): array
-    {
-        return (new static)->getFillable();
-    }
+    // public static function tableColumns(): array
+    // {
+    //     return (new static)->getFillable();
+    // }
 }

@@ -19,10 +19,10 @@ class BatchFactory extends Factory
     {
         return [
             'name' => fake()->word,
-            'location_id' => Location::factory(),
-            'status' => Status::factory()->create()->name,
-            'created_by' => User::factory(),
-            'default_destination' => 'Denmark',
+            // 'location_id' => Location::factory(),
+            // 'status' => Status::factory()->create()->name,
+            // 'created_by' => User::factory(),
+            'destination' => 'Denmark',
         ];
     }
 }

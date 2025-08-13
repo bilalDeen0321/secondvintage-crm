@@ -74,6 +74,7 @@ export default function AddNewWatch() {
         batches = [],
         brands = [],
         statuses = [],
+        watch_skus = []
     } = (usePage().props as any) || {};
 
     const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -94,9 +95,9 @@ export default function AddNewWatch() {
     //generate sku and display
     useEffect(() => {
         if (data.name && data.brand) {
-            setData("sku", generateSKU(data.brand, data.name));
+            setData("sku", generateSKU(data.brand, data.name, watch_skus));
         }
-    }, [data.name, data.brand, setData]);
+    }, [data.name, data.brand, setData, watch_skus]);
 
     // Update display value when form data or currency changes
     useEffect(() => {
