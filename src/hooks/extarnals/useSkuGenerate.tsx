@@ -1,49 +1,60 @@
-import { sleep } from "@/app/utils";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce"; // 💡 Suggests using a debouncing library
+
+interface SkuData {
+    brand: string;
+    watch: string;
+}
 
 interface UseSkuGenerateResult {
     sku: string;
     loading: boolean;
     error: string | null;
-    setSku: (data: { brand: string; watch: string }) => void;
 }
 
-export function useSkuGenerate(): UseSkuGenerateResult {
+export function useSkuGenerate(data: SkuData | null): UseSkuGenerateResult {
     const [sku, setSkuValue] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const setSku = useCallback(async (data: { brand: string; watch: string }) => {
-        const { brand, watch } = data;
+    // Debounce the data to prevent rapid API calls
+    const [debouncedData] = useDebounce(data, 200);
 
-        if (!brand || !watch) {
-            setError("Brand and watch name are required");
+    useEffect(() => {
+        // Only fetch if debouncedData is valid
+        if (!debouncedData?.brand || !debouncedData?.watch) {
+            setSkuValue(""); // Reset SKU if data is incomplete
+            setLoading(false);
             return;
         }
 
-        setLoading(true);
-        setError(null);
+        const generateSku = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.post(route('api.watches.generate-sku'), {
+                    brand_name: debouncedData.brand,
+                    watch_name: debouncedData.watch,
+                });
 
-        try {
-            await sleep(1000);
-            const response = await axios.post(route('api.watches.generate-sku'), {
-                brand_name: brand,
-                watch_name: watch,
-            });
-
-            if (response.data?.sku) {
-                setSkuValue(response.data.sku);
-            } else {
-                setError("Invalid response from server");
+                if (response.data?.sku) {
+                    setSkuValue(response.data.sku);
+                } else {
+                    setError("Invalid response from server");
+                    setSkuValue(""); // Clear SKU on error
+                }
+            } catch (err: any) {
+                setError(err?.response?.data?.message || err.message || "Failed to generate SKU");
+                setSkuValue(""); // Clear SKU on error
+            } finally {
+                setLoading(false);
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
-            setError(err?.response?.data?.message || err.message || "Failed to generate SKU");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+        };
 
-    return { sku, loading, setSku, error };
+        generateSku();
+    }, [debouncedData]); // Trigger effect only when debouncedData changes
+
+    return { sku, loading, error };
 }
