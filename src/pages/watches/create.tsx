@@ -20,22 +20,15 @@ import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { Watch as TWatch } from "@/types/watch";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import {
-    CheckCircle,
-    Loader2,
-    Plus,
-    RotateCcw,
-    Sparkles,
-    Tag,
-} from "lucide-react";
+import { CheckCircle, Loader2, Plus, RotateCcw, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { handlePrintSKULabel } from "./_create-actions";
 import {
     handleApprove,
     handleEditBrands,
     handleEditLocations,
-    hanldeBatchAction
+    hanldeBatchAction,
 } from "./actions";
+import AutoSkuGenerate from "./components/AutoSkuGenerate";
 
 type Watch = TWatch & {
     brand: string;
@@ -66,19 +59,20 @@ export const initData = {
 };
 
 export default function AddNewWatch() {
-
-    const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
-
+    //server side
     const {
         locations = countries,
         batches = [],
         brands = [],
         statuses = [],
-        watch_skus = []
+        watch_skus = [],
     } = (usePage().props as any) || {};
 
-    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const formRef = useKeyboard<HTMLDivElement>("Escape", () =>
+        router.visit(route("watches.index")),
+    );
 
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
 
     const {
         data,
@@ -90,7 +84,8 @@ export default function AddNewWatch() {
 
     const [savedData, setSavedData] = useState<any>(initData);
     const [hasChanges, setHasChanges] = useState(false);
-    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+    const [isGeneratingDescription, setIsGeneratingDescription] =
+        useState(false);
 
     //generate sku and display
     useEffect(() => {
@@ -123,7 +118,6 @@ export default function AddNewWatch() {
             setHasChanges(true);
         }
     }, [data, savedData]);
-
 
     const handleSave = () => {
         //save the data to server
@@ -198,7 +192,9 @@ export default function AddNewWatch() {
                         </h2>
                     </div>
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        {Object.entries(errors).map(([, error]) => <InputError message={String(error)} />)}
+                        {Object.entries(errors).map(([, error]) => (
+                            <InputError message={String(error)} />
+                        ))}
                     </div>
 
                     <form
@@ -224,32 +220,11 @@ export default function AddNewWatch() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                                        SKU (Auto-generated)
-                                    </label>
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            type="text"
-                                            name="sku"
-                                            value={data.sku}
-                                            readOnly
-                                            className="flex-1 cursor-not-allowed rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-slate-600"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                handlePrintSKULabel(data.name, data.brand, data.sku)
-                                            }
-                                            className="p-2"
-                                            title="Print SKU Label"
-                                        >
-                                            <Tag className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
+                                <AutoSkuGenerate
+                                    name={data.name}
+                                    brand={data.brand}
+                                    onChange={(value) => setData("sku", value)}
+                                />
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -257,7 +232,9 @@ export default function AddNewWatch() {
                                     </label>
                                     <BrandSelector
                                         value={data.brand}
-                                        onValueChange={(value) => setData("brand", value)}
+                                        onValueChange={(value) =>
+                                            setData("brand", value)
+                                        }
                                         brands={brands}
                                         onEditBrands={handleEditBrands}
                                     />
@@ -325,15 +302,11 @@ export default function AddNewWatch() {
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     >
-                                        {(statuses).map((status, index) => (
-                                            <option
-                                                key={index}
-                                                value={status}
-                                            >
+                                        {statuses.map((status, index) => (
+                                            <option key={index} value={status}>
                                                 {Status.toHuman(status)}
                                             </option>
-                                        ),
-                                        )}
+                                        ))}
                                     </select>
                                 </div>
 
@@ -368,7 +341,9 @@ export default function AddNewWatch() {
                                     </div>
                                     <BatchSelector
                                         value={data.batch}
-                                        onValueChange={(value) => setData("batch", value)}
+                                        onValueChange={(value) =>
+                                            setData("batch", value)
+                                        }
                                         batches={batches}
                                         onEditBatches={hanldeBatchAction}
                                     />

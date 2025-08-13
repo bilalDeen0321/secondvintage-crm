@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const getRoleColor = (role: string) => {
     switch (role) {
         case "admin":
@@ -57,6 +59,16 @@ export function generateSKU(brand: string, model: string, existingSKUs = []) {
 
     return sku;
 }
+/**
+ * Generate a server SKU based on brand, model, and existing SKUs
+ */
+export async function generateServerSKU(brand_name: string, watch_name: string) {
+    if (!brand_name || !watch_name) return "";
+    return (await axios.get(route('api.watches.sku-generate', {
+        watch_name: watch_name,
+        brand_name: brand_name,
+    }))).data?.sku;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number = 300) {
@@ -68,4 +80,22 @@ export function debounce<F extends (...args: any[]) => void>(func: F, wait: numb
             func.apply(this, args);
         }, wait);
     };
+}
+
+
+/**
+ * Sleeping while
+ */
+export function sleepWhile(ms: number) {
+    const start = Date.now();
+    while (Date.now() - start < ms) {
+        // busy-wait, blocking execution
+    }
+}
+
+/**
+ * Sleep 
+ */
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
