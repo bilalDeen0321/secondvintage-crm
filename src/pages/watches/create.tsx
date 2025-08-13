@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { countries, currencies, exchangeRates } from "@/app/data";
 import Status from "@/app/models/Status";
-import { generateSKU } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
@@ -65,7 +64,6 @@ export default function AddNewWatch() {
         batches = [],
         brands = [],
         statuses = [],
-        watch_skus = [],
     } = (usePage().props as any) || {};
 
     const formRef = useKeyboard<HTMLDivElement>("Escape", () =>
@@ -87,12 +85,6 @@ export default function AddNewWatch() {
     const [isGeneratingDescription, setIsGeneratingDescription] =
         useState(false);
 
-    //generate sku and display
-    useEffect(() => {
-        if (data.name && data.brand) {
-            setData("sku", generateSKU(data.brand, data.name, watch_skus));
-        }
-    }, [data.name, data.brand, setData, watch_skus]);
 
     // Update display value when form data or currency changes
     useEffect(() => {

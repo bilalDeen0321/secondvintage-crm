@@ -23,7 +23,6 @@ Route::get('test', function () {
 
 
 Route::get('welcome', fn() => Inertia::render('Welcome', [
-    'watch_skus' => Watch::query()->pluck('sku')->toArray(),
     'locations' => Location::query()->pluck('name')->unique()->values(),
     'statuses' => Status::query()->pluck('name')->unique()->values(),
     'batches' => Batch::query()->pluck('name')->unique()->values(),

@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { countries, currencies, exchangeRates } from "@/app/data";
 import Status from "@/app/models/Status";
-import { generateSKU } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
@@ -28,17 +27,16 @@ import {
     Loader2,
     Plus,
     RotateCcw,
-    Sparkles,
-    Tag,
+    Sparkles
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { handlePrintSKULabel } from "./_create-actions";
 import {
     handleApprove,
     handleEditBrands,
     handleEditLocations,
     hanldeBatchAction
 } from "./actions";
+import AutoSkuGenerate from "./components/AutoSkuGenerate";
 
 type Watch = TWatch & {
     brand: string;
@@ -56,7 +54,7 @@ export default function AddNewWatch() {
     const serverProps = usePage().props as any;
 
     const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
-    const { locations = countries, batches = [], brands = [], statuses = [], watch_skus = [] } = (serverProps as any) || {};
+    const { locations = countries, batches = [], brands = [], statuses = [] } = (serverProps as any) || {};
     const { watch, nextItem, previousItem } = (serverProps as Props) || {};
 
     const initData = {
@@ -85,7 +83,7 @@ export default function AddNewWatch() {
     const {
         data,
         setData,
-        post: storeServer,
+        put: updateServer,
         processing,
         errors,
     } = useForm(initData);
@@ -93,13 +91,7 @@ export default function AddNewWatch() {
     const [savedData, setSavedData] = useState<any>(initData);
     const [hasChanges, setHasChanges] = useState(false);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
-
-    //generate sku and display
-    useEffect(() => {
-        if (data.name && data.brand) {
-            setData("sku", generateSKU(data.brand, data.name, watch_skus));
-        }
-    }, [data.name, data.brand, setData, watch_skus]);
+    ;
 
     // Update display value when form data or currency changes
     useEffect(() => {
@@ -129,7 +121,7 @@ export default function AddNewWatch() {
 
     const handleSave = () => {
         //save the data to server
-        storeServer(route("watches.store"), {
+        updateServer(route("watches.store"), {
             onSuccess: () => {
                 // reset();
             },
@@ -254,32 +246,11 @@ export default function AddNewWatch() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                                        SKU (Auto-generated)
-                                    </label>
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            type="text"
-                                            name="sku"
-                                            value={data.sku}
-                                            readOnly
-                                            className="flex-1 cursor-not-allowed rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-slate-600"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                handlePrintSKULabel(data.name, data.brand, data.sku)
-                                            }
-                                            className="p-2"
-                                            title="Print SKU Label"
-                                        >
-                                            <Tag className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
+                                <AutoSkuGenerate
+                                    name={data.name}
+                                    brand={data.brand}
+                                    onChange={(value) => setData('sku', value)}
+                                />
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">

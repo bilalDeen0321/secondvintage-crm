@@ -85,7 +85,6 @@ class WatchController extends Controller
     {
 
         return Inertia::render('watches/create', [
-            'watch_skus' => Watch::query()->pluck('sku')->toArray(),
             'locations' => Location::query()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->pluck('name')->unique()->values(),
@@ -138,7 +137,6 @@ class WatchController extends Controller
 
         return Inertia::render('watches/edit', [
             'watch' => new WatchResource($watch),  // single model resource, not collection
-            'watch_skus' => Watch::query()->pluck('sku')->toArray(),
             'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
             'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
 

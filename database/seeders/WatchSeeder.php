@@ -20,10 +20,7 @@ class WatchSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->deomItems();
-        for ($i = 0; $i < 1000; $i++) {
-            Watch::factory(1000)->create();
-        }
+        $this->deomItems();
     }
 
     /**
