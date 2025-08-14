@@ -34,11 +34,9 @@ class MakeAiHook
 
     /**
      * Send a request to make.com to generate a watch descriptoin.
-     * 
      */
-    public function generateDescription(array $data = [])
+    public function generateDescription(array $payload = [])
     {
-        $payload = $this->getPayload($data);
 
         try {
 
@@ -66,17 +64,17 @@ class MakeAiHook
      * @param  array|object  $data
      * @return array
      */
-    protected function getPayload($data): array
+    protected function getPayload(array $atrributes = []): array
     {
-        if (is_object($data) && method_exists($data, 'toArray')) {
-            $data = $data->toArray();
+        if (is_object($atrributes) && method_exists($atrributes, 'toArray')) {
+            $atrributes = $atrributes->toArray();
         }
 
         $payload = [
             'AI_Action'        => 'generate_description',
             'SKU'              => $data['sku'] ?? null,
             'Name'             => $data['name'] ?? null,
-            'Brand'            => $data['brand_id'] ?? null, // brand_id in your list
+            'Brand'            => $data['brand'] ?? null, // brand_id in your list
             'Serial'           => $data['serial_number'] ?? null,
             'Ref'              => $data['reference'] ?? null,
             'Case_Size'        => $data['case_size'] ?? null,

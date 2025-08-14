@@ -72,25 +72,14 @@ export default function UpdateWatch(props: Props) {
     /**
      * unimproved scripts
      */
-    useEffect(() => {
-        const savedDataString = JSON.stringify(savedData);
-        const formDataString = JSON.stringify(data);
-        if (!(formDataString === savedDataString)) {
-            setHasChanges(true);
-        }
-    }, [data, savedData]);
+    // useEffect(() => {
+    //     const savedDataString = JSON.stringify(savedData);
+    //     const formDataString = JSON.stringify(data);
+    //     if (!(formDataString === savedDataString)) {
+    //         setHasChanges(true);
+    //     }
+    // }, [data, savedData]);
 
-    const handleResetAI = () => {
-        if (
-            window.confirm(
-                "Are you sure you want to reset the AI instructions? This action cannot be undone.",
-            )
-        ) {
-            setData("ai_instructions", "");
-
-            alert("AI thread reset for watch:" + data.name);
-        }
-    };
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 

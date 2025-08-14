@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Watch\GenerateAiDescription;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
 use App\Services\Api\MakeAiHook;
@@ -12,10 +13,10 @@ class MakeAiHookController extends Controller
     /**
      * Hanld make.com ai generate watch description.
      */
-    public function generate(Request $request)
+    public function generate(Request $request, GenerateAiDescription $action)
     {
 
-        $validated = $request->validate([
+        $request->validate([
             'name'              => 'required|string',
             'ai_instructions'   => 'required|string',
             'ai_thread_id'      => 'nullable|string',
@@ -29,23 +30,13 @@ class MakeAiHookController extends Controller
             'image_urls'        => 'nullable|array',
             'platform'          => 'nullable|string',
             'status'            => 'nullable|string',
+
+            // images is an array of base64 strings inside objects
+            'images'          => ['nullable', 'array'],
+            'images.*.url'    => ['required_with:images', 'string'],
         ]);
 
-        $make = MakeAiHook::init()->generateDescription($validated);
-
-        if ($make->get('Status') === 'success') {
-            return response()->json([
-                'status'          => 'success',
-                'thread_id'       => $make->get('Thread_ID'),
-                'description'     => $make->get('Description') ?? 'No description',
-                'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
-            ]);
-        }
-
-        // If Make.com fails
-        throw new \RuntimeException(
-            $make->get('Message') ?? 'Something went wrong with make.com'
-        );
+        return $action($request);
     }
 
     /**

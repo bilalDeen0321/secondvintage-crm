@@ -1,9 +1,8 @@
-import InputError from "@/components/InputError";
+import { generateSKU } from "@/app/utils";
 import { Button } from "@/components/ui/button";
-import { useSkuGenerate } from "@/hooks/extarnals/useSkuGenerate";
 import { cn } from "@/lib/utils";
 import { Tag } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useState } from "react";
 import { handlePrintSKULabel } from "../_create-actions";
 
 type Props = {
@@ -13,22 +12,9 @@ type Props = {
 }
 
 export default function AutoSkuGenerate({ name, brand, onChange }: Props) {
-    // 💡 Pass the data directly to the hook, which handles debouncing internally.
-    const skuData = useMemo(() => {
-        if (name && brand) {
-            return { brand, watch: name };
-        }
-        return null; // Return null if data is incomplete
-    }, [name, brand]);
 
-    const { sku, loading, error } = useSkuGenerate(skuData);
-
-    // 💡 Notify parent only when a valid SKU is returned.
-    useEffect(() => {
-        if (onChange && sku) {
-            onChange(sku);
-        }
-    }, [sku, onChange]);
+    const [loading, setLoading] = useState(false);
+    const [sku, setSkug] = useState(generateSKU(brand, name))
 
     return (
         <div>
@@ -58,8 +44,6 @@ export default function AutoSkuGenerate({ name, brand, onChange }: Props) {
                         <Tag className="h-4 w-4" />
                     </Button>
                 </div>
-                {/* 💡 Display error message below the input */}
-                {error && <InputError message={error} className="mt-2 text-sm" />}
             </div>
         </div>
     );

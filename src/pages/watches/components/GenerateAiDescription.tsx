@@ -9,7 +9,7 @@ import {
     RotateCcw,
     Sparkles
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
 
@@ -26,6 +26,8 @@ export default function GenerateAiDescription(props: Props) {
 
     //state
     const [processing, setLoading] = useState(false);
+
+    useEffect(() => { console.log(data.images.filter(i => i.useForAI)) }, [data])
 
 
     // const handleGenerateDescription = async () => {
@@ -70,6 +72,8 @@ export default function GenerateAiDescription(props: Props) {
         try {
             // Make the server request
             const response = await axios.post(route("api.make-hooks.ai-description.generate"), data);
+
+            console.log(response.data)
 
             // Success check
             if (response.data?.status === "success") {

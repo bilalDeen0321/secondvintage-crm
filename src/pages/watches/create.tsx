@@ -21,7 +21,7 @@ import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
+import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
     handleEditBrands,
@@ -62,7 +62,7 @@ export default function AddNewWatch(props) {
     //local state
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [savedData, setSavedData] = useState<any>(watchInitData());
-    const [hasChanges, setHasChanges] = useState(false);
+    const [hasChanges, setHasChanges] = useState(true);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
 
@@ -71,13 +71,13 @@ export default function AddNewWatch(props) {
 
 
     // Update display value when form data or currency changes
-    useEffect(() => {
-        currencyExchange(
-            data.original_cost,
-            data.currency,
-            (value) => setData('current_cost', value)
-        );
-    }, [data.currency, data.original_cost, setData]);
+    // useEffect(() => {
+    //     currencyExchange(
+    //         data.original_cost,
+    //         data.currency,
+    //         (value) => setData('current_cost', value)
+    //     );
+    // }, [data.currency, data.original_cost, setData]);
 
     /**
      * unimproved scripts
