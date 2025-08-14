@@ -32,7 +32,7 @@ class StoreWatchRequest extends FormRequest
             'case_size'       => ['nullable', 'string', 'max:255'],
             'caliber'         => ['nullable', 'string', 'max:255'],
             'timegrapher'     => ['nullable', 'string', 'max:255'],
-            'original_cost'   => ['required', 'numeric'],
+            'original_cost'   => ['nullable', 'numeric'],
             'current_cost'    => ['nullable', 'numeric'],
             'location'        => ['nullable', 'string', 'max:255'],
             'batch'           => ['nullable', 'string', 'max:255'],

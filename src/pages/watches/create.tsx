@@ -21,7 +21,7 @@ import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { watchEscapeCallback, watchInitData } from "./_utils";
+import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
     handleEditBrands,
@@ -56,13 +56,13 @@ export default function AddNewWatch(props) {
 
 
     // Update display value when form data or currency changes
-    // useEffect(() => {
-    //     currencyExchange(
-    //         data.original_cost,
-    //         data.currency,
-    //         (value) => setData('current_cost', value)
-    //     );
-    // }, [data.currency, data.original_cost, setData]);
+    useEffect(() => {
+        currencyExchange(
+            data.original_cost,
+            data.currency,
+            (value) => setData('current_cost', value)
+        );
+    }, [data.currency, data.original_cost, setData]);
 
     /**
      * unimproved scripts

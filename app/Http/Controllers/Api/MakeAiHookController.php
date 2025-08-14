@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Watch\GenerateAiDescription;
+use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
 use App\Services\Api\MakeAiHook;
@@ -13,7 +13,7 @@ class MakeAiHookController extends Controller
     /**
      * Hanld make.com ai generate watch description.
      */
-    public function generate(Request $request, GenerateAiDescription $action)
+    public function generate(Request $request, GenerateAiDescriptionAction $action)
     {
 
         $request->validate([

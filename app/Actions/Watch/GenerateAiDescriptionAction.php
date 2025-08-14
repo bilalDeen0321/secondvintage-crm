@@ -7,7 +7,7 @@ use App\Models\WatchImage;
 use App\Services\Api\MakeAiHook;
 use Illuminate\Http\Request;
 
-class GenerateAiDescription
+class GenerateAiDescriptionAction
 {
     /**
      * Create a new class instance.
@@ -38,9 +38,9 @@ class GenerateAiDescription
             'AI_Instruction'  => $request->input('ai_instructions'),
         ];
 
-        // $payload['Image_URLs'] = ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
+        $payload['Image_URLs'] = ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
 
-        $payload['Image_URLs'] = $this->processImages($request->input('images'));;
+        // $payload['Image_URLs'] = $this->processImages($request->input('images'));
 
         $data = array_filter($payload);
 
