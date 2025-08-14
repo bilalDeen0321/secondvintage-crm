@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
  * Register all api routes
  */
 
-Route::prefix('make-ai-hooks')->name('make-ai-hooks.')->group(function () {
-    Route::post('description/{watch}', [MakeAiHookController::class, 'description'])->name('description');
+Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group(function () {
+    Route::post('generate', [MakeAiHookController::class, 'generate'])->name('generate');
 });
 
 Route::prefix('watches')->name('watches.')->group(function () {

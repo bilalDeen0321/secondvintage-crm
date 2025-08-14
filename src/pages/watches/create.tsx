@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
-import { CheckCircle, Loader2, Plus, RotateCcw, Sparkles } from "lucide-react";
+import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
 import {
@@ -29,6 +29,7 @@ import {
     hanldeBatchAction,
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
+import GenerateAiDescription from "./components/GenerateAiDescription";
 
 export const initData = {
     name: "",
@@ -463,62 +464,10 @@ export default function AddNewWatch(props) {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                AI Instructions
-                                            </label>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={handleResetAI}
-                                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                                            >
-                                                <RotateCcw className="mr-1 h-4 w-4" />
-                                                Reset AI
-                                            </Button>
-                                        </div>
-                                        <Textarea
-                                            name="ai_instructions"
-                                            value={data.ai_instructions}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "ai_instructions",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            rows={1}
-                                            placeholder=""
-                                            className="min-h-[40px] w-full resize-y"
-                                        />
-                                        <div className="mt-3">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={
-                                                    handleGenerateDescription
-                                                }
-                                                disabled={
-                                                    isGeneratingDescription
-                                                }
-                                                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-                                            >
-                                                {isGeneratingDescription ? (
-                                                    <>
-                                                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                                                        Processing
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Sparkles className="mr-1 h-4 w-4" />
-                                                        Generate Description
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
+                                    <GenerateAiDescription
+                                        data={data}
+                                        setData={setData}
+                                    />
 
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">

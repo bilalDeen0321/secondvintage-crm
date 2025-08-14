@@ -83,7 +83,7 @@ class Watch extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'id';
+        return 'sku';
     }
 
     /**

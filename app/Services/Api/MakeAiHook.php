@@ -4,6 +4,8 @@ namespace App\Services\Api;
 
 use App\Models\Status;
 use App\Models\Watch;
+use Dom\Attr;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -21,15 +23,22 @@ class MakeAiHook
         $this->apiKey  = config('services.make_hook.key');
     }
 
+    /**
+     * Create a new static instance
+     */
+    public static function init()
+    {
+        return app(static::class);
+    }
+
 
     /**
-     * Send a request to Make.com to generate a product description.
-     *
-     * @param Watch $watch  The watch data or a Watch model instance.
+     * Send a request to make.com to generate a watch descriptoin.
+     * 
      */
-    public function description(Watch $watch)
+    public function generateDescription(array $data = [])
     {
-        $payload = $this->payloadFromWatch($watch);
+        $payload = $this->getPayload($data);
 
         try {
 
@@ -51,65 +60,35 @@ class MakeAiHook
         }
     }
 
-
     /**
      * Format the payload from the provided data.
      *
      * @param  array|object  $data
      * @return array
      */
-    protected function payloadFromWatch(Watch $watch, $Thread_ID = null): array
-    {
-
-        return [
-            'AI_Action'        => 'generate_description',
-            'Watch_ID'         => $watch->id ?? null,
-            'SKU'              => $watch->sku ?? '',
-            'Name'             => $watch->name ?? '',
-            'Brand'            => $watch->brand->name ?? '',
-            'Serial'           => $watch->serial_number ?? '',
-            'Ref'              => $watch->reference ?? '',
-            'Case_Size'        => $watch->case_size ?? '',
-            'Caliber'          => $watch->caliber ?? '',
-            'Timegrapher'      => $watch->timegrapher,
-            'Image_URLs'       => app()->environment('local') ? [
-                "https://i.imgur.com/Rq8NO58.jpeg",
-                "https://i.imgur.com/NHn1Xq8.jpeg"
-            ] :  $watch->image_urls,
-            'Platform'         => $watch->platformData,
-            'Status_Selected'  => $watch->status,
-            'AI_Instruction'   => $watch->ai_instructions,
-            // 'Thread_ID'        => null,
-        ];
-    }
-    /**
-     * Format the payload from the provided data.
-     *
-     * @param  array|object  $data
-     * @return array
-     */
-    protected function formatPayload($data): array
+    protected function getPayload($data): array
     {
         if (is_object($data) && method_exists($data, 'toArray')) {
             $data = $data->toArray();
         }
 
-        return [
+        $payload = [
             'AI_Action'        => 'generate_description',
-            'Watch_ID'         => $data['id'] ?? null,
-            'SKU'              => $data['sku'] ?? '',
-            'Name'             => $data['name'] ?? '',
-            'Brand'            => $data['brand'] ?? '',
-            'Serial'           => $data['serial'] ?? '',
-            'Ref'              => $data['ref'] ?? '',
-            'Case_Size'        => $data['case_size'] ?? '',
-            'Caliber'          => $data['caliber'] ?? '',
-            'Timegrapher'      => $data['timegrapher'] ?? '',
-            'Image_URLs'       => $data['image_urls'] ?? [],
-            'Platform'         => $data['platform'] ?? '',
+            'SKU'              => $data['sku'] ?? null,
+            'Name'             => $data['name'] ?? null,
+            'Brand'            => $data['brand_id'] ?? null, // brand_id in your list
+            'Serial'           => $data['serial_number'] ?? null,
+            'Ref'              => $data['reference'] ?? null,
+            'Case_Size'        => $data['case_size'] ?? null,
+            'Caliber'          => $data['caliber'] ?? null,
+            'Timegrapher'      => $data['timegrapher'] ?? null,
+            'Image_URLs'       => $data['image_urls'] ?? null, // not in your list, keep as-is
+            'Platform'         => $data['platform'] ?? null,   // not in your list, keep as-is
             'Status_Selected'  => $data['status'] ?? Status::DRAFT,
-            'AI_Instruction'   => $data['ai_instruction'] ?? '',
-            'Thread_ID'        => $data['ai_thread_id'] ?? '',
+            'AI_Instruction'   => $data['ai_instructions'] ?? null, // plural in your list
+            'Thread_ID'        => $data['ai_thread_id'] ?? null,
         ];
+
+        return array_filter($payload, fn($value) => $value !== null);
     }
 }

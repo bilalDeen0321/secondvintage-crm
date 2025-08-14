@@ -24,15 +24,14 @@ import {
     CheckCircle,
     ChevronLeft,
     ChevronRight,
-    Loader2,
     Plus,
-    RotateCcw,
-    Sparkles,
+    Sparkles
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
 import { handleApprove, handleEditBrands, handleEditLocations, hanldeBatchAction } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
+import GenerateAiDescription from "./components/GenerateAiDescription";
 
 type Props = {
     watch: WatchResource;
@@ -56,7 +55,6 @@ export default function UpdateWatch(props: Props) {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [savedData, setSavedData] = useState<any>(watchInitData(watch));
     const [hasChanges, setHasChanges] = useState(false);
-    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
     //server state
     const { data, setData, put: updateServer, processing, errors } = useForm(watchInitData(watch));
@@ -92,24 +90,6 @@ export default function UpdateWatch(props: Props) {
 
             alert("AI thread reset for watch:" + data.name);
         }
-    };
-
-    const handleGenerateDescription = async () => {
-        setIsGeneratingDescription(true);
-        console.log("Generating description for watch:", data.name);
-        console.log("Using AI instructions:", data.ai_instructions);
-        console.log(
-            "Using images marked for AI:",
-            data.images.filter((img) => img.useForAI),
-        );
-
-        // Simulate API call with timeout
-        setTimeout(() => {
-            alert(
-                "Description generation would be implemented here using the AI instructions and selected images.",
-            );
-            setIsGeneratingDescription(false);
-        }, 2000);
     };
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
@@ -438,55 +418,10 @@ export default function UpdateWatch(props: Props) {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <label className="block text-sm font-medium text-slate-700">
-                                                AI Instructions
-                                            </label>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={handleResetAI}
-                                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                                            >
-                                                <RotateCcw className="mr-1 h-4 w-4" />
-                                                Reset AI
-                                            </Button>
-                                        </div>
-                                        <Textarea
-                                            name="ai_instructions"
-                                            value={data.ai_instructions}
-                                            onChange={(e) =>
-                                                setData("ai_instructions", e.target.value)
-                                            }
-                                            rows={1}
-                                            placeholder=""
-                                            className="min-h-[40px] w-full resize-y"
-                                        />
-                                        <div className="mt-3">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={handleGenerateDescription}
-                                                disabled={isGeneratingDescription}
-                                                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-                                            >
-                                                {isGeneratingDescription ? (
-                                                    <>
-                                                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                                                        Processing
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Sparkles className="mr-1 h-4 w-4" />
-                                                        Generate Description
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </div>
+                                    <GenerateAiDescription
+                                        data={data}
+                                        setData={setData}
+                                    />
 
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -501,7 +436,6 @@ export default function UpdateWatch(props: Props) {
                                             value={data.description}
                                             onChange={(e) => setData("description", e.target.value)}
                                             className="min-h-[320px] w-full resize-y"
-                                            disabled={isGeneratingDescription}
                                         />
                                     </div>
 
