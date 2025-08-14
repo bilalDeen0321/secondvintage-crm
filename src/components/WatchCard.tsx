@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
+import { WatchResource } from "@/types/resources/watch";
 import { Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
-import { Watch } from "../types/Watch";
 import ImageViewer from "./ImageViewer";
 
 interface WatchCardProps {
-    watch: Watch;
-    onEdit: (watch: Watch) => void;
-    onDelete: (id: string) => void;
+    watch: WatchResource;
+    onEdit: (watch: WatchResource) => void;
+    onDelete: (id: string | number) => void;
 }
 
 const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
-        images: any[];
+        images: never[];
         currentIndex: number;
     }>({
         isOpen: false,
@@ -21,7 +22,7 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
         currentIndex: 0,
     });
 
-    const getStatusColor = (status: Watch["status"]) => {
+    const getStatusColor = (status: WatchResource["status"]) => {
         switch (status) {
             case "Draft":
                 return "bg-gray-100 text-gray-800";
@@ -53,7 +54,7 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
         if (watch.images && watch.images.length > 0) {
             setImageViewer({
                 isOpen: true,
-                images: watch.images,
+                images: watch.images as any,
                 currentIndex: 0,
             });
         }
@@ -144,9 +145,9 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
                         <p className="text-sm text-slate-600">
                             Brand: {watch.brand}
                         </p>
-                        {watch.acquisitionCost && (
+                        {watch.original_cost && (
                             <p className="text-sm font-medium text-slate-900">
-                                €{watch.acquisitionCost.toLocaleString()}
+                                €{watch.original_cost.toLocaleString()}
                             </p>
                         )}
                         <p className="text-sm text-slate-600">
@@ -174,7 +175,7 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onDelete(watch.id)}
+                            onClick={() => onDelete(watch.routeKey)}
                             className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                         >
                             <Trash2 className="h-4 w-4" />

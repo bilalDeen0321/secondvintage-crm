@@ -9,6 +9,7 @@ import InputError from "@/components/InputError";
 import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
+import Link from "@/components/ui/Link";
 import {
     Select,
     SelectContent,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
-import { Watch as TWatch } from "@/types/watch";
+import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import {
     CheckCircle,
@@ -38,15 +39,8 @@ import {
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 
-type Watch = TWatch & {
-    brand: string;
-    status: any;
-    location: string;
-    images: any[];
-};
-
 type Props = {
-    watch: Watch, nextItem: Watch, previousItem: Watch;
+    watch: WatchResource, nextItem: WatchResource, previousItem: WatchResource;
 }
 
 export default function AddNewWatch() {
@@ -75,7 +69,7 @@ export default function AddNewWatch() {
         description: watch.description || '',
         currency: watch.currency || "DKK",
         notes: watch.notes || "",
-        images: watch.images || [] as Watch["images"],
+        images: watch.images || [] as WatchResource["images"],
     }
 
     const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -91,7 +85,6 @@ export default function AddNewWatch() {
     const [savedData, setSavedData] = useState<any>(initData);
     const [hasChanges, setHasChanges] = useState(false);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
-    ;
 
     // Update display value when form data or currency changes
     useEffect(() => {
@@ -200,27 +193,27 @@ export default function AddNewWatch() {
 
                     {/* Navigation Arrows - Outside the box */}
                     {previousItem && (
-                        <Button
+                        <Link
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => router.visit(route('watches.show', previousItem.id))}
+                            href={route('watches.show', previousItem.routeKey)}
                             className="absolute left-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
                         >
                             <ChevronLeft className="h-4 w-4" />
-                        </Button>
+                        </Link>
                     )}
 
                     {nextItem && (
-                        <Button
+                        <Link
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => router.visit(route('watches.show', nextItem.id))}
+                            href={route('watches.show', nextItem.routeKey)}
                             className="absolute right-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
                         >
                             <ChevronRight className="h-4 w-4" />
-                        </Button>
+                        </Link>
                     )}
 
                     <form

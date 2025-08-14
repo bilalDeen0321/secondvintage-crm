@@ -1,23 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { WatchWith } from "@/types/watch";
+import { WatchResource } from "@/types/resources/watch";
 import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ImageViewer from "./ImageViewer";
 import Link from "./ui/Link";
 
-type Watch = WatchWith & {
-    brand: string;
-    batch?: string;
-    status: string;
-    location: string;
-    images: Array<{ id: string | number, url: string, order_index?: number, useForAI: boolean }>
-}
-
 interface WatchListViewProps {
-    watches: Watch[];
-    onEdit: (watch: Watch) => void;
-    onDelete: (id: string) => void;
+    watches: WatchResource[];
+    onEdit: (watch: WatchResource) => void;
+    onDelete: (id: string | number) => void;
     onSort: (field: string) => void;
     sortField: string;
     sortDirection: "asc" | "desc";
@@ -57,7 +49,7 @@ const WatchListView = ({
         );
     };
 
-    const getStatusColor = (status: Watch["status"]) => {
+    const getStatusColor = (status: WatchResource["status"]) => {
         switch (status) {
             case "Draft":
                 return "bg-gray-100 text-gray-800";
@@ -108,7 +100,7 @@ const WatchListView = ({
         return "EUR";
     };
 
-    const handleImageClick = (watch: Watch) => {
+    const handleImageClick = (watch: WatchResource) => {
         if (watch.images && watch.images.length > 0) {
             setImageViewer({
                 isOpen: true,
@@ -220,16 +212,15 @@ const WatchListView = ({
                             {watches.map((watch) => (
                                 <tr
                                     key={watch.id}
-                                    className={`hover:bg-slate-50 ${selectedWatches.includes(watch.id) ? "bg-amber-50" : ""}`}
+                                    className={`hover:bg-slate-50 ${selectedWatches.includes(String(watch.id)) ? "bg-amber-50" : ""}`}
                                 >
                                     <td className="p-2">
                                         <Checkbox
-                                            checked={selectedWatches.includes(
-                                                watch.id,
+                                            checked={selectedWatches.includes(String(watch.id),
                                             )}
                                             onCheckedChange={(checked) =>
                                                 onSelectWatch(
-                                                    watch.id,
+                                                    watch.sku,
                                                     checked as boolean,
                                                 )
                                             }
@@ -341,7 +332,7 @@ const WatchListView = ({
                                     <td className="p-2">
                                         <div className="flex gap-1">
                                             <Link
-                                                href={route('watches.show', watch.id)}
+                                                href={route('watches.show', watch.routeKey)}
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-7 w-7 p-0"
@@ -351,9 +342,7 @@ const WatchListView = ({
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() =>
-                                                    onDelete(watch.id)
-                                                }
+                                                onClick={() => onDelete(watch.routeKey)}
                                                 className="h-7 w-7 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
                                             >
                                                 <Trash2 className="h-3 w-3" />

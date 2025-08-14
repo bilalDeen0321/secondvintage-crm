@@ -21,20 +21,14 @@ import WatchForm from "@/components/WatchForm";
 import WatchListView from "@/components/WatchListView";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
-import { WatchWith } from "@/types/watch";
+import { WatchResource } from "@/types/resources/watch";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
 import { getSearchStatus, getSelectSearch, getSelectStatus, handleSerchSort, watcheSearch } from "./_searchActions";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch } from "./actions";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch } from "./actions";
 
 
-type Watch = WatchWith & {
-    brand: string;
-    status: string;
-    location: string;
-    images: Array<{ id: string | number, url: string, order_index?: number, useForAI: boolean }>
-}
 
 type StatusKey = typeof Status.statuses[number];
 type WatchCount = Record<StatusKey, number>;
@@ -48,12 +42,12 @@ const WatchManagement = () => {
     const [viewMode, setViewMode] = useLocalStorage<'list' | 'grid'>('watch_view_mode', "list");
 
     const page = usePage();
-    const { data: watches = [], meta } = page.props.watches as PaginateData<Watch>
+    const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
 
     const [showForm, setShowForm] = useState(false);
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
-    const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
+    const [editingWatch, setEditingWatch] = useState<WatchResource | undefined>();
 
     const { data, setData, delete: destroy } = useForm({
         column: '',
@@ -89,7 +83,7 @@ const WatchManagement = () => {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedWatches(watches.map((w) => w.id));
+            setSelectedWatches(watches.map((w) => String(w.id)));
         } else {
             setSelectedWatches([]);
         }
@@ -97,12 +91,16 @@ const WatchManagement = () => {
 
 
     /**
+     * =======================================
      * Server actions
+     * ========================================
      */
-    const handleDelete = (watch_id: string | number) => {
+
+    //handle server delete actions
+    const handleDelete = (routeKey: string | number) => {
         const confirmed = window.confirm("Are you sure you want to delete the Watch?");
-        if (watch_id && confirmed) {
-            destroy(route("watches.destroy", watch_id), {
+        if (routeKey && confirmed) {
+            destroy(route("watches.destroy", routeKey), {
                 preserveScroll: true,
                 onSuccess(response) { },
             });
@@ -413,7 +411,8 @@ const WatchManagement = () => {
                 {showForm && (
                     <WatchForm
                         watch={editingWatch}
-                        onSave={handleSaveWatch}
+                        // onSave={handleSaveWatch}
+                        onSave={(e) => alert('somthing')}
                         onCancel={() => {
                             setShowForm(false);
                             setEditingWatch(undefined);

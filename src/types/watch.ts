@@ -1,6 +1,7 @@
 // types/watch.ts
 
 export interface Watch {
+    routeKey: string,
     id: string;
     sku: string;
     name: string;

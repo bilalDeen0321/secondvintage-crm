@@ -16,6 +16,7 @@ class WatchResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'routeKey' => $this->getRouteKey(),
             'brand' => $this->brand->name,
             'batch' => $this->batch?->name ?? null,
             'status' => $this->status,

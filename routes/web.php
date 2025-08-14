@@ -18,7 +18,7 @@ use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
 Route::get('test', function () {
-    return route('api.make-ai-hooks.description', ['watch' => 1]);
+    return new WatchResource(Watch::first());
 });
 
 

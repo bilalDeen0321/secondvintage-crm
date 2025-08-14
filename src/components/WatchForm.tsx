@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { WatchResource } from "@/types/resources/watch";
 import {
     CheckCircle,
     ChevronLeft,
@@ -19,20 +20,14 @@ import {
     Tag,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Watch as TWatch } from "../types/watch";
 import BatchSelector from "./BatchSelector";
 import BrandSelector from "./BrandSelector";
 import ImageManager from "./ImageManager";
 import LocationSelector from "./LocationSelector";
 
-type Watch = TWatch & {
-    brand: string, status: any, location: string,
-    images: (any)[]
-}
-
 interface WatchFormProps {
-    watch?: Watch;
-    onSave: (watch: Omit<Watch, "id">) => void;
+    watch?: WatchResource;
+    onSave: (watch: Omit<WatchResource, "id">) => void;
     onCancel: () => void;
     onNext?: () => void;
     onPrevious?: () => void;
@@ -54,7 +49,7 @@ const WatchForm = ({
         sku: "",
         brand: "",
         acquisitionCost: "",
-        status: "Draft" as Watch["status"],
+        status: "Draft" as WatchResource["status"],
         location: "",
         batch: "",
         description: "",
@@ -65,7 +60,7 @@ const WatchForm = ({
         caliber: "",
         timegrapher: "",
         aiInstructions: "",
-        images: [] as Watch["images"],
+        images: [] as WatchResource["images"],
     });
 
     const [originalData, setOriginalData] = useState<any>(null);
@@ -213,7 +208,7 @@ const WatchForm = ({
                 sku: "",
                 brand: "",
                 acquisitionCost: "",
-                status: "Draft" as Watch["status"],
+                status: "Draft" as WatchResource["status"],
                 location: "",
                 batch: "",
                 description: "",
