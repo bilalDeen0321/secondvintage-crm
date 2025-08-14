@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
+import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import {
@@ -58,6 +59,14 @@ export default function UpdateWatch(props: Props) {
 
     //server state
     const { data, setData, put: updateServer, processing, errors } = useForm(watchInitData(watch));
+
+
+    // Use the debounced server SKU hook
+    const sku = useServerSku(data.name, data.brand);
+
+    // Update the form state only when SKU changes
+    useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
+
 
 
     // Update display value when form data or currency changes
@@ -110,6 +119,7 @@ export default function UpdateWatch(props: Props) {
         e.preventDefault();
         handleSave();
     };
+
 
     return (
         <Layout>
@@ -174,6 +184,7 @@ export default function UpdateWatch(props: Props) {
                                 </div>
 
                                 <AutoSkuGenerate
+                                    value={data.sku}
                                     name={data.name}
                                     brand={data.brand}
                                     onChange={(value) => setData("sku", value)}

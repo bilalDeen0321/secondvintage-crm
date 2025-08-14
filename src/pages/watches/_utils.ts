@@ -2,6 +2,8 @@ import { exchangeRates } from "@/app/data";
 import Status from "@/app/models/Status";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 /**
  * Watch Escape callback with routing
@@ -61,4 +63,30 @@ export const currencyExchange = (
 
     // Always return converted cost as string
     return convertedCost;
+};
+
+
+
+// Server SKU fetcher
+export const getServerSku = async (name: string, brand: string): Promise<string> => {
+    if (!name || !brand) return '';
+
+    try {
+        const res = await axios.post(route('api.watches.generate-sku'), {
+            watch_name: name,
+            brand_name: brand,
+        });
+
+        return res.data?.sku ?? '';
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            toast.error(error.response?.data?.message || 'Failed to generate SKU from server.');
+        } else if (error instanceof Error) {
+            toast.error(error.message);
+        } else {
+            toast.error('An unknown error occurred.');
+        }
+
+        return '';
+    }
 };

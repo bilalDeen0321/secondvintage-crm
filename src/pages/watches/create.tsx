@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
+import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
@@ -63,11 +64,17 @@ export default function AddNewWatch(props) {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [savedData, setSavedData] = useState<any>(watchInitData());
     const [hasChanges, setHasChanges] = useState(true);
-    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
 
     //server state
     const { data, setData, post: storeServer, processing, errors } = useForm(watchInitData());
+
+    // Use the debounced server SKU hook
+    const sku = useServerSku(data.name, data.brand);
+
+    // Update the form state only when SKU changes
+    useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
+
 
 
     // Update display value when form data or currency changes
@@ -115,36 +122,6 @@ export default function AddNewWatch(props) {
     };
 
 
-    const handleResetAI = () => {
-        if (
-            window.confirm(
-                "Are you sure you want to reset the AI instructions? This action cannot be undone.",
-            )
-        ) {
-            setData("ai_instructions", "");
-
-            alert("AI thread reset for watch:" + data.name);
-        }
-    };
-
-    const handleGenerateDescription = async () => {
-        setIsGeneratingDescription(true);
-        console.log("Generating description for watch:", data.name);
-        console.log("Using AI instructions:", data.ai_instructions);
-        console.log(
-            "Using images marked for AI:",
-            data.images.filter((img) => img.useForAI),
-        );
-
-        // Simulate API call with timeout
-        setTimeout(() => {
-            alert(
-                "Description generation would be implemented here using the AI instructions and selected images.",
-            );
-            setIsGeneratingDescription(false);
-        }, 2000);
-    };
-
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
     return (
@@ -191,6 +168,7 @@ export default function AddNewWatch(props) {
                                 </div>
 
                                 <AutoSkuGenerate
+                                    value={data.sku}
                                     name={data.name}
                                     brand={data.brand}
                                     onChange={(value) => setData("sku", value)}
@@ -490,7 +468,7 @@ export default function AddNewWatch(props) {
                                                 )
                                             }
                                             className="min-h-[320px] w-full resize-y"
-                                            disabled={isGeneratingDescription}
+                                        // disabled={isGeneratingDescription}
                                         />
                                     </div>
 
