@@ -40,6 +40,7 @@ class StoreWatchRequest extends FormRequest
             'currency'        => ['nullable', 'string', 'max:3'],
             'notes'           => ['nullable', 'string'],
             'ai_instructions' => ['nullable', 'string'],
+            'ai_thread_id'    => ['nullable', 'string'],
 
             // images is an array of base64 strings inside objects
             'images'          => ['nullable', 'array'],

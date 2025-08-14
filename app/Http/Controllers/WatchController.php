@@ -223,6 +223,7 @@ class WatchController extends Controller
             'currency'        => ['nullable', 'string', 'max:3'],
             'notes'           => ['nullable', 'string'],
             'ai_instructions' => ['nullable', 'string'],
+            'ai_thread_id'    => ['nullable', 'string'],
 
             'images'          => ['nullable', 'array'],
             'images.*.url'    => ['required_with:images', 'string'],

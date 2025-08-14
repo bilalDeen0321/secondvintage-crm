@@ -38,8 +38,7 @@ Route::get('test', function () {
         'Caliber'         => '1861',
         'Timegrapher'     => '+5s/day, 290 amplitude',
         'Image_URLs'      => [
-            'https://test.secondvintage.com/lovable-uploads/c3abfafa-8986-4b30-bd89-3d163701cb64.png',
-            'https://test.secondvintage.com/lovable-uploads/c3abfafa-8986-4b30-bd89-3d163701cb64.png'
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'
         ],
         'Platform'        => 'Catawiki',
         'Status_Selected' => 'Draft',

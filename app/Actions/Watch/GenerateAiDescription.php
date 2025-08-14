@@ -3,6 +3,7 @@
 namespace App\Actions\Watch;
 
 use App\Models\Status;
+use App\Models\WatchImage;
 use App\Services\Api\MakeAiHook;
 use Illuminate\Http\Request;
 
@@ -31,19 +32,25 @@ class GenerateAiDescription
             'Case_Size'       => $request->input('case_size'),
             'Caliber'         => $request->input('caliber'),
             'Timegrapher'     => $request->input('timegrapher'),
-            'Image_URLs'      => array_map(fn($img) => $img['url'], $request->array('images', [])),
+            // 'Image_URLs'      => array_map(fn($img) => $img['url'], $request->array('images', [])),
             'Platform'        => $request->string('platform', 'Catawiki'),
             'Status_Selected' => $request->string('status'),
             'AI_Instruction'  => $request->input('ai_instructions'),
         ];
 
-        $make = MakeAiHook::init()->generateDescription($payload);
+        // $payload['Image_URLs'] = ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
+
+        $payload['Image_URLs'] = $this->processImages($request->input('images'));;
+
+        $data = array_filter($payload);
+
+        $make = MakeAiHook::init()->generateDescription($data);
 
         if ($make->get('Status') === 'success') {
             return response()->json([
                 'status'          => 'success',
-                'thread_id'       => $make->get('Thread_ID'),
                 'description'     => $make->get('Description') ?? 'No description',
+                'ai_thread_id'    => $make->get('Thread_ID'),
                 'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
             ]);
         }
@@ -52,5 +59,35 @@ class GenerateAiDescription
         throw new \RuntimeException(
             $make->get('Message') ?? 'Something went wrong with make.com'
         );
+    }
+
+    /**
+     * Process the images to safely return URLs for ChatGPT
+     *
+     * @param array $images
+     * @return array
+     */
+    private function processImages(array $images): array
+    {
+        return collect($images)->map(function ($image) {
+            $url = $image['url'] ?? null;
+
+            if (!$url) {
+                return null; // skip if no URL
+            }
+
+            // If it's a base64 image, return as is
+            if (str_starts_with($url, 'data:image')) {
+                return WatchImage::uploadBase64Image($url);
+            }
+
+            // First check if the file exists in storage
+            if (\Illuminate\Support\Facades\Storage::exists($url)) {
+                return url(\Illuminate\Support\Facades\Storage::url($url));
+            }
+
+            // Fallback: return the original URL (could be http, https, or base64)
+            return $url;
+        })->filter()->values()->all(); // remove nulls and reindex
     }
 }

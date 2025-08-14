@@ -78,7 +78,9 @@ export default function GenerateAiDescription(props: Props) {
             // Success check
             if (response.data?.status === "success") {
                 toast.success("Watch AI description generated");
+                setData('ai_thread_id', response?.data?.ai_thread_id)
                 setData('description', response?.data?.description)
+                setData('status', response?.data?.status_selected)
             } else {
                 toast.error(response.data?.message || "Failed to generate description");
             }

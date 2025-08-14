@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { countries, currencies } from "@/app/data";
 import Status from "@/app/models/Status";
@@ -18,7 +18,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
-import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -31,27 +30,6 @@ import {
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
-
-export const initData = {
-    name: "",
-    sku: "",
-    brand: "",
-    status: Status.DRAFT,
-    serial_number: "",
-    reference: "",
-    case_size: "",
-    caliber: "",
-    timegrapher: "",
-    original_cost: "",
-    current_cost: "",
-    ai_instructions: "",
-    location: "",
-    batch: "",
-    description: "",
-    currency: "DKK",
-    notes: "",
-    images: [] as WatchResource["images"],
-};
 
 export default function AddNewWatch(props) {
 
