@@ -8,10 +8,15 @@ declare global {
         axios: AxiosInstance;
     }
 
-    /* eslint-disable no-var */
+
     var route: typeof ziggyRoute;
+
+    interface ReadonlyArray<T> {
+        unique(removeFalsy?: boolean): T[];
+    }
 }
 
 declare module "@inertiajs/core" {
-    interface PageProps extends InertiaPageProps, AppPageProps {}
+    interface PageProps extends InertiaPageProps, AppPageProps { }
 }
+

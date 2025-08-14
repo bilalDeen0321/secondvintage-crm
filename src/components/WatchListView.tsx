@@ -91,18 +91,18 @@ const WatchListView = ({
     };
 
     const getLocalCurrency = (
-        acquisitionCost: number | undefined,
+        original_cost: number | undefined,
         location: string,
     ) => {
-        if (!acquisitionCost) return "-";
+        if (!original_cost) return "-";
 
         if (location === "Vietnam") {
             // Convert EUR to VND (approximate rate: 1 EUR = 26,000 VND)
-            const vndAmount = acquisitionCost * 26000;
+            const vndAmount = original_cost * 26000;
             return `₫${vndAmount.toLocaleString()}`;
         } else if (location === "Japan") {
             // Convert EUR to JPY (approximate rate: 1 EUR = 160 JPY)
-            const jpyAmount = acquisitionCost * 160;
+            const jpyAmount = original_cost * 160;
             return `¥${jpyAmount.toLocaleString()}`;
         }
         return "EUR";
@@ -177,15 +177,15 @@ const WatchListView = ({
                                 </th>
                                 <th
                                     className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("brand")}
                                 >
-                                    Brand {getSortIcon("brand")}
+                                    Brand
+                                    {/* Brand {getSortIcon("brand")} */}
                                 </th>
                                 <th
                                     className="w-20 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("acquisitionCost")}
+                                    onClick={() => onSort("original_cost")}
                                 >
-                                    Cost {getSortIcon("acquisitionCost")}
+                                    Cost {getSortIcon("original_cost")}
                                 </th>
                                 <th className="w-24 p-2 text-xs font-medium text-slate-700">
                                     Org. Currency

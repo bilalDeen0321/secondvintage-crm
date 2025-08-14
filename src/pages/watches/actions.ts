@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Watch as TWatch } from "@/types/watch";
-import { router } from "@inertiajs/react";
 
 type SetData<K, V> = (key: K, value: V) => void;
 
@@ -63,6 +62,7 @@ export const handleEditBrands = () => {
 
 
 import { Inertia } from '@inertiajs/inertia';
+import { handleSerchSort } from "./_searchActions";
 
 
 export const handleEditLocations = () => {
@@ -221,18 +221,15 @@ export const handleStatusToggle = (status: string, setStatusFilters) => {
     }
 };
 
-export const handleSort = (field: string, data, setData) => {
-    if (data.sort === field) {
+export const handleSort = (columns: string | string[], data, setData) => {
+    if (data.sort === columns) {
         setData('direction', data.direction === "asc" ? "desc" : "asc");
     } else {
-        setData('sort', field);
+        setData('sort', columns);
         setData('direction', "asc");
     }
 
-    router.get(route("watches.index"), withQuery('direction', data.direction), {
-        preserveState: true,
-        replace: true,
-    });
+    handleSerchSort(column, data.direction);
 };
 
 

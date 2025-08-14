@@ -99,3 +99,26 @@ export function sleepWhile(ms: number) {
 export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
+/**
+ * Returns a unique array.
+ * Optionally filters out falsy values before deduplication.
+ */
+export function uniqueArray<T>(arr: readonly T[], removeFalsy = false): T[] {
+    return arr.unique(removeFalsy);
+}
+
+// Utility function to clean empty parameters
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const cleanQueryParams = (params: Record<string, any>) => {
+    const cleaned = {};
+    Object.keys(params).forEach(key => {
+        const value = params[key];
+        if (value !== null && value !== undefined && value !== '' &&
+            !(Array.isArray(value) && value.length === 0)) {
+            cleaned[key] = value;
+        }
+    });
+    return cleaned;
+};

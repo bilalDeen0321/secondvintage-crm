@@ -1,5 +1,6 @@
 import { batchGroups, brands, countries } from "@/app/data";
 import Status from "@/app/models/Status";
+import { uniqueArray } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import Layout from "@/components/Layout";
@@ -24,8 +25,8 @@ import { WatchWith } from "@/types/watch";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
-import { getSearchStatus, getSelectSearch, getSelectStatus, watcheSearch } from "./_searchActions";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch, handleSort } from "./actions";
+import { getSearchStatus, getSelectSearch, getSelectStatus, handleSerchSort, watcheSearch } from "./_searchActions";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch, handleSaveWatch } from "./actions";
 
 
 type Watch = WatchWith & {
@@ -55,7 +56,7 @@ const WatchManagement = () => {
     const [editingWatch, setEditingWatch] = useState<Watch | undefined>();
 
     const { data, setData, delete: destroy } = useForm({
-        sort: '',
+        column: '',
         search: '',
         status: ['all'],
         brand: 'All',
@@ -384,8 +385,11 @@ const WatchManagement = () => {
                         watches={watches}
                         onEdit={handleEditWatch}
                         onDelete={handleDelete}
-                        onSort={(field) => handleSort(field, data, setData)}
-                        sortField={data.sort}
+                        onSort={(field) => {
+                            handleSerchSort(uniqueArray([data.column, field], true), data.direction)
+                            setData('column', field)
+                        }}
+                        sortField={data.column}
                         sortDirection={data.direction as 'asc'}
                         selectedWatches={selectedWatches}
                         onSelectWatch={handleSelectWatch}

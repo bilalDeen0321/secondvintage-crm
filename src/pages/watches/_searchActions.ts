@@ -58,6 +58,23 @@ export function watchFilters(key: string, value: any, query: Record<string, any>
 
 
 export const watcheSearch = watchFilters;
+
+export const handleSerchSort = (columns: string[], direction: string) => {
+
+    const search = (new URLSearchParams(window.location.search)).get('search');
+
+    const params = {
+        search,
+        direction: direction || 'asc',
+        columns: columns,
+    }
+
+    // Clean params by removing empty keys
+    const cleanedParams = cleanParams(params);
+
+    //inertia naviate search by url
+    debouncedNavigate(cleanedParams);
+};
 // export function watcheSearch(key: string, value: any, query: Record<string, any> = {}) {
 //     const search = new URLSearchParams(window.location.search).get('search') || '';
 
@@ -93,3 +110,5 @@ export const getSelectSearch = (value: string) => {
 export const getSelectStatus = (arr: string[]) => {
     return arr.filter(s => String(s) != 'all').filter(Boolean);
 };
+
+

@@ -37,44 +37,91 @@ class WatchController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Watch::query()
-            ->latest()
-            ->when($request->input('search'), function (Builder $q, $search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
-                        ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$search}%"));
-                });
-            })
-            ->when($request->input('status'), function (Builder $q, $value) {
-                $q->whereIn('status', is_array($value) ? $value : $value);
-            })
-            ->when($request->input('brand'), function (Builder $q, $value) {
-                $q->whereHas(
-                    'brand',
-                    fn($brandQuery) =>
-                    $brandQuery->where('name', $value)
-                );
-            })
-            ->when($request->input('location'), function (Builder $q, $value) {
-                $q->where('location', $value);
-            })
-            ->orderBy($request->input('sortField', 'id'), $request->input('sortDirection', 'asc'));
 
-        $watches = $query->paginate()->withQueryString();
-
-        $watchCount = [
-            'all' => Watch::count(),
+        // Define allowed columns for sorting
+        $allow_columns = [
+            'id',
+            'name',
+            'sku',
+            'status',
+            'location',
+            'original_cost',
+            'created_at',
+            'updated_at'
         ];
 
-        foreach (Status::allStatuses() as $status) {
-            $watchCount[$status] = Watch::query()->where('status', $status)->count();
+        $columns = $request->input('columns', 'id');
+        $direction = $request->input('direction', 'desc');
+
+        // Validate sort field
+        if (!in_array($columns, $allow_columns)) {
+            $columns = 'id';
         }
 
+        // Validate sort direction
+        if (!in_array(strtolower($direction), ['asc', 'desc'])) {
+            $direction = 'desc';
+        }
+
+        $query = Watch::query()
+            ->when($request->filled('search'), function (Builder $q) use ($request) {
+                $search = $request->input('search');
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%")
+                        // ->orWhere('original_cost', 'like', "%{$search}%")
+                        ->orWhereHas('brand', function ($brandQuery) use ($search) {
+                            $brandQuery->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('brand'), function (Builder $q) use ($request) {
+                $brands = $request->input('brand');
+                // Support multiple brands
+                if (is_array($brands)) {
+                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                        $brandQuery->whereIn('name', $brands);
+                    });
+                } else {
+                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                        $brandQuery->where('name', $brands);
+                    });
+                }
+            })
+            ->when($request->filled('status'), function (Builder $q) use ($request) {
+                $statuses = $request->input('status');
+                // Support multiple statuses
+                if (is_array($statuses)) {
+                    $q->whereIn('status', $statuses);
+                } else {
+                    $q->where('status', $statuses);
+                }
+            })
+            ->when($request->filled('location'), function (Builder $q) use ($request) {
+                $locations = $request->input('location');
+                // Support multiple locations
+                if (is_array($locations)) {
+                    $q->whereIn('location', $locations);
+                } else {
+                    $q->where('location', $locations);
+                }
+            })
+            ->orderBy($columns, $direction);
+
+        // Get paginated results
+        $watches = $query->paginate($request->input('per_page', 10))->withQueryString();
+
+        // Get counts for different statuses
+        $watchCount = ['all' => Watch::count()];
+        foreach (Status::allStatuses() as $status) {
+            $watchCount[$status] = Watch::where('status', $status)->count();
+        }
 
         return Inertia::render('watches/index', [
             'watches' => WatchResource::collection($watches)->response()->getData(true),
             'watch_count' => $watchCount,
-            'filters' => request()->only(['search', 'status', 'brand', 'location', 'sortField', 'sortDirection']),
+            'filters' => request()->only(['search', 'status', 'brand', 'location', 'columns', 'direction']),
         ]);
     }
 

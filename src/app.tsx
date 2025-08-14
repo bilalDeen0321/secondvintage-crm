@@ -1,3 +1,4 @@
+import './app/global';
 import "./index.css";
 
 import { createInertiaApp } from "@inertiajs/react";
