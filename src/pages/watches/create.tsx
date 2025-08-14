@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { countries, currencies, exchangeRates } from "@/app/data";
+import { countries, currencies } from "@/app/data";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
-import { Watch as TWatch } from "@/types/watch";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { WatchResource } from "@/types/resources/watch";
+import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Loader2, Plus, RotateCcw, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
     handleEditBrands,
@@ -28,13 +29,6 @@ import {
     hanldeBatchAction,
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
-
-type Watch = TWatch & {
-    brand: string;
-    status: any;
-    location: string;
-    images: any[];
-};
 
 export const initData = {
     name: "",
@@ -54,50 +48,34 @@ export const initData = {
     description: "",
     currency: "DKK",
     notes: "",
-    images: [] as Watch["images"],
+    images: [] as WatchResource["images"],
 };
 
-export default function AddNewWatch() {
-    //server side
-    const {
-        locations = countries,
-        batches = [],
-        brands = [],
-        statuses = [],
-    } = (usePage().props as any) || {};
+export default function AddNewWatch(props) {
 
-    const formRef = useKeyboard<HTMLDivElement>("Escape", () =>
-        router.visit(route("watches.index")),
-    );
+    //server props
+    const { locations = countries, batches = [], brands = [], statuses = [] } = props || {};
 
+
+    const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
+    //local state
     const [showSaveDialog, setShowSaveDialog] = useState(false);
-
-    const {
-        data,
-        setData,
-        post: storeServer,
-        processing,
-        errors,
-    } = useForm(initData);
-
-    const [savedData, setSavedData] = useState<any>(initData);
+    const [savedData, setSavedData] = useState<any>(watchInitData());
     const [hasChanges, setHasChanges] = useState(false);
-    const [isGeneratingDescription, setIsGeneratingDescription] =
-        useState(false);
+    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+
+
+    //server state
+    const { data, setData, post: storeServer, processing, errors } = useForm(watchInitData());
 
 
     // Update display value when form data or currency changes
     useEffect(() => {
-        const originalCost = Number(data.original_cost);
-        const rate = Number(exchangeRates[data.currency]);
-
-        if (!isNaN(originalCost) && !isNaN(rate)) {
-            // Store as string for form state
-            setData("current_cost", (originalCost * rate).toFixed(2));
-        } else {
-            // Fallback to original cost as string (2 decimals)
-            setData("current_cost", originalCost.toFixed(2));
-        }
+        currencyExchange(
+            data.original_cost,
+            data.currency,
+            (value) => setData('current_cost', value)
+        );
     }, [data.currency, data.original_cost, setData]);
 
     /**
@@ -135,7 +113,6 @@ export default function AddNewWatch() {
         handleSave();
     };
 
-    const handleSaveAndNavigate = (e) => { };
 
     const handleResetAI = () => {
         if (
@@ -638,7 +615,7 @@ export default function AddNewWatch() {
                         </p>
                         <div className="flex gap-3">
                             <Button
-                                onClick={handleSaveAndNavigate}
+                                onClick={() => alert('Save and continue is under development')}
                                 className="flex-1"
                             >
                                 Save & Continue

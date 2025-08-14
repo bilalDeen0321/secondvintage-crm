@@ -1,6 +1,5 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { countries, currencies, exchangeRates } from "@/app/data";
+import { countries, currencies } from "@/app/data";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
@@ -28,76 +27,48 @@ import {
     Loader2,
     Plus,
     RotateCcw,
-    Sparkles
+    Sparkles,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import {
-    handleApprove,
-    handleEditBrands,
-    handleEditLocations,
-    hanldeBatchAction
-} from "./actions";
+import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
+import { handleApprove, handleEditBrands, handleEditLocations, hanldeBatchAction } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 
 type Props = {
-    watch: WatchResource, nextItem: WatchResource, previousItem: WatchResource;
-}
+    watch: WatchResource;
+    nextItem: WatchResource;
+    previousItem: WatchResource;
+    locations: typeof countries;
+    batches: string[];
+    brands: string[];
+    statuses: string[];
+};
 
-export default function AddNewWatch() {
+export default function UpdateWatch(props: Props) {
 
-    const serverProps = usePage().props as any;
+    //server props
+    const { locations = countries, batches = [], brands = [], statuses = [] } = props || {};
+    const { watch, nextItem, previousItem } = (usePage().props) as unknown as Props;
 
-    const formRef = useKeyboard<HTMLDivElement>("Escape", () => router.visit(route("watches.index")));
-    const { locations = countries, batches = [], brands = [], statuses = [] } = (serverProps as any) || {};
-    const { watch, nextItem, previousItem } = (serverProps as Props) || {};
-
-    const initData = {
-        name: watch.name || '',
-        sku: watch.sku || '',
-        brand: watch.brand || "",
-        status: watch.status || Status.DRAFT,
-        serial_number: watch.serial_number || "",
-        reference: watch.reference || "",
-        case_size: watch.case_size || "",
-        caliber: watch.caliber || "",
-        timegrapher: watch.timegrapher || "",
-        original_cost: watch.original_cost || "",
-        current_cost: watch.current_cost || "",
-        ai_instructions: watch.ai_instructions || "",
-        location: watch.location || "",
-        batch: "",
-        description: watch.description || '',
-        currency: watch.currency || "DKK",
-        notes: watch.notes || "",
-        images: watch.images || [] as WatchResource["images"],
-    }
-
+    //utils    
+    const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
+    //local state
     const [showSaveDialog, setShowSaveDialog] = useState(false);
-
-    const {
-        data,
-        setData,
-        put: updateServer,
-        processing,
-        errors,
-    } = useForm(initData);
-
-    const [savedData, setSavedData] = useState<any>(initData);
+    const [savedData, setSavedData] = useState<any>(watchInitData(watch));
     const [hasChanges, setHasChanges] = useState(false);
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
+    //server state
+    const { data, setData, put: updateServer, processing, errors } = useForm(watchInitData(watch));
+
+
     // Update display value when form data or currency changes
     useEffect(() => {
-        const originalCost = Number(data.original_cost);
-        const rate = Number(exchangeRates[data.currency]);
-
-        if (!isNaN(originalCost) && !isNaN(rate)) {
-            // Store as string for form state
-            setData("current_cost", (originalCost * rate).toFixed(2));
-        } else {
-            // Fallback to original cost as string (2 decimals)
-            setData("current_cost", originalCost.toFixed(2));
-        }
+        currencyExchange(
+            data.original_cost,
+            data.currency,
+            (value) => setData('current_cost', value)
+        );
     }, [data.currency, data.original_cost, setData]);
 
     /**
@@ -110,33 +81,6 @@ export default function AddNewWatch() {
             setHasChanges(true);
         }
     }, [data, savedData]);
-
-
-    const handleSave = () => {
-        //save the data to server
-        updateServer(route("watches.store"), {
-            onSuccess: () => {
-                // reset();
-            },
-        });
-
-        setSavedData(data);
-        // setHasChanges(false);
-    };
-
-    const handleSaveAndClose = () => {
-        handleSave();
-        setTimeout(() => {
-            router.visit(route("watches.index"));
-        }, 100);
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        handleSave();
-    };
-
-    const handleSaveAndNavigate = (e) => { };
 
     const handleResetAI = () => {
         if (
@@ -170,25 +114,51 @@ export default function AddNewWatch() {
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
+
+    /**
+     * All Handlers + server actions
+     */
+
+    const handleSave = () => {
+        //save the data to server
+        updateServer(route("watches.store"), {
+            onSuccess: () => {
+                // reset();
+            },
+        });
+
+        setSavedData(data);
+        setHasChanges(false);
+    };
+
+    const handleSaveAndClose = () => {
+        handleSave();
+        router.visit(route("watches.index"));
+    };
+
+    //Form handler with server reqeust
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSave();
+    };
+
     return (
         <Layout>
             <Head title="Add New Watch" />
 
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-
-
                 <div
                     ref={formRef}
                     tabIndex={-1}
                     className="flex max-h-[98vh] w-full max-w-[90vw] flex-col overflow-hidden rounded-xl bg-white shadow-xl"
                 >
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        <h2 className="text-lg font-bold text-slate-900">
-                            {"Add New Watch"}
-                        </h2>
+                        <h2 className="text-lg font-bold text-slate-900">{"Add New Watch"}</h2>
                     </div>
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        {Object.entries(errors).map(([, error]) => <InputError message={String(error)} />)}
+                        {Object.entries(errors).map(([, error]) => (
+                            <InputError message={String(error)} />
+                        ))}
                     </div>
 
                     {/* Navigation Arrows - Outside the box */}
@@ -197,7 +167,7 @@ export default function AddNewWatch() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            href={route('watches.show', previousItem.routeKey)}
+                            href={route("watches.show", previousItem.routeKey)}
                             className="absolute left-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
                         >
                             <ChevronLeft className="h-4 w-4" />
@@ -209,17 +179,14 @@ export default function AddNewWatch() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            href={route('watches.show', nextItem.routeKey)}
+                            href={route("watches.show", nextItem.routeKey)}
                             className="absolute right-8 top-1/2 z-10 -translate-y-1/2 transform bg-white shadow-lg hover:bg-gray-50"
                         >
                             <ChevronRight className="h-4 w-4" />
                         </Link>
                     )}
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="flex flex-1 flex-col overflow-hidden"
-                    >
+                    <form onSubmit={onSubmit} className="flex flex-1 flex-col overflow-hidden">
                         <div className="flex-1 space-y-2.5 overflow-y-auto p-6">
                             {/* First row: Name | SKU | Brand | Original Cost + Currency dropdown */}
                             <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
@@ -231,9 +198,7 @@ export default function AddNewWatch() {
                                         type="text"
                                         name="name"
                                         value={data.name}
-                                        onChange={(e) =>
-                                            setData("name", e.target.value)
-                                        }
+                                        onChange={(e) => setData("name", e.target.value)}
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     />
@@ -242,7 +207,7 @@ export default function AddNewWatch() {
                                 <AutoSkuGenerate
                                     name={data.name}
                                     brand={data.brand}
-                                    onChange={(value) => setData('sku', value)}
+                                    onChange={(value) => setData("sku", value)}
                                 />
 
                                 <div>
@@ -271,19 +236,14 @@ export default function AddNewWatch() {
                                             type="number"
                                             value={data.original_cost}
                                             onChange={(e) =>
-                                                setData(
-                                                    "original_cost",
-                                                    e.target.value,
-                                                )
+                                                setData("original_cost", e.target.value)
                                             }
                                             placeholder="1.00"
                                             className="w-36 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                         />
                                         <Select
                                             value={data.currency}
-                                            onValueChange={(value) =>
-                                                setData("currency", value)
-                                            }
+                                            onValueChange={(value) => setData("currency", value)}
                                         >
                                             <SelectTrigger className="w-40">
                                                 <SelectValue />
@@ -294,8 +254,7 @@ export default function AddNewWatch() {
                                                         key={currency.code}
                                                         value={currency.code}
                                                     >
-                                                        {currency.symbol}{" "}
-                                                        {currency.name}
+                                                        {currency.symbol} {currency.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -313,21 +272,15 @@ export default function AddNewWatch() {
                                     <select
                                         name="status"
                                         value={data.status}
-                                        onChange={(e) =>
-                                            setData("status", e.target.value)
-                                        }
+                                        onChange={(e) => setData("status", e.target.value)}
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     >
-                                        {(statuses).map((status, index) => (
-                                            <option
-                                                key={index}
-                                                value={status}
-                                            >
+                                        {statuses.map((status, index) => (
+                                            <option key={index} value={status}>
                                                 {Status.toHuman(status)}
                                             </option>
-                                        ),
-                                        )}
+                                        ))}
                                     </select>
                                 </div>
 
@@ -337,9 +290,7 @@ export default function AddNewWatch() {
                                     </label>
                                     <LocationSelector
                                         value={data.location}
-                                        onValueChange={(value) =>
-                                            setData("location", value)
-                                        }
+                                        onValueChange={(value) => setData("location", value)}
                                         locations={locations}
                                         onEditLocations={handleEditLocations}
                                     />
@@ -388,31 +339,22 @@ export default function AddNewWatch() {
                                                 Images (up to 40)
                                             </label>
                                             <div className="flex items-center space-x-4 text-sm text-slate-600">
-                                                <span>
-                                                    {data.images.length}/40
-                                                    images
-                                                </span>
+                                                <span>{data.images.length}/40 images</span>
                                                 <span className="flex items-center space-x-1">
                                                     <Sparkles className="h-4 w-4 text-amber-500" />
-                                                    <span>
-                                                        {aiSelectedCount}/10 AI
-                                                        selected
-                                                    </span>
+                                                    <span>{aiSelectedCount}/10 AI selected</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="min-h-[200px] flex-1">
                                             <ImageManager
                                                 images={data.images}
-                                                onChange={(images) =>
-                                                    setData("images", images)
-                                                }
+                                                onChange={(images) => setData("images", images)}
                                             />
                                         </div>
                                         {/* Created by line */}
                                         <div className="mt-2 text-xs text-slate-500">
-                                            Edited by <strong>Admin</strong> on
-                                            6/23/2025 | Seller:{" "}
+                                            Edited by <strong>Admin</strong> on 6/23/2025 | Seller:{" "}
                                             <strong>John Doe</strong> | Agent:{" "}
                                             <strong>Mike Smith</strong>
                                         </div>
@@ -431,10 +373,7 @@ export default function AddNewWatch() {
                                                 name="serial"
                                                 value={data.serial_number}
                                                 onChange={(e) =>
-                                                    setData(
-                                                        "serial_number",
-                                                        e.target.value,
-                                                    )
+                                                    setData("serial_number", e.target.value)
                                                 }
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
@@ -449,10 +388,7 @@ export default function AddNewWatch() {
                                                 name="ref"
                                                 value={data.reference}
                                                 onChange={(e) =>
-                                                    setData(
-                                                        "reference",
-                                                        e.target.value,
-                                                    )
+                                                    setData("reference", e.target.value)
                                                 }
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
@@ -467,10 +403,7 @@ export default function AddNewWatch() {
                                                 name="case_size"
                                                 value={data.case_size}
                                                 onChange={(e) =>
-                                                    setData(
-                                                        "case_size",
-                                                        e.target.value,
-                                                    )
+                                                    setData("case_size", e.target.value)
                                                 }
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
@@ -484,12 +417,7 @@ export default function AddNewWatch() {
                                                 type="text"
                                                 name="caliber"
                                                 value={data.caliber}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "caliber",
-                                                        e.target.value,
-                                                    )
-                                                }
+                                                onChange={(e) => setData("caliber", e.target.value)}
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
@@ -503,10 +431,7 @@ export default function AddNewWatch() {
                                                 name="timegrapher"
                                                 value={data.timegrapher}
                                                 onChange={(e) =>
-                                                    setData(
-                                                        "timegrapher",
-                                                        e.target.value,
-                                                    )
+                                                    setData("timegrapher", e.target.value)
                                                 }
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
@@ -533,10 +458,7 @@ export default function AddNewWatch() {
                                             name="ai_instructions"
                                             value={data.ai_instructions}
                                             onChange={(e) =>
-                                                setData(
-                                                    "ai_instructions",
-                                                    e.target.value,
-                                                )
+                                                setData("ai_instructions", e.target.value)
                                             }
                                             rows={1}
                                             placeholder=""
@@ -547,12 +469,8 @@ export default function AddNewWatch() {
                                                 type="button"
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={
-                                                    handleGenerateDescription
-                                                }
-                                                disabled={
-                                                    isGeneratingDescription
-                                                }
+                                                onClick={handleGenerateDescription}
+                                                disabled={isGeneratingDescription}
                                                 className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 {isGeneratingDescription ? (
@@ -572,24 +490,16 @@ export default function AddNewWatch() {
 
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">
-                                            <span className="font-bold">
-                                                Description
-                                            </span>{" "}
+                                            <span className="font-bold">Description</span>{" "}
                                             <span className="font-normal">
-                                                (Remember to check Model, Case
-                                                size, Serial, Reference,
-                                                Timegrapher result)
+                                                (Remember to check Model, Case size, Serial,
+                                                Reference, Timegrapher result)
                                             </span>
                                         </label>
                                         <Textarea
                                             name="description"
                                             value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value,
-                                                )
-                                            }
+                                            onChange={(e) => setData("description", e.target.value)}
                                             className="min-h-[320px] w-full resize-y"
                                             disabled={isGeneratingDescription}
                                         />
@@ -602,9 +512,7 @@ export default function AddNewWatch() {
                                         <Textarea
                                             name="notes"
                                             value={data.notes}
-                                            onChange={(e) =>
-                                                setData("notes", e.target.value)
-                                            }
+                                            onChange={(e) => setData("notes", e.target.value)}
                                             rows={2}
                                             className="w-full resize-y"
                                         />
@@ -639,9 +547,7 @@ export default function AddNewWatch() {
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() =>
-                                    router.visit(route("watches.index"))
-                                }
+                                onClick={() => router.visit(route("watches.index"))}
                                 variant="outline"
                                 className="flex-1"
                             >
@@ -656,18 +562,13 @@ export default function AddNewWatch() {
             {showSaveDialog && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50 p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6">
-                        <h3 className="mb-4 text-lg font-semibold">
-                            Unsaved Changes
-                        </h3>
+                        <h3 className="mb-4 text-lg font-semibold">Unsaved Changes</h3>
                         <p className="mb-6 text-gray-600">
-                            You have unsaved changes. Do you want to save them
-                            before navigating to the next watch?
+                            You have unsaved changes. Do you want to save them before navigating to
+                            the next watch?
                         </p>
                         <div className="flex gap-3">
-                            <Button
-                                onClick={handleSaveAndNavigate}
-                                className="flex-1"
-                            >
+                            <Button onClick={() => alert('Save and continue is under development')} className="flex-1">
                                 Save & Continue
                             </Button>
                             <Button
