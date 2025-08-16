@@ -26,7 +26,7 @@ import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
 import { getSearchStatus, getSelectSearch, getSelectStatus, handleSerchSort, watcheSearch } from "./_searchActions";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleNextWatch, handlePreviousWatch } from "./actions";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
 
 
 
@@ -61,18 +61,6 @@ const WatchManagement = () => {
 
 
 
-    const getNavigationInfo = () => {
-        if (!editingWatch) return { hasNext: false, hasPrevious: false };
-
-        const currentIndex = watches.findIndex(
-            (w) => w.id === editingWatch.id,
-        );
-        return {
-            hasNext: currentIndex < watches.length - 1,
-            hasPrevious: currentIndex > 0,
-        };
-    };
-
     const handleSelectWatch = (watchId: string, checked: boolean) => {
         if (checked) {
             setSelectedWatches([...selectedWatches, watchId]);
@@ -106,6 +94,20 @@ const WatchManagement = () => {
             });
         }
     }
+
+
+    //Handle sort state
+    const handleSort = (field: string) => {
+
+        const direction = data.direction === "asc" ? "desc" : "asc";
+
+        setData('direction', direction);
+        setData('column', field)
+
+        const columns = uniqueArray([data.column, field], true);
+
+        handleSerchSort(columns, data.direction);
+    };
 
 
     return (
@@ -381,10 +383,7 @@ const WatchManagement = () => {
                     <WatchListView
                         watches={watches}
                         onDelete={handleDelete}
-                        onSort={(field) => {
-                            handleSerchSort(uniqueArray([data.column, field], true), data.direction)
-                            setData('column', field)
-                        }}
+                        onSort={handleSort}
                         sortField={data.column}
                         sortDirection={data.direction as 'asc'}
                         selectedWatches={selectedWatches}
@@ -415,18 +414,6 @@ const WatchManagement = () => {
                             setShowForm(false);
                             setEditingWatch(undefined);
                         }}
-                        onNext={
-                            getNavigationInfo().hasNext
-                                ? handleNextWatch
-                                : undefined
-                        }
-                        onPrevious={
-                            getNavigationInfo().hasPrevious
-                                ? handlePreviousWatch
-                                : undefined
-                        }
-                        hasNext={getNavigationInfo().hasNext}
-                        hasPrevious={getNavigationInfo().hasPrevious}
                     />
                 )}
             </div>
