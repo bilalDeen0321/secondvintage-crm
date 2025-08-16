@@ -421,6 +421,7 @@ export default function UpdateWatch(props: Props) {
                                     <GenerateAiDescription
                                         data={data}
                                         setData={setData}
+                                        watch={watch}
                                     />
 
                                     <div className="flex flex-col">

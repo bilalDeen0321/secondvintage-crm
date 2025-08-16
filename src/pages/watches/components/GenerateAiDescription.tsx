@@ -22,43 +22,31 @@ type Props = {
 
 export default function GenerateAiDescription(props: Props) {
 
-    const { data, setData, watch } = props;
+    const { data, setData, watch = {} as WatchResource } = props;
 
     //state
     const [processing, setLoading] = useState(false);
 
-    useEffect(() => { console.log(data.images.filter(i => i.useForAI)) }, [data])
-
-
-    // const handleGenerateDescription = async () => {
-    //     setIsGeneratingDescription(true);
-    //     console.log("Generating description for watch:", data.name);
-    //     console.log("Using AI instructions:", data.ai_instructions);
-    //     console.log(
-    //         "Using images marked for AI:",
-    //         data.images.filter((img) => img.useForAI),
-    //     );
-
-    //     // Simulate API call with timeout
-    //     setTimeout(() => {
-    //         alert(
-    //             "Description generation would be implemented here using the AI instructions and selected images.",
-    //         );
-    //         setIsGeneratingDescription(false);
-    //     }, 2000);
-    // };
+    useEffect(() => { console.log(watch) }, [watch])
 
     /**
      * Handlers
      */
     const handleRest = () => {
         const reset_confirm = confirm(
-            'Are you sure want to reset the AI instructions? This action cannot be undone.'
+            'Are you sure want to reset the AI thread id? This action cannot be undone.'
         );
 
         if (reset_confirm) {
-            setData('ai_instructions', '')
-            alert("AI thread reset for this watch");
+            setData('ai_thread_id', '')
+
+            if (watch.routeKey) {
+                axios.post(route('api.make-hooks.ai-description.reset_thread'), { routeKey: watch.routeKey }).then(function () {
+                    toast.success("AI thread reset for this watch");
+                }).catch(error => {
+                    toast.error(error?.message)
+                })
+            }
         }
     }
 
@@ -107,7 +95,6 @@ export default function GenerateAiDescription(props: Props) {
             setLoading(false);
         }
     };
-
 
     return <div>
         <div className="mb-2 flex items-center justify-between">

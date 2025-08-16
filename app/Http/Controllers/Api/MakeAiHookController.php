@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
+use App\Models\Watch;
 use App\Services\Api\MakeAiHook;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class MakeAiHookController extends Controller
 {
+    use ApiResponse;
     /**
      * Hanld make.com ai generate watch description.
      */
@@ -18,7 +21,7 @@ class MakeAiHookController extends Controller
 
         $request->validate([
             'name'              => 'required|string',
-            'ai_instructions'   => 'required|string',
+            'ai_instructions'   => 'nullable|string',
             'ai_thread_id'      => 'nullable|string',
             'sku'               => 'nullable|string',
             'brand'             => 'nullable|string',
@@ -32,11 +35,24 @@ class MakeAiHookController extends Controller
             'status'            => 'nullable|string',
 
             // images is an array of base64 strings inside objects
-            'images'          => ['nullable', 'array'],
+            'images'          => ['required', 'array'],
             'images.*.url'    => ['required_with:images', 'string'],
         ]);
 
         return $action($request);
+    }
+
+    /**
+     * Reset thread id form watch data
+     */
+    public function resetThread(Request $request)
+    {
+
+        $routeKey = $request->input('routeKey');
+
+        Watch::where(Watch::routeKeyName(), $routeKey)->update(['ai_thread_id' => null]);
+
+        return $this->apiSuccess('reset');
     }
 
     /**

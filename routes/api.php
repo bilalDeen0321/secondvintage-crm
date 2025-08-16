@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group(function () {
     Route::post('generate', [MakeAiHookController::class, 'generate'])->name('generate');
+    Route::post('reset-thread', [MakeAiHookController::class, 'resetThread'])->name('reset_thread');
 });
 
 Route::prefix('watches')->name('watches.')->group(function () {

@@ -2,20 +2,20 @@
 
 namespace App\Traits\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
- * @var \Illuminate\Database\Eloquent\Model $this;
- * @var \Illuminate\Database\Eloquent\Model self;
- * @var \Illuminate\Database\Eloquent\Model static;
+ * Model trait helpers
+ * 
+ * @mixin \Illuminate\Database\Eloquent\Model
  */
 trait ModelHelpers
 {
 
     /**
-     * Create a new model instance
+     * Create a new static instance
+     * 
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public static function instance(): static
+    public static function instance()
     {
         return app(static::class);
     }
@@ -25,8 +25,7 @@ trait ModelHelpers
      */
     public static function tableName(): string
     {
-        // Create a temporary instance to get table name
-        return (new static)->getTable();
+        return static::instance()->getTable();
     }
 
     /**
@@ -34,22 +33,22 @@ trait ModelHelpers
      */
     public static function routeKeyName(): string
     {
-        return (new static)->getRouteKeyName();
-    }
-
-    /**
-     * Get the route key value from the model instance.
-     */
-    public function routeKey()
-    {
-        return $this->getRouteKey();
+        return static::instance()->getRouteKeyName();
     }
 
     /**
      * Get the fillable attributes statically from the model.
      */
-    // public static function tableColumns(): array
-    // {
-    //     return (new static)->getFillable();
-    // }
+    public static function fields(): array
+    {
+        return static::instance()->getFillable();
+    }
+
+    /**
+     * Get model find by route key
+     */
+    public static function findByKey(string|int $key): static|null
+    {
+        return static::where(static::routeKeyName(), $key)->first();
+    }
 }
