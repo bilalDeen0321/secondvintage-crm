@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class WatchController extends Controller
 {
@@ -38,76 +39,80 @@ class WatchController extends Controller
     public function index(Request $request)
     {
 
-        // Define allowed columns for sorting
-        $allow_columns = [
-            'id',
-            'name',
-            'sku',
-            'status',
-            'location',
-            'original_cost',
-            'created_at',
-            'updated_at'
+        // Map frontend column names to database columns if needed
+        $sortableColumns = [
+            'name' => 'name',
+            'sku' => 'sku',
+            'created_at' => 'created_at',
+            'brand' => 'brand',
+            'original_cost' => 'original_cost',
+            'status' => 'status',
+            'location' => 'location',
         ];
 
-        $columns = $request->input('columns', 'id');
-        $direction = $request->input('direction', 'desc');
+        // Get sorting from frontend
+        $orders = $request->input('order', [
+            'column' => 'created_at',
+            'dir'    => 'asc'
+        ]);
 
-        // Validate sort field
-        if (!in_array($columns, $allow_columns)) {
-            $columns = 'id';
+        $query = QueryBuilder::for(Watch::class);
+
+        // Apply multi-column sorting from frontend if exists
+        $orders = $request->input('order', []);
+        if (!empty($orders)) {
+            foreach ($orders as $order) {
+                $column = $order['column'] ?? null;
+                $dir = $order['dir'] ?? 'asc';
+                if ($column && isset($sortableColumns[$column])) {
+                    $query->orderBy($sortableColumns[$column], $dir);
+                }
+            }
+        } else {
+            // Default sorting by latest created
+            $query->orderBy('created_at', 'desc');
         }
 
-        // Validate sort direction
-        if (!in_array(strtolower($direction), ['asc', 'desc'])) {
-            $direction = 'desc';
-        }
-
-        $query = Watch::query()
-            ->when($request->filled('search'), function (Builder $q) use ($request) {
-                $search = $request->input('search');
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%")
-                        ->orWhere('location', 'like', "%{$search}%")
-                        // ->orWhere('original_cost', 'like', "%{$search}%")
-                        ->orWhereHas('brand', function ($brandQuery) use ($search) {
-                            $brandQuery->where('name', 'like', "%{$search}%");
-                        });
+        $query->when($request->filled('search'), function (Builder $q) use ($request) {
+            $search = $request->input('search');
+            $q->where(function ($sub) use ($search) {
+                $sub->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%")
+                    // ->orWhere('original_cost', 'like', "%{$search}%")
+                    ->orWhereHas('brand', function ($brandQuery) use ($search) {
+                        $brandQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        })->when($request->filled('brand'), function (Builder $q) use ($request) {
+            $brands = $request->input('brand');
+            // Support multiple brands
+            if (is_array($brands)) {
+                $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                    $brandQuery->whereIn('name', $brands);
                 });
-            })
-            ->when($request->filled('brand'), function (Builder $q) use ($request) {
-                $brands = $request->input('brand');
-                // Support multiple brands
-                if (is_array($brands)) {
-                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                        $brandQuery->whereIn('name', $brands);
-                    });
-                } else {
-                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                        $brandQuery->where('name', $brands);
-                    });
-                }
-            })
-            ->when($request->filled('status'), function (Builder $q) use ($request) {
-                $statuses = $request->input('status');
-                // Support multiple statuses
-                if (is_array($statuses)) {
-                    $q->whereIn('status', $statuses);
-                } else {
-                    $q->where('status', $statuses);
-                }
-            })
-            ->when($request->filled('location'), function (Builder $q) use ($request) {
-                $locations = $request->input('location');
-                // Support multiple locations
-                if (is_array($locations)) {
-                    $q->whereIn('location', $locations);
-                } else {
-                    $q->where('location', $locations);
-                }
-            })
-            ->orderBy($columns, $direction);
+            } else {
+                $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                    $brandQuery->where('name', $brands);
+                });
+            }
+        })->when($request->filled('status'), function (Builder $q) use ($request) {
+            $statuses = $request->input('status');
+            // Support multiple statuses
+            if (is_array($statuses)) {
+                $q->whereIn('status', $statuses);
+            } else {
+                $q->where('status', $statuses);
+            }
+        })->when($request->filled('location'), function (Builder $q) use ($request) {
+            $locations = $request->input('location');
+            // Support multiple locations
+            if (is_array($locations)) {
+                $q->whereIn('location', $locations);
+            } else {
+                $q->where('location', $locations);
+            }
+        });
 
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();

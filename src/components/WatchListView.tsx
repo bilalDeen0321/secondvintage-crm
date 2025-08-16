@@ -2,9 +2,11 @@ import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Linkui from "@/components/ui/Link";
+import { debouncedNavigate } from "@/pages/watches/_searchActions";
 import { WatchResource } from "@/types/resources/watch";
 import { Link } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-react";
+import qs from 'qs';
 import { useState } from "react";
 import ImageViewer from "./ImageViewer";
 
@@ -23,12 +25,16 @@ const WatchListView = ({
     watches,
     onDelete,
     onSort,
-    sortField,
-    sortDirection,
     selectedWatches,
     onSelectWatch,
     onSelectAll,
 }: WatchListViewProps) => {
+
+    const [sortField, setSortField] = useState('created_at'); // default sort field
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc'); // default direction
+
+
+
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,39 +46,7 @@ const WatchListView = ({
         currentIndex: 0,
     });
 
-    const getSortIcon = (field: string) => {
-        if (sortField !== field) return null;
-        return sortDirection === "asc" ? (
-            <ChevronUp className="ml-1 inline h-4 w-4" />
-        ) : (
-            <ChevronDown className="ml-1 inline h-4 w-4" />
-        );
-    };
 
-
-    const getBatchGroup = (watchId: string) => {
-        // Simple logic to assign batch groups based on watch ID
-        const batchNumber = (parseInt(watchId) % 4) + 1;
-        return `B00${batchNumber}`;
-    };
-
-    const getLocalCurrency = (
-        original_cost: number | undefined,
-        location: string,
-    ) => {
-        if (!original_cost) return "-";
-
-        if (location === "Vietnam") {
-            // Convert EUR to VND (approximate rate: 1 EUR = 26,000 VND)
-            const vndAmount = original_cost * 26000;
-            return `₫${vndAmount.toLocaleString()}`;
-        } else if (location === "Japan") {
-            // Convert EUR to JPY (approximate rate: 1 EUR = 160 JPY)
-            const jpyAmount = original_cost * 160;
-            return `¥${jpyAmount.toLocaleString()}`;
-        }
-        return "EUR";
-    };
 
     const handleImageClick = (watch: WatchResource) => {
         if (watch.images && watch.images.length > 0) {
@@ -109,6 +83,50 @@ const WatchListView = ({
         }));
     };
 
+
+    // Update getSortIcon to use local state
+    const getSortIcon = (field: string) => {
+        if (sortField !== field) return null;
+        return sortDirection === 'asc' ? (
+            <ChevronUp className="ml-1 inline h-4 w-4" />
+        ) : (
+            <ChevronDown className="ml-1 inline h-4 w-4" />
+        );
+    };
+
+    // Updated handleSort
+    const handleSort = (field: string) => {
+        let direction: 'asc' | 'desc' | null = 'asc';
+
+        if (sortField === field) {
+            // toggle ascending/descending
+            direction = sortDirection === 'asc' ? 'desc' : 'asc';
+        }
+
+        // clicking same field again to remove sorting
+        if (sortField === field && sortDirection === 'desc') {
+            direction = null;
+        }
+
+        setSortField(field);
+        setSortDirection(direction as 'asc' | 'desc');
+
+        // Get current query params
+        const current = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+
+        // Build new order params
+        const params = {
+            ...current,
+            order: direction
+                ? [{ column: field, dir: direction, name: field }]
+                : [], // empty = no sorting
+        };
+
+        debouncedNavigate(params);
+    };
+
+
+
     return (
         <>
             <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -126,18 +144,18 @@ const WatchListView = ({
                                         onCheckedChange={onSelectAll}
                                     />
                                 </th>
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700">
-                                    Image
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("created_at")}>
+                                    Image {getSortIcon("created_at")}
                                 </th>
                                 <th
                                     className="w-48 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("name")}
+                                    onClick={() => handleSort("name")}
                                 >
                                     Name {getSortIcon("name")}
                                 </th>
                                 <th
                                     className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("sku")}
+                                    onClick={() => handleSort("sku")}
                                 >
                                     SKU {getSortIcon("sku")}
                                 </th>
@@ -149,7 +167,7 @@ const WatchListView = ({
                                 </th>
                                 <th
                                     className="w-20 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("original_cost")}
+                                    onClick={() => handleSort("original_cost")}
                                 >
                                     Cost {getSortIcon("original_cost")}
                                 </th>
@@ -161,13 +179,13 @@ const WatchListView = ({
                                 </th>
                                 <th
                                     className="w-28 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("status")}
+                                    onClick={() => handleSort("status")}
                                 >
                                     Status {getSortIcon("status")}
                                 </th>
                                 <th
                                     className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => onSort("location")}
+                                    onClick={() => handleSort("location")}
                                 >
                                     Location {getSortIcon("location")}
                                 </th>

@@ -30,7 +30,7 @@ function cleanParams(params: Record<string, any>) {
 }
 
 // Create a debounced router call once
-const debouncedNavigate = debounce((params: Record<string, any>) => {
+export const debouncedNavigate = debounce((params: Record<string, any>) => {
     router.get(route("watches.index"), params, {
         preserveState: true,
         replace: true,

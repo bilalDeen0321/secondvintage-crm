@@ -99,14 +99,16 @@ const WatchManagement = () => {
     //Handle sort state
     const handleSort = (field: string) => {
 
+        const params = new URLSearchParams();
+
         const direction = data.direction === "asc" ? "desc" : "asc";
 
         setData('direction', direction);
         setData('column', field)
 
-        const columns = uniqueArray([data.column, field], true);
+        const columns = uniqueArray([field, field], true);
 
-        handleSerchSort(columns, data.direction);
+        handleSerchSort(columns, direction);
     };
 
 
