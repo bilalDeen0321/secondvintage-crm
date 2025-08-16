@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import Linkui from "@/components/ui/Link";
 import { WatchResource } from "@/types/resources/watch";
+import { Link } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ImageViewer from "./ImageViewer";
-import Link from "./ui/Link";
 
 interface WatchListViewProps {
     watches: WatchResource[];
-    onEdit: (watch: WatchResource) => void;
     onDelete: (id: string | number) => void;
     onSort: (field: string) => void;
     sortField: string;
@@ -20,7 +20,6 @@ interface WatchListViewProps {
 
 const WatchListView = ({
     watches,
-    onEdit,
     onDelete,
     onSort,
     sortField,
@@ -250,21 +249,21 @@ const WatchListView = ({
                                         </div>
                                     </td>
                                     <td className="p-2">
-                                        <div
+                                        <Link
+                                            href={route('watches.show', watch.routeKey)}
                                             className="cursor-pointer truncate text-sm font-medium text-slate-900 transition-colors hover:text-blue-600"
                                             title={watch.name}
-                                            onClick={() => onEdit(watch)}
                                         >
                                             {watch.name}
-                                        </div>
+                                        </Link>
                                     </td>
                                     <td className="p-2">
-                                        <div
+                                        <Link
+                                            href={route('watches.show', watch.routeKey)}
                                             className="cursor-pointer text-sm text-slate-600 transition-colors hover:text-blue-600"
-                                            onClick={() => onEdit(watch)}
                                         >
                                             {watch.sku}
-                                        </div>
+                                        </Link>
                                     </td>
                                     <td className="p-2">
                                         <div className="text-sm text-slate-600">
@@ -331,14 +330,14 @@ const WatchListView = ({
                                     </td>
                                     <td className="p-2">
                                         <div className="flex gap-1">
-                                            <Link
+                                            <Linkui
                                                 href={route('watches.show', watch.routeKey)}
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-7 w-7 p-0"
                                             >
                                                 <Edit className="h-3 w-3" />
-                                            </Link>
+                                            </Linkui>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"

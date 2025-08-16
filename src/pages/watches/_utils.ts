@@ -91,3 +91,81 @@ export const getServerSku = async (name: string, brand: string): Promise<string>
         return '';
     }
 };
+
+
+
+/**
+ * Handle printing of SKU label in a new window.
+ *
+ * @param name  - Watch name (optional, fallback: "Watch")
+ * @param brand - Watch brand (optional)
+ * @param sku   - SKU string (required)
+ */
+export const printWatchSku = (name: string, brand: string, sku: string): void => {
+    // Prevent printing if SKU is missing
+    if (!sku) {
+        alert("No SKU available to print");
+        return;
+    }
+
+    // Open a popup print window
+    const printWindow = window.open("", "_blank", "width=400,height=300");
+
+    if (printWindow) {
+        // Sanitize inputs to avoid injecting unwanted HTML
+        const safeName = name ? name.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "Watch";
+        const safeBrand = brand ? brand.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+
+        // Build and write the printable document
+        printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>SKU Label - ${sku}</title>
+            <style>
+              body { 
+                font-family: Arial, sans-serif; 
+                margin: 20px; 
+                text-align: center;
+                background: white;
+              }
+              .label {
+                border: 2px solid #000;
+                padding: 20px;
+                margin: 20px auto;
+                width: 300px;
+                background: white;
+              }
+              .sku {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 10px 0;
+              }
+              .watch-name {
+                font-size: 16px;
+                margin: 10px 0;
+              }
+              @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="label">
+              <div class="sku">${sku}</div>
+              <div class="watch-name">${safeName}</div>
+              <div>${safeBrand}</div>
+            </div>
+            <div class="no-print">
+              <button onclick="window.print()">Print</button>
+              <button onclick="window.close()">Close</button>
+            </div>
+          </body>
+        </html>
+      `);
+
+        // Close document stream to apply styles/scripts
+        printWindow.document.close();
+    }
+};

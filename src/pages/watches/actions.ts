@@ -61,7 +61,6 @@ export const handleEditBrands = () => {
 };
 
 
-import { WatchResource } from "@/types/resources/watch";
 import { Inertia } from '@inertiajs/inertia';
 import { handleSerchSort } from "./_searchActions";
 
@@ -114,11 +113,6 @@ export const handlePreviousWatch = () => {
     //         setSearchParams(newSearchParams, { replace: true });
     //     }
     // }
-};
-
-export const handleEditWatch = (watch: WatchResource) => {
-    alert('on edit handler');
-    // return route('watches.edit', watch.routeKey);
 };
 
 export const handleSaveWatch = (watchData: Omit<Watch, "id">) => {

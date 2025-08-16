@@ -26,7 +26,7 @@ import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
 import { getSearchStatus, getSelectSearch, getSelectStatus, handleSerchSort, watcheSearch } from "./_searchActions";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleEditWatch, handleNextWatch, handlePreviousWatch } from "./actions";
+import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations, handleNextWatch, handlePreviousWatch } from "./actions";
 
 
 
@@ -373,7 +373,6 @@ const WatchManagement = () => {
                             <WatchCard
                                 key={watch.id}
                                 watch={watch}
-                                onEdit={handleEditWatch}
                                 onDelete={handleDelete}
                             />
                         ))}
@@ -381,7 +380,6 @@ const WatchManagement = () => {
                 ) : (
                     <WatchListView
                         watches={watches}
-                        onEdit={handleEditWatch}
                         onDelete={handleDelete}
                         onSort={(field) => {
                             handleSerchSort(uniqueArray([data.column, field], true), data.direction)

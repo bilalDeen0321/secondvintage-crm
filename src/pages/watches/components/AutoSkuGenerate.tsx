@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tag } from "lucide-react";
 import { useState } from "react";
-import { handlePrintSKULabel } from "../_create-actions";
+import { printWatchSku } from "../_utils";
 
 type Props = {
     value?: string,
@@ -32,7 +32,7 @@ export default function AutoSkuGenerate({ value, name, brand, onChange }: Props)
                         variant="outline"
                         disabled={!value}
                         size="sm"
-                        onClick={() => handlePrintSKULabel(name, brand, value)}
+                        onClick={() => printWatchSku(name, brand, value)}
                         className={cn('p-2 py-3', { 'cursor-not-allowed': !value })}
                         title="Print SKU Label"
                     >

@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { WatchResource } from "@/types/resources/watch";
+import { Link } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import ImageViewer from "./ImageViewer";
+import Linkui from "./ui/Link";
 
 interface WatchCardProps {
     watch: WatchResource;
-    onEdit: (watch: WatchResource) => void;
     onDelete: (id: string | number) => void;
 }
 
-const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
+const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
         images: never[];
@@ -85,14 +86,6 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
         }));
     };
 
-    const handleCardClick = () => {
-        onEdit(watch);
-    };
-
-    const handleNameClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onEdit(watch);
-    };
 
     return (
         <>
@@ -125,12 +118,12 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
                 {/* Content */}
                 <div className="p-4">
                     <div className="mb-2 flex items-start justify-between">
-                        <h3
+                        <Link
+                            href={route('watches.show', watch.routeKey)}
                             className="line-clamp-2 cursor-pointer font-medium text-slate-900 transition-colors hover:text-blue-600"
-                            onClick={handleNameClick}
                         >
                             {watch.name}
-                        </h3>
+                        </Link>
                         <span
                             className={`ml-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(watch.status)}`}
                         >
@@ -163,15 +156,15 @@ const WatchCard = ({ watch, onEdit, onDelete }: WatchCardProps) => {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                        <Button
+                        <Linkui
+                            href={route('watches.show', watch.routeKey)}
                             variant="outline"
                             size="sm"
-                            onClick={() => onEdit(watch)}
                             className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
                         >
                             <Edit className="mr-1 h-4 w-4" />
                             Edit
-                        </Button>
+                        </Linkui>
                         <Button
                             variant="outline"
                             size="sm"
