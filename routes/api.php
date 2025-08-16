@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MakeAiHookController;
 use App\Http\Controllers\Api\WatchApiController;
 use App\Http\Controllers\Api\WatchSkuController;
@@ -17,3 +18,6 @@ Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group
 Route::prefix('watches')->name('watches.')->group(function () {
     Route::post('generate-sku', [WatchSkuController::class, 'generate'])->name('generate-sku');
 });
+
+
+Route::resource('locations', LocationController::class);

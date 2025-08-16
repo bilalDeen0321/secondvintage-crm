@@ -137,10 +137,10 @@ class WatchController extends Controller
     {
 
         return Inertia::render('watches/create', [
-            'locations' => Location::query()->pluck('name')->unique()->values(),
-            'statuses' => Status::query()->pluck('name')->unique()->values(),
-            'batches' => Batch::query()->pluck('name')->unique()->values(),
-            'brands' => Brand::query()->pluck('name')->unique()->values(),
+            'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
+            'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
         ]);
     }
 
@@ -193,10 +193,10 @@ class WatchController extends Controller
             'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
 
             //form data
-            'locations' => Location::query()->pluck('name')->unique()->values(),
-            'statuses' => Status::query()->pluck('name')->unique()->values(),
-            'batches' => Batch::query()->pluck('name')->unique()->values(),
-            'brands' => Brand::query()->pluck('name')->unique()->values(),
+            'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
+            'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
         ]);
     }
 

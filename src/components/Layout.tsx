@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/react";
 import React, { useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import { useIsMobile } from "../hooks/use-mobile";
 import Sidebar from "./Sidebar";
 

@@ -6,6 +6,7 @@ import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
 import InputError from "@/components/InputError";
+import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
 import {
@@ -103,7 +104,7 @@ export default function AddNewWatch(props) {
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
     return (
-        <>
+        <Layout>
             <Head title="Add New Watch" />
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                 <div
@@ -543,6 +544,6 @@ export default function AddNewWatch(props) {
                     </div>
                 </div>
             )}
-        </>
+        </Layout>
     );
 }

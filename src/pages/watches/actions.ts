@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Watch as TWatch } from "@/types/watch";
+import { Inertia } from '@inertiajs/inertia';
+import { router } from "@inertiajs/react";
 
 type SetData<K, V> = (key: K, value: V) => void;
 
@@ -45,34 +47,16 @@ export const handleEditBrands = () => {
     const newBrand = prompt("Enter new brand name:");
 
     if (newBrand && newBrand.trim()) {
-        // Direct Inertia POST request without page reload
-        Inertia.post(route('brands.store'), { name: newBrand.trim() }, {
-            onSuccess: () => {
-                alert(`Brand "${newBrand.trim()}" added successfully.`);
-            },
-            onError: (errors) => {
-                alert('Failed to add brand. ' + JSON.stringify(errors));
-            },
-            // Keep the current page, don't reload or redirect
-            preserveScroll: true,
-            preserveState: true,
-        });
+
+        router.post(route('brands.store'), { name: newBrand }, { fresh: false });
     }
 };
 
 
-import { Inertia } from '@inertiajs/inertia';
-
-
 export const handleEditLocations = () => {
-    return alert('Action disabled');
-    const newLocation = prompt("Enter new location name:");
-    if (newLocation && newLocation.trim()) {
-        console.log("Adding new location:", newLocation.trim());
-        alert(
-            `Location "${newLocation.trim()}" would be added to the list. This would be implemented with a proper modal in the real application.`,
-        );
-    }
+    const newLocation = prompt("Enter new location:");
+    if (!newLocation?.trim()) return;
+    router.post(route('api.locations.store'), { name: newLocation });
 };
 
 
