@@ -62,7 +62,6 @@ export const handleEditBrands = () => {
 
 
 import { Inertia } from '@inertiajs/inertia';
-import { handleSerchSort } from "./_searchActions";
 
 
 export const handleEditLocations = () => {
@@ -216,16 +215,6 @@ export const handleStatusToggle = (status: string, setStatusFilters) => {
     }
 };
 
-export const handleSort = (columns: string | string[], data, setData) => {
-    if (data.sort === columns) {
-        setData('direction', data.direction === "asc" ? "desc" : "asc");
-    } else {
-        setData('sort', columns);
-        setData('direction', "asc");
-    }
-
-    handleSerchSort(column, data.direction);
-};
 
 
 
