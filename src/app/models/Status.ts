@@ -12,8 +12,6 @@ export default class Status {
     static readonly PROBLEM = 'defect_problem';
     static readonly STANDBY = 'standby';
 
-    public name: string;
-
     static statuses = [
         Status.DRAFT,
         Status.REVIEW,
@@ -52,20 +50,45 @@ export default class Status {
             [Status.LISTED]: 'Listed',
             [Status.REVIEW]: 'Review',
             [Status.LISTING]: 'Ready for listing',
+            [Status.APPROVED]: 'Approved',
             [Status.RESERVED]: 'Reserved',
             [Status.PLATFORM_REVIEW]: 'Platform Review',
             [Status.STANDBY]: 'Standby', // if you want to use literal key
             [Status.PROBLEM]: 'Defect/Problem',
         };
 
+        console.log(status, statuses[status] ?? status)
 
         return statuses[status] ?? status;
     }
+
+
+    static toColorClass(status: string) {
+
+        // Map from Status constants to display color class
+        const statuses: Record<string, string> = {
+            [Status.SOLD]: 'bg-slate-300 text-slate-800',
+            [Status.DRAFT]: 'bg-gray-100 text-gray-800',
+            [Status.LISTED]: 'bg-green-600 text-white',
+            [Status.REVIEW]: 'bg-blue-100 text-blue-800',
+            [Status.APPROVED]: 'bg-green-100 text-green-800',
+            [Status.LISTING]: 'bg-green-100 text-green-800',
+            [Status.RESERVED]: 'bg-purple-100 text-purple-800',
+            [Status.PLATFORM_REVIEW]: 'bg-blue-600 text-white',
+            [Status.STANDBY]: 'bg-amber-100 text-amber-800', // if you want to use literal key
+            [Status.PROBLEM]: 'bg-red-100 text-red-800',
+        };
+
+
+        return statuses[status] ?? 'bg-gray-100 text-gray-800';
+    }
+
 
     static toDatabase(key: string): typeof Status.statuses[number] | null {
 
         const statuses: Record<string, typeof Status.statuses[number]> = {
             "Draft": Status.DRAFT,
+            "Approved": Status.APPROVED,
             "Listed": Status.LISTED,
             "Ready for listing": Status.LISTING,
             "Review": Status.REVIEW,

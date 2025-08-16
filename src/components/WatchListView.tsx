@@ -1,3 +1,4 @@
+import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Linkui from "@/components/ui/Link";
@@ -48,32 +49,6 @@ const WatchListView = ({
         );
     };
 
-    const getStatusColor = (status: WatchResource["status"]) => {
-        switch (status) {
-            case "Draft":
-                return "bg-gray-100 text-gray-800";
-            case "Review":
-                return "bg-blue-100 text-blue-800";
-            case "Approved":
-                return "bg-green-100 text-green-800";
-            case "Platform Review":
-                return "bg-blue-600 text-white";
-            case "Ready for listing":
-                return "bg-green-100 text-green-800";
-            case "Listed":
-                return "bg-green-600 text-white";
-            case "Reserved":
-                return "bg-purple-100 text-purple-800";
-            case "Sold":
-                return "bg-slate-100 text-slate-800";
-            case "Defect/Problem":
-                return "bg-red-100 text-red-800";
-            case "Standby":
-                return "bg-amber-100 text-amber-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
 
     const getBatchGroup = (watchId: string) => {
         // Simple logic to assign batch groups based on watch ID
@@ -290,9 +265,9 @@ const WatchListView = ({
                                     </td>
                                     <td className="p-2">
                                         <span
-                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(watch.status)}`}
+                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${Status.toColorClass(watch.status)}`}
                                         >
-                                            {watch.status}
+                                            {Status.toHuman(watch.status)}
                                         </span>
                                     </td>
                                     <td className="p-2">

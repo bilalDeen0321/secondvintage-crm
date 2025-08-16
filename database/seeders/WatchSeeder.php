@@ -35,7 +35,7 @@ class WatchSeeder extends Seeder
 
             $location   = Location::query()->updateOrCreate(['name' => $item['location']]);
             $brand      = Brand::query()->updateOrCreate(['name' => $item['brand']]);
-            $status     = Status::query()->updateOrCreate(['name' => Str::slug($item['status'])]);
+            $status     = Status::query()->updateOrCreate(['name' => $item['status']]);
             $user_id    = User::inRandomOrder()->first()?->id  ?? User::factory()->create()->id;
 
 
@@ -44,8 +44,7 @@ class WatchSeeder extends Seeder
                 'name'              => $item['name'],
                 'brand_id'          => $brand->id,
                 'user_id'           => $user_id,
-                'original_cost'     => $item['acquisitionCost'],
-                'current_cost'      => $item['acquisitionCost'],
+                'original_cost'     => $item['original_cost'],
                 'status'            => $status->name,
                 'location'          => $location->name,
                 'description'       => $item['description'],
