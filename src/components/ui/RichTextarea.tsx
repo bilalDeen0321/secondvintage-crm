@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, formatRichText } from "@/lib/utils";
 import React, { useRef } from "react";
 
 interface EditableProps {
@@ -20,7 +20,7 @@ const RichTextarea: React.FC<EditableProps> = ({ name, value, onChange, classNam
                 className,
             )}
             contentEditable
-            dangerouslySetInnerHTML={{ __html: value }} // render HTML
+            dangerouslySetInnerHTML={{ __html: formatRichText(value) }} // render HTML
             onInput={(e) => onChange((e.target as HTMLDivElement).innerHTML)} // update with HTML
         />
     );

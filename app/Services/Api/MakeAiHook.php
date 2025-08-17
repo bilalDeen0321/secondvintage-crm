@@ -2,12 +2,9 @@
 
 namespace App\Services\Api;
 
+use App\Models\Log;
 use App\Models\Status;
-use App\Models\Watch;
-use Dom\Attr;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class MakeAiHook
 {
@@ -47,10 +44,10 @@ class MakeAiHook
                 ])
                 ->post($this->hookUrl, $payload);
 
+
             //send back
             return $response->collect();
         } catch (\Throwable $e) {
-            Log::error('Make.com request exception', ['error' => $e->getMessage()]);
             return collect([
                 'Status' => 'error',
                 'Message'   => $e->getMessage(),

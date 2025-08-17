@@ -2,6 +2,7 @@
 
 namespace App\Actions\Watch;
 
+use App\Models\Log;
 use App\Models\Status;
 use App\Models\WatchImage;
 use App\Services\Api\MakeAiHook;
@@ -43,7 +44,7 @@ class GenerateAiDescriptionAction
 
         // $payload['Image_URLs'] = ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
 
-        return $payload;
+        // return $payload;
 
 
         $data = array_filter($payload);
@@ -82,7 +83,7 @@ class GenerateAiDescriptionAction
             // If it's a base64 image, return as is
             if (str_starts_with($url, 'data:image')) {
 
-                $cacheKey = 'preview_image_from_cache_' . Str::random(10);
+                $cacheKey = 'preview_image_from_cache_' . Str::random();
 
                 // Store Base64 in cache for 1 day
                 Cache::put($cacheKey, $url, now()->addDay());
