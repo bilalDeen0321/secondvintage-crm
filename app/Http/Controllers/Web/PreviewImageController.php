@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class PreviewImageController extends Controller
@@ -14,14 +15,15 @@ class PreviewImageController extends Controller
     public function __invoke(Request $request)
     {
 
-        $url = $request->input('url');
+        $path = $request->input('path');
 
         // Handle Base64
-        if (preg_match('/^data:(.*);base64,(.*)$/', $url, $matches)) {
+        if (preg_match('/^data:(.*);base64,(.*)$/', Cache::get($path, $path), $matches)) {
+
             $mime = $matches[1];
             $data = base64_decode($matches[2]);
             $ext = explode('/', $mime)[1] ?? 'png';
-            $filename = "image.$ext";
+            $filename = "file.$ext";
 
             return response($data)
                 ->header('Content-Type', $mime)
@@ -29,9 +31,9 @@ class PreviewImageController extends Controller
         }
 
         // Optional fallback to storage
-        if (Storage::exists($url)) {
-            return response(Storage::get($url))
-                ->header('Content-Type', Storage::mimeType($url))
+        if (Storage::exists($path)) {
+            return response(Storage::get($path))
+                ->header('Content-Type', Storage::mimeType($path))
                 ->header('Content-Disposition', 'inline');
         }
 

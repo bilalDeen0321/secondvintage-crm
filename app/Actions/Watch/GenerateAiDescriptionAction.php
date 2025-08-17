@@ -5,7 +5,9 @@ namespace App\Actions\Watch;
 use App\Models\Status;
 use App\Models\WatchImage;
 use App\Services\Api\MakeAiHook;
+use App\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GenerateAiDescriptionAction
 {
@@ -79,7 +81,14 @@ class GenerateAiDescriptionAction
 
             // If it's a base64 image, return as is
             if (str_starts_with($url, 'data:image')) {
-                return route('web.preview-image', ['url' => $url]);
+
+                $cacheKey = 'preview_image_from_cache_' . Str::random(10);
+
+                // Store Base64 in cache for 1 day
+                Cache::put($cacheKey, $url, now()->addDay());
+
+                // Return route with the **cache key**, not full Base64
+                return route('web.preview-image', ['path' => $cacheKey]);
             }
 
             // First check if the file exists in storage
