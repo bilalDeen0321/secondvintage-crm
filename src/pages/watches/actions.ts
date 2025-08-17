@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Watch as TWatch } from "@/types/watch";
-import { Inertia } from '@inertiajs/inertia';
 import { router } from "@inertiajs/react";
 
 type SetData<K, V> = (key: K, value: V) => void;
@@ -11,17 +10,8 @@ export const hanldeBatchAction = () => {
 
     if (newBatch && newBatch.trim()) {
         // Direct Inertia POST request without page reload
-        Inertia.post(route('batch.store'), { name: newBatch.trim() }, {
-            onSuccess: () => {
-                alert(`Batch "${newBatch.trim()}" added successfully.`);
-            },
-            onError: (errors) => {
-                alert('Failed: ' + JSON.stringify(errors));
-            },
-            // Keep the current page, don't reload or redirect
-            preserveScroll: true,
-            preserveState: true,
-        });
+
+        router.post(route('batch.store'), { name: newBatch }, { fresh: false });
     }
 };
 

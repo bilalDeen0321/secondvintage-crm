@@ -82,19 +82,21 @@ export default function UpdateWatch(props: Props) {
         );
     }, [currencies, data.currency, data.original_cost, setData]);
 
-    /**
-     * unimproved scripts
-     */
-    // useEffect(() => {
-    //     const savedDataString = JSON.stringify(savedData);
-    //     const formDataString = JSON.stringify(data);
-    //     if (!(formDataString === savedDataString)) {
-    //         setHasChanges(true);
-    //     }
-    // }, [data, savedData]);
 
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
+
+
+    /**
+     * unimproved scripts
+    */
+    useEffect(() => {
+        const savedDataString = JSON.stringify(savedData);
+        const formDataString = JSON.stringify(data);
+        if (!hasChanges && !(formDataString === savedDataString)) {
+            setHasChanges(true);
+        }
+    }, [data, hasChanges, savedData]);
 
 
     /**

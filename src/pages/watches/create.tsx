@@ -83,10 +83,10 @@ export default function AddNewWatch(props: Props) {
     useEffect(() => {
         const savedDataString = JSON.stringify(savedData);
         const formDataString = JSON.stringify(data);
-        if (!(formDataString === savedDataString)) {
+        if (!hasChanges && !(formDataString === savedDataString)) {
             setHasChanges(true);
         }
-    }, [data, savedData]);
+    }, [data, hasChanges, savedData]);
 
     const handleSave = () => {
         //save the data to server
