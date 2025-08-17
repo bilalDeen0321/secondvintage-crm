@@ -9,7 +9,7 @@ import {
     RotateCcw,
     Sparkles
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
 
@@ -26,8 +26,6 @@ export default function GenerateAiDescription(props: Props) {
 
     //state
     const [processing, setLoading] = useState(false);
-
-    useEffect(() => { console.log(watch) }, [watch])
 
     /**
      * Handlers
@@ -53,7 +51,7 @@ export default function GenerateAiDescription(props: Props) {
     // generate ai description
     const onGenerate = async () => {
 
-        if (!data.ai_instructions) return;
+        if (!data.images.some(i => i.useForAI)) return;
 
         setLoading(true);
 
@@ -61,7 +59,6 @@ export default function GenerateAiDescription(props: Props) {
             // Make the server request
             const response = await axios.post(route("api.make-hooks.ai-description.generate"), data);
 
-            console.log(response.data)
 
             // Success check
             if (response.data?.status === "success") {
@@ -127,7 +124,7 @@ export default function GenerateAiDescription(props: Props) {
                 variant="outline"
                 size="sm"
                 onClick={onGenerate}
-                disabled={!data.ai_instructions || processing}
+                disabled={!data.images.some(m => m.useForAI) || processing}
                 className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 {processing ? (

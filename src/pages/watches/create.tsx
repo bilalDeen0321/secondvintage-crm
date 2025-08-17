@@ -9,6 +9,7 @@ import InputError from "@/components/InputError";
 import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
+import RichTextarea from "@/components/ui/RichTextarea";
 import {
     Select,
     SelectContent,
@@ -437,18 +438,13 @@ export default function AddNewWatch(props) {
                                                 Timegrapher result)
                                             </span>
                                         </label>
-                                        <Textarea
-                                            name="description"
+                                        <RichTextarea
                                             value={data.description}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "description",
-                                                    e.target.value,
-                                                )
-                                            }
+                                            name="description"
+                                            onChange={val => setData("description", val)}
                                             className="min-h-[320px] w-full resize-y"
                                         // disabled={isGeneratingDescription}
-                                        />
+                                        ></RichTextarea>
                                     </div>
 
                                     <div>

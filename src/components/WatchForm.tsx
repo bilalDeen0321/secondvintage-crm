@@ -178,7 +178,6 @@ const WatchForm = ({
 
     useEffect(() => {
         if (watch) {
-            console.log("Loading watch data:", watch);
             const initialData = {
                 name: watch.name || "",
                 sku: watch.sku || "",

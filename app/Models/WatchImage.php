@@ -120,7 +120,7 @@ class WatchImage extends Model
     /**
      * Save a base64 image for a given watch
      */
-    public static function uploadBase64Image(string $base64Image)
+    public static function uploadBase64Image(string $base64Image, $path = 'uploads/images/')
     {
         if (!Str::startsWith($base64Image, 'data:image')) {
             return null;
@@ -135,11 +135,9 @@ class WatchImage extends Model
         $extension = Str::contains($type, 'jpeg') ? 'jpg' : (Str::contains($type, 'png') ? 'png' : 'jpg');
 
         // Determine next sequence number (padded to 3 digits)
-        $nextIndex = Watch::count() + 1;
-        $sequence  = str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
 
         // Build filename
-        $fileName = 'watches/images/' . uniqid() . '_' . $sequence . '.' . $extension;
+        $fileName = trim($path, '/') . '/' .  Str::uuid() . '.' . $extension;
 
         // Store file
         Storage::disk('public')->put($fileName, $data);

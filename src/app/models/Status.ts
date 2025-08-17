@@ -57,8 +57,6 @@ export default class Status {
             [Status.PROBLEM]: 'Defect/Problem',
         };
 
-        console.log(status, statuses[status] ?? status)
-
         return statuses[status] ?? status;
     }
 

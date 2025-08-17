@@ -20,7 +20,7 @@ class MakeAiHookController extends Controller
     {
 
         $request->validate([
-            'name'              => 'required|string',
+            'name'              => 'nullable|string',
             'ai_instructions'   => 'nullable|string',
             'ai_thread_id'      => 'nullable|string',
             'sku'               => 'nullable|string',
