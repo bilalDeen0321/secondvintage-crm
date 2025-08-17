@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { brands, currencies, exchangeRates } from "@/app/data";
+import { brands, currencies } from "@/app/data";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import ImageManager from "@/components/ImageManager";
@@ -113,7 +113,7 @@ export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext
                 setDisplayCostValue(data.acquisitionCost);
             } else {
                 const convertedValue = (
-                    eurValue * exchangeRates[selectedCurrency]
+                    eurValue * currencies.map(c => c.rate)[selectedCurrency]
                 ).toFixed(2);
                 setDisplayCostValue(convertedValue);
             }
@@ -269,7 +269,7 @@ export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext
         } else {
             // Convert from selected currency to EUR
             const eurValue =
-                parseFloat(newValue) / exchangeRates[selectedCurrency];
+                parseFloat(newValue) / currencies.map(c => c.rate)[selectedCurrency];
 
             setData('acquisitionCost', eurValue.toFixed(2))
         }
@@ -568,7 +568,7 @@ export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => handleAddBatchGroup(batchGroups, setBatchGroups, setData)}
+                                            onClick={() => handleAddBatchGroup(batchGroups, setData)}
                                             className="h-6 w-6 p-0"
                                         >
                                             <Plus className="h-3 w-3" />
@@ -791,7 +791,7 @@ export default function AddNewWatch({ watch, onSave, onNext, onPrevious, hasNext
                         <div className="flex flex-shrink-0 gap-3 border-t border-slate-200 p-6 pt-4">
                             <Button
                                 type="button"
-                                onClick={() => handleApprove(data, setData, onSave)}
+                                onClick={() => handleApprove(data, setData)}
                                 className="flex-1 bg-green-600 text-white hover:bg-green-700"
                             >
                                 <CheckCircle className="mr-2 h-4 w-4" />

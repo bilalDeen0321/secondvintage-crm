@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { countries, currencies_with_lebel } from "@/app/data";
+import { countries, currencies } from "@/app/data";
 import RawSelect from "@/components/mixed/RawSelect";
 import { useForm, usePage } from "@inertiajs/react";
 import InputError from "../../../components/InputError";
@@ -111,7 +111,7 @@ export default function EditUserDialog({
                                     />
 
                                     <RawSelect
-                                        data={currencies_with_lebel}
+                                        data={currencies.map(c => ({ name: c.name, id: c.code }))}
                                         name="currency"
                                         label="Currency"
                                         value={data.currency}
@@ -120,7 +120,7 @@ export default function EditUserDialog({
                                             setData("currency", e.target.value)
                                         }
                                     >
-                                        {currencies_with_lebel.map((currency, index) => (
+                                        {currencies.map(c => ({ name: c.name, id: c.code })).map((currency, index) => (
                                             <option key={index} value={currency.id}>
                                                 {currency.id} - {currency.name}
                                             </option>

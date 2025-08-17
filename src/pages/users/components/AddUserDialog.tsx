@@ -1,4 +1,4 @@
-import { countries, currencies_with_lebel } from "@/app/data";
+import { countries, currencies } from "@/app/data";
 import InputError from "@/components/InputError";
 import RawSelect from "@/components/mixed/RawSelect";
 import { Button } from "@/components/ui/button";
@@ -136,14 +136,14 @@ export default function AddNewUser({ show, setShow }) {
                                 />
 
                                 <RawSelect
-                                    data={currencies_with_lebel}
+                                    data={currencies.map(c => ({ name: c.name, id: c.code }))}
                                     name="currency"
                                     label="Currency"
                                     value={data.currency}
                                     error={errors.currency}
                                     onChange={(e) => setData("currency", e.target.value)}
                                 >
-                                    {currencies_with_lebel.map((currency, index) => (
+                                    {currencies.map(c => ({ name: c.name, id: c.code })).map((currency, index) => (
                                         <option key={index} value={currency.id}>
                                             {currency.id} - {currency.name}
                                         </option>
