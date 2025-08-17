@@ -1,6 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { countries, currencies } from "@/app/data";
+import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
@@ -20,10 +20,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
+import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
+import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
     handleEditBrands,
@@ -33,10 +34,20 @@ import {
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 
-export default function AddNewWatch(props) {
+type Props = {
+    watch: WatchResource;
+    locations: string[];
+    batches: string[];
+    brands: string[];
+    statuses: string[];
+    currencies: CurrencyAttributes[];
+};
+
+
+export default function AddNewWatch(props: Props) {
 
     //server props
-    const { locations = countries, batches = [], brands = [], statuses = [] } = props || {};
+    const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
 
 
     const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
@@ -56,15 +67,15 @@ export default function AddNewWatch(props) {
     useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
 
 
-
     // Update display value when form data or currency changes
     useEffect(() => {
-        currencyExchange(
+        Currency.init().exchange(
             data.original_cost,
             data.currency,
+            currencies,
             (value) => setData('current_cost', value)
         );
-    }, [data.currency, data.original_cost, setData]);
+    }, [currencies, data.currency, data.original_cost, setData]);
 
     /**
      * unimproved scripts

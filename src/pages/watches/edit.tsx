@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { countries, currencies } from "@/app/data";
+import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
@@ -29,7 +29,7 @@ import {
     Sparkles
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { currencyExchange, watchEscapeCallback, watchInitData } from "./_utils";
+import { watchEscapeCallback, watchInitData } from "./_utils";
 import { handleApprove, handleEditBrands, handleEditLocations, hanldeBatchAction } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
@@ -38,16 +38,19 @@ type Props = {
     watch: WatchResource;
     nextItem: WatchResource;
     previousItem: WatchResource;
-    locations: typeof countries;
+
+    locations: string[];
     batches: string[];
     brands: string[];
     statuses: string[];
+    currencies: CurrencyAttributes[];
 };
 
 export default function UpdateWatch(props: Props) {
 
     //server props
-    const { locations = countries, batches = [], brands = [], statuses = [] } = props || {};
+    //server props
+    const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
     const { watch, nextItem, previousItem } = (usePage().props) as unknown as Props;
 
     //utils    
@@ -71,12 +74,13 @@ export default function UpdateWatch(props: Props) {
 
     // Update display value when form data or currency changes
     useEffect(() => {
-        currencyExchange(
+        Currency.init().exchange(
             data.original_cost,
             data.currency,
+            currencies,
             (value) => setData('current_cost', value)
         );
-    }, [data.currency, data.original_cost, setData]);
+    }, [currencies, data.currency, data.original_cost, setData]);
 
     /**
      * unimproved scripts

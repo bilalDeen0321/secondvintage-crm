@@ -122,3 +122,35 @@ export const cleanQueryParams = (params: Record<string, any>) => {
     });
     return cleaned;
 };
+
+
+
+
+/**
+ * Makes properties of an object read-only.
+ *
+ * @param o The object on which to define or modify properties.
+ * @param p A single property key or an array of property keys to make read-only.
+ * @returns The object with the specified properties made read-only.
+ * @throws {TypeError} If `o` is not an object or `null`.
+ */
+export function readonly<T extends object>(o: T, p: PropertyKey | PropertyKey[]): T {
+    //
+    const keysToProcess = Array.isArray(p) ? p : [p];
+
+    for (const key of keysToProcess) {
+        // Only apply if the property actually exists on the object
+        // This prevents creating new, non-writable properties accidentally
+        if (Object.prototype.hasOwnProperty.call(o, key)) {
+            //
+            Object.defineProperty(o, key, {
+                writable: false,
+                configurable: false,
+                enumerable: true,
+                value: o[key as keyof T], // Type assertion for safety
+            });
+        }
+    }
+
+    return o; // Return the modified object for chaining or direct use
+}

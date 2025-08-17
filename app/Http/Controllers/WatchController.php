@@ -8,6 +8,7 @@ use App\Http\Requests\StoreWatchRequest;
 use App\Http\Resources\WatchResource;
 use App\Models\Batch;
 use App\Models\Brand;
+use App\Models\Currency;
 use App\Models\Location;
 use App\Models\Status;
 use App\Models\Watch;
@@ -132,6 +133,7 @@ class WatchController extends Controller
     {
 
         return Inertia::render('watches/create', [
+            'currencies' => Currency::query()->latest()->get(),
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
@@ -188,6 +190,7 @@ class WatchController extends Controller
             'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
 
             //form data
+            'currencies' => Location::query()->latest()->get(),
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),

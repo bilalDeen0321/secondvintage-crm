@@ -30,7 +30,6 @@ class MakeAiHookController extends Controller
             'case_size'         => 'nullable|string',
             'caliber'           => 'nullable|string',
             'timegrapher'       => 'nullable|string',
-            'image_urls'        => 'nullable|array',
             'platform'          => 'nullable|string',
             'status'            => 'nullable|string',
 
