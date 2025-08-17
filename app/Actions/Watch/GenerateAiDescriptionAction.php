@@ -79,9 +79,6 @@ class GenerateAiDescriptionAction
 
             // If it's a base64 image, return as is
             if (str_starts_with($url, 'data:image')) {
-                $base = 'https://f7b3724b1b6c.ngrok-free.app';
-
-                return "$base/url?$url";
                 return route('web.preview-image', ['url' => $url]);
             }
 

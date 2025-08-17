@@ -14,23 +14,24 @@ class PreviewImageController extends Controller
     public function __invoke(Request $request)
     {
 
-        $request->validate(['url' => 'required|string']);
+        $url = $request->input('url');
 
-        // Separate MIME type and data
-        if (preg_match('/^data:(.*);base64,(.*)$/', $request->input('url'), $matches)) {
+        // Handle Base64
+        if (preg_match('/^data:(.*);base64,(.*)$/', $url, $matches)) {
             $mime = $matches[1];
             $data = base64_decode($matches[2]);
+            $ext = explode('/', $mime)[1] ?? 'png';
+            $filename = "image.$ext";
 
             return response($data)
                 ->header('Content-Type', $mime)
-                ->header('Content-Disposition', 'inline'); // Preview in browser
+                ->header('Content-Disposition', "inline; filename=\"$filename\"");
         }
 
-
-        /// Fallback to storage file
-        if (Storage::exists($request->input('url'))) {
-            return response(Storage::get($request->input('url')))
-                ->header('Content-Type', Storage::mimeType($request->input('url')))
+        // Optional fallback to storage
+        if (Storage::exists($url)) {
+            return response(Storage::get($url))
+                ->header('Content-Type', Storage::mimeType($url))
                 ->header('Content-Disposition', 'inline');
         }
 
