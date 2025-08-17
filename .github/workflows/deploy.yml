@@ -42,7 +42,7 @@ jobs:
           REMOTE_USER: u495568265
           REMOTE_PORT: 65002
           TARGET: /home/u495568265/domains/test.secondvintage.com/public_html
-          EXCLUDE: "/node_modules/, /.github/, /.git/, /README.md, /templates, /.vscode, /.editorconfig, ./gitattributes, /.gitignore, /docs"
+          EXCLUDE: "/node_modules/, /.github/, /.git/, /README.md, /.vscode, /docs"
           SCRIPT_BEFORE: |
             rm -rf /home/u495568265/domains/test.secondvintage.com/public_html/database/migrations /home/u495568265/domains/test.secondvintage.com/public_html/app/Console/Commands
           SCRIPT_AFTER: |

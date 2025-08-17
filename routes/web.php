@@ -18,7 +18,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
-Route::get('preview-image', PreviewImageController::class)->name('preview-image');
+Route::name('web.')->group(function () {
+    Route::get('preview-image', PreviewImageController::class)->name('preview-image');
+});
+
 Route::get('welcome', fn() => Inertia::render('Welcome', [
     'locations' => Location::query()->pluck('name')->unique()->values(),
     'statuses' => Status::query()->pluck('name')->unique()->values(),

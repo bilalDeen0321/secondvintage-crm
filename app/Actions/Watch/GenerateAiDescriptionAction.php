@@ -82,7 +82,7 @@ class GenerateAiDescriptionAction
                 $base = 'https://f7b3724b1b6c.ngrok-free.app';
 
                 return "$base/url?$url";
-                return route('preview-image', ['url' => $url]);
+                return route('web.preview-image', ['url' => $url]);
             }
 
             // First check if the file exists in storage
