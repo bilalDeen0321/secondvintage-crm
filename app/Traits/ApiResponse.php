@@ -24,7 +24,7 @@ trait ApiResponse
     /**
      * Send api message response
      */
-    public function apiMessage(string $message = 'Api message', bool $success, int $status = 200)
+    public function apiMessage(string $message = 'Api message', bool $success = true, int $status = 200)
     {
         return response()->json(['success'  => $success,  'message' => $message], $status);
     }

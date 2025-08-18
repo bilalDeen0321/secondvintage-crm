@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type WatchImageResource = {
     id: string;
-    url: string;
-    order_index: number;
-    useForAI: number; // could also be boolean if you normalize it
+    url?: string | null;
+    file?: File | null;
+    order_index?: number;
+    useForAI?: boolean; // could also be boolean if you normalize it
 };
 
 export type WatchResource = {

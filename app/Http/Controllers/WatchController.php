@@ -14,6 +14,7 @@ use App\Models\Status;
 use App\Models\Watch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Sleep;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -148,15 +149,17 @@ class WatchController extends Controller
      */
     public function store(StoreWatchRequest $request, AddNewWatch $action)
     {
-        $validated = $request->validated();
-
         try {
 
-            $action($validated);
+            $watch =  $action($request->validated());
 
             //successfully response
-            return redirect()->route('watches.index')
-                ->with('success', 'Watch created successfully.');
+            return redirect()->back()->with([
+                'success' => 'Watch created successfully.',
+                'data' => $watch,
+            ]);
+
+            //
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors($th->getMessage());
         }
@@ -203,6 +206,9 @@ class WatchController extends Controller
      */
     public function update(Request $request, Watch $watch, UpdateWatchAction $action)
     {
+
+        dd($request->all());
+
         $input = $request->validate([
             'name'            => ['required', 'string', 'max:255'],
             'sku'             => [

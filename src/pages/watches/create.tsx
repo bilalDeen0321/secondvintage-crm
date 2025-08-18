@@ -4,7 +4,6 @@ import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
-import ImageManager from "@/components/ImageManager";
 import InputError from "@/components/InputError";
 import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
@@ -18,12 +17,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import UploadManager from "@/components/UploadManager";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
@@ -51,13 +52,15 @@ export default function AddNewWatch(props: Props) {
 
 
     const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
-    //local state
+
+    //local states
+    const [loadName, setLoadName] = useState<'save_and_close' | 'save'>('save');
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [savedData, setSavedData] = useState<any>(watchInitData());
-    const [hasChanges, setHasChanges] = useState(true);
+    const [hasChanges, setHasChanges] = useState(false);
 
 
-    //server state
+    //server states
     const { data, setData, post: storeServer, processing, errors } = useForm(watchInitData());
 
     // Use the debounced server SKU hook
@@ -88,28 +91,37 @@ export default function AddNewWatch(props: Props) {
         }
     }, [data, hasChanges, savedData]);
 
-    const handleSave = () => {
-        //save the data to server
-        storeServer(route("watches.store"), {
-            onSuccess: () => {
-                // reset();
-            },
-        });
 
-        setSavedData(data);
-        // setHasChanges(false);
-    };
 
     const handleSaveAndClose = () => {
-        handleSave();
-        setTimeout(() => {
-            router.visit(route("watches.index"));
-        }, 100);
+        setLoadName('save_and_close');
+        storeServer(route("watches.store"), {
+            onSuccess: () => {
+                setSavedData(data);
+                // only after success → navigate away
+                router.visit(route("watches.index"));
+            },
+            onError: (error) => {
+                toast.error(error?.message)
+                // keep user here if failed
+                console.error("Save failed, staying on page");
+            },
+        });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        handleSave();
+        setLoadName('save');
+        storeServer(route("watches.store"), {
+            forceFormData: true,
+            onSuccess: (response) => {
+                setSavedData(data);
+                if (response?.props?.flash?.data?.sku) {
+                    router.visit(route("watches.show", response.props.flash.data.sku))
+                }
+            },
+        });
     };
 
 
@@ -118,6 +130,19 @@ export default function AddNewWatch(props: Props) {
     return (
         <Layout>
             <Head title="Add New Watch" />
+
+            {processing && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-white/70 cursor-not-allowed">
+                    <div className="flex flex-col items-center space-y-3">
+                        <svg className="h-8 w-8 animate-spin text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <span className="text-slate-700 font-medium">Saving...</span>
+                    </div>
+                </div>
+            )}
+
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                 <div
                     ref={formRef}
@@ -235,9 +260,7 @@ export default function AddNewWatch(props: Props) {
                                     <select
                                         name="status"
                                         value={data.status}
-                                        onChange={(e) =>
-                                            setData("status", e.target.value)
-                                        }
+                                        onChange={(e) => setData("status", e.target.value)}
                                         required
                                         className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     >
@@ -322,7 +345,7 @@ export default function AddNewWatch(props: Props) {
                                             </div>
                                         </div>
                                         <div className="min-h-[200px] flex-1">
-                                            <ImageManager
+                                            <UploadManager
                                                 images={data.images}
                                                 onChange={(images) =>
                                                     setData("images", images)
@@ -490,15 +513,15 @@ export default function AddNewWatch(props: Props) {
                                 className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
                                 disabled={processing || !hasChanges}
                             >
-                                {hasChanges ? "Save" : "Saved"}
+                                {loadName === 'save' && processing ? "Saving..." : (hasChanges ? "Save" : "Saved")}
                             </Button>
                             <Button
                                 type="button"
                                 onClick={handleSaveAndClose}
                                 className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
-                                disabled={!hasChanges}
+                                disabled={processing || !hasChanges}
                             >
-                                Save & Close
+                                {loadName === 'save_and_close' && processing ? "Saving..." : "Save & Close"}
                             </Button>
                             <Button
                                 type="button"

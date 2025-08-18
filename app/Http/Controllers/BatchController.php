@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBatchRequest;
 use App\Models\Batch;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class BatchController extends Controller
@@ -41,7 +42,13 @@ class BatchController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100|min:2',
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                Rule::unique(Batch::tableName(), 'name'),
+            ],
         ]);
 
         // Create the new brand

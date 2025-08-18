@@ -29,6 +29,7 @@ import {
     Sparkles
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { watchEscapeCallback, watchInitData } from "./_utils";
 import { handleApprove, handleEditBrands, handleEditLocations, hanldeBatchAction } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
@@ -116,8 +117,17 @@ export default function UpdateWatch(props: Props) {
     };
 
     const handleSaveAndClose = () => {
-        handleSave();
-        router.visit(route("watches.index"));
+        updateServer(route("watches.store"), {
+            onSuccess: () => {
+                // only after success → navigate away
+                router.visit(route("watches.index"));
+            },
+            onError: (error) => {
+                toast.error(error?.message)
+                // keep user here if failed
+                console.error("Save failed, staying on page");
+            },
+        });
     };
 
     //Form handler with server reqeust
@@ -484,7 +494,7 @@ export default function UpdateWatch(props: Props) {
                                 className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
                                 disabled={!hasChanges}
                             >
-                                Save & Close
+                                {processing ? "Saving..." : "Save & Close"}
                             </Button>
                             <Button
                                 type="button"

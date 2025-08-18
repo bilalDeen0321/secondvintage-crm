@@ -44,15 +44,9 @@ class StoreWatchRequest extends FormRequest
 
             // images is an array of base64 strings inside objects
             'images'          => ['nullable', 'array'],
-            'images.*.url'    => ['required_with:images', 'string'],
-        ];
-    }
+            // 'images.*.url'    => ['required_with:images', 'string'],
+            'images.*.file'    => ['nullable', 'file', 'image', 'max:5120'],
 
-    public function messages(): array
-    {
-        return [
-            'sku.unique'          => 'This SKU already exists in the database.',
-            'images.*.url.regex'  => 'Each image must be a valid base64 encoded PNG or JPEG.',
         ];
     }
 }

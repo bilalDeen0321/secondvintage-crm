@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Models\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Batch extends Model
 {
     /** @use HasFactory<\Database\Factories\BatchFactory> */
-    use HasFactory;
+    use HasFactory, ModelHelpers;
 
     /**
      * The attributes that are mass assignable.

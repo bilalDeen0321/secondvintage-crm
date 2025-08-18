@@ -18,6 +18,18 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
+// In routes/web.php
+Route::get('/php-settings', function () {
+    return [
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size' => ini_get('post_max_size'),
+        'max_execution_time' => ini_get('max_execution_time'),
+        'memory_limit' => ini_get('memory_limit'),
+        'loaded_ini' => php_ini_loaded_file(),
+        'additional_ini' => php_ini_scanned_files(),
+    ];
+});
+
 Route::name('web.')->group(function () {
     Route::get('preview-image', PreviewImageController::class)->name('preview-image');
 });

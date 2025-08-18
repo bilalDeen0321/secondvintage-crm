@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class BrandController extends Controller
@@ -41,14 +42,20 @@ class BrandController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|string|max:100|min:2',
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                Rule::unique(Brand::tableName(), 'name'),
+            ],
         ]);
 
         // Create the new brand
         Brand::query()->updateOrCreate(['name' => $request->input('name')]);
 
         // Redirect back with flash message
-        return redirect()->back()->with('success', sprintf('Brand successfully saved.'));
+        return redirect()->back()->with('success', 'Brand successfully saved.');
     }
 
     /**

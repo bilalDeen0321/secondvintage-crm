@@ -44,11 +44,11 @@ class AddNewWatch
             'batch_id'        => $batch_id,
         ]);
 
-        // 3. Handle Base64 Images
-        if (!empty($data['images']) && is_array($data['images'])) {
-            foreach ($data['images'] as $imageData) {
-                if (!empty($imageData['url'])) {
-                    WatchImage::storeBase64Image($watch, $imageData['url']);
+        // Handle images
+        if (!empty($data['images'])) {
+            foreach ($data['images'] as $img) {
+                if (isset($img['file']) && $img['file'] instanceof \Illuminate\Http\UploadedFile) {
+                    WatchImage::uploadImage($watch, $img['file']);
                 }
             }
         }

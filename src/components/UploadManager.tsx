@@ -126,7 +126,7 @@ const SortableImage = ({
     );
 };
 
-const ImageManager = ({ images, onChange }: ImageManagerProps) => {
+const UploadManager = ({ images = [], onChange }: ImageManagerProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const [viewerIndex, setViewerIndex] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -138,33 +138,42 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
         }),
     );
 
-    const addImages = (imageUrls: string[]) => {
-        const newImages: WatchImageResource[] = imageUrls.map((url) => ({
+    const addImages = (files: File[]) => {
+        const newImages: WatchImageResource[] = files.map((file) => ({
             id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-            url,
+            url: URL.createObjectURL(file), // Create object URL for preview
+            file: file, // Store the actual File object
             useForAI: false,
         }));
 
-        const totalImages = images.length + newImages.length;
+        const currentImages = images || [];
+        const totalImages = currentImages.length + newImages.length;
         if (totalImages <= 40) {
-            onChange([...images, ...newImages]);
+            onChange([...currentImages, ...newImages]);
         } else {
-            const remainingSlots = 40 - images.length;
+            const remainingSlots = 40 - currentImages.length;
             if (remainingSlots > 0) {
-                onChange([...images, ...newImages.slice(0, remainingSlots)]);
+                onChange([...currentImages, ...newImages.slice(0, remainingSlots)]);
             }
         }
     };
 
     const removeImage = (imageId: string) => {
         if (window.confirm("Are you sure you want to remove this image?")) {
-            onChange(images.filter((img) => img.id !== imageId));
+            const currentImages = images || [];
+            const imageToRemove = currentImages.find(img => img.id === imageId);
+            // Clean up object URL if it exists
+            if (imageToRemove?.file && imageToRemove.url.startsWith('blob:')) {
+                URL.revokeObjectURL(imageToRemove.url);
+            }
+            onChange(currentImages.filter((img) => img.id !== imageId));
         }
     };
 
     const toggleAIUsage = (imageId: string) => {
-        const aiCount = images.filter((img) => img.useForAI).length;
-        const targetImage = images.find((img) => img.id === imageId);
+        const currentImages = images || [];
+        const aiCount = currentImages.filter((img) => img.useForAI).length;
+        const targetImage = currentImages.find((img) => img.id === imageId);
 
         // If trying to enable AI and already at limit, don't allow
         if (targetImage && !targetImage.useForAI && aiCount >= 10) {
@@ -172,7 +181,7 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
         }
 
         onChange(
-            images.map((img) =>
+            currentImages.map((img) =>
                 img.id === imageId ? { ...img, useForAI: !img.useForAI } : img,
             ),
         );
@@ -198,23 +207,7 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
         );
 
         if (imageFiles.length > 0) {
-            const imageUrls: string[] = [];
-            let processedCount = 0;
-
-            imageFiles.forEach((file) => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    if (event.target?.result) {
-                        imageUrls.push(event.target.result as string);
-                        processedCount++;
-
-                        if (processedCount === imageFiles.length) {
-                            addImages(imageUrls);
-                        }
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
+            addImages(imageFiles);
         }
     };
 
@@ -225,35 +218,20 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
         );
 
         if (imageFiles.length > 0) {
-            const imageUrls: string[] = [];
-            let processedCount = 0;
-
-            imageFiles.forEach((file) => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    if (event.target?.result) {
-                        imageUrls.push(event.target.result as string);
-                        processedCount++;
-
-                        if (processedCount === imageFiles.length) {
-                            addImages(imageUrls);
-                        }
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
+            addImages(imageFiles);
         }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleDragEnd = (event: any) => {
         const { active, over } = event;
+        const currentImages = images || [];
 
         if (active.id !== over?.id) {
-            const oldIndex = images.findIndex((img) => img.id === active.id);
-            const newIndex = images.findIndex((img) => img.id === over.id);
+            const oldIndex = currentImages.findIndex((img) => img.id === active.id);
+            const newIndex = currentImages.findIndex((img) => img.id === over.id);
 
-            onChange(arrayMove(images, oldIndex, newIndex));
+            onChange(arrayMove(currentImages, oldIndex, newIndex));
         }
     };
 
@@ -272,7 +250,8 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
     };
 
     const nextImage = () => {
-        if (viewerIndex !== null && viewerIndex < images.length - 1) {
+        const currentImages = images || [];
+        if (viewerIndex !== null && viewerIndex < currentImages.length - 1) {
             setViewerIndex(viewerIndex + 1);
         }
     };
@@ -284,7 +263,7 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
                     <Button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        disabled={images.length >= 40}
+                        disabled={(images || []).length >= 40}
                         variant="outline"
                         className="flex h-[72px] flex-shrink-0 flex-col items-center justify-center px-4"
                     >
@@ -324,15 +303,16 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
                     onDragEnd={handleDragEnd}
                 >
                     <SortableContext
-                        items={images.map((img) => img.id)}
+                        items={(images || []).map((img) => img.id)}
                         strategy={rectSortingStrategy}
                     >
                         <div
                             className="mb-12 grid grid-cols-7 gap-3 overflow-y-auto"
                             style={{ maxHeight: "600px" }}
                         >
-                            {images.map((image, index) => {
-                                const aiCount = images.filter(
+                            {(images || []).map((image, index) => {
+                                const currentImages = images || [];
+                                const aiCount = currentImages.filter(
                                     (img) => img.useForAI,
                                 ).length;
                                 const canToggleAI =
@@ -368,4 +348,4 @@ const ImageManager = ({ images, onChange }: ImageManagerProps) => {
     );
 };
 
-export default ImageManager;
+export default UploadManager;

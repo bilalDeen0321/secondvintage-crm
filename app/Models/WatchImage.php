@@ -82,6 +82,32 @@ class WatchImage extends Model
         return  url(Storage::url($this->public_url));
     }
 
+    /**
+     * Save an uploaded file for a given watch
+     */
+    public static function uploadImage(Watch $watch, \Illuminate\Http\UploadedFile $file)
+    {
+        if (!$file->isValid()) {
+            return null;
+        }
+
+        // Determine next sequence number (padded to 3 digits)
+        $nextIndex = $watch->images()->count() + 1;
+        $sequence  = str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
+
+        // Build filename
+        $extension = $file->getClientOriginalExtension();
+        $filename  =  $watch->sku . '_' . $sequence . '.' . $extension;
+
+
+        return $watch->images()->create([
+            'filename'   => $file->getClientOriginalName(),
+            'public_url' => $file->storeAs('watches/images', $filename, 'public'),
+            'order_index' => $nextIndex,
+        ]);
+    }
+
+
 
     /**
      * Save a base64 image for a given watch
