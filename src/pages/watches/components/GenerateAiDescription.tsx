@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { echo } from "@/app/echo";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
@@ -25,7 +26,7 @@ export default function GenerateAiDescription(props: Props) {
     const { data, setData, watch = {} as WatchResource } = props;
 
     //state
-    const [processing, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     /**
      * Handlers
@@ -61,11 +62,19 @@ export default function GenerateAiDescription(props: Props) {
 
 
             // Success check
-            if (response.data?.status === "success") {
-                toast.success("Watch AI description generated");
-                setData('ai_thread_id', response?.data?.ai_thread_id)
-                setData('description', response?.data?.description)
-                setData('status', response?.data?.status_selected)
+            if (response.data?.watch) {
+
+                //seved darft watch key in browser session
+                window.sessionStorage.setItem('darft_watch_key', response.data?.watch.routeKey)
+
+                echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessed', (event) => {
+                    if (event.ai_status === 'loading') {
+                        setLoading(true);
+                    } else {
+                        setLoading(false);
+                        window.sessionStorage.removeItem('darft_watch_key')
+                    }
+                })
             } else {
                 toast.error(response.data?.message || "Failed to generate description");
             }
@@ -124,10 +133,10 @@ export default function GenerateAiDescription(props: Props) {
                 variant="outline"
                 size="sm"
                 onClick={onGenerate}
-                disabled={!data.images.some(m => m.useForAI) || processing}
+                disabled={!data.images.some(m => m.useForAI) || loading}
                 className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                {processing ? (
+                {loading ? (
                     <>
                         <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                         Processing

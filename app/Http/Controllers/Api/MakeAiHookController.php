@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Watch\GenerateAiDescriptionAction;
+use App\Actions\Watch\UpdateOrCreateAction;
+use App\Events\WatchAiDescriptionProcessed;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateWatchRequest;
+use App\Http\Requests\Watch\UpdateOrCreateRequest;
+use App\Http\Resources\WatchResource;
+use App\Jobs\ProcessWatchAIDescription;
 use App\Models\Status;
 use App\Models\Watch;
 use App\Services\Api\MakeAiHook;
@@ -13,32 +19,20 @@ use Illuminate\Http\Request;
 class MakeAiHookController extends Controller
 {
     use ApiResponse;
+
     /**
      * Hanld make.com ai generate watch description.
      */
-    public function generate(Request $request, GenerateAiDescriptionAction $action)
+    public function generate(UpdateOrCreateRequest $request, UpdateOrCreateAction $action)
     {
+        $watch = $action($request->validated());
 
-        $request->validate([
-            'name'              => 'nullable|string',
-            'ai_instructions'   => 'nullable|string',
-            'ai_thread_id'      => 'nullable|string',
-            'sku'               => 'nullable|string',
-            'brand'             => 'nullable|string',
-            'serial_number'     => 'nullable|string',
-            'reference'         => 'nullable|string',
-            'case_size'         => 'nullable|string',
-            'caliber'           => 'nullable|string',
-            'timegrapher'       => 'nullable|string',
-            'platform'          => 'nullable|string',
-            'status'            => 'nullable|string',
+        dispatch(new ProcessWatchAIDescription($watch));
 
-            // images is an array of base64 strings inside objects
-            'images'          => ['required', 'array'],
-            'images.*.url'    => ['required_with:images', 'string'],
+        return response()->json([
+            'status' => 'success',
+            'watch'  => new WatchResource($watch),
         ]);
-
-        return $action($request);
     }
 
     /**

@@ -129,12 +129,12 @@ class Log extends Model
     /**
      * Universal log method
      */
-    public static function log(string $level, string $message, string $category = 'watch', ?string $details = null): self
+    public static function log(string $level, string $message, ?string $details = null, ?string $category = null): self
     {
         return self::create([
             'level'    => $level,
             'message'  => $message,
-            'category' => self::category($category),
+            'category' => self::category($category ?? 'watch'),
             'details'  => $details,
         ]);
     }
@@ -143,32 +143,32 @@ class Log extends Model
     /**
      * Create info log
      */
-    public static function info(string $message, string $category = 'watch', ?string $details = null): self
+    public static function info(string $message, ?string $details = null, ?string $category = null): self
     {
-        return self::log(self::LEVEL_INFO, $message, $category, $details);
+        return self::log(self::LEVEL_INFO, $message, $details, $category);
     }
 
     /**
      * Create success log
      */
-    public static function success(string $message, string $category = 'watch', ?string $details = null): self
+    public static function success(string $message, ?string $details = null, ?string $category = null): self
     {
-        return self::log(self::LEVEL_SUCCESS, $message, $category, $details);
+        return self::log(self::LEVEL_SUCCESS, $message, $details, $category);
     }
 
     /**
      * Create warning log
      */
-    public static function warning(string $message, string $category = 'watch', ?string $details = null): self
+    public static function warning(string $message, ?string $details = null, ?string $category = null): self
     {
-        return self::log(self::LEVEL_WARNING, $message, $category, $details);
+        return self::log(self::LEVEL_WARNING, $message, $details, $category);
     }
 
     /**
      * Create error log
      */
-    public static function error(string $message, string $category = 'watch', ?string $details = null): self
+    public static function error(string $message, ?string $details = null, ?string $category = null): self
     {
-        return self::log(self::LEVEL_ERROR, $message, $category, $details);
+        return self::log(self::LEVEL_ERROR, $message, $details, $category);
     }
 }

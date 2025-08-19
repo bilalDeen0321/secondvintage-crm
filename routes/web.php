@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\PreviewImageController;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WatchResource;
@@ -29,6 +28,8 @@ Route::get('/php-settings', function () {
         'additional_ini' => php_ini_scanned_files(),
     ];
 });
+
+
 
 Route::name('web.')->group(function () {
     Route::get('preview-image', PreviewImageController::class)->name('preview-image');
