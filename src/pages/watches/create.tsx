@@ -23,8 +23,7 @@ import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect, useMemo, useState } from "react";
 import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
@@ -50,18 +49,15 @@ export default function AddNewWatch(props: Props) {
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
 
-
     const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
 
     //local states
     const [loadName, setLoadName] = useState<'save_and_close' | 'save'>('save');
     const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const [savedData, setSavedData] = useState<any>(watchInitData());
-    const [hasChanges, setHasChanges] = useState(false);
-
 
     //server states
     const { data, setData, post: storeServer, processing, errors } = useForm(watchInitData());
+    const [savedData, setSavedData] = useState<any>(watchInitData());
 
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand);
@@ -69,63 +65,84 @@ export default function AddNewWatch(props: Props) {
     // Update the form state only when SKU changes
     useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
 
+    const hasChanges = useMemo(() => JSON.stringify(data) !== JSON.stringify(savedData), [data, savedData]);
 
     // Update display value when form data or currency changes
     useEffect(() => {
-        Currency.init().exchange(
-            data.original_cost,
-            data.currency,
-            currencies,
-            (value) => setData('current_cost', value)
-        );
+        if (data.original_cost) {
+            Currency.init().exchange(
+                data.original_cost,
+                data.currency,
+                currencies,
+                (value) => setData('current_cost', value)
+            );
+        }
     }, [currencies, data.currency, data.original_cost, setData]);
 
-    /**
-     * unimproved scripts
-     */
-    useEffect(() => {
-        const savedDataString = JSON.stringify(savedData);
-        const formDataString = JSON.stringify(data);
-        if (!hasChanges && !(formDataString === savedDataString)) {
-            setHasChanges(true);
-        }
-    }, [data, hasChanges, savedData]);
+    const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
-
-
-    const handleSaveAndClose = () => {
-        setLoadName('save_and_close');
-        storeServer(route("watches.store"), {
-            onSuccess: () => {
-                setSavedData(data);
-                // only after success → navigate away
-                router.visit(route("watches.index"));
-            },
-            onError: (error) => {
-                toast.error(error?.message)
-                // keep user here if failed
-                console.error("Save failed, staying on page");
-            },
-        });
-    };
-
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLoadName('save');
         storeServer(route("watches.store"), {
             forceFormData: true,
             onSuccess: (response) => {
-                setSavedData(data);
+                setSavedData(data); // ✅ reset baseline after saving
                 if (response?.props?.flash?.data?.sku) {
-                    router.visit(route("watches.show", response.props.flash.data.sku))
+                    router.visit(route("watches.show", response.props.flash.data.sku));
                 }
             },
         });
     };
 
+    const onSaveAndClose = () => {
+        setLoadName('save_and_close');
+        storeServer(route("watches.store"), {
+            onSuccess: () => {
+                setSavedData(data); // ✅ reset baseline
+                router.visit(route("watches.index"));
+            },
+        });
+    };
 
-    const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
+
+    const onClose = () => {
+        if (hasChanges) {
+            setShowSaveDialog(true);
+            return;
+        }
+        router.visit(route("watches.index"));
+    }
+
+    // Handle browser close / refresh
+    useEffect(() => {
+        const onBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        };
+
+        window.addEventListener("beforeunload", onBeforeUnload);
+        return () => window.removeEventListener("beforeunload", onBeforeUnload);
+    }, [hasChanges]);
+
+    // Handle browser back/forward navigation
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            if (hasChanges) {
+                event.preventDefault();
+                event.stopPropagation();
+                setShowSaveDialog(true);
+            }
+        };
+
+        // Push a new state to the history stack to intercept navigation
+        window.history.pushState(null, "", window.location.href);
+
+        window.addEventListener("popstate", handlePopState);
+        return () => window.removeEventListener("popstate", handlePopState);
+    }, [hasChanges]);
 
     return (
         <Layout>
@@ -161,7 +178,7 @@ export default function AddNewWatch(props: Props) {
                     </div>
 
                     <form
-                        onSubmit={handleSubmit}
+                        onSubmit={onSubmit}
                         className="flex flex-1 flex-col overflow-hidden"
                     >
                         <div className="flex-1 space-y-2.5 overflow-y-auto p-6">
@@ -517,7 +534,7 @@ export default function AddNewWatch(props: Props) {
                             </Button>
                             <Button
                                 type="button"
-                                onClick={handleSaveAndClose}
+                                onClick={onSaveAndClose}
                                 className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
                                 disabled={processing || !hasChanges}
                             >
@@ -525,9 +542,7 @@ export default function AddNewWatch(props: Props) {
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() =>
-                                    router.visit(route("watches.index"))
-                                }
+                                onClick={onClose}
                                 variant="outline"
                                 className="flex-1"
                             >
@@ -551,13 +566,13 @@ export default function AddNewWatch(props: Props) {
                         </p>
                         <div className="flex gap-3">
                             <Button
-                                onClick={() => alert('Save and continue is under development')}
+                                onClick={onSaveAndClose}
                                 className="flex-1"
                             >
                                 Save & Continue
                             </Button>
                             <Button
-                                onClick={handleSaveAndClose}
+                                onClick={() => router.visit(route("watches.index"))}
                                 variant="outline"
                                 className="flex-1"
                             >

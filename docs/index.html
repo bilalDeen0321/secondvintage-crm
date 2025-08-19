@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Documentation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link
+            rel="stylesheet"
+            href="//cdn.jsdelivr.net/npm/docsify@4/themes/vue.css"
+        />
+
+        <!-- 🧪 Code Highlighting -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css"
+        />
+        <style>
+            :root {
+                --sidebar-width: 10px;
+            }
+
+            a.app-name-link img {
+                max-width: 40px;
+            }
+
+            body {
+                overflow-y: auto !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">Documentation loading...</div>
+        <script>
+            window.$docsify = {
+                name: "Docs",
+                // logo: "{{ config('app.logo') }}",
+                //nameLink: "{{ rtrim(route('docs.index'), '/') }}/",
+                repo: "",
+                loadSidebar: true,
+                loadNavbar: false,
+                subMaxLevel: 2,
+                auto2top: true,
+                executeScript: true,
+                mergeNavbar: true,
+                maxLevel: 4,
+                //basePath: '/docs/render/',
+                //routerMode: 'history',
+                //relativePath: true,
+                coverpage: false, //landing page
+                // ga: 'UA-106147152-1',
+                // themeColor: '#0d9488',
+                search: {
+                    placeholder: "🔍 Search docs...",
+                    noData: "No results!",
+                    depth: 3,
+                },
+                pagination: {
+                    previousText: "⬅️ Previous",
+                    nextText: "Next ➡️",
+                    crossChapter: true,
+                    crossChapterText: true,
+                },
+
+                plugins: [
+                    function (hook, vm) {
+                        hook.ready(function () {
+                            console.log("Docs ready!");
+                        });
+                    },
+                ],
+            };
+        </script>
+
+        <!-- 📦 Core -->
+        {{--
+        <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+        --}}
+        <script src="https://cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+
+        <!-- 🔍 Search -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+
+        <!-- 🌙 Dark/Light Toggle -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"></script>
+
+        <!-- 📋 Copy to Clipboard -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+
+        <!-- 🧪 Code Syntax Highlighting (PrismJS) -->
+        <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-json.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-php.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
+
+        <!-- 🗂 Tabs Support -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1/dist/docsify-tabs.min.js"></script>
+
+        <!-- 🔁 Pagination -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+        <!-- 🧠 Zoom Image -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+
+        <!-- 🧠 Emojis -->
+        <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+
+        <!-- 📊 Mermaid Diagrams -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/docsify-mermaid@latest/dist/docsify-mermaid.min.js"></script>
+    </body>
+</html>

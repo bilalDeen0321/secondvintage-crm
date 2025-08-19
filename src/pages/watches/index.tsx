@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import TablePaginate from "@/components/ui/table/TablePaginate";
 import WatchCard from "@/components/WatchCard";
-import WatchForm from "@/components/WatchForm";
 import WatchListView from "@/components/WatchListView";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
@@ -44,8 +43,6 @@ const WatchManagement = () => {
     const page = usePage();
     const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
-
-    const [showForm, setShowForm] = useState(false);
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
     const [editingWatch, setEditingWatch] = useState<WatchResource | undefined>();
 
@@ -404,19 +401,6 @@ const WatchManagement = () => {
                             Try adjusting your search or filters
                         </p>
                     </div>
-                )}
-
-                {/* Form Modal */}
-                {showForm && (
-                    <WatchForm
-                        watch={editingWatch}
-                        // onSave={handleSaveWatch}
-                        onSave={(e) => alert('somthing')}
-                        onCancel={() => {
-                            setShowForm(false);
-                            setEditingWatch(undefined);
-                        }}
-                    />
                 )}
             </div>
         </Layout>
