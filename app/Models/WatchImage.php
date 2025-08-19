@@ -6,6 +6,7 @@ use App\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use \Illuminate\Http\UploadedFile;
 
 class WatchImage extends Model
 {
@@ -23,7 +24,7 @@ class WatchImage extends Model
         'public_url',
         'thumbnail',
         'order_index',
-        'user_for_ai'
+        'use_for_ai'
     ];
 
     /**
@@ -85,7 +86,7 @@ class WatchImage extends Model
     /**
      * Save an uploaded file for a given watch
      */
-    public static function uploadImage(Watch $watch, \Illuminate\Http\UploadedFile $file)
+    public static function uploadImage(Watch $watch, UploadedFile $file, $use_for_ai = false)
     {
         if (!$file->isValid()) {
             return null;
@@ -101,6 +102,7 @@ class WatchImage extends Model
 
 
         return $watch->images()->create([
+            'use_for_ai' => (bool) $use_for_ai,
             'filename'   => $file->getClientOriginalName(),
             'public_url' => $file->storeAs('watches/images', $filename, 'public'),
             'order_index' => $nextIndex,

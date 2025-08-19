@@ -9,12 +9,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Requests\Watch\UpdateOrCreateRequest;
 use App\Http\Resources\WatchResource;
-use App\Jobs\ProcessWatchAIDescription;
+use App\Jobs\ProcessWatchAIDescriptionJob;
+use App\Models\Log;
 use App\Models\Status;
 use App\Models\Watch;
 use App\Services\Api\MakeAiHook;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class MakeAiHookController extends Controller
 {
@@ -22,12 +24,17 @@ class MakeAiHookController extends Controller
 
     /**
      * Hanld make.com ai generate watch description.
+     * 
+     * @param \Illuminate\Http\Request $request
      */
     public function generate(UpdateOrCreateRequest $request, UpdateOrCreateAction $action)
     {
-        $watch = $action($request->validated());
 
-        dispatch(new ProcessWatchAIDescription($watch));
+        $watch = $action($request->only(['name', 'sku']), $request->all());
+
+        dispatch(new ProcessWatchAIDescriptionJob($watch));
+
+        $watch->refresh();
 
         return response()->json([
             'status' => 'success',

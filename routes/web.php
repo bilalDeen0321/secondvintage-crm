@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\PreviewImageController;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WatchResource;
+use App\Mail\TestingEmail;
 use App\Models\Batch;
 use App\Models\Brand;
 use App\Models\Location;
@@ -12,7 +13,9 @@ use App\Models\Watch;
 use App\Services\Api\MakeAiHook;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -34,6 +37,27 @@ Route::get('/php-settings', function () {
 Route::name('web.')->group(function () {
     Route::get('preview-image', PreviewImageController::class)->name('preview-image');
 });
+
+
+Route::prefix('testing')->group(function () {
+    Route::get('email', fn() => Mail::to('appsaeed7@gmail.com')->send(new TestingEmail()) ? 'ok' : 'No');
+    Route::get('listen', fn() => Inertia::render('testing/EventLestening'));
+    // Route::get('schedule', ScheduleListening::class);
+    Route::get('dispatch-event', fn() => event(new \App\Events\TestingEvent));
+    Route::get('dispatch-job', fn() => tap(dispatch(new \App\Jobs\TestingJob)) ? 'dispatched!' : 'Failed');
+});
+
+Route::get('/clear', function () {
+
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+
+    return "Cleared!";
+});
+
 
 Route::get('welcome', fn() => Inertia::render('Welcome', [
     'locations' => Location::query()->pluck('name')->unique()->values(),

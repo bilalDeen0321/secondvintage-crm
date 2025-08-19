@@ -1810,7 +1810,7 @@ const MultiplatformSales = () => {
                                         <Checkbox
                                             checked={
                                                 selectedWatches.length ===
-                                                    filteredWatches.length &&
+                                                filteredWatches.length &&
                                                 filteredWatches.length > 0
                                             }
                                             onCheckedChange={handleSelectAll}
@@ -2022,7 +2022,7 @@ const MultiplatformSales = () => {
                                             ) : (
                                                 watchPlatforms[watch.id] &&
                                                 watchPlatforms[watch.id] !==
-                                                    "None" && (
+                                                "None" && (
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -2030,7 +2030,7 @@ const MultiplatformSales = () => {
                                                             handleViewPlatformData(
                                                                 watch,
                                                                 watchPlatforms[
-                                                                    watch.id
+                                                                watch.id
                                                                 ],
                                                             )
                                                         }
@@ -2137,18 +2137,17 @@ const MultiplatformSales = () => {
                                     {/* Thumbnail Images Grid - Show more images */}
                                     {singleViewModal.watch.images &&
                                         singleViewModal.watch.images.length >
-                                            1 && (
+                                        1 && (
                                             <div className="grid grid-cols-6 gap-3">
                                                 {singleViewModal.watch.images.map(
                                                     (image, index) => (
                                                         <div
                                                             key={image.id}
-                                                            className={`aspect-square cursor-pointer overflow-hidden rounded-lg bg-slate-100 transition-all duration-200 hover:opacity-80 ${
-                                                                index ===
-                                                                singleViewModal.selectedImageIndex
+                                                            className={`aspect-square cursor-pointer overflow-hidden rounded-lg bg-slate-100 transition-all duration-200 hover:opacity-80 ${index ===
+                                                                    singleViewModal.selectedImageIndex
                                                                     ? "ring-3 ring-blue-500 ring-offset-2"
                                                                     : "hover:ring-2 hover:ring-slate-300"
-                                                            }`}
+                                                                }`}
                                                             onClick={() =>
                                                                 handleThumbnailClick(
                                                                     index,
@@ -2169,7 +2168,7 @@ const MultiplatformSales = () => {
                                     {/* Image Counter */}
                                     {singleViewModal.watch.images &&
                                         singleViewModal.watch.images.length >
-                                            1 && (
+                                        1 && (
                                             <div className="mt-4 text-center text-sm text-slate-600">
                                                 Image{" "}
                                                 {singleViewModal.selectedImageIndex +
@@ -2204,16 +2203,16 @@ const MultiplatformSales = () => {
                                             </div>
                                             {singleViewModal.watch
                                                 .acquisitionCost && (
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-slate-600">
-                                                        Acquisition Cost:
-                                                    </span>
-                                                    <span className="text-lg font-medium">
-                                                        €
-                                                        {singleViewModal.watch.acquisitionCost.toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            )}
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-slate-600">
+                                                            Acquisition Cost:
+                                                        </span>
+                                                        <span className="text-lg font-medium">
+                                                            €
+                                                            {singleViewModal.watch.acquisitionCost.toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             <div className="flex items-center gap-3">
                                                 <MapPin className="h-5 w-5 text-slate-400" />
                                                 <span className="text-slate-600">

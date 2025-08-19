@@ -15,6 +15,8 @@ export const watchEscapeCallback = () => router.visit(route("watches.index"));
  * Watch init data
  */
 export const watchInitData = (watch?: WatchResource | null) => ({
+  id: '',
+  routeKey: '',
   name: watch?.name || "",
   sku: watch?.sku || "",
   brand: watch?.brand || "",

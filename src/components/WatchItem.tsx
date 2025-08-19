@@ -8,6 +8,8 @@ import { WatchResource } from "@/types/resources/watch";
 import { Link } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import StatusBadge from "./faildStatusBadge";
+import Loading from "./Loading";
 
 type Props = {
     watch: WatchResource;
@@ -23,10 +25,11 @@ export default function WatchItem(props: Props) {
     const [aiStatus, setAiStatus] = useState<string | null>(null);
 
     useEffect(() => {
-        echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessed', (event) => {
+        echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessedEvent', (event) => {
             setAiStatus(event.ai_status);
+            console.log(event)
         })
-        return () => echo.leave(`watch.${watch.routeKey}`);
+        // return () => echo.leave(`watch.${watch.routeKey}`);
     }, [watch.routeKey]);
 
 
@@ -133,9 +136,9 @@ export default function WatchItem(props: Props) {
                 title={watch.description}
             >
                 {aiStatus === 'loading'
-                    ? 'Loading...'
+                    ? <Loading />
                     : aiStatus === 'failed'
-                        ? 'Failed'
+                        ? <StatusBadge />
                         : watch.description || '-'}
             </div>
         </td>

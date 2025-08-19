@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
+Broadcast::channel('testing', fn() => true);
 
 Broadcast::channel('watch.{routekey}', fn() => true);

@@ -16,9 +16,9 @@ use App\Support\Str;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Sleep;
 
-class ProcessWatchAIDescription implements ShouldQueue
+class ProcessWatchAIDescriptionJob implements ShouldQueue
 {
-    use Queueable, InteractsWithSockets, Dispatchable, SerializesModels;
+    use Queueable, Dispatchable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -32,8 +32,6 @@ class ProcessWatchAIDescription implements ShouldQueue
     {
 
         $this->updateWatchStatus(WatchAiStatus::loading);
-
-        event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
 
         $payload = [
             'AI_Action'       => 'generate_description',
@@ -56,24 +54,18 @@ class ProcessWatchAIDescription implements ShouldQueue
          * Create test case
          */
 
-        Sleep::for(30)->seconds();
+        Sleep::for(10)->seconds();
 
         $status = fake()->randomElement([WatchAiStatus::success, WatchAiStatus::failed]);
 
-        if ($status === WatchAiStatus::success) {
+        $this->watch->update([
+            'status'       => Status::REVIEW,
+            'ai_status'    => $status,
+            'ai_thread_id' => Str::uuid(),
+            'description'  => $status === WatchAiStatus::success ? fake()->sentences : null,
+        ]);
 
-            $watch =  $this->watch->update([
-                'status'       => Status::REVIEW,
-                'ai_status'    => WatchAiStatus::success,
-                'ai_thread_id' => Str::uuid(),
-                'description'  => fake()->sentence,
-            ]);
-
-            FacadesLog::info($watch);
-
-            event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
-        }
-
+        $this->updateWatchStatus(WatchAiStatus::failed);
 
         return;
 

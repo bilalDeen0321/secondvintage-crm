@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { echo } from "@/app/echo";
+import { getError } from "@/app/errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import {
     Loader2,
     RotateCcw,
     Sparkles
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
 
@@ -56,51 +57,55 @@ export default function GenerateAiDescription(props: Props) {
 
         setLoading(true);
 
-        try {
-            // Make the server request
-            const response = await axios.post(route("api.make-hooks.ai-description.generate"), data);
+        axios.post(route("api.make-hooks.ai-description.generate"), data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(function (response) {
 
-
-            // Success check
-            if (response.data?.watch) {
-
-                //seved darft watch key in browser session
-                window.sessionStorage.setItem('darft_watch_key', response.data?.watch.routeKey)
-
-                echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessed', (event) => {
-                    if (event.ai_status === 'loading') {
-                        setLoading(true);
-                    } else {
-                        setLoading(false);
-                        window.sessionStorage.removeItem('darft_watch_key')
-                    }
-                })
-            } else {
+            console.log(response.data.watch);
+            if (!response.data?.watch) {
                 toast.error(response.data?.message || "Failed to generate description");
+                return;
             }
 
-        } catch (error) {
-            const err = error as AxiosError<any>;
+            const resWatch = (response.data?.watch || {}) as WatchResource | null;
 
-            // Server returned a response with error status (4xx, 5xx)
-            if (err.response) {
-                toast.error(err.response.data?.message || "Server error occurred");
-                console.error("Error details:", err.response.data);
-            }
-            // Request was made but no response
-            else if (err.request) {
-                toast.error("No response from server");
-                console.error("No response:", err.request);
-            }
-            // Something else happened
-            else {
-                toast.error(err.message || "Unknown error");
-            }
+            Object.keys(resWatch).forEach((key: keyof typeof data) => {
+                setData(key, resWatch[key] || '')
+            });
 
-        } finally {
-            setLoading(false);
-        }
+            window.sessionStorage.setItem('watch_draft_route_key', String(resWatch.routeKey))
+
+        }).finally(() => setLoading(false)).catch(err => toast.error(getError(err)))
+
+
     };
+
+    //listeners
+    useEffect(() => {
+
+        const routeKey = watch?.routeKey || data.routeKey;
+
+        if (routeKey) {
+
+            const channel = `watch.${watch.routeKey}`;
+
+            echo.listen(channel, 'WatchAiDescriptionProcessed', (event: WatchResource) => {
+
+                console.log(event);
+
+                if (event.ai_status === 'loading') {
+                    setLoading(true);
+                    return;
+                }
+
+                setLoading(false);
+
+            })
+        }
+
+    }, [data.routeKey, watch.routeKey])
 
     return <div>
         <div className="mb-2 flex items-center justify-between">

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Watch;
 
 use App\Http\Requests\StoreWatchRequest;
+use App\Models\Watch;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,7 @@ class UpdateOrCreateRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('watches', 'sku')->ignore($this->route('watch')->id),
+                Rule::unique(Watch::tableName(), 'sku')->ignore($this?->watch?->id ?? $this?->id ?? null),
             ]
         ]);
     }

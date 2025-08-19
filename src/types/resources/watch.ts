@@ -37,6 +37,7 @@ export type WatchResource = {
     image_urls: string[];
     images: WatchImageResource[];
     routeKey: number | string;
+    ai_status?: null | string;
     brand: string | null;
     batch: any; // adjust to actual batch type if available
 };
