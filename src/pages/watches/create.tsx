@@ -122,7 +122,6 @@ export default function AddNewWatch(props: Props) {
                 e.returnValue = "";
             }
         };
-
         window.addEventListener("beforeunload", onBeforeUnload);
         return () => window.removeEventListener("beforeunload", onBeforeUnload);
     }, [hasChanges]);
@@ -138,7 +137,9 @@ export default function AddNewWatch(props: Props) {
         };
 
         // Push a new state to the history stack to intercept navigation
-        window.history.pushState(null, "", window.location.href);
+        // if (hasChanges) {
+        //     window.history.pushState(null, "", window.location.href);
+        // }
 
         window.addEventListener("popstate", handlePopState);
         return () => window.removeEventListener("popstate", handlePopState);

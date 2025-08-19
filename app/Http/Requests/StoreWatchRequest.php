@@ -24,9 +24,9 @@ class StoreWatchRequest extends FormRequest
     {
         return [
             'name'            => ['required', 'string', 'max:255'],
-            'sku'             => ['required', 'string', 'max:255', 'unique:watches,sku'],
             'brand'           => ['required', 'string', 'max:255'],
-            'status'          => ['required', 'string', 'max:255'],
+            'sku'             => ['nullable', 'string', 'max:255', 'unique:watches,sku'],
+            'status'          => ['nullable', 'string', 'max:255'],
             'serial_number'   => ['nullable', 'string', 'max:255'],
             'reference'       => ['nullable', 'string', 'max:255'],
             'case_size'       => ['nullable', 'string', 'max:255'],
@@ -42,10 +42,10 @@ class StoreWatchRequest extends FormRequest
             'ai_instructions' => ['nullable', 'string'],
             'ai_thread_id'    => ['nullable', 'string'],
 
-            // images is an array of base64 strings inside objects
             'images'          => ['nullable', 'array'],
+            // images is an array of base64 strings inside objects
             // 'images.*.url'    => ['required_with:images', 'string'],
-            'images.*.file'    => ['nullable', 'file', 'image', 'max:5120'],
+            'images.*.file'   => ['nullable', 'file', 'image', 'max:5120'],
 
         ];
     }

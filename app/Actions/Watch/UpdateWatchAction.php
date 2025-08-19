@@ -41,8 +41,8 @@ class UpdateWatchAction
         //save new images 
         if (!empty($data['images']) && is_array($data['images'])) {
             foreach ($data['images'] as $imageData) {
-                if (!empty($imageData['url'])) {
-                    WatchImage::storeBase64Image($watch, $imageData['url']);
+                if (!empty($imageData['file'])) {
+                    WatchImage::uploadImage($watch, $imageData['file']);
                 }
             }
         }
