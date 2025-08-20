@@ -38,7 +38,22 @@ class AIGenerateRequest extends FormRequest
 
             // images is an array of base64 strings inside objects
             'images'          => ['required', 'array'],
-            'images.*.url'    => ['string'],
+            'images.*.file'   => ['nullable', 'file', 'image', 'max:5120'],
+        ];
+    }
+
+
+    /**
+     * Custom error messages
+     */
+    public function messages(): array
+    {
+        return [
+            'images.required'          => 'You must provide at least one image.',
+            'images.array'             => 'Images must be provided as an array.',
+            'images.*.file.file'       => 'Each image must be a valid file.',
+            'images.*.file.image'      => 'Each image must be an actual image (jpg, png, gif, etc.).',
+            'images.*.file.max'        => 'Each image may not be greater than 5 MB.',
         ];
     }
 }

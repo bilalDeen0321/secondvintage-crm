@@ -15,9 +15,6 @@ class GenerateAiDescriptionAction
      */
     public function __invoke(Request $request)
     {
-
-        return $request->all();
-
         $payload = [
             'AI_Action'       => 'generate_description',
             'SKU'             => $request->string('sku'),
@@ -28,17 +25,11 @@ class GenerateAiDescriptionAction
             'Case_Size'       => $request->input('case_size'),
             'Caliber'         => $request->input('caliber'),
             'Timegrapher'     => $request->input('timegrapher'),
-            'Image_URLs'      => $this->image_urls($request->input('images')),
+            'Image_URLs'      => $this->image_urls($request->images ?? []),
             'Platform'        => $request->string('platform', 'Catawiki'),
             'Status_Selected' => $request->string('status'),
             'AI_Instruction'  => $request->input('ai_instructions'),
         ];
-        // $payload['Image_URLs'] = $this->processImages($request->input('images'));
-
-        // $payload['Image_URLs'] = ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
-
-        // return $payload;
-
 
         $data = array_filter($payload);
 
@@ -51,35 +42,38 @@ class GenerateAiDescriptionAction
     private function image_urls($images)
     {
 
+        if (app()->environment('local')) {
+            return ['https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG/500px-Casio_OCEANUS_OCW-S1350PC-1AJR_01.JPG'];
+        }
+
         return collect($images)->map(function ($image) {
 
-            $url = $image['url'] ?? null;
+            $file = $image['file'] ?? null;
 
-            if (!$url) {
-                return null; // skip if no URL
+            if (!$file) {
+                return null; // skip if no file
             }
 
-            // If it's a base64 image, return as is
-            if (str_starts_with($url, 'data:image')) {
-
-                $cacheKey = 'preview_image_from_cache_' . Str::random();
-
-                // Store Base64 in cache for 1 day
-                Cache::put($cacheKey, $url, now()->addDay());
-
-                // Return route with the **cache key**, not full Base64
+            // Base64 string
+            if (is_string($file) && str_starts_with($file, 'data:image')) {
+                $cacheKey = 'preview_image_from_cache_' . \App\Support\Str::random();
+                \Illuminate\Support\Facades\Cache::put($cacheKey, $file, now()->addDay());
                 return route('web.preview-image', ['path' => $cacheKey]);
             }
 
-            // First check if the file exists in storage
-            if (\Illuminate\Support\Facades\Storage::exists($url)) {
-                return url(\Illuminate\Support\Facades\Storage::url($url));
+            // Already a stored path (string)
+            if (is_string($file) && \Illuminate\Support\Facades\Storage::exists($file)) {
+                return url(\Illuminate\Support\Facades\Storage::url($file));
             }
 
-            // Fallback: return the original URL (could be http, https, or base64)
-            return $url;
+            // Uploaded file
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                $path = $file->store('tmp', 'public'); // only called if it's a real file
+                return url(\Illuminate\Support\Facades\Storage::url($path));
+            }
 
-            //ok
+            // Fallback for any other string (URL or unknown)
+            return is_string($file) ? $file : null;
         })->filter()->values()->all();
     }
 }

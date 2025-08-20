@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Actions\Watch\UpdateOrCreateAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Watch\AIGenerateRequest;
 use App\Http\Requests\Watch\UpdateOrCreateRequest;
 use App\Http\Resources\WatchResource;
 use App\Jobs\ProcessWatchAIDescriptionJob;
@@ -25,7 +26,7 @@ class MakeAiHookController extends Controller
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function generate(UpdateOrCreateRequest $request, GenerateAiDescriptionAction $action)
+    public function generate(AIGenerateRequest $request, GenerateAiDescriptionAction $action)
     {
 
         $make = $action($request);

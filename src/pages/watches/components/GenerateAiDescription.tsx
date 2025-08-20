@@ -89,7 +89,9 @@ export default function GenerateAiDescription(props: Props) {
 
         setLoading(true);
 
-        axios.post(route("api.make-hooks.ai-description.generate"), data).then((response) => {
+        axios.post(route("api.make-hooks.ai-description.generate"), data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((response) => {
             console.log('response: ', response)
             // Success check
             if (response.data?.status === "success") {
