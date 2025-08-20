@@ -1,15 +1,12 @@
 
-import { echo } from "@/app/echo";
 import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Linkui from "@/components/ui/Link";
+import WatchDescription from "@/pages/watches/components/WatchDescription";
 import { WatchResource } from "@/types/resources/watch";
 import { Link } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import StatusBadge from "./faildStatusBadge";
-import Loading from "./Loading";
 
 type Props = {
     watch: WatchResource;
@@ -21,17 +18,6 @@ type Props = {
 
 export default function WatchItem(props: Props) {
     const { watch, onSelectWatch, selectedWatches, handleImageClick, onDelete } = props;
-
-    const [aiStatus, setAiStatus] = useState<string | null>(null);
-
-    useEffect(() => {
-        echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessedEvent', (event) => {
-            setAiStatus(event.ai_status);
-            console.log(event)
-        })
-        // return () => echo.leave(`watch.${watch.routeKey}`);
-    }, [watch.routeKey]);
-
 
     return <tr
         key={watch.id}
@@ -135,11 +121,7 @@ export default function WatchItem(props: Props) {
                 }}
                 title={watch.description}
             >
-                {aiStatus === 'loading'
-                    ? <Loading />
-                    : aiStatus === 'failed'
-                        ? <StatusBadge />
-                        : watch.description || '-'}
+                <WatchDescription watch={watch} />
             </div>
         </td>
         <td className="p-2">
@@ -177,4 +159,44 @@ export default function WatchItem(props: Props) {
             </div>
         </td>
     </tr>
+}
+
+export function WatchItemSkeleton() {
+    return (
+        <tr className="animate-pulse">
+            <td className="p-2">
+                <Checkbox disabled />
+            </td>
+            <td className="p-2">
+                <div className="h-12 w-12 bg-slate-200 rounded-lg"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-1/3"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-1/4"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-1/5"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-full"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-full"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-full"></div>
+            </td>
+            <td className="p-2">
+                <div className="h-4 bg-slate-200 rounded w-full"></div>
+            </td>
+        </tr>
+    );
 }
