@@ -81,28 +81,36 @@ export default function AddNewWatch(props: Props) {
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
-    const onSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoadName('save');
+    const onSave = () => {
         storeServer(route("watches.store"), {
             forceFormData: true,
             onSuccess: (response) => {
+
                 setSavedData(data); // ✅ reset baseline after saving
+
+
+                if (loadName == 'save_and_close') {
+                    router.visit(route("watches.index"));
+                    return;
+                }
+
                 if (response?.props?.flash?.data?.sku) {
                     router.visit(route("watches.show", response.props.flash.data.sku));
                 }
+
             },
         });
     };
 
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoadName('save');
+        onSave();
+    };
+
     const onSaveAndClose = () => {
         setLoadName('save_and_close');
-        storeServer(route("watches.store"), {
-            onSuccess: () => {
-                setSavedData(data); // ✅ reset baseline
-                router.visit(route("watches.index"));
-            },
-        });
+        onSave();
     };
 
 
