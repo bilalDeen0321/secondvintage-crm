@@ -2,8 +2,11 @@
 
 namespace App\Observers;
 
+use App\Models\Brand;
 use App\Models\Watch;
+use App\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class WatchObserver
@@ -36,14 +39,19 @@ class WatchObserver
      */
     public function updating(Watch $watch)
     {
-        // If name or brand changes → regenerate SKU
-        if (
-            ($watch->isDirty('name') || $watch->isDirty('brand_id')) &&
-            $watch->name &&
-            $watch->brand
-        ) {
-            $brand_name = $watch->brand?->name ?? $watch->brand;
-            $watch->sku = Watch::generateSKU($brand_name, $watch->name, Watch::class);
+
+        $nameChanged = $watch->isDirty('name');
+        $brandChanged = $watch->isDirty('brand_id');
+
+        // Check if brand name changed only if the brand relation is loaded
+        $brandNameChanged = false;
+        if (!$brandChanged && $watch->relationLoaded('brand')) {
+            $brandNameChanged = $watch->brand->isDirty('name');
+        }
+
+        if ($nameChanged || $brandChanged || $brandNameChanged) {
+            $brandName = $watch->brand?->name ?? '';
+            $watch->slug = generateSKU($brandName, $watch->name, Watch::class);
         }
     }
 

@@ -3,7 +3,6 @@ import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
-import ImageManager from "@/components/ImageManager";
 import InputError from "@/components/InputError";
 import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
@@ -17,17 +16,12 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import UploadManager from "@/components/UploadManager";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import {
-    CheckCircle,
-    ChevronLeft,
-    ChevronRight,
-    Plus,
-    Sparkles
-} from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight, Plus, Sparkles } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchEscapeCallback, watchInitData } from "./_utils";
@@ -48,13 +42,18 @@ type Props = {
 };
 
 export default function UpdateWatch(props: Props) {
-
     //server props
     //server props
-    const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
-    const { watch, nextItem, previousItem } = (usePage().props) as unknown as Props;
+    const {
+        locations = [],
+        batches = [],
+        brands = [],
+        statuses = [],
+        currencies = [],
+    } = props || {};
+    const { watch, nextItem, previousItem } = usePage().props as unknown as Props;
 
-    //utils    
+    //utils
     const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
     //local state
     const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -64,33 +63,26 @@ export default function UpdateWatch(props: Props) {
     //server state
     const { data, setData, put: updateServer, processing, errors } = useForm(watchInitData(watch));
 
-
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand);
 
     // Update the form state only when SKU changes
-    useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
-
-
+    useEffect(() => {
+        if (data.sku !== sku) setData("sku", sku);
+    }, [sku, setData, data.sku]);
 
     // Update display value when form data or currency changes
     useEffect(() => {
-        Currency.init().exchange(
-            data.original_cost,
-            data.currency,
-            currencies,
-            (value) => setData('current_cost', value)
+        Currency.init().exchange(data.original_cost, data.currency, currencies, (value) =>
+            setData("current_cost", value),
         );
     }, [currencies, data.currency, data.original_cost, setData]);
 
-
-
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
-
 
     /**
      * unimproved scripts
-    */
+     */
     useEffect(() => {
         const savedDataString = JSON.stringify(savedData);
         const formDataString = JSON.stringify(data);
@@ -99,14 +91,14 @@ export default function UpdateWatch(props: Props) {
         }
     }, [data, hasChanges, savedData]);
 
-
     /**
      * All Handlers + server actions
      */
 
     const handleSave = () => {
         //save the data to server
-        updateServer(route("watches.store"), {
+        updateServer(route("watches.update", watch.routeKey), {
+            forceFormData: true,
             onSuccess: () => {
                 // reset();
             },
@@ -117,13 +109,15 @@ export default function UpdateWatch(props: Props) {
     };
 
     const handleSaveAndClose = () => {
-        updateServer(route("watches.store"), {
+        updateServer(route("watches.update"), {
+            forceFormData: true,
+            fresh: true,
             onSuccess: () => {
                 // only after success → navigate away
                 router.visit(route("watches.index"));
             },
             onError: (error) => {
-                toast.error(error?.message)
+                toast.error(error?.message);
                 // keep user here if failed
                 console.error("Save failed, staying on page");
             },
@@ -136,6 +130,13 @@ export default function UpdateWatch(props: Props) {
         handleSave();
     };
 
+    // return (
+    //     <Layout>
+    //         <h1 className="p-10">
+    //             This component will be available after completing the watch creation form.
+    //         </h1>
+    //     </Layout>
+    // );
 
     return (
         <Layout>
@@ -343,7 +344,7 @@ export default function UpdateWatch(props: Props) {
                                             </div>
                                         </div>
                                         <div className="min-h-[200px] flex-1">
-                                            <ImageManager
+                                            <UploadManager
                                                 images={data.images}
                                                 onChange={(images) => setData("images", images)}
                                             />
@@ -519,7 +520,10 @@ export default function UpdateWatch(props: Props) {
                             the next watch?
                         </p>
                         <div className="flex gap-3">
-                            <Button onClick={() => alert('Save and continue is under development')} className="flex-1">
+                            <Button
+                                onClick={() => alert("Save and continue is under development")}
+                                className="flex-1"
+                            >
                                 Save & Continue
                             </Button>
                             <Button

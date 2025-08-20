@@ -44,7 +44,7 @@ class MakeAiHook
                 ->post($this->hookUrl, $payload);
 
 
-            Log::info('Make.com response', $response->json() ?? 'No response', Log::CATEGORY_SYSTEM);
+            Log::info('Make.com response', $response->body(), Log::CATEGORY_SYSTEM);
 
             //send back
             return $response->collect()

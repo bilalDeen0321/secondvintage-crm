@@ -12,20 +12,22 @@ class Sku
     /**
      * Check the sku exits
      */
-    protected static function skuExists(string $sku, array|string $source, string $key = 'sku'): bool
+    protected static function skuExists(string $sku, array|string $source, $oldSku = null): bool
     {
         // If it's a class name (Laravel Model)
         if (is_string($source) && class_exists($source) && new $source instanceof Model) {
-            return $source::where($key, $sku)->exists();
+            return $source::query()->where('sku', $sku)
+                ->when(fn($q) => $q->where('sku', '!=', $oldSku))
+                ->exists();
         }
 
-        return in_array($sku, $source);
+        return in_array($sku, array_pop($source, $oldSku));
     }
 
     /**
      * SKU Generation : generate a unique sku
      */
-    public static function generateSKU($brand, $model, array|string $modeClass = [])
+    public static function generateSKU($brand, $model, array|string $modeClass = [], $oldSku = null)
     {
         if (!$brand || !$model) return "";
 
@@ -50,7 +52,7 @@ class Sku
         $serial = 1;
         $sku = "{$base}-" . str_pad($serial, 4, "0", STR_PAD_LEFT);
 
-        while (self::skuExists($sku, $modeClass)) {
+        while (self::skuExists($sku, $modeClass, $oldSku)) {
             $serial++;
             $sku = "{$base}-" . str_pad($serial, 4, "0", STR_PAD_LEFT);
         }

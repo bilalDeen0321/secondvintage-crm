@@ -12,7 +12,7 @@ class WatchSkuController extends Controller
     /**
      * Handle new sku generate
      */
-    public function generate(Request $request)
+    public function generate(Request $request, $oldSku = null)
     {
         $data =  $request->validate([
             'watch_name' => 'required|string',
@@ -20,7 +20,7 @@ class WatchSkuController extends Controller
         ]);
 
         return [
-            'sku' => generateSKU($data['brand_name'], $data['watch_name'], Watch::class),
+            'sku' => generateSKU($data['brand_name'], $data['watch_name'], Watch::class, $oldSku),
         ];
     }
 

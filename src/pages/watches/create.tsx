@@ -1,5 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getError } from "@/app/errors";
 import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import BatchSelector from "@/components/BatchSelector";
@@ -21,9 +22,12 @@ import UploadManager from "@/components/UploadManager";
 import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
+import { Page } from "@inertiajs/core";
 import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
+import { PageProps } from "node_modules/@inertiajs/core/types/types";
 import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleApprove,
@@ -33,9 +37,10 @@ import {
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
+import WatchFormNavigation from "./components/WatchFormNavigation";
 
 type Props = {
-    watch: WatchResource;
+    watch?: WatchResource;
     locations: string[];
     batches: string[];
     brands: string[];
@@ -44,7 +49,7 @@ type Props = {
 };
 
 
-export default function AddNewWatch(props: Props) {
+export default function CreateWatch({ watch, ...props }: Props) {
 
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
@@ -56,11 +61,11 @@ export default function AddNewWatch(props: Props) {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
 
     //server states
-    const { data, setData, post: storeServer, processing, errors } = useForm(watchInitData());
-    const [savedData, setSavedData] = useState<any>(watchInitData());
+    const { data, setData, post, processing, errors } = useForm(watchInitData(watch));
+    const [savedData, setSavedData] = useState<any>(watchInitData(watch));
 
     // Use the debounced server SKU hook
-    const sku = useServerSku(data.name, data.brand);
+    const sku = useServerSku(data.name, data.brand, watch?.sku);
 
     // Update the form state only when SKU changes
     useEffect(() => { if (data.sku !== sku) setData('sku', sku); }, [sku, setData, data.sku]);
@@ -81,36 +86,53 @@ export default function AddNewWatch(props: Props) {
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
-    const onSave = () => {
-        storeServer(route("watches.store"), {
+    const onSave = (handler?: ((res?: any) => void) | string) => {
+
+        const errorcallback = (err: unknown) => toast.error(getError(err));
+
+        const successcallback = (res: Page<PageProps>) => {
+
+            setSavedData(data);
+
+            if (typeof handler === 'function') {
+                handler(res.props?.flash?.data);
+            } else if (typeof handler === 'string') {
+                router.visit(handler);
+            }
+
+        };
+
+
+        //handle update watch
+        if (watch?.routeKey) {
+
+            router.post(route(`watches.update`, watch.routeKey), { ...data, _method: 'put' }, {
+                forceFormData: true,
+                onSuccess: successcallback,
+                onError: errorcallback,
+            });
+
+            return;
+        }
+
+        post(route(`watches.store`), {
             forceFormData: true,
-            onSuccess: (response) => {
-
-                setSavedData(data); // ✅ reset baseline after saving
-
-
-                if (loadName == 'save_and_close') {
-                    router.visit(route("watches.index"));
-                    return;
-                }
-
-                if (response?.props?.flash?.data?.sku) {
-                    router.visit(route("watches.show", response.props.flash.data.sku));
-                }
-
-            },
+            onSuccess: successcallback,
+            onError: errorcallback,
         });
+
+
     };
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLoadName('save');
-        onSave();
+        onSave((res) => router.visit(route('watches.show', res?.routeKey || '')));
     };
 
     const onSaveAndClose = () => {
         setLoadName('save_and_close');
-        onSave();
+        onSave(route("watches.index"));
     };
 
 
@@ -155,8 +177,7 @@ export default function AddNewWatch(props: Props) {
 
     return (
         <Layout>
-            <Head title="Add New Watch" />
-
+            <Head title={watch?.routeKey ? 'Update the Watch' : "Add New Watch"} />
             {processing && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center bg-white/70 cursor-not-allowed">
                     <div className="flex flex-col items-center space-y-3">
@@ -181,10 +202,12 @@ export default function AddNewWatch(props: Props) {
                         </h2>
                     </div>
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        {Object.entries(errors).map(([, error]) => (
-                            <InputError message={String(error)} />
+                        {Object.entries(errors).map(([, error], index) => (
+                            <InputError key={index} message={String(error)} />
                         ))}
                     </div>
+
+                    <WatchFormNavigation />
 
                     <form
                         onSubmit={onSubmit}

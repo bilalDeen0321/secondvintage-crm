@@ -15,7 +15,6 @@ use App\Models\Status;
 use App\Models\Watch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -128,17 +127,54 @@ class WatchController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * The controller's actions data for watch management.
      */
-    public function create()
+    public function crudData()
     {
-
-        return Inertia::render('watches/create', [
+        return [
             'currencies' => Currency::query()->latest()->get(),
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
             'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
+        ];
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('watches/create', $this->crudData());
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Watch $watch)
+    {
+        return $this->edit($watch);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Watch $watch)
+    {
+
+        $nextItem = Watch::where('id', '<', $watch->id) // smaller id for next in latest-first
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $previousItem = Watch::where('id', '>', $watch->id) // larger id for previous in latest-first
+            ->orderBy('id', 'asc')
+            ->first();
+
+        return Inertia::render('watches/create', [
+            ...$this->crudData(),
+            'watch' => new WatchResource($watch),  // single model resource, not collection
+            'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
+            'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
         ]);
     }
 
@@ -165,55 +201,26 @@ class WatchController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Watch $watch)
-    {
-        return $this->edit($watch);
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Watch $watch)
-    {
-
-        $nextItem = Watch::where('id', '<', $watch->id) // smaller id for next in latest-first
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $previousItem = Watch::where('id', '>', $watch->id) // larger id for previous in latest-first
-            ->orderBy('id', 'asc')
-            ->first();
-
-        return Inertia::render('watches/edit', [
-            'watch' => new WatchResource($watch),  // single model resource, not collection
-            'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
-            'previousItem' => $previousItem ? new WatchResource($previousItem) : null,
-
-            //form data
-            'currencies' => Location::query()->latest()->get(),
-            'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
-            'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
-            'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
-            'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
-        ]);
-    }
 
     /**
      * Update the specified resource in storage.
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function update(UpdateWatchRequest $request, Watch $watch, UpdateWatchAction $action)
+    public function update(Watch $watch, UpdateWatchRequest $request, UpdateWatchAction $action)
     {
-
-        dd($request->all());
+        // Validate the request
+        $input = $request->validated();
 
         $action($watch, $input);
 
-        return redirect()->back()->with('success', 'Watch updated successfully.');
+        $watch->refresh(); // Refresh the watch model to get updated data
+
+        return redirect()->route('watches.show', $watch)->with([
+            'success' => 'Watch saved.',
+            'data' => new WatchResource($watch), // Return the updated watch resource
+        ]);
     }
 
     /**

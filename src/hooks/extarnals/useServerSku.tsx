@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 // Example React hook using debounce
-export const useServerSku = (name: string, brand: string) => {
+export const useServerSku = (name: string, brand: string, oldSku?: string | null) => {
     const [sku, setSku] = useState('');
     const [debouncedName] = useDebounce(name, 500); // 500ms debounce
     const [debouncedBrand] = useDebounce(brand, 500);
@@ -16,14 +16,14 @@ export const useServerSku = (name: string, brand: string) => {
             return;
         }
 
-        getServerSku(debouncedName, debouncedBrand).then((result) => {
+        getServerSku(debouncedName, debouncedBrand, oldSku).then((result) => {
             if (mounted) setSku(result);
         });
 
         return () => {
             mounted = false; // cancel setState if unmounted
         };
-    }, [debouncedName, debouncedBrand]);
+    }, [debouncedName, debouncedBrand, oldSku]);
 
     return sku;
 };

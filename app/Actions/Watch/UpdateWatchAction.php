@@ -23,30 +23,34 @@ class UpdateWatchAction
      */
     public function __invoke(Watch $watch,  array $input)
     {
-        $data =  Arr::only($input, Watch::instance()->getFillable());
 
-        if (isset($data['brand'])) {
-            $data['brand_id'] = Brand::firstOrCreate(['name' => $input['brand']]);;
+        $data =  $input;
+
+        if (isset($input['batch'])) {
+            $data['batch_id'] = Batch::firstOrCreate(['name' => $input['batch']])->id;
         }
 
-        if (isset($data['batch'])) {
-            $data['batch_id'] = Batch::firstOrCreate(['name' => $data['batch']])->id;
+        if (isset($input['brand'])) {
+            $data['brand_id'] = Brand::firstOrCreate(['name' => $input['brand']])->id;
         }
 
+        // 2. Create Watch
+        if (!Watch::query()->update(Arr::only($data, Watch::fields()))) {
+            throw new \Exception('Failed to update watch');
+        }
 
-        // 3. Handle Base64 Images
-        //clear images before store new images
-        $watch->images()->getQuery()->delete();
+        // refresh the watch instance
+        $watch->refresh();
 
-        //save new images 
-        if (!empty($data['images']) && is_array($data['images'])) {
-            foreach ($data['images'] as $imageData) {
-                if (!empty($imageData['file'])) {
-                    WatchImage::uploadImage($watch, $imageData['file']);
+        // Handle images
+        if (!empty($input['images'])) {
+            foreach ($input['images'] as $img) {
+                if (isset($img['file']) && $img['file'] instanceof \Illuminate\Http\UploadedFile) {
+                    WatchImage::uploadImage($watch, $img['file'], $img['useForAI'] ?? false);
                 }
             }
         }
 
-        return $watch->update($data);
+        return $watch;
     }
 }

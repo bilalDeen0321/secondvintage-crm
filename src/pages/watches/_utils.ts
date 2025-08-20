@@ -42,11 +42,11 @@ export const watchInitData = (watch?: WatchResource | null) => ({
 
 
 // Server SKU fetcher
-export const getServerSku = async (name: string, brand: string): Promise<string> => {
+export const getServerSku = async (name: string, brand: string, oldSku?: string | null): Promise<string> => {
   if (!name || !brand) return '';
 
   try {
-    const res = await axios.post(route('api.watches.generate-sku'), {
+    const res = await axios.post(route('api.watches.generate-sku', oldSku), {
       watch_name: name,
       brand_name: brand,
     });

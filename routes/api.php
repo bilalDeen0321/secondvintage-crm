@@ -17,7 +17,7 @@ Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group
 });
 
 Route::prefix('watches')->name('watches.')->group(function () {
-    Route::post('generate-sku', [WatchSkuController::class, 'generate'])->name('generate-sku');
+    Route::post('generate-sku/{oldSku?}', [WatchSkuController::class, 'generate'])->name('generate-sku');
 });
 
 

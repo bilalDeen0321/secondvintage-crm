@@ -48,7 +48,7 @@ class AddNewWatch
         if (!empty($data['images'])) {
             foreach ($data['images'] as $img) {
                 if (isset($img['file']) && $img['file'] instanceof \Illuminate\Http\UploadedFile) {
-                    WatchImage::uploadImage($watch, $img['file']);
+                    WatchImage::uploadImage($watch, $img['file'], $img['useForAI'] ?? false);
                 }
             }
         }

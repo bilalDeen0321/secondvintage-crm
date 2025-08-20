@@ -19,7 +19,7 @@ class WatchImageResource extends JsonResource
             'id' => (string) $this->id,
             'url' => $this->url(),
             'order_index' => $this->order_index,
-            'useForAI' => $this->use_for_ai, // or use another logic if you prefer
+            'useForAI' => (bool) $this->use_for_ai, // or use another logic if you prefer
         ];
     }
 }

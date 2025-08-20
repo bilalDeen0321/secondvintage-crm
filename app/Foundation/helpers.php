@@ -23,8 +23,8 @@ if (!function_exists('generateSKU')) {
      * @param array|string $modeClass laravel model class string or array of slugs
      * @return string
      */
-    function generateSKU($brand, $model, $modeClass = []): string
+    function generateSKU($brand, $model, $modeClass = [], $oldSku = null): string
     {
-        return Sku::generateSKU($brand, $model, $modeClass);
+        return Sku::generateSKU($brand, $model, $modeClass, $oldSku);
     }
 }
