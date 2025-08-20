@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Watch;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class WatchObserver
 {
@@ -43,6 +44,28 @@ class WatchObserver
         ) {
             $brand_name = $watch->brand?->name ?? $watch->brand;
             $watch->sku = Watch::generateSKU($brand_name, $watch->name, Watch::class);
+        }
+    }
+
+    /**
+     * Handle the Watch "deleting" event.
+     */
+    public function deleting(Watch $watch): void
+    {
+        // Example: Delete associated images BEFORE the watch is deleted
+        if ($watch->images) {
+            foreach ($watch->images as $image) {
+
+                //remove file from storage
+                if (Storage::disk('public')->exists($image?->public_url ?? '')) {
+                    Storage::disk('public')->delete($image->public_url);
+                }
+
+                //delete the image record if exists
+                if ($image instanceof \App\Models\WatchImage) {
+                    $image->delete();
+                }
+            }
         }
     }
 
