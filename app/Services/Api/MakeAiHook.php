@@ -4,10 +4,13 @@ namespace App\Services\Api;
 
 use App\Models\Log;
 use App\Models\Status;
+use App\Traits\Fakes\FakesMakeAiHook;
 use Illuminate\Support\Facades\Http;
 
 class MakeAiHook
 {
+    use FakesMakeAiHook;
+
     protected string $hookUrl;
     protected string $apiKey;
 
@@ -37,16 +40,15 @@ class MakeAiHook
 
         try {
 
-            $response = Http::timeout(30) // Make.com can take a while with images
-                ->asJson() // sets Content-Type: application/json and encodes payload
-                ->withHeaders([
-                    'x-make-apikey' => $this->apiKey,
-                ])
+            $response = Http::timeout(60)->asJson()->withHeaders(['x-make-apikey' => $this->apiKey])
                 ->post($this->hookUrl, $payload);
 
-
             //send back
-            return $response->collect();
+            return $response->collect()
+                ->mapWithKeys(function ($value, $key) {
+                    return [ucfirst($key) => $value];
+                });
+            //
         } catch (\Throwable $e) {
             return collect([
                 'Status' => 'error',

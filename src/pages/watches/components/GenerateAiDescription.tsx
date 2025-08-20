@@ -50,6 +50,38 @@ export default function GenerateAiDescription(props: Props) {
         }
     }
 
+    // // generate ai description
+    // const onGenerate = async () => {
+
+    //     if (!data.images.some(i => i.useForAI)) return;
+
+    //     setLoading(true);
+
+    //     axios.post(route("api.make-hooks.ai-description.generate"), data, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data'
+    //         }
+    //     }).then(function (response) {
+
+    //         console.log(response.data.watch);
+    //         if (!response.data?.watch) {
+    //             toast.error(response.data?.message || "Failed to generate description");
+    //             return;
+    //         }
+
+    //         const resWatch = (response.data?.watch || {}) as WatchResource | null;
+
+    //         Object.keys(resWatch).forEach((key: keyof typeof data) => {
+    //             setData(key, resWatch[key] || '')
+    //         });
+
+    //         window.sessionStorage.setItem('watch_draft_route_key', String(resWatch.routeKey))
+
+    //     }).finally(() => setLoading(false)).catch(err => toast.error(getError(err)))
+
+
+    // };
+
     // generate ai description
     const onGenerate = async () => {
 
@@ -57,29 +89,20 @@ export default function GenerateAiDescription(props: Props) {
 
         setLoading(true);
 
-        axios.post(route("api.make-hooks.ai-description.generate"), data, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then(function (response) {
-
-            console.log(response.data.watch);
-            if (!response.data?.watch) {
+        axios.post(route("api.make-hooks.ai-description.generate"), data).then((response) => {
+            console.log('response: ', response)
+            // Success check
+            if (response.data?.status === "success") {
+                toast.success("Watch AI description generated");
+                setData('ai_thread_id', response?.data?.ai_thread_id)
+                setData('description', response?.data?.description)
+                setData('status', response?.data?.status_selected)
+            } else {
                 toast.error(response.data?.message || "Failed to generate description");
-                return;
             }
 
-            const resWatch = (response.data?.watch || {}) as WatchResource | null;
-
-            Object.keys(resWatch).forEach((key: keyof typeof data) => {
-                setData(key, resWatch[key] || '')
-            });
-
-            window.sessionStorage.setItem('watch_draft_route_key', String(resWatch.routeKey))
-
-        }).finally(() => setLoading(false)).catch(err => toast.error(getError(err)))
-
-
+        }).catch(error => toast.error(getError(error)))
+            .finally(() => setLoading(false))
     };
 
     //listeners

@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Actions\Watch\UpdateOrCreateAction;
-use App\Events\WatchAiDescriptionProcessed;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateWatchRequest;
 use App\Http\Requests\Watch\UpdateOrCreateRequest;
 use App\Http\Resources\WatchResource;
 use App\Jobs\ProcessWatchAIDescriptionJob;
@@ -27,7 +25,31 @@ class MakeAiHookController extends Controller
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function generate(UpdateOrCreateRequest $request, UpdateOrCreateAction $action)
+    public function generate(UpdateOrCreateRequest $request, GenerateAiDescriptionAction $action)
+    {
+
+        $make = $action($request);
+
+        if ($make->get('Status') === 'success') {
+            return response()->json([
+                'status'          => 'success',
+                'description'     => $make->get('Description') ?? 'No description',
+                'ai_thread_id'    => $make->get('Thread_ID'),
+                'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
+            ]);
+        }
+
+        // If Make.com fails
+        throw new \RuntimeException(
+            $make->get('Message') ?? 'Something went wrong with make.com'
+        );
+    }
+    /**
+     * Hanld make.com ai generate watch description.
+     * 
+     * @param \Illuminate\Http\Request $request
+     */
+    public function withQueue(UpdateOrCreateRequest $request, UpdateOrCreateAction $action)
     {
 
         $watch = $action($request->only(['name', 'sku']), $request->all());

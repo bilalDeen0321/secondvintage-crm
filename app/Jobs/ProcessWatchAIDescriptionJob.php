@@ -6,15 +6,12 @@ use App\Enums\WatchAiStatus;
 use App\Models\Status;
 use App\Models\Watch;
 use App\Services\Api\MakeAiHook;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Log;
-use App\Support\Str;
-use Illuminate\Support\Facades\Log as FacadesLog;
-use Illuminate\Support\Sleep;
+use Illuminate\Support\Collection;
 
 class ProcessWatchAIDescriptionJob implements ShouldQueue
 {
@@ -49,70 +46,65 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Image_URLs'      => $this->getImageUrls($this->watch->image_urls ?? []),
         ];
 
+        $make = MakeAiHook::init()->generateDescription(array_filter($payload));
 
-        /**
-         * Create test case
-         */
-
-        Sleep::for(10)->seconds();
-
-        $status = fake()->randomElement([WatchAiStatus::success, WatchAiStatus::failed]);
-
-        $this->watch->update([
-            'status'       => Status::REVIEW,
-            'ai_status'    => $status,
-            'ai_thread_id' => Str::uuid(),
-            'description'  => $status === WatchAiStatus::success ? fake()->sentences : null,
-        ]);
-
-        $this->updateWatchStatus(WatchAiStatus::failed);
-
-        return;
-
-        /**
-         * end of the thest case
-         */
-
-        $data = array_filter($payload);
-
-        $make = MakeAiHook::init()->generateDescription($data);
-
+        //success handler
         if ($make->get('Status') === 'success') {
-            Log::info('AI description generated', $make->get('Description', 'No response'));
 
-            if ($this->watch instanceof Watch) {
-
-                $this->watch->update([
-                    'status'       => $make->get('Status_Selected') ?? Status::DRAFT,
-                    'ai_status'    => WatchAiStatus::success,
-                    'ai_thread_id' => $make->get('Thread_ID'),
-                    'description'  => $make->get('Description'),
-                ]);
-
-                $this->watch->refresh();
-
-                // Broadcast the event
-                event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
-            }
+            $this->successfull($make);
 
             return;
         }
 
-        Log::error('AI description failed', $make->get('Message', 'Something went wrong with AI'));
+        //failer handler
+        $this->failer($make);
+    }
 
-        $this->updateWatchStatus(WatchAiStatus::failed);
+    /**
+     * Handle success ai genareted description with watch
+     */
+    public function successfull(Collection $make)
+    {
 
-        throw new \RuntimeException($make->get('Message') ?? 'Something went wrong with make.com');
+        Log::info('AI description successfully generated', $make->get('Description', 'No response'));
+
+        if ($this->watch instanceof Watch) {
+
+            $this->watch->update([
+                'status'       => $make->get('Status_Selected') ?? Status::DRAFT,
+                'ai_status'    => WatchAiStatus::success,
+                'ai_thread_id' => $make->get('Thread_ID'),
+                'description'  => $make->get('Description'),
+            ]);
+
+            $this->watch->refresh();
+
+            // Broadcast the event
+            event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
+        }
+    }
+    /**
+     * Handle success ai genareted description with watch
+     */
+    public function failer(Collection $make)
+    {
+        $message  = $make->get('Message', 'Something went wrong with AI');
+
+        Log::error('AI description failed', $message);
+
+        $this->updateWatchStatus(WatchAiStatus::failed, ['description' => $message]);
+
+        throw new \RuntimeException($message);
     }
 
     /**
      * Update watch AI status.
      */
-    private function updateWatchStatus(string $status): void
+    private function updateWatchStatus(string $status, array $attributes = []): void
     {
         if ($this->watch instanceof Watch) {
 
-            $this->watch->update(['ai_status' => $status]);
+            $this->watch->update(array_merge(['ai_status' => $status], $attributes));
 
             $this->watch->refresh();
 
