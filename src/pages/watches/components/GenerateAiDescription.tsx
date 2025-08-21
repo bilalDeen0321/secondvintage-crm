@@ -47,7 +47,7 @@ export default function GenerateAiDescription(props: Props) {
     const onGenerate = async () => {
         if (!data.images.some((i) => i.useForAI)) return;
         setLoading(true);
-        router.post(route("api.make-hooks.ai-description.in-queue"), data, {
+        router.post(route("api.make-hooks.ai-description.with-queue"), data, {
             forceFormData: true,
             fresh: true,
             onFinish: () => setLoading(false),
