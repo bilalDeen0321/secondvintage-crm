@@ -99,8 +99,6 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
         Log::error('AI description failed', $message);
 
         $this->updateWatchStatus(WatchAiStatus::failed, ['ai_message' => $message]);
-
-        throw new \RuntimeException($message);
     }
 
     /**
