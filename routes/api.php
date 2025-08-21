@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group(function () {
     Route::post('generate', [MakeAiHookController::class, 'generate'])->name('generate');
-    Route::post('with-queue', [MakeAiHookController::class, 'withQueue'])->name('with-queue');
+    Route::post('in-queue', [MakeAiHookController::class, 'withQueue'])->name('in-queue');
     Route::post('reset-thread', [MakeAiHookController::class, 'resetThread'])->name('reset_thread');
 });
 

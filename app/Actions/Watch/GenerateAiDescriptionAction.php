@@ -33,6 +33,8 @@ class GenerateAiDescriptionAction
 
         $data = array_filter($payload);
 
+        // return MakeAiHook::init()->getSuccessResponseDemoData();
+
         return MakeAiHook::init()->generateDescription($data);
     }
 

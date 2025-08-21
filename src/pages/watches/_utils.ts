@@ -35,7 +35,8 @@ export const watchInitData = (watch?: WatchResource | null) => ({
   currency: watch?.currency || "DKK",
   notes: watch?.notes || "",
   images: watch?.images || ([] as WatchResource["images"]),
-  ai_thread_id: ''
+  ai_thread_id: '',
+  ai_status: ''
 });
 
 

@@ -5,6 +5,7 @@ import { getError } from "@/app/errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
+import { router } from "@inertiajs/react";
 import axios from "axios";
 import {
     Loader2,
@@ -30,108 +31,64 @@ export default function GenerateAiDescription(props: Props) {
     const [loading, setLoading] = useState(false);
 
     /**
-     * Handlers
+     * Handle ai ai reset thread id in database
      */
-    const handleRest = () => {
-        const reset_confirm = confirm(
-            'Are you sure want to reset the AI thread id? This action cannot be undone.'
-        );
-
-        if (reset_confirm) {
-            setData('ai_thread_id', '')
-
+    const onResestThread = () => {
+        if (confirm('Are you sure want to reset the AI thread id? This action cannot be undone.')) {
             if (watch.routeKey) {
-                axios.post(route('api.make-hooks.ai-description.reset_thread'), { routeKey: watch.routeKey }).then(function () {
+                const reset_thread_url = route('api.make-hooks.ai-description.reset_thread');
+                axios.post(reset_thread_url, { routeKey: watch.routeKey }).then(function () {
                     toast.success("AI thread reset for this watch");
-                }).catch(error => {
-                    toast.error(error?.message)
-                })
+                    setData('ai_thread_id', '')
+                }).catch(error => toast.error(getError(error)))
             }
         }
     }
 
-    // // generate ai description
-    // const onGenerate = async () => {
-
-    //     if (!data.images.some(i => i.useForAI)) return;
-
-    //     setLoading(true);
-
-    //     axios.post(route("api.make-hooks.ai-description.generate"), data, {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
-    //         }
-    //     }).then(function (response) {
-
-    //         console.log(response.data.watch);
-    //         if (!response.data?.watch) {
-    //             toast.error(response.data?.message || "Failed to generate description");
-    //             return;
-    //         }
-
-    //         const resWatch = (response.data?.watch || {}) as WatchResource | null;
-
-    //         Object.keys(resWatch).forEach((key: keyof typeof data) => {
-    //             setData(key, resWatch[key] || '')
-    //         });
-
-    //         window.sessionStorage.setItem('watch_draft_route_key', String(resWatch.routeKey))
-
-    //     }).finally(() => setLoading(false)).catch(err => toast.error(getError(err)))
-
-
-    // };
-
     // generate ai description
     const onGenerate = async () => {
-
         if (!data.images.some(i => i.useForAI)) return;
-
         setLoading(true);
-
-        axios.post(route("api.make-hooks.ai-description.generate"), data, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        }).then((response) => {
-            console.log('response: ', response)
-            // Success check
-            if (response.data?.status === "success") {
-                toast.success("Watch AI description generated");
-                setData('ai_thread_id', response?.data?.ai_thread_id)
-                setData('description', response?.data?.description?.replace(/\\n/g, "\n"))
-                // setData('description', response?.data?.description)
-                setData('status', response?.data?.status_selected)
-            } else {
-                toast.error(response.data?.message || "Failed to generate description");
-            }
-
-        }).catch(error => toast.error(getError(error)))
-            .finally(() => setLoading(false))
+        router.post(route("api.make-hooks.ai-description.in-queue"), data, {
+            forceFormData: true,
+            onFinish: () => setLoading(false),
+            onError: (error) => toast.error(getError(error)),
+            onSuccess: (response) => {
+                console.log(response);
+                const aidata = response.props.flash.data;
+                if (!aidata) return;
+                setData('ai_status', aidata.ai_status);
+                setData('description', aidata.description);
+                setData('status', aidata.status_selected);
+            },
+        });
     };
+
+
+    useEffect(() => {
+        if (data?.ai_status === 'loading') {
+            setLoading(true);
+        } else {
+            setLoading(false);
+        }
+    }, [data.ai_status])
 
     //listeners
     useEffect(() => {
-
-        const routeKey = watch?.routeKey || data.routeKey;
-
+        const routeKey = watch?.routeKey;
         if (routeKey) {
-
-            const channel = `watch.${watch.routeKey}`;
-
-            echo.listen(channel, 'WatchAiDescriptionProcessed', (event: WatchResource) => {
-
-                console.log(event);
-
-                if (event.ai_status === 'loading') {
-                    setLoading(true);
-                    return;
-                }
-
-                setLoading(false);
-
+            const channel = `watch.${routeKey}`;
+            const eventJob = 'WatchAiDescriptionProcessedEvent';
+            echo.listen(channel, eventJob, (event: WatchResource) => {
+                setData('ai_status', event.ai_status);
+                setData('status', event.status);
+                setData('description', event.description.replace(/\\n/g, "\n"));
+                setData('ai_thread_id', event.ai_thread_id);
+                toast.info(event.ai_message);
             })
+            return () => echo.leave(`watch.${watch.routeKey}`);
         }
-
-    }, [data.routeKey, watch.routeKey])
+    }, [data.routeKey, setData, watch.routeKey])
 
     return <div>
         <div className="mb-2 flex items-center justify-between">
@@ -142,7 +99,7 @@ export default function GenerateAiDescription(props: Props) {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={handleRest}
+                onClick={onResestThread}
                 className="text-red-600 hover:bg-red-50 hover:text-red-700"
                 disabled={!watch?.ai_thread_id}
             >
@@ -158,7 +115,7 @@ export default function GenerateAiDescription(props: Props) {
             placeholder=""
             className="min-h-[40px] w-full resize-y"
         />
-        <div className="mt-3 flex gap-6">
+        <div className="mt-3">
             <Button
                 type="button"
                 variant="outline"
@@ -176,26 +133,6 @@ export default function GenerateAiDescription(props: Props) {
                     <>
                         <Sparkles className="mr-1 h-4 w-4" />
                         Generate Description
-                    </>
-                )}
-            </Button>
-            <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onGenerate}
-                disabled={!data.images.some(m => m.useForAI) || loading}
-                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {loading ? (
-                    <>
-                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                        Processing
-                    </>
-                ) : (
-                    <>
-                        <Sparkles className="mr-1 h-4 w-4" />
-                        Generate Description Now
                     </>
                 )}
             </Button>

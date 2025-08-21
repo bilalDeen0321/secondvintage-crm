@@ -24,6 +24,7 @@ class AIGenerateRequest extends FormRequest
     {
         return [
             'name'              => 'nullable|string',
+            'routeKey'          => 'nullable|string',
             'ai_instructions'   => 'nullable|string',
             'ai_thread_id'      => 'nullable|string',
             'sku'               => 'nullable|string',

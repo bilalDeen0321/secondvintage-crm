@@ -12,8 +12,8 @@ const Layout = ({ children }: LayoutProps) => {
     const isMobile = useIsMobile();
 
     const { props } = usePage();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const flash = props.flash as any;
+
+    const flash = props.flash;
     useEffect(() => {
         if (flash.success) {
             toast.success(flash.success);
@@ -21,7 +21,10 @@ const Layout = ({ children }: LayoutProps) => {
         if (flash.error) {
             toast.success(flash.error);
         }
-    }, [flash.success, flash.error]);
+        if (flash.message) {
+            toast(flash.message, { type: flash.status || 'info' });
+        }
+    }, [flash]);
 
     return (
         <div className="flex min-h-screen bg-background">

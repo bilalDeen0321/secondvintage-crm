@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('watches', function (Blueprint $table) {
-            $table->string('ai_status')->default('pending'); // pending, processing, done, failed
+            $table->string('ai_status')->nullable(); // pending, processing, done, failed
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('watches', function (Blueprint $table) {
-            //
+            $table->dropColumn('ai_status');
         });
     }
 };

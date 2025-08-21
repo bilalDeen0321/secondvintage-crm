@@ -506,6 +506,7 @@ export default function CreateWatch({ watch, ...props }: Props) {
                                     </div>
 
                                     <GenerateAiDescription
+                                        watch={watch}
                                         data={data}
                                         setData={setData}
                                     />

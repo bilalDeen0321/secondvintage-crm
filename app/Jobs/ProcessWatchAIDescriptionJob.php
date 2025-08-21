@@ -12,6 +12,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Log;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Sleep;
 
 class ProcessWatchAIDescriptionJob implements ShouldQueue
 {
@@ -29,6 +30,10 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
     {
 
         $this->updateWatchStatus(WatchAiStatus::loading);
+
+        if (app()->environment('local')) {
+            Sleep::for(rand(3, 20,))->seconds();
+        }
 
         $payload = [
             'AI_Action'       => 'generate_description',

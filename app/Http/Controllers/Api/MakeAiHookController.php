@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Watch\AddNewWatch;
 use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Actions\Watch\UpdateOrCreateAction;
 use App\Http\Controllers\Controller;
@@ -42,27 +43,40 @@ class MakeAiHookController extends Controller
         }
 
         // If Make.com fails
-        throw new \RuntimeException(
-            $make->get('Message') ?? 'Something went wrong with make.com'
-        );
+        throw new \RuntimeException($make->get('Message') ?? 'Something went wrong with make.com');
     }
     /**
      * Hanld make.com ai generate watch description.
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function withQueue(UpdateOrCreateRequest $request, UpdateOrCreateAction $action)
+    public function withQueue(AIGenerateRequest $request, UpdateOrCreateAction $action)
     {
 
-        $watch = $action($request->only(['name', 'sku']), $request->all());
+        //check if the the request has a name and brand send to create or update action
+        if ($request->input('name') && $request->input('brand')) {
 
-        dispatch(new ProcessWatchAIDescriptionJob($watch));
+            $watch = $action($request->only(['id']), $request->all());
 
-        $watch->refresh();
+            dispatch(new ProcessWatchAIDescriptionJob($watch));
 
-        return response()->json([
-            'status' => 'success',
-            'watch'  => new WatchResource($watch),
+            return redirect()->route('watches.show', $watch)->with([
+                'success' => 'AI description generation has been queued successfully.',
+                'data' => new WatchResource($watch), // Return the updated watch resource
+            ]);
+        }
+
+        // If the request does not have a name and brand, generate description synchronously
+        $make =  (new GenerateAiDescriptionAction)($request);
+
+        return redirect()->back()->with([
+            'status'        => $make->get('Status', 'error'),
+            'message'       => $make->get('Message', 'No message'),
+            'data'          => [
+                'description'     => $make->get('Description', 'No description'),
+                'ai_thread_id'    => $make->get('Thread_ID'),
+                'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
+            ],
         ]);
     }
 
