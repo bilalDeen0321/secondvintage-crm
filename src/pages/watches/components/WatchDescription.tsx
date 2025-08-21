@@ -9,11 +9,12 @@ import { useEffect, useState } from "react";
 export default function WatchDescription({ watch }: { watch: WatchResource }) {
 
     const [aiStatus, setAiStatus] = useState<string | null>(watch.ai_status);
+    const [aiMessage, setAiMessage] = useState<string | null>(watch.ai_message);
 
     useEffect(() => {
         echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessedEvent', (event) => {
             setAiStatus(event.ai_status);
-            console.log(event)
+            setAiMessage(event.ai_message)
         })
         return () => echo.leave(`watch.${watch.routeKey}`);
     }, [watch.routeKey]);
@@ -23,14 +24,14 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
     }
 
     if (aiStatus === 'failed') {
-        return <WatchAiDescriptionError watch={watch} />;
+        return <WatchAiDescriptionError message={aiMessage} />;
     }
 
     return watch.description || '-';
 }
 
 
-export function WatchAiDescriptionError({ watch }: { watch: WatchResource }) {
+export function WatchAiDescriptionError({ message }: { message: string }) {
     return <AlertDialog>
         <AlertDialogTrigger asChild>
             <Button
@@ -48,7 +49,7 @@ export function WatchAiDescriptionError({ watch }: { watch: WatchResource }) {
                 </AlertDialogTitle>
             </AlertDialogHeader>
             <AlertDialogDescription className="overflow-auto">
-                {watch?.ai_message}
+                {message}
             </AlertDialogDescription>
             <AlertDialogFooter>
                 <AlertDialogAction>
