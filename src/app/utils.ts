@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 
 export const getRoleColor = (role: string) => {
@@ -70,10 +71,10 @@ export async function generateServerSKU(brand_name: string, watch_name: string) 
     }))).data?.sku;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number = 300) {
     let timeoutId: ReturnType<typeof setTimeout> | null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     return function (this: any, ...args: Parameters<F>) {
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
@@ -110,7 +111,7 @@ export function uniqueArray<T>(arr: readonly T[], removeFalsy = false): T[] {
 }
 
 // Utility function to clean empty parameters
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const cleanQueryParams = (params: Record<string, any>) => {
     const cleaned = {};
     Object.keys(params).forEach(key => {
@@ -172,3 +173,20 @@ export const base64ToFile = (base64: string, filename: string) => {
 
     return new File([u8arr], filename, { type: mime });
 };
+
+
+
+/**
+ * Removes given keys from an object and returns a new object.
+ *
+ * @param obj - The source object
+ * @param keys - Array of keys to remove
+ * @returns A new object without the specified keys
+ */
+export function sliceObject<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+    const clone = { ...obj };
+    for (const key of keys) {
+        delete clone[key];
+    }
+    return clone;
+}

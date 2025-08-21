@@ -4,19 +4,16 @@ namespace App\Actions\Watch;
 
 use App\Models\Batch;
 use App\Models\Brand;
-use App\Models\Location;
 use App\Models\Watch;
 use App\Models\WatchImage;
-use Illuminate\Support\Arr;
 
-class UpdateOrCreateAction
+class WatchUpsertForAi
 {
     /**
-     * Invoke the action to update or create watch.
+     * Invoke the class instance.
      */
-    public function __invoke(array $attributes, array $values = [], $routeKey = null)
+    public function __invoke(array $values = [], $routeKey = null)
     {
-
         if (isset($values['batch'])) {
             $values['batch_id'] = Batch::firstOrCreate(['name' => $values['batch']])->id;
         }
@@ -25,12 +22,12 @@ class UpdateOrCreateAction
             $values['brand_id'] = Brand::firstOrCreate(['name' => $values['brand']])->id;
         }
 
-        if (empty($input['location'])) {
-            $data['location'] = Location::DEFAULT_COUNTRY;
+        if (isset($values['location'])  && empty($values['location'])) {
+            unset($values['location']);
         }
 
         // 2. Create Watch
-        $watch = Watch::query()->updateOrCreate($attributes, $values);
+        $watch = Watch::query()->updateOrCreate([Watch::routeKeyName() => $routeKey], $values);
 
         // Handle images
         if (!empty($values['images'])) {

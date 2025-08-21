@@ -15,8 +15,8 @@ export const watchEscapeCallback = () => router.visit(route("watches.index"));
  * Watch init data
  */
 export const watchInitData = (watch?: WatchResource | null) => ({
-  id: '',
-  routeKey: '',
+  id: watch?.id || "",
+  routeKey: watch?.routeKey || "",
   name: watch?.name || "",
   sku: watch?.sku || "",
   brand: watch?.brand || "",
@@ -30,13 +30,13 @@ export const watchInitData = (watch?: WatchResource | null) => ({
   current_cost: watch?.current_cost || "",
   ai_instructions: watch?.ai_instructions || "",
   location: watch?.location || "",
-  batch: "",
+  batch: watch?.batch || "",
   description: watch?.description || "",
   currency: watch?.currency || "DKK",
   notes: watch?.notes || "",
   images: watch?.images || ([] as WatchResource["images"]),
-  ai_thread_id: '',
-  ai_status: ''
+  ai_thread_id: watch?.ai_thread_id || "",
+  ai_status: watch?.ai_status || "",
 });
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Watch\AddNewWatch;
 use App\Actions\Watch\GenerateAiDescriptionAction;
 use App\Actions\Watch\UpdateOrCreateAction;
+use App\Actions\Watch\WatchUpsertForAi;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Watch\AIGenerateRequest;
 use App\Http\Requests\Watch\UpdateOrCreateRequest;
@@ -50,18 +51,18 @@ class MakeAiHookController extends Controller
      * 
      * @param \Illuminate\Http\Request $request
      */
-    public function withQueue(AIGenerateRequest $request, UpdateOrCreateAction $action)
+    public function withQueue(AIGenerateRequest $request, WatchUpsertForAi $action)
     {
 
         //check if the the request has a name and brand send to create or update action
         if ($request->input('name') && $request->input('brand')) {
 
-            $watch = $action($request->only(['id']), $request->all());
+            $watch = $action($request->all(), $request->input('routeKey'));
 
             dispatch(new ProcessWatchAIDescriptionJob($watch));
 
             return redirect()->route('watches.show', $watch)->with([
-                'success' => 'AI description generation has been queued successfully.',
+                'success' => 'Watch saved and AI description has been generating.',
                 'data' => new WatchResource($watch), // Return the updated watch resource
             ]);
         }

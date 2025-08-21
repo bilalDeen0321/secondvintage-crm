@@ -59,7 +59,7 @@ export default function GenerateAiDescription(props: Props) {
                 if (!aidata) return;
                 setData('ai_status', aidata.ai_status);
                 setData('description', aidata.description);
-                setData('status', aidata.status_selected);
+                setData('status', aidata.status_selected || data.status);
             },
         });
     };

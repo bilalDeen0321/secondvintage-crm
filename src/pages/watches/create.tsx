@@ -3,6 +3,7 @@
 import { getError } from "@/app/errors";
 import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
+import { sliceObject } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import InputError from "@/components/InputError";
@@ -106,7 +107,9 @@ export default function CreateWatch({ watch, ...props }: Props) {
         //handle update watch
         if (watch?.routeKey) {
 
-            router.post(route(`watches.update`, watch.routeKey), { ...data, _method: 'put' }, {
+            const putDate = sliceObject(data, ['sku', 'id'])
+
+            router.post(route(`watches.update`, watch.routeKey), { ...putDate, _method: 'put' }, {
                 forceFormData: true,
                 onSuccess: successcallback,
                 onError: errorcallback,
