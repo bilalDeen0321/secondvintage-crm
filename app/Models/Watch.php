@@ -78,7 +78,7 @@ class Watch extends Model
     /**
      * Append attributes
      */
-    protected $appends = ['image_urls'];
+    protected $appends = ['image_urls', 'ai_image_urls'];
 
     /**
      * get route key by slug
@@ -207,5 +207,16 @@ class Watch extends Model
     public function getImageUrlsAttribute(): array
     {
         return $this->images->pluck('full_url')->all();
+    }
+
+    /**
+     * Get ai images urls
+     */
+    public function getAiImageUrlsAttribute(): array
+    {
+        return optional($this->images)
+            ->filter(fn($i) => $i->use_for_ai)
+            ->pluck('full_url')
+            ->all() ?? [];
     }
 }
