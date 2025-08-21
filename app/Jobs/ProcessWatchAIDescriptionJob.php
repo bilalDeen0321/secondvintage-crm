@@ -73,6 +73,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             $this->watch->update([
                 'status'       => $make->get('Status_Selected') ?? Status::DRAFT,
                 'ai_status'    => WatchAiStatus::success,
+                'ai_message'   => $make->get('Message'),
                 'ai_thread_id' => $make->get('Thread_ID'),
                 'description'  => $make->get('Description'),
             ]);
@@ -92,7 +93,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
 
         Log::error('AI description failed', $message);
 
-        $this->updateWatchStatus(WatchAiStatus::failed, ['description' => $message]);
+        $this->updateWatchStatus(WatchAiStatus::failed, ['ai_message' => $message]);
 
         throw new \RuntimeException($message);
     }

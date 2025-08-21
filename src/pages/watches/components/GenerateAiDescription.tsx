@@ -158,7 +158,7 @@ export default function GenerateAiDescription(props: Props) {
             placeholder=""
             className="min-h-[40px] w-full resize-y"
         />
-        <div className="mt-3">
+        <div className="mt-3 flex gap-6">
             <Button
                 type="button"
                 variant="outline"
@@ -176,6 +176,26 @@ export default function GenerateAiDescription(props: Props) {
                     <>
                         <Sparkles className="mr-1 h-4 w-4" />
                         Generate Description
+                    </>
+                )}
+            </Button>
+            <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onGenerate}
+                disabled={!data.images.some(m => m.useForAI) || loading}
+                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                {loading ? (
+                    <>
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                        Processing
+                    </>
+                ) : (
+                    <>
+                        <Sparkles className="mr-1 h-4 w-4" />
+                        Generate Description Now
                     </>
                 )}
             </Button>

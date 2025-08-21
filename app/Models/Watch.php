@@ -38,6 +38,7 @@ class Watch extends Model
         'ai_instructions',
         'ai_thread_id',
         'ai_status',
+        'ai_message',
 
         'notes',
         'description',
