@@ -60,7 +60,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Platform'        => $this->watch->platformData ?? 'Catawiki',
             'Status_Selected' => $this->watch->status ?? Status::DRAFT,
             'AI_Instruction'  => $this->watch->ai_instructions ?? null,
-            'Image_URLs'      => $this->getImageUrls($this->watch->image_urls ?? []),
+            'Image_URLs'      => $this->watch->image_urls,
         ];
 
         $payload = array_filter($payload, fn($v) => $v !== null);
