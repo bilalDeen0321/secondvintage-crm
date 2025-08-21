@@ -40,7 +40,7 @@ class UpdateWatchAction
         }
 
         // 2. Create Watch
-        if (!Watch::query()->update(Arr::only($data, Watch::fields()))) {
+        if (!$watch->update(Arr::only($data, Watch::fields()))) {
             throw new \Exception('Failed to update watch');
         }
 

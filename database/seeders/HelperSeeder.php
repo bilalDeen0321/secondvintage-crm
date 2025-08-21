@@ -15,6 +15,6 @@ class HelperSeeder extends Seeder
     {
         Watch::query()->delete();
 
-        WatchSeeder::createDemoResoruces();
+        // WatchSeeder::createDemoResoruces();
     }
 }
