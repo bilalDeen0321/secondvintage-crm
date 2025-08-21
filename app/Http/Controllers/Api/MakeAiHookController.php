@@ -37,7 +37,7 @@ class MakeAiHookController extends Controller
         if ($make->get('Status') === 'success') {
             return response()->json([
                 'status'          => 'success',
-                'description'     => $make->get('Description') ?? 'No description',
+                'description'     => ai_description_format($make->get('Description')),
                 'ai_thread_id'    => $make->get('Thread_ID'),
                 'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
             ]);
@@ -74,9 +74,9 @@ class MakeAiHookController extends Controller
             'status'        => $make->get('Status', 'error'),
             'message'       => $make->get('Message', 'No message'),
             'data'          => [
-                'description'     => $make->get('Description', 'No description'),
+                'description'     => ai_description_format($make->get('Description')),
                 'ai_thread_id'    => $make->get('Thread_ID'),
-                'status_selected' => $make->get('Status_Selected') ?? Status::DRAFT,
+                'status' => $make->get('Status_Selected') ?? Status::DRAFT,
             ],
         ]);
     }

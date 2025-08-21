@@ -28,12 +28,23 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
      */
     public function handle(): void
     {
+        try {
+            $this->handler();
+        } catch (\Throwable $th) {
+            $this->updateWatchStatus(WatchAiStatus::failed, [
+                'ai_message' => $th->getMessage()
+            ]);
+        }
+    }
+
+
+    /**
+     * Execute the job.
+     */
+    public function handler(): void
+    {
 
         $this->updateWatchStatus(WatchAiStatus::loading);
-
-        if (app()->environment('local')) {
-            Sleep::for(rand(3, 20,))->seconds();
-        }
 
         $payload = [
             'AI_Action'       => 'generate_description',
@@ -71,7 +82,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
     public function successfull(Collection $make)
     {
 
-        Log::info('AI description successfully generated', $make->get('Description', 'No response'));
+        Log::info('AI description successfully generated', '');
 
         if ($this->watch instanceof Watch) {
 
@@ -80,7 +91,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
                 'ai_status'    => WatchAiStatus::success,
                 'ai_message'   => $make->get('Message'),
                 'ai_thread_id' => $make->get('Thread_ID'),
-                'description'  => $make->get('Description'),
+                'description'  => ai_description_format($make->get('Description')),
             ]);
 
             $this->watch->refresh();

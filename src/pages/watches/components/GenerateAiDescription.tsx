@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { in_array } from "@/app/arr";
 import { echo } from "@/app/echo";
 import { getError } from "@/app/errors";
 import { Button } from "@/components/ui/button";
@@ -7,24 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
 import axios from "axios";
-import {
-    Loader2,
-    RotateCcw,
-    Sparkles
-} from "lucide-react";
+import { Loader2, RotateCcw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
 
 type Props = {
     watch?: WatchResource | null;
-    data: ReturnType<typeof watchInitData>
+    data: ReturnType<typeof watchInitData>;
     setData: (key: keyof ReturnType<typeof watchInitData>, value: any) => void;
-}
-
+};
 
 export default function GenerateAiDescription(props: Props) {
-
     const { data, setData, watch = {} as WatchResource } = props;
 
     //state
@@ -34,108 +29,125 @@ export default function GenerateAiDescription(props: Props) {
      * Handle ai ai reset thread id in database
      */
     const onResestThread = () => {
-        if (confirm('Are you sure want to reset the AI thread id? This action cannot be undone.')) {
+        if (confirm("Are you sure want to reset the AI thread id? This action cannot be undone.")) {
             if (watch.routeKey) {
-                const reset_thread_url = route('api.make-hooks.ai-description.reset_thread');
-                axios.post(reset_thread_url, { routeKey: watch.routeKey }).then(function () {
-                    toast.success("AI thread reset for this watch");
-                    setData('ai_thread_id', '')
-                }).catch(error => toast.error(getError(error)))
+                const reset_thread_url = route("api.make-hooks.ai-description.reset_thread");
+                axios
+                    .post(reset_thread_url, { routeKey: watch.routeKey })
+                    .then(function () {
+                        toast.success("AI thread reset for this watch");
+                        setData("ai_thread_id", "");
+                    })
+                    .catch((error) => toast.error(getError(error)));
             }
         }
-    }
+    };
 
     // generate ai description
     const onGenerate = async () => {
-        if (!data.images.some(i => i.useForAI)) return;
+        if (!data.images.some((i) => i.useForAI)) return;
         setLoading(true);
         router.post(route("api.make-hooks.ai-description.in-queue"), data, {
             forceFormData: true,
+            fresh: true,
             onFinish: () => setLoading(false),
             onError: (error) => toast.error(getError(error)),
             onSuccess: (response) => {
                 console.log(response);
                 const aidata = response.props.flash.data;
                 if (!aidata) return;
-                setData('ai_status', aidata.ai_status);
-                setData('description', aidata.description);
-                setData('status', aidata.status_selected || data.status);
+
+                const allow_keys = [
+                    "routeKey",
+                    "status",
+                    "ai_thread_id",
+                    "sku",
+                    "description",
+                    "ai_status",
+                ];
+
+                Object.keys(aidata)
+                    .filter((i) => in_array(i, allow_keys))
+                    .forEach((key) => {
+                        const k = key as keyof typeof data;
+                        if (aidata[k] !== data[k]) {
+                            setData(k, aidata[k]);
+                        }
+                    });
             },
         });
     };
 
-
     useEffect(() => {
-        if (data?.ai_status === 'loading') {
+        if (data?.ai_status === "loading") {
             setLoading(true);
         } else {
             setLoading(false);
         }
-    }, [data.ai_status])
+    }, [data.ai_status]);
 
     //listeners
     useEffect(() => {
-        const routeKey = watch?.routeKey;
-        if (routeKey) {
-            const channel = `watch.${routeKey}`;
-            const eventJob = 'WatchAiDescriptionProcessedEvent';
+        if (watch?.routeKey) {
+            const channel = `watch.${watch.routeKey}`;
+            const eventJob = "WatchAiDescriptionProcessedEvent";
             echo.listen(channel, eventJob, (event: WatchResource) => {
-                setData('ai_status', event.ai_status);
-                setData('status', event.status);
-                setData('description', event.description.replace(/\\n/g, "\n"));
-                setData('ai_thread_id', event.ai_thread_id);
+                setData("ai_status", event.ai_status);
+                setData("status", event.status);
+                setData("description", event.description);
+                setData("ai_thread_id", event.ai_thread_id);
                 toast.info(event.ai_message);
-            })
+            });
             return () => echo.leave(`watch.${watch.routeKey}`);
         }
-    }, [data.routeKey, setData, watch.routeKey])
+    }, [data.routeKey, setData, watch.routeKey]);
 
-    return <div>
-        <div className="mb-2 flex items-center justify-between">
-            <label className="block text-sm font-medium text-slate-700">
-                AI Instructions
-            </label>
-            <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onResestThread}
-                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                disabled={!watch?.ai_thread_id}
-            >
-                <RotateCcw className="mr-1 h-4 w-4" />
-                Reset AI
-            </Button>
+    return (
+        <div>
+            <div className="mb-2 flex items-center justify-between">
+                <label className="block text-sm font-medium text-slate-700">AI Instructions</label>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onResestThread}
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                    disabled={!watch?.ai_thread_id}
+                >
+                    <RotateCcw className="mr-1 h-4 w-4" />
+                    Reset AI
+                </Button>
+            </div>
+            <Textarea
+                name="ai_instructions"
+                value={data.ai_instructions}
+                onChange={(e) => setData("ai_instructions", e.target.value)}
+                rows={1}
+                placeholder=""
+                className="min-h-[40px] w-full resize-y"
+            />
+            <div className="mt-3">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onGenerate}
+                    disabled={!data.images.some((m) => m.useForAI) || loading}
+                    className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    {loading ? (
+                        <>
+                            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                            Processing
+                        </>
+                    ) : (
+                        <>
+                            <Sparkles className="mr-1 h-4 w-4" />
+                            Generate Description
+                        </>
+                    )}
+                </Button>
+            </div>
         </div>
-        <Textarea
-            name="ai_instructions"
-            value={data.ai_instructions}
-            onChange={(e) => setData('ai_instructions', e.target.value)}
-            rows={1}
-            placeholder=""
-            className="min-h-[40px] w-full resize-y"
-        />
-        <div className="mt-3">
-            <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onGenerate}
-                disabled={!data.images.some(m => m.useForAI) || loading}
-                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {loading ? (
-                    <>
-                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                        Processing
-                    </>
-                ) : (
-                    <>
-                        <Sparkles className="mr-1 h-4 w-4" />
-                        Generate Description
-                    </>
-                )}
-            </Button>
-        </div>
-    </div>
+    );
 }

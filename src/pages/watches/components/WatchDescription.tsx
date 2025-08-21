@@ -46,8 +46,10 @@ export function WatchAiDescriptionError({ watch }: { watch: WatchResource }) {
                 <AlertDialogTitle className="text-red-600">
                     AI Description Error
                 </AlertDialogTitle>
-                <AlertDialogDescription>{watch?.ai_message}</AlertDialogDescription>
             </AlertDialogHeader>
+            <AlertDialogDescription className="overflow-auto">
+                {watch?.ai_message}
+            </AlertDialogDescription>
             <AlertDialogFooter>
                 <AlertDialogAction>
                     OK

@@ -53,7 +53,6 @@ class UpdateWatchAction
 
             foreach ($input['images'] as $img) {
                 if (isset($img['file']) && $img['file'] instanceof \Illuminate\Http\UploadedFile) {
-                    dd($input);
                     WatchImage::uploadImage($watch, $img['file'], $img['useForAI'] ?? false);
                 }
             }

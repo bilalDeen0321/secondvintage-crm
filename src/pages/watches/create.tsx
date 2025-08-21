@@ -10,7 +10,6 @@ import InputError from "@/components/InputError";
 import Layout from "@/components/Layout";
 import LocationSelector from "@/components/LocationSelector";
 import { Button } from "@/components/ui/button";
-import RichTextarea from "@/components/ui/RichTextarea";
 import {
     Select,
     SelectContent,
@@ -111,6 +110,7 @@ export default function CreateWatch({ watch, ...props }: Props) {
 
             router.post(route(`watches.update`, watch.routeKey), { ...putDate, _method: 'put' }, {
                 forceFormData: true,
+                fresh: true,
                 onSuccess: successcallback,
                 onError: errorcallback,
             });
@@ -204,11 +204,13 @@ export default function CreateWatch({ watch, ...props }: Props) {
                             {"Add New Watch"}
                         </h2>
                     </div>
-                    <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        {Object.entries(errors).map(([, error], index) => (
-                            <InputError key={index} message={String(error)} />
-                        ))}
-                    </div>
+                    {
+                        Object.keys(errors).length > 0 && <div className="flex-shrink-0 border-b border-slate-200 p-3">
+                            {Object.entries(errors).map(([, error], index) => (
+                                <InputError key={index} message={String(error)} />
+                            ))}
+                        </div>
+                    }
 
                     <WatchFormNavigation />
 
@@ -525,13 +527,13 @@ export default function CreateWatch({ watch, ...props }: Props) {
                                                 Timegrapher result)
                                             </span>
                                         </label>
-                                        <RichTextarea
+                                        <Textarea
                                             value={data.description}
                                             name="description"
-                                            onChange={val => setData("description", val)}
+                                            onChange={e => setData("description", e.target.value)}
                                             className="min-h-[320px] w-full resize-y"
-                                        // disabled={isGeneratingDescription}
-                                        ></RichTextarea>
+                                            disabled={data.ai_status === 'loading'}
+                                        ></Textarea>
                                     </div>
 
                                     <div>
