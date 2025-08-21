@@ -31,19 +31,20 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
         try {
             $this->handler();
         } catch (\Throwable $th) {
+
+            Log::error('Failed ai generate description', $th->getMessage());
+
             $this->updateWatchStatus(WatchAiStatus::failed, [
                 'ai_message' => $th->getMessage()
             ]);
         }
     }
 
-
     /**
-     * Execute the job.
+     * Main handler for AI description generation.
      */
-    public function handler(): void
+    private function handler(): void
     {
-
         $this->updateWatchStatus(WatchAiStatus::loading);
 
         $payload = [
@@ -62,52 +63,52 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Image_URLs'      => $this->getImageUrls($this->watch->image_urls ?? []),
         ];
 
-        $make = MakeAiHook::init()->generateDescription(array_filter($payload));
+        $payload = array_filter($payload, fn($v) => $v !== null);
 
-        //success handler
-        if ($make->get('Status') === 'success') {
+        try {
+            $make = MakeAiHook::init()->generateDescription($payload);
 
-            $this->successfull($make);
-
-            return;
+            if ($make->get('Status') === 'success') {
+                $this->handleSuccess($make);
+            } else {
+                $this->handleFailure($make);
+            }
+        } catch (\Throwable $th) {
+            Log::error('Failed ai generate description', $th->getMessage());
+            $this->updateWatchStatus(WatchAiStatus::failed, ['ai_message' => $th->getMessage()]);
         }
+    }
 
-        //failer handler
-        $this->failer($make);
+
+    /**
+     * Handle successful AI description.
+     */
+    private function handleSuccess(Collection $make): void
+    {
+        Log::info('AI description generated', "Generated for watch ID {$this->watch->id}");
+
+        $this->watch->update([
+            'status'       => $make->get('Status_Selected') ?? Status::DRAFT,
+            'ai_status'    => WatchAiStatus::success,
+            'ai_message'   => $make->get('Message'),
+            'ai_thread_id' => $make->get('Thread_ID'),
+            'description'  => ai_description_format($make->get('Description')),
+        ]);
+
+        $this->watch->refresh();
+
+        // Broadcast event (optional)
+        event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
     }
 
     /**
-     * Handle success ai genareted description with watch
+     * Handle failed AI description attempt.
      */
-    public function successfull(Collection $make)
+    private function handleFailure(Collection $make): void
     {
+        $message = $make->get('Message', 'AI description failed');
 
-        Log::info('AI description successfully generated', '');
-
-        if ($this->watch instanceof Watch) {
-
-            $this->watch->update([
-                'status'       => $make->get('Status_Selected') ?? Status::DRAFT,
-                'ai_status'    => WatchAiStatus::success,
-                'ai_message'   => $make->get('Message'),
-                'ai_thread_id' => $make->get('Thread_ID'),
-                'description'  => ai_description_format($make->get('Description')),
-            ]);
-
-            $this->watch->refresh();
-
-            // Broadcast the event
-            event(new \App\Events\WatchAiDescriptionProcessedEvent($this->watch));
-        }
-    }
-    /**
-     * Handle success ai genareted description with watch
-     */
-    public function failer(Collection $make)
-    {
-        $message  = $make->get('Message', 'Something went wrong with AI');
-
-        Log::error('AI description failed', $message);
+        Log::error("AI description failed", $message);
 
         $this->updateWatchStatus(WatchAiStatus::failed, ['ai_message' => $message]);
     }

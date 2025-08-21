@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Str;
+use App\Traits\Models\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +12,7 @@ use \Illuminate\Http\UploadedFile;
 class WatchImage extends Model
 {
     /** @use HasFactory<\Database\Factories\WatchImageFactory> */
-    use HasFactory;
+    use HasFactory, ModelHelpers;
 
     /**
      * The attributes that are mass assignable.
