@@ -61,7 +61,16 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Status_Selected' => $this->watch->status ?? Status::DRAFT,
             'AI_Instruction'  => $this->watch->ai_instructions ?? null,
             'Image_URLs'      => $this->watch->ai_image_urls,
+            'Thread_ID'       => $this->watch->ai_thread_id,
         ];
+
+        // if (app()->environment('local')) {
+        //     $payload['Image_URLs'] = array_map(
+        //         fn($url) =>
+        //         str_replace(url('/'), 'https://test.secondvintage.com', $url),
+        //         $this->watch->ai_image_urls
+        //     );
+        // }
 
         $payload = array_filter($payload, fn($v) => $v !== null);
 

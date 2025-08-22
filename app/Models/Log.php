@@ -135,7 +135,7 @@ class Log extends Model
             'level'    => $level,
             'message'  => $message,
             'category' => self::category($category ?? 'watch'),
-            'details'  => $details,
+            'context'  => $details,
         ]);
     }
 

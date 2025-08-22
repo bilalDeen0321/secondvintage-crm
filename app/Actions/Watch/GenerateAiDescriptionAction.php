@@ -26,6 +26,7 @@ class GenerateAiDescriptionAction
             'Caliber'         => $request->input('caliber'),
             'Timegrapher'     => $request->input('timegrapher'),
             'Image_URLs'      => $this->image_urls($request->images ?? []),
+            'Thread_ID'       => $request->input('ai_thread_id'),
             'Platform'        => $request->string('platform', 'Catawiki'),
             'Status_Selected' => $request->string('status'),
             'AI_Instruction'  => $request->input('ai_instructions'),

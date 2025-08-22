@@ -2,12 +2,10 @@
 
 import { in_array } from "@/app/arr";
 import { echo } from "@/app/echo";
-import { getError } from "@/app/errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
-import axios from "axios";
 import { Loader2, RotateCcw, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -30,15 +28,12 @@ export default function GenerateAiDescription(props: Props) {
      */
     const onResestThread = () => {
         if (confirm("Are you sure want to reset the AI thread id? This action cannot be undone.")) {
-            if (watch.routeKey) {
+            if (data.routeKey) {
                 const reset_thread_url = route("api.make-hooks.ai-description.reset_thread");
-                axios
-                    .post(reset_thread_url, { routeKey: watch.routeKey })
-                    .then(function () {
-                        toast.success("AI thread reset for this watch");
-                        setData("ai_thread_id", "");
-                    })
-                    .catch((error) => toast.error(getError(error)));
+                router.post(reset_thread_url, data, {
+                    preserveScroll: true,
+                    onSuccess: () => setData('ai_thread_id', '')
+                });
             }
         }
     };
@@ -51,12 +46,10 @@ export default function GenerateAiDescription(props: Props) {
             forceFormData: true,
             fresh: true,
             onFinish: () => setLoading(false),
-            onError: (error) => toast.error(getError(error)),
             onSuccess: (response) => {
                 console.log(response);
                 const aidata = response.props.flash.data;
                 if (!aidata) return;
-
                 const allow_keys = [
                     "routeKey",
                     "status",
@@ -65,7 +58,6 @@ export default function GenerateAiDescription(props: Props) {
                     "description",
                     "ai_status",
                 ];
-
                 Object.keys(aidata)
                     .filter((i) => in_array(i, allow_keys))
                     .forEach((key) => {
@@ -92,11 +84,16 @@ export default function GenerateAiDescription(props: Props) {
             const channel = `watch.${watch.routeKey}`;
             const eventJob = "WatchAiDescriptionProcessedEvent";
             echo.listen(channel, eventJob, (event: WatchResource) => {
+
+                if (event?.ai_status != 'loading') {
+                    toast(event.ai_message, { type: event.ai_status as any });
+                }
+
                 setData("ai_status", event.ai_status);
                 setData("status", event.status);
                 setData("description", event.description);
                 setData("ai_thread_id", event.ai_thread_id);
-                toast.info(event.ai_message);
+
             });
             return () => echo.leave(`watch.${watch.routeKey}`);
         }
@@ -112,7 +109,7 @@ export default function GenerateAiDescription(props: Props) {
                     size="sm"
                     onClick={onResestThread}
                     className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                    disabled={!watch?.ai_thread_id}
+                    disabled={!data?.ai_thread_id}
                 >
                     <RotateCcw className="mr-1 h-4 w-4" />
                     Reset AI

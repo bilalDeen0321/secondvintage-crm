@@ -86,12 +86,11 @@ class MakeAiHookController extends Controller
      */
     public function resetThread(Request $request)
     {
-
         $routeKey = $request->input('routeKey');
 
         Watch::where(Watch::routeKeyName(), $routeKey)->update(['ai_thread_id' => null]);
 
-        return $this->apiSuccess('reset');
+        return redirect()->back()->with('success', 'AI thread id reset from database!');
     }
 
     /**
