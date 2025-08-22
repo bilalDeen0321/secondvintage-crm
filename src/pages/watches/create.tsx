@@ -140,7 +140,7 @@ export default function CreateWatch({ watch, ...props }: Props) {
 
 
     const onClose = () => {
-        if (hasChanges) {
+        if (hasChanges || watch?.routeKey) {
             setShowSaveDialog(true);
             return;
         }
@@ -584,7 +584,7 @@ export default function CreateWatch({ watch, ...props }: Props) {
                                 variant="outline"
                                 className="flex-1"
                             >
-                                {hasChanges ? "Cancel & Close" : "Close"}
+                                {(hasChanges || watch?.routeKey) ? "Cancel & Close" : "Close"}
                             </Button>
                         </div>
                     </form>

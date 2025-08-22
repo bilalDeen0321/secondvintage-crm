@@ -6,6 +6,7 @@ use App\Http\Resources\WatchResource;
 use App\Mail\TestingEmail;
 use App\Models\Batch;
 use App\Models\Brand;
+use App\Models\Currency;
 use App\Models\Location;
 use App\Models\Status;
 use App\Models\User;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
+
+Route::get('test', function () {
+
+    return Currency::query()->latest()->get();
+});
 
 // In routes/web.php
 Route::get('/php-settings', function () {
