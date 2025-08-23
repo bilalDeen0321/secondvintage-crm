@@ -32,7 +32,10 @@ use Inertia\Inertia;
 
 Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);
+
+Route::post('watches/{watch}/approve', [WatchController::class, 'approve'])->name('watches.approve');
 Route::resource('watches', WatchController::class);
+
 Route::resource('brands', BrandController::class);
 Route::resource('sales', SaleController::class);
 Route::resource('batch', BatchController::class);

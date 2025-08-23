@@ -243,4 +243,15 @@ class WatchController extends Controller
 
         return redirect()->back()->with('success', 'Watch deleted successfully.');
     }
+
+    /**
+     * Approve the watch 
+     */
+    public function approve(Watch $watch)
+    {
+
+        $watch->update(['status' => Status::APPROVED]);
+
+        return redirect()->back()->with('success', 'Approved');
+    }
 }

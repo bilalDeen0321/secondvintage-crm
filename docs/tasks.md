@@ -1,6 +1,5 @@
 Watch Management - Feedback
 
-- Batch Group is not being displayed on list.
 - When you click Approve it should change the status to Approved in the interface
 - Batch filter dropdown is not working / not matching with data
 - Location filter dropdown is not working / not matching with data

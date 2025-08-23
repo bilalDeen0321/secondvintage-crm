@@ -1,6 +1,5 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getError } from "@/app/errors";
 import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import { sliceObject } from "@/app/utils";
@@ -27,13 +26,11 @@ import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import { PageProps } from "node_modules/@inertiajs/core/types/types";
 import React, { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
 import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
-    handleApprove,
     handleEditBrands,
     handleEditLocations,
-    hanldeBatchAction,
+    hanldeBatchAction
 } from "./actions";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
@@ -88,8 +85,6 @@ export default function CreateWatch({ watch, ...props }: Props) {
 
     const onSave = (handler?: ((res?: any) => void) | string) => {
 
-        const errorcallback = (err: unknown) => toast.error(getError(err));
-
         const successcallback = (res: Page<PageProps>) => {
 
             setSavedData(data);
@@ -110,9 +105,9 @@ export default function CreateWatch({ watch, ...props }: Props) {
 
             router.post(route(`watches.update`, watch.routeKey), { ...putDate, _method: 'put' }, {
                 forceFormData: true,
-                fresh: true,
+                preserveState: false,
+                preserveScroll: true,
                 onSuccess: successcallback,
-                onError: errorcallback,
             });
 
             return;
@@ -120,8 +115,9 @@ export default function CreateWatch({ watch, ...props }: Props) {
 
         post(route(`watches.store`), {
             forceFormData: true,
+            preserveState: false,
+            preserveScroll: true,
             onSuccess: successcallback,
-            onError: errorcallback,
         });
 
 
@@ -557,7 +553,14 @@ export default function CreateWatch({ watch, ...props }: Props) {
                         <div className="flex flex-shrink-0 gap-3 border-t border-slate-200 p-6 pt-4">
                             <Button
                                 type="button"
-                                onClick={() => handleApprove(data, setData)}
+                                disabled={watch?.status === Status.APPROVED}
+                                onClick={() => {
+                                    if (!watch?.routeKey) return;
+                                    router.post(route('watches.approve', watch.routeKey), {}, {
+                                        preserveState: false,
+                                        preserveScroll: true,
+                                    });
+                                }}
                                 className="flex-1 bg-green-600 text-white hover:bg-green-700"
                             >
                                 <CheckCircle className="mr-2 h-4 w-4" />
