@@ -10,18 +10,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { countries, currencies } from "@/app/data";
+import { CurrencyAttributes } from "@/app/models/Currency";
 import RawSelect from "@/components/mixed/RawSelect";
 import { useForm, usePage } from "@inertiajs/react";
 import InputError from "../../../components/InputError";
+
+type Props = {
+    locations: string[];
+    currencies: CurrencyAttributes[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    roles: any[],
+};
 
 export default function EditUserDialog({
     isEditDialogOpen,
     setIsEditDialogOpen,
     user,
 }) {
-    const pageProps = usePage().props;
-    const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
+
+    const { locations = [], currencies = [], roles = [] } = (usePage().props || {}) as Props;
 
     const { data, setData, put, processing, errors } = useForm({
         name: user?.name ?? "",
@@ -102,7 +109,7 @@ export default function EditUserDialog({
                                 <div className="grid grid-cols-2 gap-4">
 
                                     <RawSelect
-                                        data={countries}
+                                        data={locations}
                                         name="country"
                                         label="Country"
                                         value={data.country}

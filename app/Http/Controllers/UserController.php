@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Models\Batch;
+use App\Models\Brand;
+use App\Models\Currency;
+use App\Models\Location;
+use App\Models\Status;
 use App\Models\User;
-use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +29,20 @@ class UserController extends Controller
     }
 
     /**
+     * The controller's actions data for watch management.
+     */
+    public function crudData()
+    {
+        return [
+            'currencies' => Currency::query()->latest()->get(),
+            'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
+            'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -38,9 +56,10 @@ class UserController extends Controller
                 $q->where('name', 'like', "%$search%")
                     ->orWhere('email', 'like', "%$search%");
             })
-            ->paginate($request->input('per_page', 10));
+            ->latest()->paginate($request->input('per_page', 10));
 
         return Inertia::render('users/index', [
+            ...$this->crudData(),
             'search' => $request->input('search'),
             'roles'  => Role::query()->pluck('name'),
             'total_users' => $query->count(),

@@ -1,5 +1,6 @@
 
 import Status from "@/app/models/Status";
+import { User } from "@/types/auth";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
 import axios from "axios";
@@ -14,7 +15,7 @@ export const watchEscapeCallback = () => router.visit(route("watches.index"));
 /**
  * Watch init data
  */
-export const watchInitData = (watch?: WatchResource | null) => ({
+export const watchInitData = (watch?: WatchResource | null, user?: User) => ({
   id: watch?.id || "",
   routeKey: watch?.routeKey || "",
   name: watch?.name || "",
@@ -32,7 +33,7 @@ export const watchInitData = (watch?: WatchResource | null) => ({
   location: watch?.location || "",
   batch: watch?.batch || "",
   description: watch?.description || "",
-  currency: watch?.currency || "DKK",
+  currency: watch?.currency || user?.currency || "DKK",
   notes: watch?.notes || "",
   images: watch?.images || ([] as WatchResource["images"]),
   ai_thread_id: watch?.ai_thread_id || "",

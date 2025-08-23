@@ -43,10 +43,10 @@ type Props = {
     brands: string[];
     statuses: string[];
     currencies: CurrencyAttributes[];
-};
+} & PageProps;
 
 
-export default function CreateWatch({ watch, ...props }: Props) {
+export default function CreateWatch({ watch, auth, ...props }: Props) {
 
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
@@ -58,8 +58,8 @@ export default function CreateWatch({ watch, ...props }: Props) {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
 
     //server states
-    const { data, setData, post, processing, errors } = useForm(watchInitData(watch));
-    const [savedData, setSavedData] = useState<any>(watchInitData(watch));
+    const { data, setData, post, processing, errors } = useForm(watchInitData(watch, auth?.user));
+    const [savedData, setSavedData] = useState<any>(watchInitData(watch, auth?.user));
 
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand, watch?.sku);

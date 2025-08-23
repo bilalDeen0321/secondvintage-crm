@@ -1,4 +1,5 @@
-import { countries, currencies } from "@/app/data";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CurrencyAttributes } from "@/app/models/Currency";
 import InputError from "@/components/InputError";
 import RawSelect from "@/components/mixed/RawSelect";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,14 @@ import { Label } from "@/components/ui/label";
 import { useForm, usePage } from "@inertiajs/react";
 import { Plus } from "lucide-react";
 
+type Props = {
+    locations: string[];
+    currencies: CurrencyAttributes[];
+    roles: any[],
+};
+
 export default function AddNewUser({ show, setShow }) {
-    const pageProps = usePage().props;
-    const roles = Array.isArray(pageProps.roles) ? pageProps.roles : [];
+    const { locations = [], currencies = [], roles = [] } = (usePage().props || {}) as Props;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
@@ -29,7 +35,7 @@ export default function AddNewUser({ show, setShow }) {
         password: "",
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const handleAddUser = (e: any) => {
         e.preventDefault();
         post(route("users.store"), {
@@ -125,7 +131,7 @@ export default function AddNewUser({ show, setShow }) {
                                 </div>
 
                                 <RawSelect
-                                    data={countries}
+                                    data={locations}
                                     name="country"
                                     label="Country"
                                     value={data.country}
