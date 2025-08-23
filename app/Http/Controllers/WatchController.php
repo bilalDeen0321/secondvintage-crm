@@ -254,4 +254,37 @@ class WatchController extends Controller
 
         return redirect()->back()->with('success', 'Approved');
     }
+
+    /**
+     * Bulk actions
+     */
+    /**
+     * Bulk actions
+     */
+    public function bulkActions(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        $action = $request->input('action');
+        $value = $request->input('value');
+
+        if ($action === 'status' && $value) {
+            Watch::whereIn('id', $ids)->update(['status' => $value]);
+
+            return redirect()->back()->with('success', 'Bulk status updated');
+        }
+
+        if ($action === 'location' && $value) {
+            Watch::whereIn('id', $ids)->update(['location' => $value]);
+
+            return redirect()->back()->with('success', 'Bulk location updated');
+        }
+
+        if ($action === 'batch' && $value) {
+            $batch = Batch::updateOrCreate(['name' => $value]); // single query
+            Watch::whereIn('id', $ids)->update(['batch_id' => $batch->id]);
+            return redirect()->back()->with('success', 'Bulk batch updated');
+        }
+
+        return redirect()->back()->with('error', 'Unknown bulk action');
+    }
 }

@@ -14,7 +14,7 @@ interface WatchListViewProps {
     sortField: string;
     sortDirection: "asc" | "desc";
     selectedWatches: string[];
-    onSelectWatch: (watchId: string, checked: boolean) => void;
+    onSelectWatch: (id: string, checked: boolean) => void;
     onSelectAll: (checked: boolean) => void;
 }
 

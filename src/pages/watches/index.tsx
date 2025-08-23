@@ -24,12 +24,17 @@ import { WatchResource } from "@/types/resources/watch";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Edit, Grid, List, X } from "lucide-react";
 import { useState } from "react";
-import { getSearchStatus, getSelectSearch, getSelectStatus, handleSerchSort, watcheSearch } from "./_searchActions";
-import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange, handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
+import { onBulkAction } from "./_actions";
+import {
+    getSearchStatus,
+    getSelectSearch,
+    getSelectStatus,
+    handleSerchSort,
+    watcheSearch,
+} from "./_searchActions";
+import { handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
 
-
-
-type StatusKey = typeof Status.statuses[number];
+type StatusKey = (typeof Status.statuses)[number];
 type WatchCount = Record<StatusKey, number>;
 
 type Props = {
@@ -40,31 +45,31 @@ type Props = {
     currencies: CurrencyAttributes[];
 };
 
-
 const WatchManagement = (props: Props) => {
-
     //server props
     const { locations = [], batches = [], brands = [], currencies = [] } = props || {};
 
     //complete state and consts list
-    const [viewMode, setViewMode] = useLocalStorage<'list' | 'grid'>('watch_view_mode', "list");
+    const [viewMode, setViewMode] = useLocalStorage<"list" | "grid">("watch_view_mode", "list");
 
     const page = usePage();
-    const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>
+    const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>;
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
 
-    const { data, setData, delete: destroy } = useForm({
-        column: '',
-        search: '',
-        status: ['all'],
-        brand: 'All',
-        batch: 'All',
-        location: 'All',
-        direction: 'asc',
+    const {
+        data,
+        setData,
+        delete: destroy,
+    } = useForm({
+        column: "",
+        search: "",
+        status: ["all"],
+        brand: "All",
+        batch: "All",
+        location: "All",
+        direction: "asc",
     });
-
-
 
     const handleSelectWatch = (watchId: string, checked: boolean) => {
         if (checked) {
@@ -82,7 +87,6 @@ const WatchManagement = (props: Props) => {
         }
     };
 
-
     /**
      * =======================================
      * Server actions
@@ -98,24 +102,21 @@ const WatchManagement = (props: Props) => {
                 onSuccess(response) { },
             });
         }
-    }
-
+    };
 
     //Handle sort state
     const handleSort = (field: string) => {
-
         const params = new URLSearchParams();
 
         const direction = data.direction === "asc" ? "desc" : "asc";
 
-        setData('direction', direction);
-        setData('column', field)
+        setData("direction", direction);
+        setData("column", field);
 
         const columns = uniqueArray([field, field], true);
 
         handleSerchSort(columns, direction);
     };
-
 
     return (
         <Layout>
@@ -125,9 +126,7 @@ const WatchManagement = (props: Props) => {
                 <div className="mb-8">
                     <div className="mb-6 flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-900">
-                                Watch Management
-                            </h1>
+                            <h1 className="text-3xl font-bold text-slate-900">Watch Management</h1>
                             <p className="mt-1 text-slate-600">
                                 Manage your watch inventory and track status
                             </p>
@@ -152,7 +151,7 @@ const WatchManagement = (props: Props) => {
                                 </Button>
                             </div>
                             <Link
-                                href={route('watches.create')}
+                                href={route("watches.create")}
                                 className="flex items-center gap-2"
                             >
                                 <span className="text-lg">+</span>
@@ -164,17 +163,23 @@ const WatchManagement = (props: Props) => {
                     {/* Multi-select Status Filter */}
                     <div className="mb-6">
                         <div className="flex flex-wrap gap-2">
-                            {['all', ...Status.allStatuses()].map((status) => (
+                            {["all", ...Status.allStatuses()].map((status) => (
                                 <button
                                     key={status}
                                     onClick={() => {
-                                        if (status == 'all') {
-                                            setData('status', ['all']);
-                                            watcheSearch('status', getSearchStatus(['all']))
+                                        if (status == "all") {
+                                            setData("status", ["all"]);
+                                            watcheSearch("status", getSearchStatus(["all"]));
                                             return;
                                         }
-                                        setData('status', getSelectStatus([...data.status, status]));
-                                        watcheSearch('status', getSearchStatus([...data.status, status]))
+                                        setData(
+                                            "status",
+                                            getSelectStatus([...data.status, status]),
+                                        );
+                                        watcheSearch(
+                                            "status",
+                                            getSearchStatus([...data.status, status]),
+                                        );
                                     }}
                                     className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
                                         ? "border-primary bg-primary/10 ring-2 ring-primary/30"
@@ -188,21 +193,19 @@ const WatchManagement = (props: Props) => {
                                         {Status.toHuman(status)}
                                     </div>
                                 </button>
-                            ),
-                            )}
+                            ))}
                         </div>
 
                         {/* Clear status filters button */}
                         {data.status.length > 1 ||
-                            (data.status.length === 1 &&
-                                !data.status.includes("All")) ? (
+                            (data.status.length === 1 && !data.status.includes("All")) ? (
                             <div className="mt-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => {
-                                        setData('status', ["All"]);
-                                        watcheSearch('status', null)
+                                        setData("status", ["All"]);
+                                        watcheSearch("status", null);
                                     }}
                                     className="border-slate-300 text-slate-600 hover:bg-slate-100"
                                 >
@@ -221,8 +224,8 @@ const WatchManagement = (props: Props) => {
                                 placeholder="Search watches by name, brand, or SKU..."
                                 value={data.search}
                                 onChange={(e) => {
-                                    watcheSearch('search', e.target.value);
-                                    setData('search', e.target.value);
+                                    watcheSearch("search", e.target.value);
+                                    setData("search", e.target.value);
                                 }}
                                 className="w-full"
                             />
@@ -235,10 +238,10 @@ const WatchManagement = (props: Props) => {
                                 <BrandSelector
                                     value={data.brand}
                                     onValueChange={(value) => {
-                                        setData('brand', value);
-                                        watcheSearch('brand', getSelectSearch(value))
+                                        setData("brand", value);
+                                        watcheSearch("brand", getSelectSearch(value));
                                     }}
-                                    brands={['All', ...brands]}
+                                    brands={["All", ...brands]}
                                     onEditBrands={handleEditBrands}
                                 />
                             </div>
@@ -250,10 +253,10 @@ const WatchManagement = (props: Props) => {
                                 <BatchSelector
                                     value={data.batch}
                                     onValueChange={(value) => {
-                                        setData('batch', value);
-                                        watcheSearch('batch', getSelectSearch(value));
+                                        setData("batch", value);
+                                        watcheSearch("batch", getSelectSearch(value));
                                     }}
-                                    batches={['All', ...batches]}
+                                    batches={["All", ...batches]}
                                     onEditBatches={handleEditBatches}
                                 />
                             </div>
@@ -265,10 +268,10 @@ const WatchManagement = (props: Props) => {
                                 <LocationSelector
                                     value={data.location}
                                     onValueChange={(value) => {
-                                        setData('location', value);
-                                        watcheSearch('location', getSelectSearch(value));
+                                        setData("location", value);
+                                        watcheSearch("location", getSelectSearch(value));
                                     }}
-                                    locations={['All', ...locations]}
+                                    locations={["All", ...locations]}
                                     onEditLocations={handleEditLocations}
                                 />
                             </div>
@@ -281,27 +284,23 @@ const WatchManagement = (props: Props) => {
                             <div className="flex items-center gap-2">
                                 <Edit className="h-4 w-4 text-blue-600" />
                                 <span className="text-sm font-medium text-blue-800">
-                                    {selectedWatches.length} watches selected -
-                                    Bulk Actions:
+                                    {selectedWatches.length} watches selected - Bulk Actions:
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-blue-700">
-                                    Status:
-                                </span>
-                                <Select onValueChange={(value) => {
-                                    handleBulkStatusChange(setSelectedWatches, value)
-                                }}>
+                                <span className="text-sm text-blue-700">Status:</span>
+                                <Select
+                                    onValueChange={(value) => {
+                                        onBulkAction("status", value, selectedWatches);
+                                    }}
+                                >
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Object.keys(watch_count).map((status) => (
-                                            <SelectItem
-                                                key={status}
-                                                value={status}
-                                            >
+                                        {Status.allStatuses().map((status, index) => (
+                                            <SelectItem key={index} value={status}>
                                                 {Status.toHuman(status)}
                                             </SelectItem>
                                         ))}
@@ -310,23 +309,18 @@ const WatchManagement = (props: Props) => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-blue-700">
-                                    Location:
-                                </span>
+                                <span className="text-sm text-blue-700">Location:</span>
                                 <Select
-                                    onValueChange={(value) => {
-                                        handleBulkLocationChange(setSelectedWatches, value)
-                                    }}
+                                    onValueChange={(value) =>
+                                        onBulkAction("location", value, selectedWatches)
+                                    }
                                 >
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Location" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {locations.map((location) => (
-                                            <SelectItem
-                                                key={location}
-                                                value={location}
-                                            >
+                                        {locations.map((location, index) => (
+                                            <SelectItem key={index} value={location}>
                                                 {location}
                                             </SelectItem>
                                         ))}
@@ -335,19 +329,18 @@ const WatchManagement = (props: Props) => {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-blue-700">
-                                    Batch Group:
-                                </span>
-                                <Select onValueChange={(value) => handleBulkBatchChange(setSelectedWatches, value)}>
+                                <span className="text-sm text-blue-700">Batch Group:</span>
+                                <Select
+                                    onValueChange={(value) =>
+                                        onBulkAction("batch", value, selectedWatches)
+                                    }
+                                >
                                     <SelectTrigger className="w-40">
                                         <SelectValue placeholder="Change Batch" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {batches.map((batch) => (
-                                            <SelectItem
-                                                key={batch}
-                                                value={batch}
-                                            >
+                                        {batches.map((batch, index) => (
+                                            <SelectItem key={index} value={batch}>
                                                 {batch}
                                             </SelectItem>
                                         ))}
@@ -368,7 +361,7 @@ const WatchManagement = (props: Props) => {
 
                     {/* Results info and pagination controls */}
                     <div className="mb-4 flex items-center justify-between">
-                        <div className="text-sm text-slate-600 w-full">
+                        <div className="w-full text-sm text-slate-600">
                             Showing {meta.from ?? 0}-{meta.to ?? 0} of {meta.total} watches
                         </div>
                         <TablePaginate links={meta.links} className="block w-full" />
@@ -379,11 +372,7 @@ const WatchManagement = (props: Props) => {
                 {viewMode === "grid" ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {watches.map((watch) => (
-                            <WatchCard
-                                key={watch.id}
-                                watch={watch}
-                                onDelete={handleDelete}
-                            />
+                            <WatchCard key={watch.id} watch={watch} onDelete={handleDelete} />
                         ))}
                     </div>
                 ) : (
@@ -392,7 +381,7 @@ const WatchManagement = (props: Props) => {
                         onDelete={handleDelete}
                         onSort={handleSort}
                         sortField={data.column}
-                        sortDirection={data.direction as 'asc'}
+                        sortDirection={data.direction as "asc"}
                         selectedWatches={selectedWatches}
                         onSelectWatch={handleSelectWatch}
                         onSelectAll={handleSelectAll}
@@ -405,9 +394,7 @@ const WatchManagement = (props: Props) => {
                         <h3 className="mb-2 text-xl font-medium text-slate-900">
                             No watches found
                         </h3>
-                        <p className="text-slate-600">
-                            Try adjusting your search or filters
-                        </p>
+                        <p className="text-slate-600">Try adjusting your search or filters</p>
                     </div>
                 )}
             </div>

@@ -38,11 +38,11 @@ export default function WatchItem(props: Props) {
     >
         <td className="p-2">
             <Checkbox
-                checked={selectedWatches.includes(String(watch.id),
+                checked={selectedWatches.includes(String(watch?.id),
                 )}
                 onCheckedChange={(checked) =>
                     onSelectWatch(
-                        watch.sku,
+                        String(watch?.id),
                         checked as boolean,
                     )
                 }

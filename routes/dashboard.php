@@ -33,6 +33,7 @@ use Inertia\Inertia;
 Route::resource('users/roles', RoleController::class);
 Route::resource('users', UserController::class);
 
+Route::post('watches/bulk-action', [WatchController::class, 'bulkActions'])->name('watches.bulk-actions');
 Route::post('watches/{watch}/approve', [WatchController::class, 'approve'])->name('watches.approve');
 Route::resource('watches', WatchController::class);
 
