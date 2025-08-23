@@ -1,19 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
+import WatchDescription from "@/pages/watches/components/WatchDescription";
 import { WatchResource } from "@/types/resources/watch";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import ImageViewer from "./ImageViewer";
 import Linkui from "./ui/Link";
 
+
 interface WatchCardProps {
     watch: WatchResource;
     onDelete: (id: string | number) => void;
 }
+type ServerProps = {
+    currencies: CurrencyAttributes[]
+}
 
 const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
+    //server props
+    const { currencies = [] } = (usePage().props) as unknown as ServerProps;
+
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
         images: never[];
@@ -116,7 +125,7 @@ const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
                         </p>
                         {watch.original_cost && (
                             <p className="text-sm font-medium text-slate-900">
-                                €{watch.original_cost.toLocaleString()}
+                                {Currency.init().toSymbol(currencies, watch.currency)}{watch.original_cost.toLocaleString()}
                             </p>
                         )}
                         <p className="text-sm text-slate-600">
@@ -126,7 +135,7 @@ const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
 
                     {watch.description && (
                         <p className="mb-3 line-clamp-2 text-xs text-slate-600">
-                            {watch.description}
+                            <WatchDescription watch={watch} />
                         </p>
                     )}
 
