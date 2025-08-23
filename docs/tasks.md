@@ -1,6 +1,5 @@
 Watch Management - Feedback
 
-- Cost & Org. Currency, should just be one column, Cost (with 2 currency displays like on Agent Balance) also display both in grid view.
 - Batch Group is not being displayed on list.
 - When you click Approve it should change the status to Approved in the interface
 - Batch filter dropdown is not working / not matching with data
