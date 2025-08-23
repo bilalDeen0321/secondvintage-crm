@@ -105,8 +105,6 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
             router.post(route(`watches.update`, watch.routeKey), { ...putDate, _method: 'put' }, {
                 forceFormData: true,
-                preserveState: false,
-                preserveScroll: true,
                 onSuccess: successcallback,
             });
 
@@ -115,8 +113,6 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
         post(route(`watches.store`), {
             forceFormData: true,
-            preserveState: false,
-            preserveScroll: true,
             onSuccess: successcallback,
         });
 
@@ -553,10 +549,10 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                         <div className="flex flex-shrink-0 gap-3 border-t border-slate-200 p-6 pt-4">
                             <Button
                                 type="button"
-                                disabled={watch?.status === Status.APPROVED}
+                                disabled={watch?.status === Status.APPROVED || !watch?.routeKey}
                                 onClick={() => {
                                     if (!watch?.routeKey) return;
-                                    router.post(route('watches.approve', watch.routeKey), {}, {
+                                    router.post(route('watches.approve', watch?.routeKey), {}, {
                                         preserveState: false,
                                         preserveScroll: true,
                                     });
