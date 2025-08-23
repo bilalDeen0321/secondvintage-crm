@@ -45,6 +45,7 @@ class StoreWatchRequest extends FormRequest
             'images'          => ['nullable', 'array'],
             // images is an array of base64 strings inside objects
             // 'images.*.url'    => ['required_with:images', 'string'],
+            'images.*.id'    => ['nullable'],
             'images.*.file'   => ['nullable', 'file', 'image', 'max:5120'],
             'images.*.useForAI' => ['nullable', 'bool'],
 

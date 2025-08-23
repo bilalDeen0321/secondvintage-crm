@@ -38,8 +38,9 @@ class AIGenerateRequest extends FormRequest
             'status'            => 'nullable|string',
 
             // images is an array of base64 strings inside objects
-            'images'          => ['required', 'array'],
-            'images.*.file'   => ['nullable', 'file', 'image', 'max:5120'],
+            'images.*.id'       => ['nullable'],
+            'images.*.file'     => ['nullable', 'file', 'image', 'max:5120'],
+            'images.*.useForAI' => ['nullable', 'bool'],
         ];
     }
 

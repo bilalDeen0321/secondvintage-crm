@@ -8,6 +8,7 @@ use App\Models\Location;
 use App\Models\Watch;
 use App\Models\WatchImage;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class UpdateWatchAction
 {
@@ -25,39 +26,37 @@ class UpdateWatchAction
     public function __invoke(Watch $watch,  array $input)
     {
 
-        $data =  $input;
+        return DB::transaction(function () use ($watch, $input) {
 
-        if (isset($input['batch'])) {
-            $data['batch_id'] = Batch::firstOrCreate(['name' => $input['batch']])->id;
-        }
+            $data =  $input;
 
-        if (isset($input['brand'])) {
-            $data['brand_id'] = Brand::firstOrCreate(['name' => $input['brand']])->id;
-        }
-
-        if (empty($input['location'])) {
-            $data['location'] = Location::DEFAULT_COUNTRY;
-        }
-
-        // 2. Create Watch
-        if (!$watch->update(Arr::only($data, Watch::fields()))) {
-            throw new \Exception('Failed to update watch');
-        }
-
-        // refresh the watch instance
-        $watch->refresh();
-
-        // Handle images
-        if (!empty($input['images'])) {
-
-
-            foreach ($input['images'] as $img) {
-                if (isset($img['file']) && $img['file'] instanceof \Illuminate\Http\UploadedFile) {
-                    WatchImage::uploadImage($watch, $img['file'], $img['useForAI'] ?? false);
-                }
+            if (isset($input['batch'])) {
+                $data['batch_id'] = Batch::firstOrCreate(['name' => $input['batch']])->id;
             }
-        }
 
-        return $watch;
+            if (isset($input['brand'])) {
+                $data['brand_id'] = Brand::firstOrCreate(['name' => $input['brand']])->id;
+            }
+
+            if (empty($input['location'])) {
+                $data['location'] = Location::DEFAULT_COUNTRY;
+            }
+
+            // 2. Create Watch
+            if (!$watch->update(Arr::only($data, Watch::fields()))) {
+                throw new \Exception('Failed to update watch');
+            }
+
+            // refresh the watch instance
+            $watch->refresh();
+
+            // Handle update images
+            if (!empty($input['images'])) {
+
+                (new WatchImageSyncAction)($watch, $input['images']);
+            }
+
+            return $watch;
+        });
     }
 }
