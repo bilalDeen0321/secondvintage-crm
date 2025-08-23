@@ -190,3 +190,22 @@ export function sliceObject<T extends Record<string, any>, K extends keyof T>(ob
     }
     return clone;
 }
+
+
+/**
+ * currency code to symbol | help of built-in toLocaleString
+ * @param currency currency code
+ * @param {string} language language e.g en-US
+ * @returns {string}
+ */
+export function currencyToSymbol(currency: string, language: string = 'en-US'): string {
+    return (0)
+        .toLocaleString(language, {
+            style: "currency",
+            currency: currency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        })
+        .replace(/\d/g, "")
+        .trim();
+}

@@ -1,4 +1,4 @@
-import { batchGroups, brands, countries } from "@/app/data";
+import { CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import { uniqueArray } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
@@ -32,10 +32,19 @@ import { handleBulkBatchChange, handleBulkLocationChange, handleBulkStatusChange
 type StatusKey = typeof Status.statuses[number];
 type WatchCount = Record<StatusKey, number>;
 
+type Props = {
+    batches: string[];
+    brands: string[];
+    statuses: string[];
+    locations: string[];
+    currencies: CurrencyAttributes[];
+};
 
 
+const WatchManagement = (props: Props) => {
 
-const WatchManagement = () => {
+    //server props
+    const { locations = [], batches = [], brands = [], currencies = [] } = props || {};
 
     //complete state and consts list
     const [viewMode, setViewMode] = useLocalStorage<'list' | 'grid'>('watch_view_mode', "list");
@@ -44,7 +53,6 @@ const WatchManagement = () => {
     const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
-    const [editingWatch, setEditingWatch] = useState<WatchResource | undefined>();
 
     const { data, setData, delete: destroy } = useForm({
         column: '',
@@ -245,7 +253,7 @@ const WatchManagement = () => {
                                         setData('batch', value);
                                         watcheSearch('batch', getSelectSearch(value));
                                     }}
-                                    batches={['All', ...batchGroups]}
+                                    batches={['All', ...batches]}
                                     onEditBatches={handleEditBatches}
                                 />
                             </div>
@@ -260,7 +268,7 @@ const WatchManagement = () => {
                                         setData('location', value);
                                         watcheSearch('location', getSelectSearch(value));
                                     }}
-                                    locations={['All', ...countries]}
+                                    locations={['All', ...locations]}
                                     onEditLocations={handleEditLocations}
                                 />
                             </div>
@@ -314,7 +322,7 @@ const WatchManagement = () => {
                                         <SelectValue placeholder="Change Location" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {countries.map((location) => (
+                                        {locations.map((location) => (
                                             <SelectItem
                                                 key={location}
                                                 value={location}
@@ -335,7 +343,7 @@ const WatchManagement = () => {
                                         <SelectValue placeholder="Change Batch" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {batchGroups.map((batch) => (
+                                        {batches.map((batch) => (
                                             <SelectItem
                                                 key={batch}
                                                 value={batch}

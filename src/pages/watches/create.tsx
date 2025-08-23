@@ -49,7 +49,7 @@ type Props = {
 };
 
 
-export default function CreateWatch({ watch, user, ...props }: Props) {
+export default function CreateWatch({ watch, ...props }: Props) {
 
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};

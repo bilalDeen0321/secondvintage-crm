@@ -42,6 +42,14 @@ export class Currency extends Model {
     };
 
 
+    /**
+     * Currency code to symbol
+     */
+    toSymbol(currencies: CurrencyAttributes[], currency: string) {
+        return currencies.find(f => f.code === currency)?.symbol || currency;
+    }
+
+
 }
 
 

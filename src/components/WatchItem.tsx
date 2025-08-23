@@ -1,12 +1,14 @@
 
+import { Currency, CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Linkui from "@/components/ui/Link";
 import WatchDescription from "@/pages/watches/components/WatchDescription";
 import { WatchResource } from "@/types/resources/watch";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
+import { useEffect } from "react";
 
 type Props = {
     watch: WatchResource;
@@ -16,8 +18,19 @@ type Props = {
     onDelete: (id: string | number) => void
 }
 
+type ServerProps = {
+    currencies: CurrencyAttributes[]
+}
+
 export default function WatchItem(props: Props) {
+    //server props
+    const { currencies = [] } = (usePage().props) as unknown as ServerProps;
+
     const { watch, onSelectWatch, selectedWatches, handleImageClick, onDelete } = props;
+
+    useEffect(() => {
+        console.log(watch.currency, currencies.find(f => f.code === watch.currency))
+    }, [watch, currencies])
 
     return <tr
         key={watch.id}
@@ -82,14 +95,10 @@ export default function WatchItem(props: Props) {
         </td>
         <td className="p-2">
             <div className="text-sm text-slate-900">
-                {watch.current_cost
-                    ? `€${watch.current_cost.toLocaleString()}`
-                    : "-"}
-            </div>
-        </td>
-        <td className="p-2">
-            <div className="text-sm text-slate-600">
-                {watch.currency}
+                <div>
+                    <div>{Currency.init().toSymbol(currencies, watch.currency)}{watch.original_cost}</div>
+                    <div className="text-xs text-slate-600">{Currency.init().toSymbol(currencies, watch.currency)}{watch.current_cost}</div>
+                </div>
             </div>
         </td>
         <td className="p-2">

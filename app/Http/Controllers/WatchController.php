@@ -80,35 +80,44 @@ class WatchController extends Controller
                         $brandQuery->where('name', 'like', "%{$search}%");
                     });
             });
-        })->when($request->filled('brand'), function (Builder $q) use ($request) {
-            $brands = $request->input('brand');
-            // Support multiple brands
-            if (is_array($brands)) {
-                $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                    $brandQuery->whereIn('name', $brands);
+        })
+            ->when($request->filled('brand'), function (Builder $q) use ($request) {
+                $brands = $request->input('brand');
+                // Support multiple brands
+                if (is_array($brands)) {
+                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                        $brandQuery->whereIn('name', $brands);
+                    });
+                } else {
+                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
+                        $brandQuery->where('name', $brands);
+                    });
+                }
+            })
+            ->when($request->filled('batch'), function (Builder $q) use ($request) {
+                $batch = $request->input('batch');
+                // Support multiple brands
+                $q->whereHas('brand', function ($brandQuery) use ($batch) {
+                    $brandQuery->where('name', $batch);
                 });
-            } else {
-                $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                    $brandQuery->where('name', $brands);
-                });
-            }
-        })->when($request->filled('status'), function (Builder $q) use ($request) {
-            $statuses = $request->input('status');
-            // Support multiple statuses
-            if (is_array($statuses)) {
-                $q->whereIn('status', $statuses);
-            } else {
-                $q->where('status', $statuses);
-            }
-        })->when($request->filled('location'), function (Builder $q) use ($request) {
-            $locations = $request->input('location');
-            // Support multiple locations
-            if (is_array($locations)) {
-                $q->whereIn('location', $locations);
-            } else {
-                $q->where('location', $locations);
-            }
-        });
+            })
+            ->when($request->filled('status'), function (Builder $q) use ($request) {
+                $statuses = $request->input('status');
+                // Support multiple statuses
+                if (is_array($statuses)) {
+                    $q->whereIn('status', $statuses);
+                } else {
+                    $q->where('status', $statuses);
+                }
+            })->when($request->filled('location'), function (Builder $q) use ($request) {
+                $locations = $request->input('location');
+                // Support multiple locations
+                if (is_array($locations)) {
+                    $q->whereIn('location', $locations);
+                } else {
+                    $q->where('location', $locations);
+                }
+            });
 
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();
@@ -120,6 +129,7 @@ class WatchController extends Controller
         }
 
         return Inertia::render('watches/index', [
+            ...$this->crudData(),
             'watches' => WatchResource::collection($watches)->response()->getData(true),
             'watch_count' => $watchCount,
             'filters' => request()->only(['search', 'status', 'brand', 'location', 'columns', 'direction']),

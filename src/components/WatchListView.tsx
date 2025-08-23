@@ -168,9 +168,6 @@ const WatchListView = ({
                                     Cost {getSortIcon("original_cost")}
                                 </th>
                                 <th className="w-24 p-2 text-xs font-medium text-slate-700">
-                                    Org. Currency
-                                </th>
-                                <th className="w-24 p-2 text-xs font-medium text-slate-700">
                                     Batch Group
                                 </th>
                                 <th
