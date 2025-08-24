@@ -10,7 +10,6 @@ import WatchItem from "./WatchItem";
 interface WatchListViewProps {
     watches: WatchResource[];
     onDelete: (id: string | number) => void;
-    onSort: (field: string) => void;
     sortField: string;
     sortDirection: "asc" | "desc";
     selectedWatches: string[];
@@ -21,7 +20,6 @@ interface WatchListViewProps {
 const WatchListView = ({
     watches,
     onDelete,
-    onSort,
     selectedWatches,
     onSelectWatch,
     onSelectAll,
@@ -163,9 +161,9 @@ const WatchListView = ({
                                 </th>
                                 <th
                                     className="w-20 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("original_cost")}
+                                    onClick={() => handleSort("current_cost")}
                                 >
-                                    Cost {getSortIcon("original_cost")}
+                                    Cost {getSortIcon("current_cost")}
                                 </th>
                                 <th className="w-24 p-2 text-xs font-medium text-slate-700">
                                     Batch Group

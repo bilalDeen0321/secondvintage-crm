@@ -1,6 +1,5 @@
 import { CurrencyAttributes } from "@/app/models/Currency";
 import Status from "@/app/models/Status";
-import { uniqueArray } from "@/app/utils";
 import BatchSelector from "@/components/BatchSelector";
 import BrandSelector from "@/components/BrandSelector";
 import Layout from "@/components/Layout";
@@ -28,7 +27,6 @@ import { onBulkAction } from "./_actions";
 import {
     getSearchStatus,
     getSelectSearch,
-    handleSerchSort,
     watcheSearch
 } from "./_searchActions";
 import { handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
@@ -101,20 +99,6 @@ const WatchManagement = (props: Props) => {
                 onSuccess(response) { },
             });
         }
-    };
-
-    //Handle sort state
-    const handleSort = (field: string) => {
-        const params = new URLSearchParams();
-
-        const direction = data.direction === "asc" ? "desc" : "asc";
-
-        setData("direction", direction);
-        setData("column", field);
-
-        const columns = uniqueArray([field, field], true);
-
-        handleSerchSort(columns, direction);
     };
 
     return (
@@ -194,8 +178,8 @@ const WatchManagement = (props: Props) => {
                                         watcheSearch("status", getSearchStatus(updatedStatus));
                                     }}
                                     className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
-                                            ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                                            : "border-slate-200 bg-white hover:border-slate-300"
+                                        ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                        : "border-slate-200 bg-white hover:border-slate-300"
                                         }`}
                                 >
                                     <div className="text-lg font-bold text-slate-900">
@@ -392,7 +376,6 @@ const WatchManagement = (props: Props) => {
                     <WatchListView
                         watches={watches}
                         onDelete={handleDelete}
-                        onSort={handleSort}
                         sortField={data.column}
                         sortDirection={data.direction as "asc"}
                         selectedWatches={selectedWatches}

@@ -44,6 +44,7 @@ class WatchController extends Controller
             'created_at' => 'created_at',
             'brand' => 'brand',
             'original_cost' => 'original_cost',
+            'current_cost' => 'current_cost',
             'status' => 'status',
             'location' => 'location',
         ];
@@ -58,8 +59,7 @@ class WatchController extends Controller
 
         // Apply multi-column sorting from frontend if exists
         $orders = $request->input('order', []);
-
-        Log::info($orders);
+        $orders = is_array($orders) ? $orders : [$orders];
 
         if (!empty($orders)) {
             foreach ($orders as $order) {
