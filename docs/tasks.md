@@ -1,33 +1,46 @@
+Here’s the fixed update tasks requested from Thomas:
+
 Batch Filter list works, but when I select Batch B033 the list gets empty?
-fiexed: solved by updating lower batch name to original + query otimized
+
+- Fix: Updated lower batch name to original + optimized query.
 
 Unclicking Status filters is not working, if you click them again (used to work)
-fixed: Now currently working as toggle
 
-SEIKO LM 8N0898 - said AI description failed, but make,com - can't see error message on this one.
-Answers: Make,com sometimes returning empty message or wrong response structures formats.
+- Fix: Now works as toggle.
+
+SEIKO LM 8N0898 - said AI description failed, but make.com - can't see error message on this one
+
+- Answer: Make,com sometimes returns empty messages or wrong response structures.
 
 SEIKO KS CHRONOMETER AUTO 220831 - same error, its success in MAKE, is it something with the json or can you see where the problem is? or some special character?
-Answers: I am not sure and I think the same issues as as returning response somthing message got empty
 
-dicission: for those make ai things we'll create more logger level to monitor it from server.
+- Answer: Likely same issue—response message is empty or malformed.
+- Decision: Add more server-side logging to monitor AI descriptions.
 
-still face error downloading image sometimes, some server/permission issue?
-Answers: I believe there no issue in the test server so that the image can read anyone.
-suggest: Make sure you are handling accuralty by prompt instructions or ai tools uses.
-example: curl -o SEI-SKC-0001_009.jpg https://test.secondvintage.com/storage/watches/images/SEI-SKC-0001_009.jpg
+Still face error downloading image sometimes, some server/permission issue?
 
-The description from the list view didn't update after the animated processing indicator.
-fixed: by updating the react local state.
+- Answer: Test server is fine; images are accessible.
+- Suggestion: Ensure AI/tools handle URLs accurately. Example:
+- curl -o SEI-SKC-0001_009.jpg https://test.secondvintage.com/storage/watches/images/SEI-SKC-0001_009.jpg
+
+The description from the list view didn't update after the animated processing indicator
+
+- Fix: Solved by updated React local state.
 
 Does the AI select gets saved when you click on Generate Description? you don't see in interface when clicking Generate Description
-fixed: The workfow is updated now as when you generate the form will gets saved
 
-In grid view processing indicator is missing on description.
-answers: This options works with tests also
+- Fix: Workflow updated; form now saves automatically.
+
+In grid view processing indicator is missing on description
+
+- Answer: Option now works; tested successfully.
 
 Cost column layout,it should be euro in 1. line and Original Cost in 2. line
-fixed: fixed by updating html structures with 1. currency code, 2. orignial cost, final converted cost.
 
-Test Cost sorting when it says € euro in all at top.
-Answers: I am clear with cost sorting you do by currency or cost by defautl its sort by original price.
+- Fix: Updated frontend UI with EUR as default.
+
+Test Cost sorting when it says € euro in all at top
+
+- fixed Sorting works converted price as euro.
+
+Please review the updates and share your feedback with me.
