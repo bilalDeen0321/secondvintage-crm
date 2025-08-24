@@ -43,6 +43,8 @@ class MakeAiHook
             $response = Http::timeout(60)->asJson()->withHeaders(['x-make-apikey' => $this->apiKey])
                 ->post($this->hookUrl, $payload);
 
+            Log::info('MakeAiHook', $response->body());
+
             //send back
             return $response->collect()
                 ->mapWithKeys(function ($value, $key) {

@@ -10,14 +10,19 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
 
     const [aiStatus, setAiStatus] = useState<string | null>(watch.ai_status);
     const [aiMessage, setAiMessage] = useState<string | null>(watch.ai_message);
+    const [description, setDescription] = useState<string | null>(watch?.description);
 
     useEffect(() => {
-        echo.listen(`watch.${watch.routeKey}`, 'WatchAiDescriptionProcessedEvent', (event) => {
-            setAiStatus(event.ai_status);
-            setAiMessage(event.ai_message)
-        })
-        return () => echo.leave(`watch.${watch.routeKey}`);
-    }, [watch.routeKey]);
+        if (watch?.routeKey) {
+            const eventName = 'WatchAiDescriptionProcessedEvent';
+            echo.listen(`watch.${watch.routeKey}`, eventName, (event: WatchResource) => {
+                setAiStatus(event?.ai_status);
+                setAiMessage(event?.ai_message)
+                setDescription(event?.description)
+            })
+            return () => echo.leave(`watch.${watch.routeKey}`);
+        }
+    }, [watch?.routeKey]);
 
     if (aiStatus === 'loading') {
         return <Loading />;
@@ -27,7 +32,7 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
         return <WatchAiDescriptionError message={aiMessage} />;
     }
 
-    return watch.description || '-';
+    return description || '-';
 }
 
 
