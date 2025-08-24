@@ -24,10 +24,10 @@ Does the AI select gets saved when you click on Generate Description? you don't 
 fixed: The workfow is updated now as when you generate the form will gets saved
 
 In grid view processing indicator is missing on description.
-answers: This options works with I tests also
+answers: This options works with tests also
 
 Cost column layout,it should be euro in 1. line and Original Cost in 2. line
-fixed: by update column structures
+fixed: fixed by updating html structures with 1. currency code, 2. orignial cost, final converted cost.
 
 Test Cost sorting when it says € euro in all at top.
 Answers: I am clear with cost sorting you do by currency or cost by defautl its sort by original price.
