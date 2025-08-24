@@ -28,11 +28,11 @@ export class Currency extends Model {
             return '0.00';
         }
 
-        const match = currencies.find(c => c.code === currency);
-        const rate = match?.rate ? Number(match.rate) : 1;
+        const user_rate = Number(currencies.find(c => c.code === currency).rate || 1);
+        const from_rate = Number(currencies.find(c => c.code === 'EUR').rate || 1);
 
         // Convert TO EUR (since rates are "1 EUR = rate currency")
-        const converted = (originalCost / rate).toFixed(2);
+        const converted = (originalCost * from_rate / user_rate).toFixed(2);
 
         if (callback && converted !== previousValue) {
             callback(converted);
@@ -45,9 +45,13 @@ export class Currency extends Model {
     /**
      * Currency code to symbol
      */
-    toSymbol(currencies: CurrencyAttributes[], currency: string) {
-        return currencies.find(f => f.code === currency)?.symbol || currency;
+    toSymbol(currencies: CurrencyAttributes[], currency: string, price?: string | number) {
+        const symbol = currencies.find(f => f.code === currency)?.symbol || currency;
+        if (price) {
+            return `${symbol + price}`;
+        }
     }
+
 
     /**
      * Currency code to symbol

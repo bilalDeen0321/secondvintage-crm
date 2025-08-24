@@ -123,10 +123,17 @@ const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
                         <p className="text-sm text-slate-600">
                             Brand: {watch.brand}
                         </p>
-                        {watch.original_cost && (
-                            <p className="text-sm font-medium text-slate-900">
-                                {Currency.init().toSymbol(currencies, watch.currency)}{watch.original_cost?.toLocaleString()} {' '}
-                                <sub>{watch.current_cost?.toLocaleString()}</sub>
+                        {watch.current_cost && (
+                            <p className="text-sm text-slate-600">
+                                Cost:&nbsp;
+                                <span className="font-medium">
+                                    €{watch?.current_cost?.toLocaleString()}
+                                </span>
+                                {watch.current_cost && (
+                                    <sub className="text-xs text-slate-500">
+                                        &nbsp; {Currency.init().toSymbol(currencies, watch.currency, watch.original_cost)}
+                                    </sub>
+                                )}
                             </p>
                         )}
                         <p className="text-sm text-slate-600">

@@ -7,7 +7,6 @@ import WatchDescription from "@/pages/watches/components/WatchDescription";
 import { WatchResource } from "@/types/resources/watch";
 import { Link, usePage } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
-import { useEffect } from "react";
 
 type Props = {
     watch: WatchResource;
@@ -26,13 +25,6 @@ export default function WatchItem(props: Props) {
     const { currencies = [] } = usePage().props as unknown as ServerProps;
 
     const { watch, onSelectWatch, selectedWatches, handleImageClick, onDelete } = props;
-
-    useEffect(() => {
-        console.log(
-            watch.currency,
-            currencies.find((f) => f.code === watch.currency),
-        );
-    }, [watch, currencies]);
 
     return (
         <tr
@@ -91,18 +83,14 @@ export default function WatchItem(props: Props) {
                 <div className="text-sm text-slate-900">
                     {watch.original_cost ? (
                         <div className="text-center">
-                            {/* Top line: Currency name */}
-                            <div className="text-xs text-slate-600">
-                                {Currency.init().toName(currencies, watch.currency)}
-                            </div>
                             {/* Second line: Original cost */}
                             <div className="font-medium">
-                                {watch?.original_cost?.toLocaleString()}
+                                €{watch?.current_cost?.toLocaleString()}
                             </div>
                             {/* Optional: Current cost */}
                             {watch.current_cost && (
                                 <div className="text-xs text-slate-500">
-                                    {watch?.current_cost?.toLocaleString()}
+                                    {Currency.init().toSymbol(currencies, watch.currency, watch.original_cost)}
                                 </div>
                             )}
                         </div>
@@ -179,6 +167,8 @@ export default function WatchItem(props: Props) {
         </tr>
     );
 }
+
+
 
 export function WatchItemSkeleton() {
     return (

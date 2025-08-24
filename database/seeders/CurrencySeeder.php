@@ -35,6 +35,7 @@ class CurrencySeeder extends Seeder
             ['code' => "CNY", 'name' => "Chinese Yuan", 'symbol' => "¥", 'rate' => 8.40],
             ['code' => "SGD", 'name' => "Singapore Dollar", 'symbol' => "S$", 'rate' => 1.495],
             ['code' => "HKD", 'name' => "Hong Kong Dollar", 'symbol' => "HK$", 'rate' => 9.05],
+            ['code' => "BDT", 'name' => "Bangladeshi Taka", 'symbol' => "৳", 'rate' => 141.01],
             ['code' => "VND", 'name' => "Vietnamese Dong", 'symbol' => "₫", 'rate' => 30587],
         ];
     }
