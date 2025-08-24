@@ -65,7 +65,7 @@ export default function WatchItem(props: Props) {
                     className="cursor-pointer truncate text-sm font-medium text-slate-900 transition-colors hover:text-blue-600"
                     title={watch.name}
                 >
-                    {watch.name}
+                    {watch?.name || '-'}
                 </Link>
             </td>
             <td className="p-2">
@@ -77,33 +77,38 @@ export default function WatchItem(props: Props) {
                 </Link>
             </td>
             <td className="p-2">
-                <div className="text-sm text-slate-600">{watch.brand}</div>
+                <div className="text-sm text-slate-600">{watch?.brand || '-'}</div>
             </td>
             <td className="p-2">
                 <div className="text-sm text-slate-900">
                     {watch.original_cost ? (
                         <div className="text-center">
-                            {/* Second line: Original cost */}
-                            <div className="font-medium">
-                                €{watch?.current_cost?.toLocaleString()}
-                            </div>
-                            {/* Optional: Current cost */}
-                            {watch.current_cost && (
-                                <div className="text-xs text-slate-500">
-                                    {Currency.init().toSymbol(currencies, watch.currency, watch.original_cost)}
-                                </div>
+                            {watch.current_cost ? (
+                                <>
+                                    <div className="font-medium">
+                                        €{watch?.current_cost?.toLocaleString()}
+                                    </div>
+                                    <div className="text-xs text-slate-500">
+                                        {Currency.init().toSymbol(
+                                            currencies,
+                                            watch.currency,
+                                            watch.original_cost,
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                "-"
                             )}
                         </div>
                     ) : (
                         "-"
                     )}
-
                 </div>
             </td>
             <td className="p-2">
                 <div className="text-sm text-slate-600">
                     {/* {getBatchGroup(watch.id)} */}
-                    {watch?.batch}
+                    {watch?.batch || "-"}
                 </div>
             </td>
             <td className="p-2">
@@ -114,7 +119,7 @@ export default function WatchItem(props: Props) {
                 </span>
             </td>
             <td className="p-2">
-                <div className="text-sm text-slate-600">{watch.location}</div>
+                <div className="text-sm text-slate-600">{watch?.location || '-'}</div>
             </td>
             <td className="p-2">
                 <div
@@ -167,8 +172,6 @@ export default function WatchItem(props: Props) {
         </tr>
     );
 }
-
-
 
 export function WatchItemSkeleton() {
     return (
