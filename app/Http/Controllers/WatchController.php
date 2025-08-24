@@ -15,6 +15,7 @@ use App\Models\Status;
 use App\Models\Watch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -69,61 +70,34 @@ class WatchController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $query->when($request->filled('search'), function (Builder $q) use ($request) {
-            $search = $request->input('search');
-            $q->where(function ($sub) use ($search) {
-                $sub->where('name', 'like', "%{$search}%")
-                    ->orWhere('sku', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%")
-                    // ->orWhere('original_cost', 'like', "%{$search}%")
-                    ->orWhereHas('brand', function ($brandQuery) use ($search) {
-                        $brandQuery->where('name', 'like', "%{$search}%");
-                    });
-            });
-        })
+        $query
+            ->when($request->filled('search'), function (Builder $q) use ($request) {
+                $search = $request->input('search');
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%")
+                        // ->orWhere('original_cost', 'like', "%{$search}%")
+                        ->orWhereHas('brand', function ($brandQuery) use ($search) {
+                            $brandQuery->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
             ->when($request->filled('brand'), function (Builder $q) use ($request) {
-                $brands = $request->input('brand');
-                // Support multiple brands
-                if (is_array($brands)) {
-                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                        $brandQuery->whereIn('name', $brands);
-                    });
-                } else {
-                    $q->whereHas('brand', function ($brandQuery) use ($brands) {
-                        $brandQuery->where('name', $brands);
-                    });
-                }
+                $brands = Arr::wrap($request->input('brand'));
+                $q->whereHas('brand', fn($brandQuery) => $brandQuery->whereIn('name', $brands));
             })
             ->when($request->filled('batch'), function (Builder $q) use ($request) {
-                $batch = $request->input('batch');
-
-                // Support multiple batch names
-                if (is_array($batch)) {
-                    $q->whereHas('batch', function ($batchQuery) use ($batch) {
-                        $batchQuery->whereIn('name', $batch);
-                    });
-                } else {
-                    $q->whereHas('batch', function ($batchQuery) use ($batch) {
-                        $batchQuery->where('name', $batch);
-                    });
-                }
+                $batches = Arr::wrap($request->input('batch'));
+                $q->whereHas('batch', fn($batchQuery) => $batchQuery->whereIn('name', $batches));
             })
             ->when($request->filled('status'), function (Builder $q) use ($request) {
-                $statuses = $request->input('status');
-                // Support multiple statuses
-                if (is_array($statuses)) {
-                    $q->whereIn('status', $statuses);
-                } else {
-                    $q->where('status', $statuses);
-                }
-            })->when($request->filled('location'), function (Builder $q) use ($request) {
-                $locations = $request->input('location');
-                // Support multiple locations
-                if (is_array($locations)) {
-                    $q->whereIn('location', $locations);
-                } else {
-                    $q->where('location', $locations);
-                }
+                $statuses = Arr::wrap($request->input('status'));
+                $q->whereIn('status', $statuses);
+            })
+            ->when($request->filled('location'), function (Builder $q) use ($request) {
+                $locations = Arr::wrap($request->input('location'));
+                $q->whereIn('location', $locations);
             });
 
         // Get paginated results
