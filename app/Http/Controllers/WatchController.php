@@ -96,10 +96,17 @@ class WatchController extends Controller
             })
             ->when($request->filled('batch'), function (Builder $q) use ($request) {
                 $batch = $request->input('batch');
-                // Support multiple brands
-                $q->whereHas('brand', function ($brandQuery) use ($batch) {
-                    $brandQuery->where('name', $batch);
-                });
+
+                // Support multiple batch names
+                if (is_array($batch)) {
+                    $q->whereHas('batch', function ($batchQuery) use ($batch) {
+                        $batchQuery->whereIn('name', $batch);
+                    });
+                } else {
+                    $q->whereHas('batch', function ($batchQuery) use ($batch) {
+                        $batchQuery->where('name', $batch);
+                    });
+                }
             })
             ->when($request->filled('status'), function (Builder $q) use ($request) {
                 $statuses = $request->input('status');

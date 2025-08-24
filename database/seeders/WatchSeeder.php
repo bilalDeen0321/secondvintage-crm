@@ -30,7 +30,10 @@ class WatchSeeder extends Seeder
     {
 
         $data = json_decode(file_get_contents(base_path('resources/data/watches.json')), true);
-        $data = array_filter($data, fn($w) => $w['name'] === 'Rolex Submariner 116610LN');
+
+        if (!app()->environment('local')) {
+            $data = array_filter($data, fn($w) => $w['name'] === 'Rolex Submariner 116610LN');
+        }
 
         foreach ($data as $item) {
 
