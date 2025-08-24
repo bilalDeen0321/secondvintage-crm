@@ -1,17 +1,17 @@
-✔️ Thread_ID
-✔️ Cancel & Close
-✔️ Brand Filter
-✔️ Location Filter
-✔️ Approved in the interface
+Batch Filter list works, but when I select Batch B033 the list gets empty?
+fiexed: solved by updating lower batch name to original + query otimized
 
 Unclicking Status filters is not working, if you click them again (used to work)
+fixed: Now currently working as toggle
 
-CITIZEN AUTODATER 3083624 - worked perfect
-LONGINES HAND 17401312 - worked perfect
-OMEGA SEAMASATER AUTO 166022 - worked perfect
 SEIKO LM 8N0898 - said AI description failed, but it worked fine in MAKE - can't see error message on this one
 SEIKO KS CHRONOMETER AUTO 220831 - same error, its success in MAKE, is it something with the json or can you see where the problem is? or some special character?
+Answers: Make,com sometimes returning empty message or wrong response structures formats.
+
 still face error downloading image sometimes, some server/permission issue?
+Answers: I believe there no issue in the test server so that the image can read anyone.
+suggest: Make sure you are handling accuralty by prompt instructions or ai tools uses.
+example: curl -o SEI-SKC-0001_009.jpg https://test.secondvintage.com/storage/watches/images/SEI-SKC-0001_009.jpg
 
 The description from the list view didn't update after the animated processing indicator
 Does the AI select gets saved when you click on Generate Description? you don't see in interface when clicking Generate Description
