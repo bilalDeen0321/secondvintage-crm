@@ -3,7 +3,7 @@
 ✔️ Brand Filter
 ✔️ Location Filter
 ✔️ Approved in the interface
-Batch Filter list works, but when I select Batch B033 the list gets empty?
+
 Unclicking Status filters is not working, if you click them again (used to work)
 
 CITIZEN AUTODATER 3083624 - worked perfect

@@ -28,9 +28,8 @@ import { onBulkAction } from "./_actions";
 import {
     getSearchStatus,
     getSelectSearch,
-    getSelectStatus,
     handleSerchSort,
-    watcheSearch,
+    watcheSearch
 } from "./_searchActions";
 import { handleEditBatches, handleEditBrands, handleEditLocations } from "./actions";
 
@@ -167,23 +166,36 @@ const WatchManagement = (props: Props) => {
                                 <button
                                     key={status}
                                     onClick={() => {
-                                        if (status == "all") {
+                                        if (status === "all") {
                                             setData("status", ["all"]);
                                             watcheSearch("status", getSearchStatus(["all"]));
                                             return;
                                         }
-                                        setData(
-                                            "status",
-                                            getSelectStatus([...data.status, status]),
-                                        );
-                                        watcheSearch(
-                                            "status",
-                                            getSearchStatus([...data.status, status]),
-                                        );
+
+                                        let updatedStatus = [...data.status];
+
+                                        if (updatedStatus.includes(status)) {
+                                            // Remove the status if already selected
+                                            updatedStatus = updatedStatus.filter((s) => s !== status);
+                                        } else {
+                                            // Add status if not selected
+                                            updatedStatus.push(status);
+                                        }
+
+                                        // If no status left, default back to "all"
+                                        if (updatedStatus.length === 0) {
+                                            updatedStatus = ["all"];
+                                        } else {
+                                            // Remove "all" if other statuses are selected
+                                            updatedStatus = updatedStatus.filter((s) => s !== "all");
+                                        }
+
+                                        setData("status", updatedStatus);
+                                        watcheSearch("status", getSearchStatus(updatedStatus));
                                     }}
                                     className={`h-16 w-[100px] rounded-lg border p-2 text-center transition-all ${data.status.includes(status)
-                                        ? "border-primary bg-primary/10 ring-2 ring-primary/30"
-                                        : "border-slate-200 bg-white hover:border-slate-300"
+                                            ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                            : "border-slate-200 bg-white hover:border-slate-300"
                                         }`}
                                 >
                                     <div className="text-lg font-bold text-slate-900">
@@ -194,6 +206,7 @@ const WatchManagement = (props: Props) => {
                                     </div>
                                 </button>
                             ))}
+
                         </div>
 
                         {/* Clear status filters button */}
