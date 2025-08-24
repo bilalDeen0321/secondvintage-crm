@@ -16,6 +16,7 @@ use App\Models\Watch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -57,6 +58,9 @@ class WatchController extends Controller
 
         // Apply multi-column sorting from frontend if exists
         $orders = $request->input('order', []);
+
+        Log::info($orders);
+
         if (!empty($orders)) {
             foreach ($orders as $order) {
                 $column = $order['column'] ?? null;

@@ -29,4 +29,5 @@ answers: This options works with I tests also
 Cost column layout,it should be euro in 1. line and Original Cost in 2. line
 fixed: by update column structures
 
-Test Cost sorting when it says € euro in all at top
+Test Cost sorting when it says € euro in all at top.
+Answers: I am clear with cost sorting you do by currency or cost by defautl its sort by original price.
