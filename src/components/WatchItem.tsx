@@ -89,20 +89,27 @@ export default function WatchItem(props: Props) {
             </td>
             <td className="p-2">
                 <div className="text-sm text-slate-900">
-                    {watch.current_cost ? (
-                        <div>
-                            <div>
-                                {Currency.init().toSymbol(currencies, watch.currency)}
-                                {watch.original_cost}
-                            </div>
+                    {watch.original_cost ? (
+                        <div className="text-center">
+                            {/* Top line: Currency name */}
                             <div className="text-xs text-slate-600">
-                                {Currency.init().toSymbol(currencies, watch.currency)}
-                                {watch.current_cost}
+                                {Currency.init().toName(currencies, watch.currency)}
                             </div>
+                            {/* Second line: Original cost */}
+                            <div className="font-medium">
+                                {watch?.original_cost?.toLocaleString()}
+                            </div>
+                            {/* Optional: Current cost */}
+                            {watch.current_cost && (
+                                <div className="text-xs text-slate-500">
+                                    {watch?.current_cost?.toLocaleString()}
+                                </div>
+                            )}
                         </div>
                     ) : (
                         "-"
                     )}
+
                 </div>
             </td>
             <td className="p-2">

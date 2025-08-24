@@ -23,7 +23,10 @@ fixed: by updating the react local state.
 Does the AI select gets saved when you click on Generate Description? you don't see in interface when clicking Generate Description
 fixed: The workfow is updated now as when you generate the form will gets saved
 
-In grid view processing indicator is missing on description
+In grid view processing indicator is missing on description.
+answers: This options works with I tests also
 
-Cost column layout, its now showing € euro in the top numbers - it should be euro in 1. line and Original Cost in 2. line
+Cost column layout,it should be euro in 1. line and Original Cost in 2. line
+fixed: by update column structures
+
 Test Cost sorting when it says € euro in all at top
