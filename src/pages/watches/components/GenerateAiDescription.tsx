@@ -44,10 +44,11 @@ export default function GenerateAiDescription(props: Props) {
         setLoading(true);
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
             forceFormData: true,
-            fresh: true,
+            preserveScroll: true,
+            preserveState: false,
             onFinish: () => setLoading(false),
             onSuccess: (response) => {
-                console.log(response);
+
                 const aidata = response.props.flash.data;
                 if (!aidata) return;
                 const allow_keys = [

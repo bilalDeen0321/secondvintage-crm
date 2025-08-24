@@ -21,7 +21,8 @@ The description from the list view didn't update after the animated processing i
 fixed: by updating the react local state.
 
 Does the AI select gets saved when you click on Generate Description? you don't see in interface when clicking Generate Description
-Ansers: only saved
+fixed: The workfow is updated now as when you generate the form will gets saved
+
 In grid view processing indicator is missing on description
 
 Cost column layout, its now showing € euro in the top numbers - it should be euro in 1. line and Original Cost in 2. line
