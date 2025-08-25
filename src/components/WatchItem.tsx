@@ -82,7 +82,7 @@ export default function WatchItem(props: Props) {
             <td className="p-2">
                 <div className="text-sm text-slate-900">
                     {watch.original_cost ? (
-                        <div className="text-center">
+                        <div className="text-left">
                             {watch.current_cost ? (
                                 <>
                                     <div className="font-medium">

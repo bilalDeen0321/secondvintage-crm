@@ -38,7 +38,7 @@ class WatchController extends Controller
     {
 
         // Map frontend column names to database columns if needed
-        $sortableColumns = [
+        $columns = [
             'name' => 'name',
             'sku' => 'sku',
             'created_at' => 'created_at',
@@ -49,29 +49,13 @@ class WatchController extends Controller
             'location' => 'location',
         ];
 
-        // Get sorting from frontend
-        $orders = $request->input('order', [
-            'column' => 'created_at',
-            'dir'    => 'asc'
-        ]);
-
         $query = QueryBuilder::for(Watch::class);
 
-        // Apply multi-column sorting from frontend if exists
-        $orders = $request->input('order', []);
-        $orders = is_array($orders) ? $orders : [$orders];
+        $column = $request->input('order.column');
+        $dir    = $request->input('order.dir', 'asc');
 
-        if (!empty($orders)) {
-            foreach ($orders as $order) {
-                $column = $order['column'] ?? null;
-                $dir = $order['dir'] ?? 'asc';
-                if ($column && isset($sortableColumns[$column])) {
-                    $query->orderBy($sortableColumns[$column], $dir);
-                }
-            }
-        } else {
-            // Default sorting by latest created
-            $query->orderBy('created_at', 'desc');
+        if ($column && isset($columns[$column])) {
+            $query->orderBy($columns[$column], $dir);
         }
 
         $query
@@ -107,6 +91,8 @@ class WatchController extends Controller
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();
 
+        Log::info($query->toSql());
+
         // Get counts for different statuses
         $watchCount = ['all' => Watch::count()];
         foreach (Status::allStatuses() as $status) {
@@ -130,7 +116,7 @@ class WatchController extends Controller
             'currencies' => Currency::query()->latest()->get(),
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
-            'batches' => Batch::query()->latest()->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->orderBy('name', 'asc')->pluck('name')->unique()->values(),
             'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
         ];
     }

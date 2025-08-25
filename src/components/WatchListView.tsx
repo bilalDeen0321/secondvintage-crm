@@ -113,8 +113,8 @@ const WatchListView = ({
         const params = {
             ...current,
             order: direction
-                ? [{ column: field, dir: direction, name: field }]
-                : [], // empty = no sorting
+                ? { column: field, dir: direction }
+                : {}, // empty = no sorting
         };
 
         debouncedNavigate(params);
