@@ -91,8 +91,6 @@ class WatchController extends Controller
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();
 
-        Log::info($query->toSql());
-
         // Get counts for different statuses
         $watchCount = ['all' => Watch::count()];
         foreach (Status::allStatuses() as $status) {
@@ -116,7 +114,7 @@ class WatchController extends Controller
             'currencies' => Currency::query()->latest()->get(),
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
-            'batches' => Batch::query()->orderBy('name', 'asc')->pluck('name')->unique()->values(),
+            'batches' => Batch::query()->orderBy('name')->pluck('name')->unique()->values(),
             'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
         ];
     }
