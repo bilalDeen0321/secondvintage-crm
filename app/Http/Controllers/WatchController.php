@@ -41,18 +41,18 @@ class WatchController extends Controller
         $columns = [
             'name' => 'name',
             'sku' => 'sku',
-            'created_at' => 'created_at',
             'brand' => 'brand',
-            'original_cost' => 'original_cost',
-            'current_cost' => 'current_cost',
             'status' => 'status',
-            'location' => 'location',
+            'location'          => 'location',
+            'created_at'        => 'created_at',
+            'current_cost'      => 'current_cost',
+            'original_cost'     => 'original_cost',
         ];
 
         $query = QueryBuilder::for(Watch::class);
 
-        $column = $request->input('order.column');
-        $dir    = $request->input('order.dir', 'asc');
+        $column = $request->input('order.column', 'created_at');
+        $dir    = $request->input('order.dir', 'desc');
 
         if ($column && isset($columns[$column])) {
             $query->orderBy($columns[$column], $dir);
@@ -87,6 +87,8 @@ class WatchController extends Controller
                 $locations = Arr::wrap($request->input('location'));
                 $q->whereIn('location', $locations);
             });
+
+        Log::info($query->toSql());
 
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();

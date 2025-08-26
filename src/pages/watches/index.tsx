@@ -376,8 +376,6 @@ const WatchManagement = (props: Props) => {
                     <WatchListView
                         watches={watches}
                         onDelete={handleDelete}
-                        sortField={data.column}
-                        sortDirection={data.direction as "asc"}
                         selectedWatches={selectedWatches}
                         onSelectWatch={handleSelectWatch}
                         onSelectAll={handleSelectAll}

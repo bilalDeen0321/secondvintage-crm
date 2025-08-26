@@ -3,15 +3,13 @@ import { debouncedNavigate } from "@/pages/watches/_searchActions";
 import { WatchResource } from "@/types/resources/watch";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import qs from 'qs';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageViewer from "./ImageViewer";
 import WatchItem from "./WatchItem";
 
 interface WatchListViewProps {
     watches: WatchResource[];
     onDelete: (id: string | number) => void;
-    sortField: string;
-    sortDirection: "asc" | "desc";
     selectedWatches: string[];
     onSelectWatch: (id: string, checked: boolean) => void;
     onSelectAll: (checked: boolean) => void;
@@ -25,10 +23,19 @@ const WatchListView = ({
     onSelectAll,
 }: WatchListViewProps) => {
 
-    const [sortField, setSortField] = useState('created_at'); // default sort field
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc'); // default direction
+    const [orderBy, setOrderBy] = useState('created_at'); // default sort field
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc'); // default direction
 
 
+    useEffect(() => {
+        const q = qs.parse(window.location.search, { ignoreQueryPrefix: true }) as {
+            order?: { column?: string, dir?: 'asc' | 'desc' }
+        };
+        if (q?.order?.column && q?.order?.dir) {
+            setOrderBy(q.order.column);
+            setSortDirection(q.order.dir)
+        }
+    }, [])
 
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
@@ -81,7 +88,7 @@ const WatchListView = ({
 
     // Update getSortIcon to use local state
     const getSortIcon = (field: string) => {
-        if (sortField !== field) return null;
+        if (orderBy !== field) return null;
         return sortDirection === 'asc' ? (
             <ChevronUp className="ml-1 inline h-4 w-4" />
         ) : (
@@ -89,36 +96,25 @@ const WatchListView = ({
         );
     };
 
-    // Updated handleSort
-    const handleSort = (field: string) => {
-        let direction: 'asc' | 'desc' | null = 'asc';
+    // handle sorting toggle (only asc/desc)
+    const handleSort = (column: string, dir: "asc" | "desc" = 'desc') => {
 
-        if (sortField === field) {
-            // toggle ascending/descending
-            direction = sortDirection === 'asc' ? 'desc' : 'asc';
+        if (orderBy === column) {
+            dir = sortDirection === "asc" ? "desc" : "asc";
         }
 
-        // clicking same field again to remove sorting
-        if (sortField === field && sortDirection === 'desc') {
-            direction = null;
-        }
+        setOrderBy(column);
+        setSortDirection(dir);
 
-        setSortField(field);
-        setSortDirection(direction as 'asc' | 'desc');
+        const current = qs.parse(window.location.search, {
+            ignoreQueryPrefix: true,
+        });
 
-        // Get current query params
-        const current = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-
-        // Build new order params
-        const params = {
-            ...current,
-            order: direction
-                ? { column: field, dir: direction }
-                : {}, // empty = no sorting
-        };
+        const params = { ...current, order: { column, dir } };
 
         debouncedNavigate(params);
     };
+
 
 
     return (
@@ -138,7 +134,7 @@ const WatchListView = ({
                                         onCheckedChange={onSelectAll}
                                     />
                                 </th>
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("created_at")}>
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("created_at", 'desc')}>
                                     Image {getSortIcon("created_at")}
                                 </th>
                                 <th
