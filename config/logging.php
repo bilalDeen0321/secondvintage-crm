@@ -52,11 +52,11 @@ return [
 
     'channels' => [
 
-        // 'database' => [
-        //     'driver' => 'custom',
-        //     'via' => App\Logging\DatabaseLogger::class,
-        //     'level' => 'debug',
-        // ],
+        'database' => [
+            'driver' => 'custom',
+            'via' => App\Logging\DatabaseLogger::class,
+            'level' => 'debug',
+        ],
 
         'stack' => [
             'driver' => 'stack',

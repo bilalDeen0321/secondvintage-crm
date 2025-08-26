@@ -88,8 +88,6 @@ class WatchController extends Controller
                 $q->whereIn('location', $locations);
             });
 
-        Log::info($query->toSql());
-
         // Get paginated results
         $watches = $query->paginate($request->input('per_page', 10))->withQueryString();
 

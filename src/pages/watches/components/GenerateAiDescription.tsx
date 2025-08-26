@@ -45,7 +45,7 @@ export default function GenerateAiDescription(props: Props) {
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
             forceFormData: true,
             preserveScroll: true,
-            preserveState: false,
+            preserveState: !watch?.routeKey,
             onFinish: () => setLoading(false),
             onSuccess: (response) => {
 
