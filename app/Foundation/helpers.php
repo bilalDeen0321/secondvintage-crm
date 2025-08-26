@@ -1,6 +1,7 @@
 <?php
 
 use App\Support\Sku;
+use GeoSot\EnvEditor\Facades\EnvEditor;
 
 if (!function_exists('setting')) {
 
@@ -43,5 +44,31 @@ if (!function_exists('ai_description_format')) {
         $first_string = nl2br(str_replace('\n\n', "\n", $str));
 
         return (str_replace('\n', "\n", $first_string));
+    }
+}
+
+
+
+if (!function_exists('envWrite')) {
+    /**
+     * Gets the value of an environment variable.
+     *
+     * @param  string  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    function envWrite($key, $default = null)
+    {
+        $value = $default;
+
+        if (gettype($default) == 'string') {
+            $value = sprintf('"%s"', $default);
+        }
+
+        if (EnvEditor::keyExists($key)) {
+            EnvEditor::editKey($key, $value);
+        } else {
+            EnvEditor::addKey($key, $value);
+        }
     }
 }

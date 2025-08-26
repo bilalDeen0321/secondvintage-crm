@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "geo-sot/laravel-env-editor": "^3.2",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.00",
         "laravel/sanctum": "^4.0",

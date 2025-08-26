@@ -50,5 +50,8 @@ jobs:
             cd /home/u495568265/domains/test.secondvintage.com/public_html
             rm -rf *.sh
 
+            php artisan putenv APP_ENV="local"
             php artisan migrate
             php artisan storage:link &> /dev/null
+            php artisan optimize:clear
+            php artisan putenv APP_ENV="production"
