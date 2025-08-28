@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\WatchResource;
+use App\Models\Watch;
+use App\Queries\WatchQuery;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -18,9 +21,21 @@ class SaleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('sales/SalesIndex');
+
+        // Get paginated results
+        $watches = WatchQuery::init()
+            ->execute($request)
+            ->paginate($request->input('per_page', 10))
+            ->withQueryString();
+
+        return Inertia::render('sales/SalesIndex', [
+            ...WatchQuery::init()->crudData(),
+            'watches' => WatchResource::collection($watches)->response()->getData(true),
+            'filters' => WatchQuery::init()->getFiltersColumns($request),
+            'watch_count' => WatchQuery::init()->getCounts(),
+        ]);
     }
 
     /**
