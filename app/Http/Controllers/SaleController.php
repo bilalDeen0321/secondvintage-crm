@@ -27,7 +27,7 @@ class SaleController extends Controller
         // Get paginated results
         $watches = WatchQuery::init()
             ->execute($request)
-            ->paginate($request->input('per_page', 10))
+            ->paginate($request->input('per_page'))
             ->withQueryString();
 
         return Inertia::render('sales/SalesIndex', [

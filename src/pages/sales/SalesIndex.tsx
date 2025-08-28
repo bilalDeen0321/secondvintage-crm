@@ -1,6 +1,7 @@
 import { CurrencyAttributes } from "@/app/models/Currency";
 import Layout from "@/components/Layout";
 import PlatformDataModal from "@/components/PlatformDataModal";
+import TablePaginate from "@/components/ui/table/TablePaginate";
 import { PaginateData } from "@/types/laravel";
 import { WatchResource } from "@/types/resources/watch";
 import { Head } from "@inertiajs/react";
@@ -138,6 +139,9 @@ const MultiplatformSales = (props: Props) => {
 
                 {/* Empty State */}
                 {watches.length === 0 && <EmptyState />}
+
+                {/* Laravel Pagination */}
+                {meta?.total > meta?.per_page && <TablePaginate links={meta.links} />}
 
                 {/* Platform Data Modal with Navigation */}
                 <PlatformDataModal

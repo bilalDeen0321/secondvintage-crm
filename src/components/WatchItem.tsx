@@ -1,12 +1,14 @@
-import { Currency, CurrencyAttributes } from "@/app/models/Currency";
-import Status from "@/app/models/Status";
+import { CurrencyAttributes } from "@/app/models/Currency";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Linkui from "@/components/ui/Link";
-import WatchDescription from "@/pages/watches/components/WatchDescription";
 import { WatchResource } from "@/types/resources/watch";
 import { Link, usePage } from "@inertiajs/react";
 import { Edit, Trash2 } from "lucide-react";
+import WatchTableDescription from "./watch/columns/WatchTableDescription";
+import WatchTableNote from "./watch/columns/WatchTableNote";
+import WatchTablePrice from "./watch/columns/WatchTablePrice";
+import WatchTableStatus from "./watch/columns/WatchTableStatus";
 
 type Props = {
     watch: WatchResource;
@@ -80,30 +82,7 @@ export default function WatchItem(props: Props) {
                 <div className="text-sm text-slate-600">{watch?.brand || '-'}</div>
             </td>
             <td className="p-2">
-                <div className="text-sm text-slate-900">
-                    {watch.original_cost ? (
-                        <div className="text-left">
-                            {watch.current_cost ? (
-                                <>
-                                    <div className="font-medium">
-                                        €{watch?.current_cost?.toLocaleString()}
-                                    </div>
-                                    <div className="text-xs text-slate-500">
-                                        {Currency.init().toSymbol(
-                                            currencies,
-                                            watch.currency,
-                                            watch.original_cost,
-                                        )}
-                                    </div>
-                                </>
-                            ) : (
-                                "-"
-                            )}
-                        </div>
-                    ) : (
-                        "-"
-                    )}
-                </div>
+                <WatchTablePrice watch={watch} />
             </td>
             <td className="p-2">
                 <div className="text-sm text-slate-600">
@@ -112,42 +91,16 @@ export default function WatchItem(props: Props) {
                 </div>
             </td>
             <td className="p-2">
-                <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${Status.toColorClass(watch.status)}`}
-                >
-                    {Status.toHuman(watch.status)}
-                </span>
+                <WatchTableStatus watch={watch} />
             </td>
             <td className="p-2">
                 <div className="text-sm text-slate-600">{watch?.location || '-'}</div>
             </td>
             <td className="p-2">
-                <div
-                    className="line-clamp-2 text-xs leading-tight text-slate-600"
-                    style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                    }}
-                    title={watch.description}
-                >
-                    <WatchDescription watch={watch} />
-                </div>
+                <WatchTableDescription watch={watch} />
             </td>
             <td className="p-2">
-                <div
-                    className="line-clamp-2 text-xs leading-tight text-slate-600"
-                    style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                    }}
-                    title={watch.notes}
-                >
-                    {watch.notes || "-"}
-                </div>
+                <WatchTableNote watch={watch} />
             </td>
             <td className="p-2">
                 <div className="flex gap-1">

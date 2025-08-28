@@ -1,4 +1,3 @@
-import Status from "@/app/models/Status";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,6 +17,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import WatchTableDescription from "@/components/watch/columns/WatchTableDescription";
+import WatchTablePrice from "@/components/watch/columns/WatchTablePrice";
+import WatchTableStatus from "@/components/watch/columns/WatchTableStatus";
 import { WatchResource } from "@/types/resources/watch";
 import { AlertTriangle, ChevronDown, ChevronUp, Eye } from "lucide-react";
 import React from "react";
@@ -133,8 +135,8 @@ const WatchTable: React.FC<WatchTableProps> = ({
                             <tr
                                 key={watch.id}
                                 className={`hover:bg-slate-50 ${selectedWatches.includes(String(watch.id))
-                                        ? "bg-amber-50"
-                                        : ""
+                                    ? "bg-amber-50"
+                                    : ""
                                     }`}
                             >
                                 <td className="p-3">
@@ -192,9 +194,7 @@ const WatchTable: React.FC<WatchTableProps> = ({
                                     </div>
                                 </td>
                                 <td className="p-2">
-                                    <div className="text-sm font-semibold">
-                                        €{watch.original_cost?.toLocaleString()}
-                                    </div>
+                                    <WatchTablePrice watch={watch} />
                                 </td>
                                 <td className="p-2">
                                     <div className="text-sm text-slate-600">
@@ -202,13 +202,7 @@ const WatchTable: React.FC<WatchTableProps> = ({
                                     </div>
                                 </td>
                                 <td className="p-2">
-                                    <span
-                                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${Status.toColorClass(
-                                            watch.status
-                                        )}`}
-                                    >
-                                        {watch.status}
-                                    </span>
+                                    <WatchTableStatus watch={watch} />
                                 </td>
                                 <td className="p-2">
                                     <Select
@@ -301,18 +295,7 @@ const WatchTable: React.FC<WatchTableProps> = ({
                                     </div>
                                 </td>
                                 <td className="p-2">
-                                    <div
-                                        className="line-clamp-2 text-xs leading-tight text-slate-600"
-                                        style={{
-                                            display: "-webkit-box",
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: "vertical",
-                                            overflow: "hidden",
-                                        }}
-                                        title={watch.description}
-                                    >
-                                        {watch.description || "-"}
-                                    </div>
+                                    <WatchTableDescription watch={watch} />
                                 </td>
                             </tr>
                         ))}
