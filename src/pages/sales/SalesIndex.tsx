@@ -16,6 +16,16 @@ import { SaleSearchFilter } from "./components/SaleSearchFilter";
 import SingleViewModal from "./components/SingleViewModal";
 import WatchTable from "./components/WatchTable";
 
+export type SaleSearchData = {
+    column: string;
+    search: string;
+    status: string[];
+    brand: string;
+    batch: string;
+    location: string;
+    direction: string;
+};
+
 type Props = {
     batches: string[];
     brands: string[];
@@ -30,6 +40,10 @@ const MultiplatformSales = (props: Props) => {
     const { locations = [], batches = [], brands = [], currencies = [] } = props || {};
     const { data: watches = [], meta } = props.watches || {};
 
+    /**
+     * ============================================================================
+     * ============================================================================
+     */
     // State management
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
     const [sortField, setSortField] = useState<SortField>("name");

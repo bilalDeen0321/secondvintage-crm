@@ -9,7 +9,7 @@ import { router } from "@inertiajs/react";
 
 
 // helper to remove empty keys from object
-function cleanParams(params: Record<string, any>) {
+export function cleanParams(params: Record<string, any>) {
     const cleaned: Record<string, any> = {};
     for (const key in params) {
         const value = params[key];
