@@ -20,7 +20,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return Inertia::render('MultiplatformSales');
+        return Inertia::render('sales/SalesIndex');
     }
 
     /**

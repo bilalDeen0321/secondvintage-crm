@@ -37,8 +37,8 @@ Route::post('watches/bulk-action', [WatchController::class, 'bulkActions'])->nam
 Route::post('watches/{watch}/approve', [WatchController::class, 'approve'])->name('watches.approve');
 Route::resource('watches', WatchController::class);
 
-Route::resource('brands', BrandController::class);
 Route::resource('sales', SaleController::class);
+Route::resource('brands', BrandController::class);
 Route::resource('batch', BatchController::class);
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
