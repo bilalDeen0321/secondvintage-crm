@@ -72,14 +72,14 @@ export async function generateServerSKU(brand_name: string, watch_name: string) 
 }
 
 
+/**
+ * Debounce function to limit the rate at which a function can fire. 
+ */
 export function debounce<F extends (...args: any[]) => void>(func: F, wait: number = 300) {
     let timeoutId: ReturnType<typeof setTimeout> | null;
-
     return function (this: any, ...args: Parameters<F>) {
         if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            func.apply(this, args);
-        }, wait);
+        timeoutId = setTimeout(() => func.apply(this, args), wait);
     };
 }
 

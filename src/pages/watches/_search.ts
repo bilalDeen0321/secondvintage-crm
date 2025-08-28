@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { debounce } from "@/app/utils";
 import { router } from "@inertiajs/react";
 
 
 
 // debounce utility (same as before)
-export function debounce<F extends (...args: any[]) => void>(func: F, wait: number = 300) {
-    let timeoutId: ReturnType<typeof setTimeout> | null;
-    return function (this: any, ...args: Parameters<F>) {
-        if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(this, args), wait);
-    };
-}
+
 
 // helper to remove empty keys from object
 function cleanParams(params: Record<string, any>) {
@@ -38,7 +33,11 @@ export const debouncedNavigate = debounce((params: Record<string, any>) => {
     });
 }, 300);
 
-export function watchFilters(key: string, value: any, query: Record<string, any> = {}) {
+
+/**
+ * Handles filtering watches by updating URL parameters and navigating.
+ */
+export function watchFilter(key: string, value: any, query: Record<string, any> = {}) {
     const searchParams = new URLSearchParams(window.location.search);
 
     // Merge params
@@ -56,42 +55,6 @@ export function watchFilters(key: string, value: any, query: Record<string, any>
 
     debouncedNavigate(cleanedParams);
 }
-
-
-export const watcheSearch = watchFilters;
-
-export const handleSerchSort = (columns: string[], direction: string) => {
-
-    const search = (new URLSearchParams(window.location.search)).get('search');
-
-    const params = {
-        search,
-        direction: direction || 'asc',
-        columns: columns,
-    }
-
-    // Clean params by removing empty keys
-    const cleanedParams = cleanParams(params);
-
-    //inertia naviate search by url
-    debouncedNavigate(cleanedParams);
-};
-// export function watcheSearch(key: string, value: any, query: Record<string, any> = {}) {
-//     const search = new URLSearchParams(window.location.search).get('search') || '';
-
-//     // Merge params
-//     const params = {
-//         search,
-//         ...query,
-//         [key]: value,
-//     };
-
-//     // Clean params by removing empty keys
-//     const cleanedParams = cleanParams(params);
-
-//     debouncedNavigate(cleanedParams);
-// }
-
 
 
 export const getSearchStatus = (data: string[]) => {

@@ -56,7 +56,7 @@ class WatchController extends Controller
      */
     public function create()
     {
-        return Inertia::render('watches/create', $this->crudData());
+        return Inertia::render('watches/create', WatchQuery::init()->crudData());
     }
 
     /**
@@ -82,7 +82,7 @@ class WatchController extends Controller
             ->first();
 
         return Inertia::render('watches/create', [
-            ...$this->crudData(),
+            ...WatchQuery::init()->crudData(),
             'watch' => new WatchResource($watch),  // single model resource, not collection
             'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
             'previousItem' => $previousItem ? new WatchResource($previousItem) : null,

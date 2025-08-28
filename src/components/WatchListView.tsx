@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { debouncedNavigate } from "@/pages/watches/_searchActions";
+import { debouncedNavigate } from "@/pages/watches/_search";
 import { WatchResource } from "@/types/resources/watch";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import qs from 'qs';

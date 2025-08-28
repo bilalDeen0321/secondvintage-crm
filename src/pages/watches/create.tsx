@@ -26,12 +26,12 @@ import { Head, router, useForm } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import { PageProps } from "node_modules/@inertiajs/core/types/types";
 import React, { useEffect, useMemo, useState } from "react";
-import { watchEscapeCallback, watchInitData } from "./_utils";
 import {
     handleEditBrands,
     handleEditLocations,
     hanldeBatchAction
-} from "./actions";
+} from "./_actions";
+import { watchEscapeCallback, watchInitData } from "./_utils";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
