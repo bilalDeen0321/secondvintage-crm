@@ -1,4 +1,7 @@
+import { debounce } from "@/app/utils";
 import { WatchResource } from "@/types/resources/watch";
+import { router } from "@inertiajs/react";
+import qs from 'qs';
 
 export type SortField =
     | "name"
@@ -200,13 +203,22 @@ export const createHandlers = (params: HandlerParams) => {
         }));
     };
 
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-        } else {
-            setSortField(field);
-            setSortDirection("asc");
+    const handleSort = (column: string, dir: "asc" | "desc" = 'desc') => {
+
+        if (sortField === column) {
+            dir = sortDirection === "asc" ? "desc" : "asc";
         }
+
+        setSortField(column as SortField);
+        setSortDirection(dir);
+
+        const current = qs.parse(window.location.search, {
+            ignoreQueryPrefix: true,
+        });
+
+        const params = { ...current, order: { column, dir } };
+
+        debouncedNavigate(params);
     };
 
     return {
@@ -225,3 +237,13 @@ export const createHandlers = (params: HandlerParams) => {
         handleSort,
     };
 };
+
+// Create a debounced router call once
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const debouncedNavigate = debounce((params: Record<string, any>) => {
+    router.get(route("sales.index"), params, {
+        preserveScroll: true,
+        preserveState: true,
+        replace: true,
+    });
+}, 300);

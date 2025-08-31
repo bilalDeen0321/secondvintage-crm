@@ -69,6 +69,7 @@ export function SaleSearchFilter({ batches, brands, watchPlatforms }: Props) {
                     </SelectTrigger>
                     <SelectContent>
                         {[
+                            "All",
                             "Approved & Platform Review",
                             "Approved",
                             "Platform Review",
