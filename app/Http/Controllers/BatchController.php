@@ -25,7 +25,13 @@ class BatchController extends Controller
      */
     public function index()
     {
-        return Inertia::render('batch/BatchIndex');
+        $batches = Batch::query()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return Inertia::render('batch/BatchIndex', [
+            'batches' => $batches
+        ]);
     }
 
     /**
@@ -33,7 +39,7 @@ class BatchController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('batch/CreateBatch');
     }
 
     /**
@@ -41,21 +47,40 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'min:2',
                 'max:100',
-                Rule::unique(Batch::tableName(), 'name'),
+                Rule::unique(Batch::class, 'name'),
             ],
+            'tracking_number' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique(Batch::class, 'tracking_number'),
+            ],
+            'origin' => 'required|string|max:100',
+            'destination' => 'required|string|max:100',
+            'status' => [
+                'required',
+                'string',
+                Rule::in(Batch::STATUSES)
+            ],
+            'notes' => 'nullable|string|max:1000',
         ]);
 
-        // Create the new brand
-        Batch::query()->updateOrCreate(['name' => $request->input('name')]);
+        Batch::create([
+            'name' => $validated['name'],
+            'tracking_number' => $validated['tracking_number'],
+            'origin' => $validated['origin'],
+            'destination' => $validated['destination'],
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
 
-        // Redirect back with flash message
-        return redirect()->back()->with('success', sprintf('Batch successfully saved.'));
+        return redirect()->route('batches.index')->with('success', 'Batch created successfully.');
     }
 
     /**
@@ -63,7 +88,9 @@ class BatchController extends Controller
      */
     public function show(Batch $batch)
     {
-        //
+        return Inertia::render('batch/ShowBatch', [
+            'batch' => $batch
+        ]);
     }
 
     /**
@@ -71,15 +98,43 @@ class BatchController extends Controller
      */
     public function edit(Batch $batch)
     {
-        //
+        return Inertia::render('batch/EditBatch', [
+            'batch' => $batch
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBatchRequest $request, Batch $batch)
+    public function update(Request $request, Batch $batch)
     {
-        //
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:100',
+                Rule::unique(Batch::class, 'name')->ignore($batch->id),
+            ],
+            'tracking_number' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique(Batch::class, 'tracking_number')->ignore($batch->id),
+            ],
+            'origin' => 'required|string|max:100',
+            'destination' => 'required|string|max:100',
+            'status' => [
+                'required',
+                'string',
+                Rule::in(['Preparing', 'Shipped', 'In Transit', 'Customs', 'Delivered'])
+            ],
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $batch->update($validated);
+
+        return redirect()->route('batches.index')->with('success', 'Batch updated successfully.');
     }
 
     /**
@@ -87,6 +142,8 @@ class BatchController extends Controller
      */
     public function destroy(Batch $batch)
     {
-        //
+        $batch->delete();
+
+        return redirect()->route('batches.index')->with('success', 'Batch deleted successfully.');
     }
 }

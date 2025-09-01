@@ -10,103 +10,142 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Batch } from "@/types/Batch";
+import { useForm } from "@inertiajs/react";
+import { FormEvent } from "react";
 
 interface CreateBatchFormProps {
-    newBatch: Partial<Batch>;
-    setNewBatch: (batch: Partial<Batch>) => void;
-    onCreateBatch: () => void;
-    onCancel: () => void;
+    onCancel?: () => void;
 }
 
-export const CreateBatchForm = ({
-    newBatch,
-    setNewBatch,
-    onCreateBatch,
-    onCancel,
-}: CreateBatchFormProps) => {
+export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: "",
+        tracking_number: "",
+        origin: "",
+        destination: "",
+        status: "Preparing" as Batch["status"],
+        notes: "",
+    });
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        post(route("batches.store"), {
+            onSuccess: () => {
+                reset();
+            },
+        });
+    };
+
     return (
         <Card className="mb-6">
             <CardHeader>
                 <CardTitle>Create New Batch</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">Batch Name</label>
-                        <Input
-                            value={newBatch.name}
-                            onChange={(e) => setNewBatch({ ...newBatch, name: e.target.value })}
-                            placeholder="Vietnam Batch #003"
-                        />
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">Batch Name</label>
+                            <Input
+                                value={data.name}
+                                onChange={(e) => setData("name", e.target.value)}
+                                placeholder="Vietnam Batch #003"
+                                className={errors.name ? "border-red-500" : ""}
+                            />
+                            {errors.name && (
+                                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Tracking Number
+                            </label>
+                            <Input
+                                value={data.tracking_number}
+                                onChange={(e) => setData("tracking_number", e.target.value)}
+                                placeholder="VN2024001234569"
+                                className={errors.tracking_number ? "border-red-500" : ""}
+                            />
+                            {errors.tracking_number && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.tracking_number}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">Tracking Number</label>
-                        <Input
-                            value={newBatch.trackingNumber}
-                            onChange={(e) =>
-                                setNewBatch({ ...newBatch, trackingNumber: e.target.value })
-                            }
-                            placeholder="VN2024001234569"
-                        />
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">Origin</label>
+                            <Input
+                                value={data.origin}
+                                onChange={(e) => setData("origin", e.target.value)}
+                                className={errors.origin ? "border-red-500" : ""}
+                            />
+                            {errors.origin && (
+                                <p className="mt-1 text-sm text-red-500">{errors.origin}</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">Destination</label>
+                            <Input
+                                value={data.destination}
+                                onChange={(e) => setData("destination", e.target.value)}
+                                className={errors.destination ? "border-red-500" : ""}
+                            />
+                            {errors.destination && (
+                                <p className="mt-1 text-sm text-red-500">{errors.destination}</p>
+                            )}
+                        </div>
                     </div>
-                </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label className="mb-1 block text-sm font-medium">Origin</label>
-                        <Input
-                            value={newBatch.origin}
-                            onChange={(e) => setNewBatch({ ...newBatch, origin: e.target.value })}
-                        />
+                        <label className="mb-1 block text-sm font-medium">Status</label>
+                        <Select
+                            value={data.status}
+                            onValueChange={(value) => setData("status", value as Batch["status"])}
+                        >
+                            <SelectTrigger className={errors.status ? "border-red-500" : ""}>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Preparing">Preparing</SelectItem>
+                                <SelectItem value="Shipped">Shipped</SelectItem>
+                                <SelectItem value="In Transit">In Transit</SelectItem>
+                                <SelectItem value="Customs">Customs</SelectItem>
+                                <SelectItem value="Delivered">Delivered</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {errors.status && (
+                            <p className="mt-1 text-sm text-red-500">{errors.status}</p>
+                        )}
                     </div>
+
                     <div>
-                        <label className="mb-1 block text-sm font-medium">Destination</label>
-                        <Input
-                            value={newBatch.destination}
-                            onChange={(e) =>
-                                setNewBatch({ ...newBatch, destination: e.target.value })
-                            }
+                        <label className="mb-1 block text-sm font-medium">Notes</label>
+                        <Textarea
+                            value={data.notes}
+                            onChange={(e) => setData("notes", e.target.value)}
+                            placeholder="Special handling instructions..."
+                            rows={3}
+                            className={errors.notes ? "border-red-500" : ""}
                         />
+                        {errors.notes && (
+                            <p className="mt-1 text-sm text-red-500">{errors.notes}</p>
+                        )}
                     </div>
-                </div>
 
-                <div>
-                    <label className="mb-1 block text-sm font-medium">Status</label>
-                    <Select
-                        value={newBatch.status}
-                        onValueChange={(value) =>
-                            setNewBatch({ ...newBatch, status: value as Batch["status"] })
-                        }
-                    >
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Preparing">Preparing</SelectItem>
-                            <SelectItem value="Shipped">Shipped</SelectItem>
-                            <SelectItem value="In Transit">In Transit</SelectItem>
-                            <SelectItem value="Customs">Customs</SelectItem>
-                            <SelectItem value="Delivered">Delivered</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div>
-                    <label className="mb-1 block text-sm font-medium">Notes</label>
-                    <Textarea
-                        value={newBatch.notes}
-                        onChange={(e) => setNewBatch({ ...newBatch, notes: e.target.value })}
-                        placeholder="Special handling instructions..."
-                        rows={3}
-                    />
-                </div>
-
-                <div className="flex gap-2">
-                    <Button onClick={onCreateBatch}>Create Batch</Button>
-                    <Button variant="outline" onClick={onCancel}>
-                        Cancel
-                    </Button>
-                </div>
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={processing}>
+                            {processing ? "Creating..." : "Create Batch"}
+                        </Button>
+                        {onCancel && (
+                            <Button type="button" variant="outline" onClick={onCancel}>
+                                Cancel
+                            </Button>
+                        )}
+                    </div>
+                </form>
             </CardContent>
         </Card>
     );

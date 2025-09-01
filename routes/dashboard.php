@@ -39,7 +39,7 @@ Route::resource('watches', WatchController::class);
 
 Route::resource('sales', SaleController::class);
 Route::resource('brands', BrandController::class);
-Route::resource('batch', BatchController::class);
+Route::resource('batches', BatchController::class);
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
 Route::resource('performance', PerformanceController::class);

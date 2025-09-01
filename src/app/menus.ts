@@ -36,7 +36,7 @@ export const menus = [
         name: "Batch Management",
         permission: "batchManagement",
         icon: PackageOpen,
-        path: "/batch",
+        path: "/batches",
     },
     {
         name: "Promote / Social Media",
