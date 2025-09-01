@@ -2,6 +2,7 @@
 import { Batch } from "@/types/Batch";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
+import { router } from "@inertiajs/react";
 import { useState } from "react";
 
 // Mock available watches (these would come from a separate API call)
@@ -48,7 +49,10 @@ const mockAvailableWatches: WatchResource[] = [
     // ...existing watch data...
 ];
 
-export const useBatchActions = (serverBatches: BatchResource[] = []) => {
+export const useBatchActions = (
+    serverBatches: BatchResource[] = [],
+    serverAvailableWatches: WatchResource[] = []
+) => {
     // Convert server batches to local Batch format
     const convertServerBatchesToLocal = (batches: BatchResource[]): Batch[] => {
         return batches.map(batch => ({
@@ -88,7 +92,7 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
     const [addWatchSortField, setAddWatchSortField] = useState<string>("name");
     const [addWatchSortDirection, setAddWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
-    const [availableWatches] = useState<WatchResource[]>(mockAvailableWatches);
+    const [availableWatches] = useState<WatchResource[]>(serverAvailableWatches);
     const [batches, setBatches] = useState<Batch[]>(convertServerBatchesToLocal(serverBatches));
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newBatch, setNewBatch] = useState<Partial<Batch>>({
@@ -101,8 +105,6 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
         notes: "",
     });
     const [editingBatchData, setEditingBatchData] = useState<Partial<Batch>>({});
-
-
 
     const filteredAndSortedAvailableWatches = availableWatches
         .filter((watch) => {
@@ -128,6 +130,20 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
         });
 
     const currentEditingBatch = editingBatch ? batches.find((b) => b.id === editingBatch) : null;
+
+    // Computed values
+    const filteredBatches = batches.filter((batch) => {
+        const matchesSearch =
+            searchTerm === "" ||
+            batch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            batch.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            batch.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            batch.destination.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = statusFilter === "all" || batch.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+    });
 
     // Utility functions
     const getSortedBatchWatches = (watches: any[]) => {
@@ -222,11 +238,22 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
 
     const updateBatchDetails = () => {
         if (editingBatch && editingBatchData) {
-            setBatches(
-                batches.map((batch) =>
-                    batch.id === editingBatch ? { ...batch, ...editingBatchData } : batch,
-                ),
-            );
+            router.patch(route('batches.updateDetails', editingBatch), {
+                name: editingBatchData.name,
+                tracking_number: editingBatchData.trackingNumber,
+                origin: editingBatchData.origin,
+                destination: editingBatchData.destination,
+                status: editingBatchData.status,
+                notes: editingBatchData.notes,
+                shipped_date: editingBatchData.shippedDate,
+                estimated_delivery: editingBatchData.estimatedDelivery,
+                actual_delivery: editingBatchData.actualDelivery,
+            }, {
+                onSuccess: () => {
+                    setEditingBatch(null);
+                },
+                preserveScroll: true,
+            });
         }
     };
 
@@ -264,44 +291,24 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
     };
 
     const removeWatchFromBatch = (batchId: string, watchId: string) => {
-        setBatches(
-            batches.map((batch) =>
-                batch.id === batchId
-                    ? {
-                        ...batch,
-                        watches: batch.watches.filter((w) => w.id !== watchId),
-                    }
-                    : batch,
-            ),
-        );
+        router.delete(route('batches.removeWatch', [batchId, watchId]), {
+            preserveScroll: true,
+        });
     };
 
     const handleAddSelectedWatchesToBatch = () => {
         if (!selectedBatchForWatch || selectedWatchesToAdd.length === 0) return;
 
-        const watchesToAdd = availableWatches
-            .filter((w) => selectedWatchesToAdd.includes(String(w.id)))
-            .map((watch) => ({
-                id: String(watch.id),
-                name: watch.name,
-                sku: watch.sku,
-                brand: watch.brand,
-                image:
-                    watch.images?.[0]?.url ||
-                    "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png",
-            }));
-
-        setBatches(
-            batches.map((batch) =>
-                batch.id === selectedBatchForWatch
-                    ? { ...batch, watches: [...batch.watches, ...watchesToAdd] }
-                    : batch,
-            ),
-        );
-
-        setIsAddWatchModalOpen(false);
-        setSelectedBatchForWatch(null);
-        setSelectedWatchesToAdd([]);
+        router.post(route('batches.assignWatches', selectedBatchForWatch), {
+            watch_ids: selectedWatchesToAdd
+        }, {
+            onSuccess: () => {
+                setIsAddWatchModalOpen(false);
+                setSelectedBatchForWatch(null);
+                setSelectedWatchesToAdd([]);
+            },
+            preserveScroll: true,
+        });
     };
 
     const handleAddWatchToBatch = (watchId: number) => {
@@ -426,6 +433,7 @@ export const useBatchActions = (serverBatches: BatchResource[] = []) => {
         setEditingBatchData,
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
+        filteredBatches,
 
         // Functions
         getSortedBatchWatches,

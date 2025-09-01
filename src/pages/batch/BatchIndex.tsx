@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Layout from "@/components/Layout";
 import WatchDetailModal from "@/components/WatchDetailModal";
-import { PaginateData } from "@/types/laravel";
 import { BatchResource } from "@/types/resources/batch";
-import { Head, usePage } from "@inertiajs/react";
+import { WatchResource } from "@/types/resources/watch";
+import { Head } from "@inertiajs/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
@@ -19,9 +19,10 @@ interface BatchManagementProps {
         links: any;
         meta: any;
     };
+    availableWatches: WatchResource[];
 }
 
-const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
+const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchManagementProps) => {
     const {
         // State
         viewMode,
@@ -56,6 +57,8 @@ const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
         setEditingBatchData,
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
+        availableWatches: actionAvailableWatches,
+        filteredBatches,
 
         // Functions
         getSortedBatchWatches,
@@ -76,7 +79,7 @@ const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
         handleAddWatchSort,
         handleSelectAllWatches,
         handleSelectWatch,
-    } = useBatchActions(serverBatches.data);
+    } = useBatchActions(serverBatches.data, availableWatches);
 
     const getSortIcon = (
         field: string,
@@ -90,8 +93,6 @@ const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
             <ChevronDown className="ml-1 inline h-4 w-4" />
         );
     };
-
-    const { data: filteredBatches } = usePage().props.batches as PaginateData<BatchResource>;
 
     return (
         <Layout>
@@ -128,7 +129,7 @@ const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
                     batch={currentEditingBatch}
                     editingBatchData={editingBatchData}
                     setEditingBatchData={setEditingBatchData}
-                    availableWatches={[]}
+                    availableWatches={actionAvailableWatches}
                     batchWatchSortField={batchWatchSortField}
                     batchWatchSortDirection={batchWatchSortDirection}
                     onBatchWatchSort={handleBatchWatchSort}

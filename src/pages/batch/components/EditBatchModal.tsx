@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     Table,
     TableBody,
     TableCell,
@@ -14,7 +21,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Batch } from "@/types/Batch";
 import { WatchResource } from "@/types/resources/watch";
+import { useForm } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Plus, X } from "lucide-react";
+import { useEffect } from "react";
 
 interface EditBatchModalProps {
     isOpen: boolean;
@@ -43,12 +52,52 @@ export const EditBatchModal = ({
     batchWatchSortField,
     batchWatchSortDirection,
     onBatchWatchSort,
-    onUpdateBatchDetails,
     onAddWatchToBatch,
     onRemoveWatchFromBatch,
     getWatchStatusColor,
     getSortedBatchWatches,
 }: EditBatchModalProps) => {
+    const { data, setData, patch, processing, errors, reset, clearErrors } = useForm({
+        name: "",
+        tracking_number: "",
+        origin: "",
+        destination: "",
+        status: "",
+        notes: "",
+        shipped_date: "",
+        estimated_delivery: "",
+        actual_delivery: "",
+    });
+
+    useEffect(() => {
+        if (batch) {
+            setData({
+                name: batch.name || "",
+                tracking_number: batch.trackingNumber || "",
+                origin: batch.origin || "",
+                destination: batch.destination || "",
+                status: batch.status || "",
+                notes: batch.notes || "",
+                shipped_date: batch.shippedDate || "",
+                estimated_delivery: batch.estimatedDelivery || "",
+                actual_delivery: batch.actualDelivery || "",
+            });
+            clearErrors();
+        }
+    }, [batch, setData, clearErrors]);
+
+    const handleUpdateBatchDetails = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (batch) {
+            patch(route("batches.updateDetails", batch.id), {
+                onSuccess: () => {
+                    onClose();
+                },
+                preserveScroll: true,
+            });
+        }
+    };
+
     const getSortIcon = (field: string) => {
         if (batchWatchSortField !== field) return null;
         return batchWatchSortDirection === "asc" ? (
@@ -68,34 +117,39 @@ export const EditBatchModal = ({
                 </DialogHeader>
                 <div className="space-y-6">
                     {/* Batch Details Form */}
-                    <div className="space-y-4 rounded-lg border bg-slate-50 p-4">
+                    <form
+                        onSubmit={handleUpdateBatchDetails}
+                        className="space-y-4 rounded-lg border bg-slate-50 p-4"
+                    >
                         <h4 className="font-medium">Batch Details</h4>
+
+                        {/* Form fields with validation */}
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <label className="mb-1 block text-sm font-medium">Batch Name</label>
                                 <Input
-                                    value={editingBatchData.name || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            name: e.target.value,
-                                        })
-                                    }
+                                    value={data.name}
+                                    onChange={(e) => setData("name", e.target.value)}
+                                    className={errors.name ? "border-red-500" : ""}
                                 />
+                                {errors.name && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                                )}
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
                                     Tracking Number
                                 </label>
                                 <Input
-                                    value={editingBatchData.trackingNumber || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            trackingNumber: e.target.value,
-                                        })
-                                    }
+                                    value={data.tracking_number}
+                                    onChange={(e) => setData("tracking_number", e.target.value)}
+                                    className={errors.tracking_number ? "border-red-500" : ""}
                                 />
+                                {errors.tracking_number && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.tracking_number}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -103,28 +157,28 @@ export const EditBatchModal = ({
                             <div>
                                 <label className="mb-1 block text-sm font-medium">Origin</label>
                                 <Input
-                                    value={editingBatchData.origin || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            origin: e.target.value,
-                                        })
-                                    }
+                                    value={data.origin}
+                                    onChange={(e) => setData("origin", e.target.value)}
+                                    className={errors.origin ? "border-red-500" : ""}
                                 />
+                                {errors.origin && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.origin}</p>
+                                )}
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
                                     Destination
                                 </label>
                                 <Input
-                                    value={editingBatchData.destination || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            destination: e.target.value,
-                                        })
-                                    }
+                                    value={data.destination}
+                                    onChange={(e) => setData("destination", e.target.value)}
+                                    className={errors.destination ? "border-red-500" : ""}
                                 />
+                                {errors.destination && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.destination}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -135,14 +189,15 @@ export const EditBatchModal = ({
                                 </label>
                                 <Input
                                     type="date"
-                                    value={editingBatchData.shippedDate || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            shippedDate: e.target.value,
-                                        })
-                                    }
+                                    value={data.shipped_date}
+                                    onChange={(e) => setData("shipped_date", e.target.value)}
+                                    className={errors.shipped_date ? "border-red-500" : ""}
                                 />
+                                {errors.shipped_date && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.shipped_date}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
@@ -150,36 +205,82 @@ export const EditBatchModal = ({
                                 </label>
                                 <Input
                                     type="date"
-                                    value={editingBatchData.estimatedDelivery || ""}
-                                    onChange={(e) =>
-                                        setEditingBatchData({
-                                            ...editingBatchData,
-                                            estimatedDelivery: e.target.value,
-                                        })
-                                    }
+                                    value={data.estimated_delivery}
+                                    onChange={(e) => setData("estimated_delivery", e.target.value)}
+                                    className={errors.estimated_delivery ? "border-red-500" : ""}
                                 />
+                                {errors.estimated_delivery && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.estimated_delivery}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div>
+                                <label className="mb-1 block text-sm font-medium">Status</label>
+                                <Select
+                                    value={data.status}
+                                    onValueChange={(value) => setData("status", value)}
+                                >
+                                    <SelectTrigger
+                                        className={errors.status ? "border-red-500" : ""}
+                                    >
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Preparing">Preparing</SelectItem>
+                                        <SelectItem value="Shipped">Shipped</SelectItem>
+                                        <SelectItem value="In Transit">In Transit</SelectItem>
+                                        <SelectItem value="Customs">Customs</SelectItem>
+                                        <SelectItem value="Delivered">Delivered</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.status}</p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-sm font-medium">
+                                    Actual Delivery
+                                </label>
+                                <Input
+                                    type="date"
+                                    value={data.actual_delivery}
+                                    onChange={(e) => setData("actual_delivery", e.target.value)}
+                                    className={errors.actual_delivery ? "border-red-500" : ""}
+                                />
+                                {errors.actual_delivery && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.actual_delivery}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
                         <div>
                             <label className="mb-1 block text-sm font-medium">Notes</label>
                             <Textarea
-                                value={editingBatchData.notes || ""}
-                                onChange={(e) =>
-                                    setEditingBatchData({
-                                        ...editingBatchData,
-                                        notes: e.target.value,
-                                    })
-                                }
+                                value={data.notes}
+                                onChange={(e) => setData("notes", e.target.value)}
                                 rows={3}
+                                className={errors.notes ? "border-red-500" : ""}
                             />
+                            {errors.notes && (
+                                <p className="mt-1 text-sm text-red-500">{errors.notes}</p>
+                            )}
                         </div>
 
-                        <Button onClick={onUpdateBatchDetails} className="flex items-center gap-2">
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="flex items-center gap-2"
+                        >
                             <Edit className="h-4 w-4" />
-                            Update Batch Details
+                            {processing ? "Updating..." : "Update Batch Details"}
                         </Button>
-                    </div>
+                    </form>
 
                     <div className="flex items-center justify-between">
                         <h4 className="font-medium">
