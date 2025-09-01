@@ -1,3 +1,4 @@
+import { Batch } from "@/app/models/Batch";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Batch } from "@/types/Batch";
 import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
@@ -23,7 +23,7 @@ export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
         tracking_number: "",
         origin: "",
         destination: "",
-        status: "Preparing" as Batch["status"],
+        status: "",
         notes: "",
     });
 
@@ -103,17 +103,17 @@ export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
                         <label className="mb-1 block text-sm font-medium">Status</label>
                         <Select
                             value={data.status}
-                            onValueChange={(value) => setData("status", value as Batch["status"])}
+                            onValueChange={(value) => setData("status", value)}
                         >
                             <SelectTrigger className={errors.status ? "border-red-500" : ""}>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Preparing">Preparing</SelectItem>
-                                <SelectItem value="Shipped">Shipped</SelectItem>
-                                <SelectItem value="In Transit">In Transit</SelectItem>
-                                <SelectItem value="Customs">Customs</SelectItem>
-                                <SelectItem value="Delivered">Delivered</SelectItem>
+                                {Batch.allStatuses().map((status, index) => (
+                                    <SelectItem key={index} value={status}>
+                                        {status}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         {errors.status && (

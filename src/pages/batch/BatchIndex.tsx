@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Layout from "@/components/Layout";
 import WatchDetailModal from "@/components/WatchDetailModal";
-import { Head } from "@inertiajs/react";
+import { PaginateData } from "@/types/laravel";
+import { BatchResource } from "@/types/resources/batch";
+import { Head, usePage } from "@inertiajs/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
@@ -10,7 +13,15 @@ import { BatchStats } from "./components/BatchStats";
 import { CreateBatchForm } from "./components/CreateBatchForm";
 import { EditBatchModal } from "./components/EditBatchModal";
 
-const BatchManagement = () => {
+interface BatchManagementProps {
+    batches: {
+        data: BatchResource[];
+        links: any;
+        meta: any;
+    };
+}
+
+const BatchManagement = ({ batches: serverBatches }: BatchManagementProps) => {
     const {
         // State
         viewMode,
@@ -43,9 +54,6 @@ const BatchManagement = () => {
         setNewBatch,
         editingBatchData,
         setEditingBatchData,
-
-        // Computed values
-        filteredBatches,
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
 
@@ -68,7 +76,7 @@ const BatchManagement = () => {
         handleAddWatchSort,
         handleSelectAllWatches,
         handleSelectWatch,
-    } = useBatchActions();
+    } = useBatchActions(serverBatches.data);
 
     const getSortIcon = (
         field: string,
@@ -82,6 +90,8 @@ const BatchManagement = () => {
             <ChevronDown className="ml-1 inline h-4 w-4" />
         );
     };
+
+    const { data: filteredBatches } = usePage().props.batches as PaginateData<BatchResource>;
 
     return (
         <Layout>

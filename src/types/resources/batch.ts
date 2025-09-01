@@ -7,5 +7,11 @@ export type BatchResource = {
     origin: string;
     destination: string;
     status: string;
+    notes: string;
+    shippedDate: string | null;
+    estimatedDelivery: string | null;
+    actualDelivery: string | null;
     watches?: WatchResource[];
+    created_at: string;
+    updated_at: string;
 };

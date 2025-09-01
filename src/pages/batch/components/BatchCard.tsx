@@ -1,3 +1,4 @@
+import { Batch } from "@/app/models/Batch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Batch } from "@/types/Batch";
+import { BatchResource } from "@/types/resources/batch";
 import {
     Calendar,
     Edit,
@@ -21,13 +22,13 @@ import {
 } from "lucide-react";
 
 interface BatchCardProps {
-    batch: Batch;
+    batch: BatchResource;
     viewMode: "grid" | "list";
     onWatchClick: (watchId: string) => void;
     onEditBatch: (batchId: string) => void;
     onCreateInvoice: (batchId: string) => void;
-    onStatusUpdate: (batchId: string, status: Batch["status"]) => void;
-    getStatusColor: (status: Batch["status"]) => string;
+    onStatusUpdate: (batchId: string, status: string) => void;
+    getStatusColor: (status: string) => string;
     getTrackingUrl: (trackingNumber: string) => string;
 }
 
@@ -76,18 +77,20 @@ export const BatchCard = ({
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Badge className={getStatusColor(batch.status)}>{batch.status}</Badge>
+                        <Badge className={Batch.toColorClass(batch.status)}>
+                            {Batch.toHuman(batch.status)}
+                        </Badge>
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onEditBatch(batch.id)}
+                            onClick={() => onEditBatch(String(batch.id))}
                             className="flex items-center gap-1"
                         >
                             <Edit className="h-3 w-3" />
                             Edit
                         </Button>
                         <Button
-                            onClick={() => onCreateInvoice(batch.id)}
+                            onClick={() => onCreateInvoice(String(batch.id))}
                             variant="outline"
                             className="flex items-center gap-2"
                             size="sm"
@@ -97,9 +100,7 @@ export const BatchCard = ({
                         </Button>
                         <Select
                             value={batch.status}
-                            onValueChange={(value) =>
-                                onStatusUpdate(batch.id, value as Batch["status"])
-                            }
+                            onValueChange={(value) => onStatusUpdate(String(batch.id), value)}
                         >
                             <SelectTrigger className="w-32">
                                 <SelectValue />
@@ -128,7 +129,7 @@ export const BatchCard = ({
                                     <div
                                         key={watch.id}
                                         className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-slate-50"
-                                        onClick={() => onWatchClick(watch.id)}
+                                        onClick={() => onWatchClick(String(watch.id))}
                                     >
                                         <div
                                             className="truncate text-sm font-medium"
@@ -149,12 +150,14 @@ export const BatchCard = ({
                                     <div
                                         key={watch.id}
                                         className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-slate-50"
-                                        onClick={() => onWatchClick(watch.id)}
+                                        onClick={() => onWatchClick(String(watch.id))}
                                         title={`${watch.name} - ${watch.sku}`}
                                     >
                                         <div className="mb-1 aspect-square overflow-hidden rounded-md">
                                             <img
-                                                src={watch.image}
+                                                src={
+                                                    watch.image_urls[0] || "/images/placeholder.png"
+                                                }
                                                 alt={watch.name}
                                                 className="h-full w-full object-cover"
                                             />

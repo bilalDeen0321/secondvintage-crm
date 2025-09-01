@@ -1,4 +1,7 @@
 import { Batch } from "@/types/Batch";
+import { PaginateData } from "@/types/laravel";
+import { BatchResource } from "@/types/resources/batch";
+import { usePage } from "@inertiajs/react";
 import { BatchCard } from "./BatchCard";
 
 interface BatchListProps {
@@ -13,7 +16,6 @@ interface BatchListProps {
 }
 
 export const BatchList = ({
-    batches,
     viewMode,
     onWatchClick,
     onEditBatch,
@@ -22,6 +24,8 @@ export const BatchList = ({
     getStatusColor,
     getTrackingUrl,
 }: BatchListProps) => {
+    const { data: batches } = usePage().props.batches as PaginateData<BatchResource>;
+
     if (batches.length === 0) {
         return (
             <div className="py-12 text-center">

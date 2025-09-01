@@ -21,7 +21,13 @@ class BatchResource extends JsonResource
             'origin' => $this->origin,
             'destination' => $this->destination,
             'status' => $this->status,
+            'notes' => $this->notes,
+            'shippedDate' => $this->shipped_date,
+            'estimatedDelivery' => $this->estimated_delivery,
+            'actualDelivery' => $this->actual_delivery,
             'watches' => WatchResource::collection($this->whenLoaded('watches')),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

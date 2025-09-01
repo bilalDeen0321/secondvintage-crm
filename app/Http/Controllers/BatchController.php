@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBatchRequest;
 use App\Http\Requests\UpdateBatchRequest;
+use App\Http\Resources\BatchResource;
 use App\Models\Batch;
 use App\Models\Brand;
 use Illuminate\Http\Request;
@@ -26,11 +27,13 @@ class BatchController extends Controller
     public function index()
     {
         $batches = Batch::query()
+            ->with(['watches']) // Load watches relationship
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(10);
+
 
         return Inertia::render('batch/BatchIndex', [
-            'batches' => $batches
+            'batches' => BatchResource::collection($batches)
         ]);
     }
 

@@ -37,10 +37,16 @@ class Batch extends Model
      */
     protected $fillable = [
         'name',
+        'tracking_number',
+        'origin',
+        'destination',
         'status',
+        'notes',
+        'shipped_date',
+        'estimated_delivery',
+        'actual_delivery',
         'location_id',
         'created_by',
-        'destination',
     ];
 
     /**

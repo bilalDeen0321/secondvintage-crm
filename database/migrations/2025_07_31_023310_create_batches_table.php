@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('status')->nullable()->default('shipped');
             $table->text('notes')->nullable();
             $table->string('destination')->default('Denmark');
+
+            $table->dateTime('shipped_date')->nullable();
+            $table->string('estimated_delivery')->nullable();
+            $table->string('actual_delivery')->nullable();
             $table->timestamps();
         });
     }
@@ -28,10 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('watches', function (Blueprint $table) {
-            $table->dropForeign(['batch_id']);
-        });
-
         Schema::dropIfExists('batches');
     }
 };

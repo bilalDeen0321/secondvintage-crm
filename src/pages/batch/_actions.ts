@@ -4,7 +4,7 @@ import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { useState } from "react";
 
-// Mock data
+// Mock available watches (these would come from a separate API call)
 const mockAvailableWatches: WatchResource[] = [
     {
         id: 1,
@@ -48,11 +48,30 @@ const mockAvailableWatches: WatchResource[] = [
     // ...existing watch data...
 ];
 
-const mockBatches: BatchResource[] = [
-    // ...existing batch data...
-];
+export const useBatchActions = (serverBatches: BatchResource[] = []) => {
+    // Convert server batches to local Batch format
+    const convertServerBatchesToLocal = (batches: BatchResource[]): Batch[] => {
+        return batches.map(batch => ({
+            id: batch.id.toString(),
+            name: batch.name,
+            trackingNumber: batch.trackingNumber,
+            origin: batch.origin,
+            destination: batch.destination,
+            status: batch.status as Batch["status"],
+            notes: batch.notes,
+            shippedDate: batch.shippedDate,
+            estimatedDelivery: batch.estimatedDelivery,
+            actualDelivery: batch.actualDelivery,
+            watches: batch.watches?.map(watch => ({
+                id: watch.id.toString(),
+                name: watch.name,
+                sku: watch.sku,
+                brand: watch.brand,
+                image: watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
+            })) || []
+        }));
+    };
 
-export const useBatchActions = () => {
     // State management
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [selectedWatch, setSelectedWatch] = useState<WatchResource | null>(null);
@@ -70,7 +89,7 @@ export const useBatchActions = () => {
     const [addWatchSortDirection, setAddWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [availableWatches] = useState<WatchResource[]>(mockAvailableWatches);
-    const [batches, setBatches] = useState<Batch[]>(mockBatches);
+    const [batches, setBatches] = useState<Batch[]>(convertServerBatchesToLocal(serverBatches));
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newBatch, setNewBatch] = useState<Partial<Batch>>({
         name: "",
@@ -83,19 +102,7 @@ export const useBatchActions = () => {
     });
     const [editingBatchData, setEditingBatchData] = useState<Partial<Batch>>({});
 
-    // Computed values
-    const filteredBatches = batches.filter((batch) => {
-        const matchesSearch =
-            searchTerm === "" ||
-            batch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.destination.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchesStatus = statusFilter === "all" || batch.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
 
     const filteredAndSortedAvailableWatches = availableWatches
         .filter((watch) => {
@@ -417,9 +424,6 @@ export const useBatchActions = () => {
         setNewBatch,
         editingBatchData,
         setEditingBatchData,
-
-        // Computed values
-        filteredBatches,
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
 
