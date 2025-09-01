@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Batch } from "@/types/Batch";
+import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { useState } from "react";
 
@@ -47,7 +48,7 @@ const mockAvailableWatches: WatchResource[] = [
     // ...existing watch data...
 ];
 
-const mockBatches: Batch[] = [
+const mockBatches: BatchResource[] = [
     // ...existing batch data...
 ];
 
