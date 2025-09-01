@@ -67,10 +67,12 @@ export const useBatchActions = (
             estimatedDelivery: batch.estimatedDelivery,
             actualDelivery: batch.actualDelivery,
             watches: batch.watches?.map(watch => ({
-                id: watch.id.toString(),
+                id: watch.id.toString(), // Ensure ID is string but keep original ID
+                originalId: watch.id, // Keep original numeric ID for backend calls
                 name: watch.name,
                 sku: watch.sku,
                 brand: watch.brand,
+                routeKey: watch.routeKey || watch.id.toString(),
                 image: watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
             })) || []
         }));
@@ -291,8 +293,27 @@ export const useBatchActions = (
     };
 
     const removeWatchFromBatch = (batchId: string, watchId: string) => {
-        router.delete(route('batches.removeWatch', [batchId, watchId]), {
+        console.log('Removing watch:', { batchId, watchId }); // Debug log
+
+        // Find the watch to get the correct ID
+        const batch = batches.find(b => b.id === batchId);
+        const watch = batch?.watches.find(w => w.id === watchId);
+
+        if (!watch) {
+            console.error('Watch not found:', watchId);
+            return;
+        }
+
+        // Use originalId if available, otherwise use the ID
+        const watchIdForBackend = watch.id || watchId;
+
+        console.log('Using watch ID for backend:', watchIdForBackend); // Debug log
+
+        router.delete(route('batches.removeWatch', [batchId, watchIdForBackend]), {
             preserveScroll: true,
+            onError: (errors) => {
+                console.error('Error removing watch:', errors);
+            }
         });
     };
 

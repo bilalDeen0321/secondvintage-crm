@@ -325,9 +325,12 @@ export const EditBatchModal = ({
                             </TableHeader>
                             <TableBody>
                                 {getSortedBatchWatches(batch.watches).map((watch) => {
+                                    console.log("Rendering watch:", watch); // Debug log
+
                                     const fullWatch = availableWatches.find(
-                                        (w) => w.id === watch.id,
+                                        (w) => w.id === Number(watch.originalId || watch.id),
                                     );
+
                                     return (
                                         <TableRow key={watch.id}>
                                             <TableCell>
@@ -358,9 +361,15 @@ export const EditBatchModal = ({
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() =>
-                                                        onRemoveWatchFromBatch(batch.id, watch.id)
-                                                    }
+                                                    onClick={() => {
+                                                        console.log("Remove button clicked:", {
+                                                            batchId: batch.id,
+                                                            watchId: watch.id,
+                                                            originalId: watch.originalId,
+                                                            routeKey: watch.routeKey,
+                                                        }); // Debug log
+                                                        onRemoveWatchFromBatch(batch.id, watch.id);
+                                                    }}
                                                     className="text-red-600 hover:text-red-700"
                                                 >
                                                     <X className="h-3 w-3" />
@@ -369,6 +378,16 @@ export const EditBatchModal = ({
                                         </TableRow>
                                     );
                                 })}
+                                {batch.watches.length === 0 && (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={7}
+                                            className="py-8 text-center text-muted-foreground"
+                                        >
+                                            No watches assigned to this batch yet.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                     </div>

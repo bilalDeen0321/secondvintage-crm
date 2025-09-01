@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Route;
 
 class BatchController extends Controller
 {
@@ -23,6 +24,10 @@ class BatchController extends Controller
     public function __construct()
     {
         $this->middleware('permission:batchManagement');
+
+        Route::bind('watch', function ($value) {
+            return Watch::where('id', $value)->firstOrFail();
+        });
     }
 
     /**
@@ -243,15 +248,36 @@ class BatchController extends Controller
     public function removeWatch(Batch $batch, Watch $watch)
     {
         try {
+            Log::info('Removing watch from batch', [
+                'batch_id' => $batch->id,
+                'watch_id' => $watch->id,
+                'watch_batch_id' => $watch->batch_id
+            ]);
+
             if ($watch->batch_id != $batch->id) {
+                Log::warning('Watch not assigned to batch', [
+                    'watch_id' => $watch->id,
+                    'watch_batch_id' => $watch->batch_id,
+                    'expected_batch_id' => $batch->id
+                ]);
                 return back()->with('error', 'This watch is not assigned to this batch.');
             }
 
             $watch->update(['batch_id' => null]);
 
+            Log::info('Watch successfully removed from batch', [
+                'batch_id' => $batch->id,
+                'watch_id' => $watch->id
+            ]);
+
             return back()->with('success', 'Watch removed from batch successfully.');
         } catch (Exception $e) {
-            Log::error('Error removing watch from batch: ' . $e->getMessage());
+            Log::error('Error removing watch from batch: ' . $e->getMessage(), [
+                'batch_id' => $batch->id,
+                'watch_id' => $watch->id ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->with('error', 'Failed to remove watch from batch. Please try again.');
         }
     }
