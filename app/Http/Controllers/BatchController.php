@@ -25,7 +25,7 @@ class BatchController extends Controller
      */
     public function index()
     {
-        return Inertia::render('BatchManagement');
+        return Inertia::render('batch/BatchIndex');
     }
 
     /**
