@@ -23,7 +23,7 @@ import { Batch } from "@/types/Batch";
 import { WatchResource } from "@/types/resources/watch";
 import { useForm } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Plus, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface EditBatchModalProps {
     isOpen: boolean;
@@ -69,6 +69,13 @@ export const EditBatchModal = ({
         actual_delivery: "",
     });
 
+    const [localBatch, setLocalBatch] = useState<Batch | null>(batch);
+
+    // Update local batch when prop changes
+    useEffect(() => {
+        setLocalBatch(batch);
+    }, [batch]);
+
     useEffect(() => {
         if (batch) {
             setData({
@@ -107,13 +114,13 @@ export const EditBatchModal = ({
         );
     };
 
-    if (!batch) return null;
+    if (!localBatch) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Edit Batch: {batch.name}</DialogTitle>
+                    <DialogTitle>Edit Batch: {localBatch.name}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6">
                     {/* Batch Details Form */}
@@ -284,10 +291,10 @@ export const EditBatchModal = ({
 
                     <div className="flex items-center justify-between">
                         <h4 className="font-medium">
-                            Watches in this batch ({batch.watches.length})
+                            Watches in this batch ({localBatch.watches.length})
                         </h4>
                         <Button
-                            onClick={() => onAddWatchToBatch(batch.id)}
+                            onClick={() => onAddWatchToBatch(localBatch.id)}
                             className="flex items-center gap-1"
                         >
                             <Plus className="h-3 w-3" />
@@ -324,7 +331,7 @@ export const EditBatchModal = ({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {getSortedBatchWatches(batch.watches).map((watch) => {
+                                {getSortedBatchWatches(localBatch.watches).map((watch) => {
                                     console.log("Rendering watch:", watch); // Debug log
 
                                     const fullWatch = availableWatches.find(
@@ -332,7 +339,7 @@ export const EditBatchModal = ({
                                     );
 
                                     return (
-                                        <TableRow key={watch.id}>
+                                        <TableRow key={`${localBatch.id}-${watch.id}`}>
                                             <TableCell>
                                                 <img
                                                     src={watch.image}
@@ -363,12 +370,15 @@ export const EditBatchModal = ({
                                                     size="sm"
                                                     onClick={() => {
                                                         console.log("Remove button clicked:", {
-                                                            batchId: batch.id,
+                                                            batchId: localBatch.id,
                                                             watchId: watch.id,
                                                             originalId: watch.originalId,
                                                             routeKey: watch.routeKey,
                                                         }); // Debug log
-                                                        onRemoveWatchFromBatch(batch.id, watch.id);
+                                                        onRemoveWatchFromBatch(
+                                                            localBatch.id,
+                                                            watch.id,
+                                                        );
                                                     }}
                                                     className="text-red-600 hover:text-red-700"
                                                 >
@@ -378,7 +388,7 @@ export const EditBatchModal = ({
                                         </TableRow>
                                     );
                                 })}
-                                {batch.watches.length === 0 && (
+                                {localBatch.watches.length === 0 && (
                                     <TableRow>
                                         <TableCell
                                             colSpan={7}

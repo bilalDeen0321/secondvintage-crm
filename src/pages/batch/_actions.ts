@@ -305,12 +305,28 @@ export const useBatchActions = (
         }
 
         // Use originalId if available, otherwise use the ID
-        const watchIdForBackend = watch.id || watchId;
+        const watchIdForBackend = watch.originalId || watch.id || watchId;
 
         console.log('Using watch ID for backend:', watchIdForBackend); // Debug log
 
         router.delete(route('batches.removeWatch', [batchId, watchIdForBackend]), {
             preserveScroll: true,
+            onSuccess: (page) => {
+                // Update local state to reflect the change immediately
+                setBatches(prevBatches =>
+                    prevBatches.map(b =>
+                        b.id === batchId
+                            ? { ...b, watches: b.watches.filter(w => w.id !== watchId) }
+                            : b
+                    )
+                );
+
+                // Also update server data if available in page props
+                if (page.props.batches?.data) {
+                    const updatedServerBatches = page.props.batches.data as BatchResource[];
+                    setBatches(convertServerBatchesToLocal(updatedServerBatches));
+                }
+            },
             onError: (errors) => {
                 console.error('Error removing watch:', errors);
             }
@@ -323,7 +339,34 @@ export const useBatchActions = (
         router.post(route('batches.assignWatches', selectedBatchForWatch), {
             watch_ids: selectedWatchesToAdd
         }, {
-            onSuccess: () => {
+            onSuccess: (page) => {
+                // Update local state immediately
+                const watchesToAdd = availableWatches
+                    .filter(w => selectedWatchesToAdd.includes(String(w.id)))
+                    .map(watch => ({
+                        id: String(watch.id),
+                        originalId: watch.id,
+                        name: watch.name,
+                        sku: watch.sku,
+                        brand: watch.brand,
+                        routeKey: watch.routeKey || watch.id.toString(),
+                        image: watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
+                    }));
+
+                setBatches(prevBatches =>
+                    prevBatches.map(batch =>
+                        batch.id === selectedBatchForWatch
+                            ? { ...batch, watches: [...batch.watches, ...watchesToAdd] }
+                            : batch
+                    )
+                );
+
+                // Also update from server data if available
+                if (page.props.batches?.data) {
+                    const updatedServerBatches = page.props.batches.data as BatchResource[];
+                    setBatches(convertServerBatchesToLocal(updatedServerBatches));
+                }
+
                 setIsAddWatchModalOpen(false);
                 setSelectedBatchForWatch(null);
                 setSelectedWatchesToAdd([]);

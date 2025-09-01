@@ -235,7 +235,8 @@ class BatchController extends Controller
                 return back()->with('warning', 'No watches were assigned. They may already be assigned to batches.');
             }
 
-            return back()->with('success', "{$assignedCount} watch(es) assigned to batch successfully.");
+            // Return fresh data
+            return $this->returnFreshData('success', "{$assignedCount} watch(es) assigned to batch successfully.");
         } catch (Exception $e) {
             Log::error('Error assigning watches to batch: ' . $e->getMessage());
             return back()->with('error', 'Failed to assign watches. Please try again.');
@@ -270,7 +271,8 @@ class BatchController extends Controller
                 'watch_id' => $watch->id
             ]);
 
-            return back()->with('success', 'Watch removed from batch successfully.');
+            // Return fresh data
+            return $this->returnFreshData('success', 'Watch removed from batch successfully.');
         } catch (Exception $e) {
             Log::error('Error removing watch from batch: ' . $e->getMessage(), [
                 'batch_id' => $batch->id,
@@ -290,5 +292,26 @@ class BatchController extends Controller
         $batch->delete();
 
         return redirect()->route('batches.index')->with('success', 'Batch deleted successfully.');
+    }
+
+    /**
+     * Return fresh data for the index page
+     */
+    private function returnFreshData(string $messageType, string $message)
+    {
+        $batches = Batch::query()
+            ->with(['watches.images', 'watches.brand'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        $availableWatches = Watch::query()
+            ->whereNull('batch_id')
+            ->with(['images', 'brand'])
+            ->get();
+
+        return Inertia::render('batch/BatchIndex', [
+            'batches' => BatchResource::collection($batches),
+            'availableWatches' => WatchResource::collection($availableWatches)
+        ])->with($messageType, $message);
     }
 }
