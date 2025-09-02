@@ -1,7 +1,7 @@
 import { CurrencyAttributes } from "@/app/models/Currency";
 import Layout from "@/components/Layout";
-import PlatformDataModal from "@/components/PlatformDataModal";
 import TablePaginate from "@/components/ui/table/TablePaginate";
+import PlatformDataModal from "@/pages/sales/components/platform/PlatformDataModal";
 import { PaginateData } from "@/types/laravel";
 import { WatchResource } from "@/types/resources/watch";
 import { Head } from "@inertiajs/react";
