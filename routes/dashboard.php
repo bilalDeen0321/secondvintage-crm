@@ -39,7 +39,13 @@ Route::resource('watches', WatchController::class);
 
 Route::resource('sales', SaleController::class);
 Route::resource('brands', BrandController::class);
-Route::resource('batch', BatchController::class);
+Route::resource('batches', BatchController::class);
+
+// Additional batch routes for watch management
+Route::patch('batches/{batch}/details', [BatchController::class, 'updateDetails'])->name('batches.updateDetails');
+Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWatches'])->name('batches.assignWatches');
+Route::delete('batches/{batch}/watches/{watch}', [BatchController::class, 'removeWatch'])->name('batches.removeWatch');
+
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
 Route::resource('performance', PerformanceController::class);
