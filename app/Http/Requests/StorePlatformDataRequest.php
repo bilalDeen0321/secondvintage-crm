@@ -11,7 +11,7 @@ class StorePlatformDataRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StorePlatformDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'watch_id' => 'required|exists:watches,id',
+            'platform' => 'required|string|max:255',
+            'data' => 'required|array',
+            'status' => 'nullable|string|in:draft,review,approved,ai_generated'
         ];
     }
 }

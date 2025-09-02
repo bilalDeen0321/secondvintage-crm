@@ -11,7 +11,7 @@ class UpdatePlatformDataRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdatePlatformDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'data' => 'required|array',
+            'status' => 'nullable|string|in:draft,review,approved,ai_generated'
         ];
     }
 }
