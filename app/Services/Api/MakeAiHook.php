@@ -4,12 +4,14 @@ namespace App\Services\Api;
 
 use App\Models\Log;
 use App\Models\Status;
+use App\Packages\Utils\Traits\CreateInstance;
 use App\Traits\Fakes\FakesMakeAiHook;
+use App\Traits\Services\HasMakeAIHookDemoData;
 use Illuminate\Support\Facades\Http;
 
 class MakeAiHook
 {
-    use FakesMakeAiHook;
+    use FakesMakeAiHook, CreateInstance, HasMakeAIHookDemoData;
 
     protected string $hookUrl;
     protected string $apiKey;
@@ -24,13 +26,14 @@ class MakeAiHook
     }
 
     /**
-     * Create a new static instance
+     * Make the request to make.com webhook
      */
-    public static function init()
+    private function request(array $payload): \Illuminate\Http\Client\Response
     {
-        return app(static::class);
+        return Http::timeout(60)->asJson()
+            ->withHeaders(['x-make-apikey' => $this->apiKey])
+            ->post($this->hookUrl, $payload);
     }
-
 
     /**
      * Send a request to make.com to generate a watch descriptoin.
@@ -40,8 +43,7 @@ class MakeAiHook
 
         try {
 
-            $response = Http::timeout(60)->asJson()->withHeaders(['x-make-apikey' => $this->apiKey])
-                ->post($this->hookUrl, $payload);
+            $response = $this->request($payload);
 
             Log::info('MakeAiHook', $response->body());
 
@@ -60,49 +62,27 @@ class MakeAiHook
     }
 
     /**
-     * Get the success response demo data
+     * Export watch item to Catawiki through make.com webhook
      */
-    public function getSuccessResponseDemoData()
+    public function generateCatawikiData(array $payload = [])
     {
-        return collect([
-            'Status' => 'success',
-            'Message' => 'Description generated successfully with demo test',
-            'Watch_ID' => '',
-            'Description' => 'No images of a Longines HydroConquest were detected. The provided images feature a vintage Bulova watch. Please upload images of the Longines HydroConquest if you would like an analysis and sales listing for that model. If you would like a sales listing for the Bulova shown, please confirm or provide the required details.',
-            'Status_Selected' => 'Review',
-            'Thread_ID' => 'thread_B9wce7fVauF2EX7IOklUySWk'
-        ]);
-    }
+        try {
+            // Set the AI_Action for Catawiki data generation
+            $payload['AI_Action'] = 'generate_catawiki_data';
+            $payload['Platform'] = 'Catawiki';
 
-    /**
-     * Format the payload from the provided data.
-     *
-     * @param  array|object  $data
-     * @return array
-     */
-    protected function getPayload(array $atrributes = []): array
-    {
-        if (is_object($atrributes) && method_exists($atrributes, 'toArray')) {
-            $atrributes = $atrributes->toArray();
+            $response = $this->request($payload);
+
+            Log::info('MakeAiHook - Catawiki Data Generation', $response->body());
+
+            // Send back response
+            return $response->collect()
+                ->mapWithKeys(fn($value, $key) => [ucfirst($key) => $value]);
+        } catch (\Throwable $e) {
+            return collect([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        $payload = [
-            'AI_Action'        => 'generate_description',
-            'SKU'              => $data['sku'] ?? null,
-            'Name'             => $data['name'] ?? null,
-            'Brand'            => $data['brand'] ?? null, // brand_id in your list
-            'Serial'           => $data['serial_number'] ?? null,
-            'Ref'              => $data['reference'] ?? null,
-            'Case_Size'        => $data['case_size'] ?? null,
-            'Caliber'          => $data['caliber'] ?? null,
-            'Timegrapher'      => $data['timegrapher'] ?? null,
-            'Image_URLs'       => $data['image_urls'] ?? null, // not in your list, keep as-is
-            'Platform'         => $data['platform'] ?? null,   // not in your list, keep as-is
-            'Status_Selected'  => $data['status'] ?? Status::DRAFT,
-            'AI_Instruction'   => $data['ai_instructions'] ?? null, // plural in your list
-            'Thread_ID'        => $data['ai_thread_id'] ?? null,
-        ];
-
-        return array_filter($payload, fn($value) => $value !== null);
     }
 }
