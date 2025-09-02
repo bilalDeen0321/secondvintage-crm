@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <AuthenticationHeader xmlns="http://api.tradera.com">
+      <AppId>5462</AppId>
+      <AppKey>appkey</AppKey>
+      <Token>app_key</Token>
+    </AuthenticationHeader>
+    <ConfigurationHeader xmlns="http://api.tradera.com">
+      <Sandbox>0</Sandbox>
+      <MaxResultAge>0</MaxResultAge>
+    </ConfigurationHeader>
+  </soap:Header>
+  <soap:Body>
+    <FetchToken xmlns="http://api.tradera.com">
+      <userId>userid</userId>
+    </FetchToken>
+  </soap:Body>
+</soap:Envelope>

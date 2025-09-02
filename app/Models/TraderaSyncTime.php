@@ -2,31 +2,23 @@
 
 namespace App\Models;
 
+use App\Packages\Utils\Traits\HasModelHelpers;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class TraderaSyncTime extends Model
 {
+    /** @use HasFactory<\Database\Factories\TraderaSyncTimeFactory> */
+    use HasFactory, HasModelHelpers;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
-        'last_sync_time',
-        'is_active'
+        'tst_sync_time',
+        'close',
+        'status',
     ];
-
-    protected $casts = [
-        'last_sync_time' => 'datetime',
-        'is_active' => 'boolean'
-    ];
-
-    public static function getLastSyncTime(): Carbon
-    {
-        $record = self::where('is_active', true)->first();
-        return $record ? $record->last_sync_time : now()->subDays(17);
-    }
-
-    public static function updateSyncTime(Carbon $time): void
-    {
-        self::where('is_active', true)->update([
-            'last_sync_time' => $time
-        ]);
-    }
 }

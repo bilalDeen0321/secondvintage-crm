@@ -27,3 +27,4 @@ yarn-error.log
 
 app/Console/Commands/Playground.php
 /docs/private
+app/Console/Commands/TestingConsoe.php

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Header>
+    <AuthenticationHeader xmlns="http://api.tradera.com">
+      <AppId>5462</AppId>
+      <AppKey>the application id</AppKey>
+    </AuthenticationHeader>
+    <AuthorizationHeader xmlns="http://api.tradera.com">
+      <UserId>userid</UserId>
+      <Token>usertoken</Token>
+    </AuthorizationHeader>
+    <ConfigurationHeader xmlns="http://api.tradera.com">
+      <Sandbox>0</Sandbox>
+      <MaxResultAge>0</MaxResultAge>
+    </ConfigurationHeader>
+  </soap:Header>
+  <soap:Body>
+    <AddItem xmlns="http://api.tradera.com">
+      <itemRequest>
+        <Title>Rolex Day-Date 40 | Olive Green | 18k Roséguld | 2021 | NY</Title>
+        <OwnReferences />
+        <CategoryId>1000985</CategoryId>
+        <Duration>14</Duration>
+        <Restarts>0</Restarts>
+        <StartPrice>574900</StartPrice>
+        <ReservePrice>0</ReservePrice>
+        <BuyItNowPrice>575000</BuyItNowPrice>
+        <Description>Vi säljer.</Description>
+        <PaymentOptionIds>
+          <int>1</int>
+        </PaymentOptionIds>
+        <ShippingOptions>
+          <ItemShipping>
+            <ShippingOptionId>6</ShippingOptionId>
+            <Cost>0</Cost>
+            <ShippingWeight>0</ShippingWeight>
+            <ShippingProductId>0</ShippingProductId>
+          </ItemShipping>
+        </ShippingOptions>
+        <AcceptedBidderId>1</AcceptedBidderId>
+        <ExpoItemIds />
+        <CustomEndDate>2025-09-15T14:41:36.287+02:00</CustomEndDate>
+        <ItemAttributes>
+          <int>3</int> <!-- Condition -->
+        </ItemAttributes>
+        <ItemType>3</ItemType>
+        <AutoCommit>true</AutoCommit>
+        <VAT>0</VAT>
+        <ShippingCondition />
+        <PaymentCondition />
+        <CampaignCode />
+        <DescriptionLanguageCodeIso2>sv</DescriptionLanguageCodeIso2>
+        <AttributeValues>
+          <Terms>
+            <TermValues>
+              <Id>3</Id>
+              <Values>
+                <string>Ny</string> <!-- Only one value: "Ny" (New) or "Begagnad" (Used) -->
+              </Values>
+            </TermValues>
+          </Terms>
+        </AttributeValues>
+      </itemRequest>
+    </AddItem>
+  </soap:Body>
+</soap:Envelope>

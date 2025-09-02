@@ -43,9 +43,9 @@
 
 ## 6 Platform Sales Integration
 
-- Per-platform schema (Catawiki, Tradera, eBay)
+- Per-platform schema (Catawiki, Tradera)
 - CSV export for Catawiki
-- Tradera / eBay API integration
+- Tradera API integration
 - "Fill with AI" logic
 - Listing status update and logs
 
