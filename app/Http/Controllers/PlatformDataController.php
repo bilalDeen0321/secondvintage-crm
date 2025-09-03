@@ -46,7 +46,7 @@ class PlatformDataController extends Controller
 
         match ($platformName) {
             PlatformData::CATAWIKI => dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform)),
-            PlatformData::TRADERA => ExractMakeHookToTradera::execute(collect([]), $watch),
+            PlatformData::TRADERA => dispatch(new \App\Jobs\ProcessMakeHookTradera($watch, $platform)),
             default => null,
         };
 
