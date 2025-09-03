@@ -1,34 +1,21 @@
+import PlatformData from "@/app/models/PlatformData";
+import Status from "@/app/models/Status";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getSelectSearch } from "@/pages/watches/_search";
 import { useForm } from "@inertiajs/react";
 import { ChevronDown, Search } from "lucide-react";
-import { useState } from "react";
-import { getuniquePlatforms } from "../_actionSchema";
+import { useEffect } from "react";
 import { saleSearchFilter } from "../_utils";
 
 type Props = {
     batches: string[];
     brands: string[];
-    watchPlatforms: Record<string, string>;
 };
 
-export function SaleSearchFilter({ batches, brands, watchPlatforms }: Props) {
-    const [platformFilter, setPlatformFilter] = useState<string>("All");
-
+export function SaleSearchFilter({ batches, brands }: Props) {
     const { data, setData } = useForm({
         column: "",
         search: "",
@@ -36,8 +23,28 @@ export function SaleSearchFilter({ batches, brands, watchPlatforms }: Props) {
         brand: "All",
         batch: "All",
         location: "All",
+        platform: "All",
         direction: "asc",
     });
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Get all params from URL and remove null values
+        const urlParams = {
+            column: searchParams.get("column") || "",
+            search: searchParams.get("search") || "",
+            status: searchParams.get("status") || "All",
+            brand: searchParams.get("brand") || "All",
+            batch: searchParams.get("batch") || "All",
+            location: searchParams.get("location") || "All",
+            platform: searchParams.get("platform") || "All",
+            direction: searchParams.get("direction") || "asc",
+        };
+
+        // Set data with URL params, filtering out null values
+        setData(urlParams);
+    }, [setData]);
 
     return (
         <div className="mb-6 flex flex-col gap-4 lg:flex-row">
@@ -68,16 +75,9 @@ export function SaleSearchFilter({ batches, brands, watchPlatforms }: Props) {
                         <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                        {[
-                            "All",
-                            "Approved & Platform Review",
-                            "Approved",
-                            "Platform Review",
-                            "Ready for listing",
-                            "Listed",
-                        ].map((status) => (
+                        {["All", ...Status.allStatuses()].map((status) => (
                             <SelectItem key={status} value={status}>
-                                {status}
+                                {Status.toHuman(status)}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -127,14 +127,20 @@ export function SaleSearchFilter({ batches, brands, watchPlatforms }: Props) {
                     </SelectContent>
                 </Select>
 
-                <Select value={platformFilter} onValueChange={setPlatformFilter}>
+                <Select
+                    value={data.platform}
+                    onValueChange={(val) => {
+                        setData("platform", val);
+                        saleSearchFilter("platform", getSelectSearch(val));
+                    }}
+                >
                     <SelectTrigger className="w-40">
                         <SelectValue placeholder="Platform" />
                     </SelectTrigger>
                     <SelectContent>
-                        {getuniquePlatforms(watchPlatforms).map((platform) => (
-                            <SelectItem key={platform} value={platform}>
-                                {platform}
+                        {["All", ...PlatformData.allPlatforms()].map((pitem, index) => (
+                            <SelectItem key={index} value={pitem}>
+                                {PlatformData.toLabel(pitem)}
                             </SelectItem>
                         ))}
                     </SelectContent>

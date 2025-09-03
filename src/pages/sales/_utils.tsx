@@ -24,6 +24,7 @@ export function saleSearchFilter(key: string, value: any, query: Record<string, 
         brand: searchParams.get("brand"),
         search: searchParams.get("search"),
         location: searchParams.get("location"),
+        platform: searchParams.get("platform"),
         ...query,
         [key]: value,
     };

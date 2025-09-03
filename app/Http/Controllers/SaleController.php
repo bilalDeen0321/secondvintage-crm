@@ -7,6 +7,8 @@ use App\Models\Watch;
 use App\Queries\WatchQuery;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use \Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 
 class SaleController extends Controller
 {
@@ -27,6 +29,10 @@ class SaleController extends Controller
         // Get paginated results
         $watches = WatchQuery::init()
             ->execute($request)
+            ->when($request->filled('platform'), function (Builder $q) use ($request) {
+                $locations = Arr::wrap($request->input('platform'));
+                $q->where('platform', $locations);
+            })
             ->with('platforms:id,name,watch_id,status,message')
             ->paginate($request->input('per_page'))
             ->withQueryString();

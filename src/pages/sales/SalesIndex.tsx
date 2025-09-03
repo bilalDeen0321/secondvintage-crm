@@ -105,13 +105,13 @@ const MultiplatformSales = (props: Props) => {
                     </div>
 
                     {/* Search and Filters */}
-                    <SaleSearchFilter brands={brands} batches={batches} watchPlatforms={watchPlatforms} />
+                    <SaleSearchFilter brands={brands} batches={batches} />
 
                     {/* Quick Selection Actions */}
                     <SaleQuickSelectionActions handleSelectAll={handlers.handleSelectAll} handleSelectByStatus={handlers.handleSelectByStatus} watcheLength={watches.length} />
 
                     {/* Bulk Actions */}
-                    <SaleWatchBlukActions ids={selectedWatches} locations={locations} batches={batches} onBulkPlatformChange={handlers.handleBulkPlatformChange} />
+                    <SaleWatchBlukActions ids={selectedWatches} locations={locations} batches={batches} />
 
                     {/* Export Actions */}
                     <SaleExports selectedWatches={selectedWatches} watchPlatforms={watchPlatforms} watches={watches} />
