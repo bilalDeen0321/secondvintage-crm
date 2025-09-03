@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { debouncedNavigate } from "@/pages/watches/_search";
 import { WatchResource } from "@/types/resources/watch";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import qs from 'qs';
+import qs from "qs";
 import { useEffect, useState } from "react";
 import ImageViewer from "./ImageViewer";
 import WatchItem from "./WatchItem";
@@ -15,27 +15,19 @@ interface WatchListViewProps {
     onSelectAll: (checked: boolean) => void;
 }
 
-const WatchListView = ({
-    watches,
-    onDelete,
-    selectedWatches,
-    onSelectWatch,
-    onSelectAll,
-}: WatchListViewProps) => {
-
-    const [orderBy, setOrderBy] = useState('created_at'); // default sort field
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc'); // default direction
-
+const WatchListView = ({ watches, onDelete, selectedWatches, onSelectWatch, onSelectAll }: WatchListViewProps) => {
+    const [orderBy, setOrderBy] = useState("created_at"); // default sort field
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc"); // default direction
 
     useEffect(() => {
         const q = qs.parse(window.location.search, { ignoreQueryPrefix: true }) as {
-            order?: { column?: string, dir?: 'asc' | 'desc' }
+            order?: { column?: string; dir?: "asc" | "desc" };
         };
         if (q?.order?.column && q?.order?.dir) {
             setOrderBy(q.order.column);
-            setSortDirection(q.order.dir)
+            setSortDirection(q.order.dir);
         }
-    }, [])
+    }, []);
 
     const [imageViewer, setImageViewer] = useState<{
         isOpen: boolean;
@@ -47,8 +39,6 @@ const WatchListView = ({
         images: [],
         currentIndex: 0,
     });
-
-
 
     const handleImageClick = (watch: WatchResource) => {
         if (watch.images && watch.images.length > 0) {
@@ -78,27 +68,18 @@ const WatchListView = ({
     const handleNextImage = () => {
         setImageViewer((prev) => ({
             ...prev,
-            currentIndex: Math.min(
-                prev.images.length - 1,
-                prev.currentIndex + 1,
-            ),
+            currentIndex: Math.min(prev.images.length - 1, prev.currentIndex + 1),
         }));
     };
-
 
     // Update getSortIcon to use local state
     const getSortIcon = (field: string) => {
         if (orderBy !== field) return null;
-        return sortDirection === 'asc' ? (
-            <ChevronUp className="ml-1 inline h-4 w-4" />
-        ) : (
-            <ChevronDown className="ml-1 inline h-4 w-4" />
-        );
+        return sortDirection === "asc" ? <ChevronUp className="ml-1 inline h-4 w-4" /> : <ChevronDown className="ml-1 inline h-4 w-4" />;
     };
 
     // handle sorting toggle (only asc/desc)
-    const handleSort = (column: string, dir: "asc" | "desc" = 'desc') => {
-
+    const handleSort = (column: string, dir: "asc" | "desc" = "desc") => {
         if (orderBy === column) {
             dir = sortDirection === "asc" ? "desc" : "asc";
         }
@@ -115,8 +96,6 @@ const WatchListView = ({
         debouncedNavigate(params);
     };
 
-
-
     return (
         <>
             <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -125,92 +104,46 @@ const WatchListView = ({
                         <thead className="bg-slate-50">
                             <tr className="text-left">
                                 <th className="w-8 p-2 text-xs font-medium text-slate-700">
-                                    <Checkbox
-                                        checked={
-                                            selectedWatches.length ===
-                                            watches.length &&
-                                            watches.length > 0
-                                        }
-                                        onCheckedChange={onSelectAll}
-                                    />
+                                    <Checkbox checked={selectedWatches.length === watches.length && watches.length > 0} onCheckedChange={onSelectAll} />
                                 </th>
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("created_at", 'desc')}>
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("created_at", "desc")}>
                                     Image {getSortIcon("created_at")}
                                 </th>
-                                <th
-                                    className="w-48 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("name")}
-                                >
+                                <th className="w-48 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => handleSort("name")}>
                                     Name {getSortIcon("name")}
                                 </th>
-                                <th
-                                    className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("sku")}
-                                >
+                                <th className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => handleSort("sku")}>
                                     SKU {getSortIcon("sku")}
                                 </th>
-                                <th
-                                    className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                >
+                                <th className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100">
                                     Brand
                                     {/* Brand {getSortIcon("brand")} */}
                                 </th>
-                                <th
-                                    className="w-20 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("current_cost")}
-                                >
+                                <th className="w-20 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => handleSort("current_cost")}>
                                     Cost {getSortIcon("current_cost")}
                                 </th>
-                                <th className="w-24 p-2 text-xs font-medium text-slate-700">
-                                    Batch Group
-                                </th>
-                                <th
-                                    className="w-28 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("status")}
-                                >
+                                <th className="w-24 p-2 text-xs font-medium text-slate-700">Batch Group</th>
+                                <th className="w-28 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => handleSort("status")}>
                                     Status {getSortIcon("status")}
                                 </th>
-                                <th
-                                    className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
-                                    onClick={() => handleSort("location")}
-                                >
+                                <th className="w-24 cursor-pointer p-2 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => handleSort("location")}>
                                     Location {getSortIcon("location")}
                                 </th>
-                                <th className="w-24 p-2 text-xs font-medium text-slate-700">
-                                    Description
-                                </th>
-                                <th className="w-24 p-2 text-xs font-medium text-slate-700">
-                                    Notes
-                                </th>
-                                <th className="w-20 p-2 text-xs font-medium text-slate-700">
-                                    Actions
-                                </th>
+                                <th className="w-24 p-2 text-xs font-medium text-slate-700">Description</th>
+                                <th className="w-24 p-2 text-xs font-medium text-slate-700">Notes</th>
+                                <th className="w-20 p-2 text-xs font-medium text-slate-700">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 bg-white">
                             {watches.map((watch, index) => (
-                                <WatchItem
-                                    key={index}
-                                    watch={watch}
-                                    handleImageClick={handleImageClick}
-                                    onSelectWatch={onSelectWatch}
-                                    selectedWatches={selectedWatches}
-                                    onDelete={onDelete} />
+                                <WatchItem key={index} watch={watch} handleImageClick={handleImageClick} onSelectWatch={onSelectWatch} selectedWatches={selectedWatches} onDelete={onDelete} />
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {imageViewer.isOpen && (
-                <ImageViewer
-                    images={imageViewer.images}
-                    currentIndex={imageViewer.currentIndex}
-                    onClose={handleCloseImageViewer}
-                    onPrevious={handlePreviousImage}
-                    onNext={handleNextImage}
-                />
-            )}
+            {imageViewer.isOpen && <ImageViewer images={imageViewer.images} currentIndex={imageViewer.currentIndex} onClose={handleCloseImageViewer} onPrevious={handlePreviousImage} onNext={handleNextImage} />}
         </>
     );
 };

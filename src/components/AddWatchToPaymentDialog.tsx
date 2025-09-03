@@ -2,22 +2,9 @@ import { ArrowDown, ArrowUp, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 interface Watch {
     id: string;
@@ -38,12 +25,7 @@ interface AddWatchToPaymentDialogProps {
     existingWatches: Watch[];
 }
 
-const AddWatchToPaymentDialog = ({
-    open,
-    onOpenChange,
-    onAddWatches,
-    existingWatches,
-}: AddWatchToPaymentDialogProps) => {
+const AddWatchToPaymentDialog = ({ open, onOpenChange, onAddWatches, existingWatches }: AddWatchToPaymentDialogProps) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
     const [sortField, setSortField] = useState<keyof Watch>("name");
@@ -318,23 +300,12 @@ const AddWatchToPaymentDialog = ({
     ];
 
     // Filter for unpaid watches only
-    const unpaidWatches = allWatches.filter(
-        (watch) => watch.status === "Pending Payment",
-    );
+    const unpaidWatches = allWatches.filter((watch) => watch.status === "Pending Payment");
 
     const existingWatchIds = existingWatches.map((w) => w.id);
-    const availableWatches = unpaidWatches.filter(
-        (watch) => !existingWatchIds.includes(watch.id),
-    );
+    const availableWatches = unpaidWatches.filter((watch) => !existingWatchIds.includes(watch.id));
 
-    const filteredWatches = availableWatches.filter(
-        (watch) =>
-            watch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            watch.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (watch.sku &&
-                watch.sku.toLowerCase().includes(searchTerm.toLowerCase())),
-    );
+    const filteredWatches = availableWatches.filter((watch) => watch.name.toLowerCase().includes(searchTerm.toLowerCase()) || watch.brand.toLowerCase().includes(searchTerm.toLowerCase()) || watch.seller.toLowerCase().includes(searchTerm.toLowerCase()) || (watch.sku && watch.sku.toLowerCase().includes(searchTerm.toLowerCase())));
 
     // Sort watches
     const sortedWatches = [...filteredWatches].sort((a, b) => {
@@ -366,11 +337,7 @@ const AddWatchToPaymentDialog = ({
         if (sortField !== field) {
             return null;
         }
-        return sortDirection === "asc" ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-        ) : (
-            <ArrowDown className="ml-2 h-4 w-4" />
-        );
+        return sortDirection === "asc" ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />;
     };
 
     const handleWatchSelect = (watchId: string, checked: boolean) => {
@@ -395,9 +362,7 @@ const AddWatchToPaymentDialog = ({
     };
 
     const handleAddSelected = () => {
-        const watchesToAdd = unpaidWatches.filter((watch) =>
-            selectedWatches.includes(watch.id),
-        );
+        const watchesToAdd = unpaidWatches.filter((watch) => selectedWatches.includes(watch.id));
         onAddWatches(watchesToAdd);
         setSelectedWatches([]);
         onOpenChange(false);
@@ -408,39 +373,24 @@ const AddWatchToPaymentDialog = ({
         return euroPrice * 26500;
     };
 
-    const isAllSelected =
-        sortedWatches.length > 0 &&
-        selectedWatches.length === sortedWatches.length;
-    const isIndeterminate =
-        selectedWatches.length > 0 &&
-        selectedWatches.length < sortedWatches.length;
+    const isAllSelected = sortedWatches.length > 0 && selectedWatches.length === sortedWatches.length;
+    const isIndeterminate = selectedWatches.length > 0 && selectedWatches.length < sortedWatches.length;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[80vh] max-w-6xl overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Add Watches to Payment</DialogTitle>
-                    <DialogDescription>
-                        Select watches with unpaid payment status to add to this
-                        payment
-                    </DialogDescription>
+                    <DialogDescription>Select watches with unpaid payment status to add to this payment</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     <div className="flex items-center space-x-2">
                         <div className="relative flex-1">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search watches..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-8"
-                            />
+                            <Input placeholder="Search watches..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-8" />
                         </div>
-                        <Button
-                            onClick={handleAddSelected}
-                            disabled={selectedWatches.length === 0}
-                        >
+                        <Button onClick={handleAddSelected} disabled={selectedWatches.length === 0}>
                             <Plus className="mr-2 h-4 w-4" />
                             Add Selected ({selectedWatches.length})
                         </Button>
@@ -451,56 +401,35 @@ const AddWatchToPaymentDialog = ({
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="w-12">
-                                        <Checkbox
-                                            checked={isAllSelected}
-                                            indeterminate={isIndeterminate}
-                                            onCheckedChange={handleSelectAll}
-                                        />
+                                        <Checkbox checked={isAllSelected} indeterminate={isIndeterminate} onCheckedChange={handleSelectAll} />
                                     </TableHead>
-                                    <TableHead className="w-16">
-                                        Image
-                                    </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer select-none hover:bg-muted/50"
-                                        onClick={() => handleSort("name")}
-                                    >
+                                    <TableHead className="w-16">Image</TableHead>
+                                    <TableHead className="cursor-pointer select-none hover:bg-muted/50" onClick={() => handleSort("name")}>
                                         <div className="flex items-center">
                                             Name
                                             {getSortIcon("name")}
                                         </div>
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer select-none hover:bg-muted/50"
-                                        onClick={() => handleSort("sku")}
-                                    >
+                                    <TableHead className="cursor-pointer select-none hover:bg-muted/50" onClick={() => handleSort("sku")}>
                                         <div className="flex items-center">
                                             SKU
                                             {getSortIcon("sku")}
                                         </div>
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer select-none hover:bg-muted/50"
-                                        onClick={() => handleSort("brand")}
-                                    >
+                                    <TableHead className="cursor-pointer select-none hover:bg-muted/50" onClick={() => handleSort("brand")}>
                                         <div className="flex items-center">
                                             Brand
                                             {getSortIcon("brand")}
                                         </div>
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer select-none hover:bg-muted/50"
-                                        onClick={() => handleSort("seller")}
-                                    >
+                                    <TableHead className="cursor-pointer select-none hover:bg-muted/50" onClick={() => handleSort("seller")}>
                                         <div className="flex items-center">
                                             Seller
                                             {getSortIcon("seller")}
                                         </div>
                                     </TableHead>
                                     <TableHead>Notes</TableHead>
-                                    <TableHead
-                                        className="cursor-pointer select-none text-right hover:bg-muted/50"
-                                        onClick={() => handleSort("price")}
-                                    >
+                                    <TableHead className="cursor-pointer select-none text-right hover:bg-muted/50" onClick={() => handleSort("price")}>
                                         <div className="flex items-center justify-end">
                                             Price
                                             {getSortIcon("price")}
@@ -510,69 +439,31 @@ const AddWatchToPaymentDialog = ({
                             </TableHeader>
                             <TableBody>
                                 {sortedWatches.map((watch) => (
-                                    <TableRow
-                                        key={watch.id}
-                                        className="cursor-pointer hover:bg-muted/50"
-                                        onClick={() => handleRowClick(watch.id)}
-                                    >
-                                        <TableCell
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <Checkbox
-                                                checked={selectedWatches.includes(
-                                                    watch.id,
-                                                )}
-                                                onCheckedChange={(checked) =>
-                                                    handleWatchSelect(
-                                                        watch.id,
-                                                        checked as boolean,
-                                                    )
-                                                }
-                                            />
+                                    <TableRow key={watch.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleRowClick(watch.id)}>
+                                        <TableCell onClick={(e) => e.stopPropagation()}>
+                                            <Checkbox checked={selectedWatches.includes(watch.id)} onCheckedChange={(checked) => handleWatchSelect(watch.id, checked as boolean)} />
                                         </TableCell>
                                         <TableCell>
-                                            <img
-                                                src={watch.image}
-                                                alt={watch.name}
-                                                className="aspect-square h-12 w-12 rounded-md object-cover"
-                                            />
+                                            <img src={watch.image} alt={watch.name} className="aspect-square h-12 w-12 rounded-md object-cover" />
                                         </TableCell>
-                                        <TableCell className="font-medium">
-                                            {watch.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {watch.sku || "-"}
-                                        </TableCell>
+                                        <TableCell className="font-medium">{watch.name}</TableCell>
+                                        <TableCell>{watch.sku || "-"}</TableCell>
                                         <TableCell>{watch.brand}</TableCell>
                                         <TableCell>{watch.seller}</TableCell>
-                                        <TableCell
-                                            className="max-w-xs truncate"
-                                            title={watch.notes}
-                                        >
+                                        <TableCell className="max-w-xs truncate" title={watch.notes}>
                                             {watch.notes}
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div>
-                                                <div>
-                                                    €
-                                                    {watch.price.toLocaleString()}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    ₫
-                                                    {convertToVND(
-                                                        watch.price,
-                                                    ).toLocaleString()}
-                                                </div>
+                                                <div>€{watch.price.toLocaleString()}</div>
+                                                <div className="text-xs text-muted-foreground">₫{convertToVND(watch.price).toLocaleString()}</div>
                                             </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                                 {sortedWatches.length === 0 && (
                                     <TableRow>
-                                        <TableCell
-                                            colSpan={8}
-                                            className="py-8 text-center text-muted-foreground"
-                                        >
+                                        <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                                             No unpaid watches available to add
                                         </TableCell>
                                     </TableRow>

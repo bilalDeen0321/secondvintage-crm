@@ -28,14 +28,14 @@ export interface ModalState {
 
 export interface HandlerParams {
     watches: WatchResource[];
-    selectedWatches: string[];
+    selectedWatches: WatchResource['id'][];
     watchPlatforms: Record<string, string>;
     sortField: SortField;
     sortDirection: SortDirection;
     platformDataModal: ModalState['platformDataModal'];
-    setSelectedWatches: React.Dispatch<React.SetStateAction<string[]>>;
+    setSelectedWatches: React.Dispatch<React.SetStateAction<WatchResource['id'][]>>;
     setWatchPlatforms: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-    setProcessingWatches: React.Dispatch<React.SetStateAction<Set<string>>>;
+    setProcessingWatches: React.Dispatch<React.SetStateAction<Set<WatchResource['id']>>>;
     setSortField: React.Dispatch<React.SetStateAction<SortField>>;
     setSortDirection: React.Dispatch<React.SetStateAction<SortDirection>>;
     setPlatformDataModal: React.Dispatch<React.SetStateAction<ModalState['platformDataModal']>>;
@@ -59,7 +59,7 @@ export const createHandlers = (params: HandlerParams) => {
         setSingleViewModal,
     } = params;
 
-    const handleSelectWatch = (watchId: string, checked: boolean) => {
+    const handleSelectWatch = (watchId: WatchResource['id'], checked: boolean) => {
         if (checked) {
             setSelectedWatches([...selectedWatches, watchId]);
         } else {
@@ -69,7 +69,7 @@ export const createHandlers = (params: HandlerParams) => {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedWatches(watches.map((w) => String(w.id)));
+            setSelectedWatches(watches.map((w) => (w.id)));
         } else {
             setSelectedWatches([]);
         }
@@ -77,13 +77,13 @@ export const createHandlers = (params: HandlerParams) => {
 
     const handleSelectByStatus = (status: string) => {
         const watchesByStatus = watches.filter((w) => w.status === status);
-        const statusWatchIds = watchesByStatus.map((w) => String(w.id));
+        const statusWatchIds = watchesByStatus.map((w) => (w.id));
         setSelectedWatches([
             ...new Set([...selectedWatches, ...statusWatchIds]),
         ]);
     };
 
-    const handlePlatformChange = (watchId: string, platform: string) => {
+    const handlePlatformChange = (watchId: WatchResource['id'], platform: string) => {
         // Add the watch to processing state
         setProcessingWatches((prev) => new Set([...prev, watchId]));
 

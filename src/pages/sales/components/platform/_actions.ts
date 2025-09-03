@@ -18,20 +18,6 @@ export interface PlatformField {
 }
 
 
-export const handleExportData = (watch, platformData, platform = 'catawiki') => {
-    const csvContent = [
-        "Field,Value",
-        ...platformData.map((row) => `"${row.field}","${row.value}"`),
-    ].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${watch.name}_${platform}_data.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-};
-
 
 // Platform-specific data configurations
 export const getPlatformData = (watch: WatchResource, platform: PlatformTypes): PlatformField[] => {

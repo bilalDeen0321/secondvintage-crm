@@ -12,10 +12,15 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('test', function () {
 
-    return Watch::query()->first()->platform_data;
+    $filePath = base_path('/resources/data/Catawiki_export_2025-09-03.csv'); // adjust path
+
+    $data = Excel::toArray([], $filePath);
+
+    return $data;
 });
 
 // In routes/web.php

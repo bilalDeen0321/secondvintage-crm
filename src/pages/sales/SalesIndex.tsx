@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import TablePaginate from "@/components/ui/table/TablePaginate";
 import PlatformDataModal from "@/pages/sales/components/platform/PlatformDataModal";
 import { PaginateData } from "@/types/laravel";
-import { SaleWatchResource } from "@/types/resources/watch";
+import { SaleWatchResource, WatchResource } from "@/types/resources/watch";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
 import { watchPlatformsItems } from "./_constraints";
@@ -48,11 +48,11 @@ const MultiplatformSales = (props: Props) => {
      * ============================================================================
      */
     // State management
-    const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
+    const [selectedWatches, setSelectedWatches] = useState<WatchResource["id"][]>([]);
     const [sortField, setSortField] = useState<SortField>("name");
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
     const [watchPlatforms, setWatchPlatforms] = useState(watchPlatformsItems);
-    const [processingWatches, setProcessingWatches] = useState<Set<string>>(new Set());
+    const [processingWatches, setProcessingWatches] = useState<Set<WatchResource["id"]>>(new Set());
 
     const [platformDataModal, setPlatformDataModal] = useState<{
         isOpen: boolean;
@@ -114,7 +114,7 @@ const MultiplatformSales = (props: Props) => {
                     <SaleWatchBlukActions ids={selectedWatches} locations={locations} batches={batches} />
 
                     {/* Export Actions */}
-                    <SaleExports selectedWatches={selectedWatches} watchPlatforms={watchPlatforms} watches={watches} />
+                    <SaleExports watch_ids={selectedWatches} />
                 </div>
 
                 {/* Watch Table */}

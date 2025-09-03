@@ -6,7 +6,7 @@ import { Loader2, RefreshCw, Upload } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
-    selectedWatches: string[];
+    selectedWatches: WatchResource["id"][];
     watches: WatchResource[];
     watchPlatforms: Record<string, string>;
 }
@@ -27,9 +27,7 @@ export default function TraderaActions({ selectedWatches, watches, watchPlatform
         }
 
         // Filter watches that are set to Tradera platform
-        const traderaWatches = selectedWatches.filter(
-            (watchId) => watchPlatforms[watchId] === "Tradera (Auction)",
-        );
+        const traderaWatches = selectedWatches.filter((watchId) => watchPlatforms[watchId] === "Tradera (Auction)");
 
         if (traderaWatches.length === 0) {
             toast({
@@ -47,10 +45,7 @@ export default function TraderaActions({ selectedWatches, watches, watchPlatform
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN":
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute("content") || "",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
                 },
                 body: JSON.stringify({
                     watch_ids: traderaWatches,
@@ -95,10 +90,7 @@ export default function TraderaActions({ selectedWatches, watches, watchPlatform
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN":
-                        document
-                            .querySelector('meta[name="csrf-token"]')
-                            ?.getAttribute("content") || "",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "",
                 },
             });
 
@@ -129,34 +121,22 @@ export default function TraderaActions({ selectedWatches, watches, watchPlatform
     };
 
     // Only show if any selected watches are set to Tradera
-    const hasTraderaWatches = selectedWatches.some(
-        (watchId) => watchPlatforms[watchId] === "Tradera (Auction)",
-    );
+    const hasTraderaWatches = selectedWatches.some((watchId) => watchPlatforms[watchId] === "Tradera (Auction)");
 
     if (!hasTraderaWatches) {
         return null;
     }
 
-    const traderaCount = selectedWatches.filter(
-        (watchId) => watchPlatforms[watchId] === "Tradera (Auction)",
-    ).length;
+    const traderaCount = selectedWatches.filter((watchId) => watchPlatforms[watchId] === "Tradera (Auction)").length;
 
     return (
         <div className="mb-6 flex gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
             <div className="flex items-center gap-2">
                 <Upload className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">
-                    Tradera Actions ({traderaCount} watches):
-                </span>
+                <span className="text-sm font-medium text-blue-800">Tradera Actions ({traderaCount} watches):</span>
             </div>
 
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={handleTraderaListing}
-                disabled={isProcessing}
-                className="border-blue-300 text-blue-600 hover:bg-blue-100"
-            >
+            <Button variant="outline" size="sm" onClick={handleTraderaListing} disabled={isProcessing} className="border-blue-300 text-blue-600 hover:bg-blue-100">
                 {isProcessing ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -170,13 +150,7 @@ export default function TraderaActions({ selectedWatches, watches, watchPlatform
                 )}
             </Button>
 
-            <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSyncOrders}
-                disabled={isSyncing}
-                className="border-green-300 text-green-600 hover:bg-green-100"
-            >
+            <Button variant="outline" size="sm" onClick={handleSyncOrders} disabled={isSyncing} className="border-green-300 text-green-600 hover:bg-green-100">
                 {isSyncing ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
