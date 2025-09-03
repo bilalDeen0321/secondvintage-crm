@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Platform\ExractMakeHookToTradera;
+use App\Actions\Platform\ExtractMakeHookToCatawiki;
 use App\Models\PlatformData;
 use App\Models\Watch;
 use Illuminate\Http\Request;
@@ -42,8 +44,14 @@ class PlatformDataController extends Controller
         // Update the specific platform status to loading
         $platform->update(['status' => PlatformData::STATUS_LOADING]);
 
+        match ($platformName) {
+            PlatformData::CATAWIKI => dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform)),
+            PlatformData::TRADERA => ExractMakeHookToTradera::execute(collect([]), $watch),
+            default => null,
+        };
+
         // Dispatch the job to process AI data extraction
-        dispatch(new \App\Jobs\PlatformAidataJob($watch, $platform));
+        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform));
 
         return back()->with('success', 'AI data is being generating.');
     }
