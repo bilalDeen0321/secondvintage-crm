@@ -22,8 +22,6 @@ class PlatformDataController extends Controller
     public function aiFill(Request $request, Watch $watch)
     {
 
-        dd($request->all());
-
         $request->validate([
             'platform' => 'required|string|in:' . implode(',', PlatformData::all_patforms() ?? []),
         ]);
@@ -32,7 +30,11 @@ class PlatformDataController extends Controller
 
         $platform = $watch->platforms()->where('name', $platformName)->first();
 
-        if (!$platform)  return back()->with('error', 'Platform not found for this watch.');
+        if (!$platform) {
+            $platform = $watch->platforms()->create([
+                'name' => $platformName,
+            ]);
+        };
 
         // Reset all platform statuses to default
         $watch->platforms()->getQuery()->update(['status' => PlatformData::STATUS_DEFAULT]);
@@ -43,6 +45,18 @@ class PlatformDataController extends Controller
         // Dispatch the job to process AI data extraction
         dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform));
 
-        return back()->with('success', 'AI data is being generating. This may take a moment.');
+        // return back()->with('success', 'AI data is being generating. This may take a moment.');
+    }
+
+    /**
+     * Fetch platform data for a specific watch.
+     */
+    public function fetch(Request $request, Watch $watch)
+    {
+        $request->validate(['platform' => 'required|string|']);
+
+        $platform = $watch->platforms()->where('name', $request->input('platform'))->first();
+
+        return $platform;
     }
 }

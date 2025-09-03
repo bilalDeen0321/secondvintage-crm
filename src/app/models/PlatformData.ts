@@ -19,7 +19,7 @@ export default class PlatformData {
     /**
      * All supported platforms.
      */
-    static allPlatforms(): string[] {
+    static allPlatforms() {
         return [
             this.CATAWIKI,
             this.TRADERA,
@@ -27,7 +27,7 @@ export default class PlatformData {
             this.EBAY_AUCTION,
             this.CHRONO24,
             this.WEBSHOP,
-        ];
+        ] as const;
     }
 
     /**
@@ -60,3 +60,5 @@ export default class PlatformData {
         return platforms[key] ?? key; // return null if not found
     }
 }
+
+export type PlatformTypes = ReturnType<typeof PlatformData['allPlatforms']>[number];

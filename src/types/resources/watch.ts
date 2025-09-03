@@ -1,3 +1,5 @@
+import { PlatformResource } from "./platform-data";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type WatchImageResource = {
     id: string;
@@ -44,4 +46,8 @@ export type WatchResource = {
 
     //new fields for platforms
     platform?: string | null;
+};
+
+export type SaleWatchResource = WatchResource & {
+    platforms: PlatformResource[];
 };

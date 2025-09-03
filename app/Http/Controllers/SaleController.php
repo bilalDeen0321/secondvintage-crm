@@ -27,6 +27,7 @@ class SaleController extends Controller
         // Get paginated results
         $watches = WatchQuery::init()
             ->execute($request)
+            ->with('platforms:id,name,watch_id,status,message')
             ->paginate($request->input('per_page'))
             ->withQueryString();
 

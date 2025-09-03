@@ -1,8 +1,9 @@
-import { WatchResource } from "@/types/resources/watch";
+import PlatformData, { PlatformTypes } from "@/app/models/PlatformData";
+import { SaleWatchResource, WatchResource } from "@/types/resources/watch";
 
 export interface PlatformDataModalProps {
-    watch: WatchResource | null;
-    platform: string;
+    watch: SaleWatchResource | null;
+    platform: PlatformTypes;
     isOpen: boolean;
     onClose: () => void;
     onNext?: () => void;
@@ -31,8 +32,9 @@ export const handleExportData = (watch, platformData, platform = 'catawiki') => 
     window.URL.revokeObjectURL(url);
 };
 
+
 // Platform-specific data configurations
-export const getPlatformData = (watch: WatchResource, platform: string): PlatformField[] => {
+export const getPlatformData = (watch: WatchResource, platform: PlatformTypes): PlatformField[] => {
     const statusField = {
         field: "Status",
         value: watch.status,
@@ -57,8 +59,7 @@ export const getPlatformData = (watch: WatchResource, platform: string): Platfor
     };
 
     switch (platform) {
-        case "Catawiki (Auction)":
-        case "Catawiki":
+        case PlatformData.CATAWIKI:
             return [
                 statusField,
                 descriptionField,
@@ -298,8 +299,7 @@ export const getPlatformData = (watch: WatchResource, platform: string): Platfor
                     type: "textarea",
                 },
             ];
-        case "Tradera":
-        case "Tradera (Auction)":
+        case PlatformData.TRADERA:
             return [
                 statusField,
                 descriptionField,
@@ -337,9 +337,8 @@ export const getPlatformData = (watch: WatchResource, platform: string): Platfor
                 { field: "Final Value Fee", value: "8%", type: "input" },
                 { field: "Category ID", value: "1234567", type: "input" },
             ];
-        case "eBay":
-        case "ebay (Fixed Price)":
-        case "ebay (Auction)":
+        case PlatformData.EBAY_AUCTION:
+        case PlatformData.EBAY_FIXED:
             return [
                 statusField,
                 descriptionField,
@@ -408,8 +407,7 @@ export const getPlatformData = (watch: WatchResource, platform: string): Platfor
                     type: "input",
                 },
             ];
-        case "Chrono24":
-        case "Chrono24 (Fixed Price)":
+        case PlatformData.CHRONO24:
             return [
                 statusField,
                 descriptionField,

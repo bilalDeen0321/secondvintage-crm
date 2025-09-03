@@ -19,7 +19,7 @@ const Layout = ({ children }: LayoutProps) => {
             toast.success(flash.success);
         }
         if (flash.error) {
-            toast.success(flash.error);
+            toast.error(flash.error);
         }
         if (flash.message) {
             toast(flash.message, { type: flash.status || "info" });
@@ -41,11 +41,7 @@ const Layout = ({ children }: LayoutProps) => {
                     <header className="flex items-center justify-between border-b border-border bg-card p-4 lg:hidden">
                         <div className="flex items-center space-x-3">
                             <Sidebar />
-                            <img
-                                src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png"
-                                alt="Second Vintage"
-                                className="h-8 object-contain"
-                            />
+                            <img src="/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png" alt="Second Vintage" className="h-8 object-contain" />
                         </div>
                     </header>
                 )}

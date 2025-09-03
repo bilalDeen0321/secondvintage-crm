@@ -18,3 +18,4 @@ Broadcast::channel('testing', fn() => true);
 
 Broadcast::channel('watch.{routekey}', fn() => true);
 Broadcast::channel('platform.{routekey}', fn() => true);
+Broadcast::channel('platform.fill.{routekey}', fn() => true);

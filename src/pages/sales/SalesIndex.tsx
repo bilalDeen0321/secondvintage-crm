@@ -1,9 +1,10 @@
 import { CurrencyAttributes } from "@/app/models/Currency";
+import { PlatformTypes } from "@/app/models/PlatformData";
 import Layout from "@/components/Layout";
 import TablePaginate from "@/components/ui/table/TablePaginate";
 import PlatformDataModal from "@/pages/sales/components/platform/PlatformDataModal";
 import { PaginateData } from "@/types/laravel";
-import { WatchResource } from "@/types/resources/watch";
+import { SaleWatchResource } from "@/types/resources/watch";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
 import { watchPlatformsItems } from "./_constraints";
@@ -32,13 +33,15 @@ type Props = {
     statuses: string[];
     locations: string[];
     currencies: CurrencyAttributes[];
-    watches: PaginateData<WatchResource>;
+    watches: PaginateData<SaleWatchResource>;
 };
 
 const MultiplatformSales = (props: Props) => {
     //server props
     const { locations = [], batches = [], brands = [], currencies = [] } = props || {};
     const { data: watches = [], meta } = props.watches || {};
+
+    console.log("Watches with platforms:", watches);
 
     /**
      * ============================================================================
@@ -53,17 +56,17 @@ const MultiplatformSales = (props: Props) => {
 
     const [platformDataModal, setPlatformDataModal] = useState<{
         isOpen: boolean;
-        watch: WatchResource | null;
-        platform: string;
+        watch: SaleWatchResource | null;
+        platform: PlatformTypes;
     }>({
         isOpen: false,
         watch: null,
-        platform: "",
+        platform: "" as PlatformTypes,
     });
 
     const [singleViewModal, setSingleViewModal] = useState<{
         isOpen: boolean;
-        watch: WatchResource | null;
+        watch: SaleWatchResource | null;
         selectedImageIndex: number;
     }>({
         isOpen: false,
@@ -96,60 +99,26 @@ const MultiplatformSales = (props: Props) => {
                 <div className="mb-8">
                     <div className="mb-6 flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl font-bold text-slate-900">
-                                Multi-platform Sales
-                            </h1>
-                            <p className="mt-1 text-slate-600">
-                                Select and export watches for different sales platforms
-                            </p>
+                            <h1 className="text-3xl font-bold text-slate-900">Multi-platform Sales</h1>
+                            <p className="mt-1 text-slate-600">Select and export watches for different sales platforms</p>
                         </div>
                     </div>
 
                     {/* Search and Filters */}
-                    <SaleSearchFilter
-                        brands={brands}
-                        batches={batches}
-                        watchPlatforms={watchPlatforms}
-                    />
+                    <SaleSearchFilter brands={brands} batches={batches} watchPlatforms={watchPlatforms} />
 
                     {/* Quick Selection Actions */}
-                    <SaleQuickSelectionActions
-                        handleSelectAll={handlers.handleSelectAll}
-                        handleSelectByStatus={handlers.handleSelectByStatus}
-                        watcheLength={watches.length}
-                    />
+                    <SaleQuickSelectionActions handleSelectAll={handlers.handleSelectAll} handleSelectByStatus={handlers.handleSelectByStatus} watcheLength={watches.length} />
 
                     {/* Bulk Actions */}
-                    <BulkActions
-                        selectedWatches={selectedWatches}
-                        locations={locations}
-                        batches={batches}
-                        onBulkPlatformChange={handlers.handleBulkPlatformChange}
-                    />
+                    <BulkActions selectedWatches={selectedWatches} locations={locations} batches={batches} onBulkPlatformChange={handlers.handleBulkPlatformChange} />
 
                     {/* Export Actions */}
-                    <SaleExports
-                        selectedWatches={selectedWatches}
-                        watchPlatforms={watchPlatforms}
-                        watches={watches}
-                    />
+                    <SaleExports selectedWatches={selectedWatches} watchPlatforms={watchPlatforms} watches={watches} />
                 </div>
 
                 {/* Watch Table */}
-                <WatchTable
-                    watches={watches}
-                    selectedWatches={selectedWatches}
-                    watchPlatforms={watchPlatforms}
-                    processingWatches={processingWatches}
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSelectWatch={handlers.handleSelectWatch}
-                    onSelectAll={handlers.handleSelectAll}
-                    onSort={handlers.handleSort}
-                    onPlatformChange={handlers.handlePlatformChange}
-                    onViewPlatformData={handlers.handleViewPlatformData}
-                    onOpenSingleView={handlers.handleOpenSingleView}
-                />
+                <WatchTable watches={watches} selectedWatches={selectedWatches} watchPlatforms={watchPlatforms} processingWatches={processingWatches} sortField={sortField} sortDirection={sortDirection} onSelectWatch={handlers.handleSelectWatch} onSelectAll={handlers.handleSelectAll} onSort={handlers.handleSort} onPlatformChange={handlers.handlePlatformChange} onViewPlatformData={handlers.handleViewPlatformData} onOpenSingleView={handlers.handleOpenSingleView} />
 
                 {/* Empty State */}
                 {watches.length === 0 && <EmptyState />}
@@ -158,25 +127,10 @@ const MultiplatformSales = (props: Props) => {
                 {meta?.total > meta?.per_page && <TablePaginate links={meta.links} />}
 
                 {/* Platform Data Modal with Navigation */}
-                {platformDataModal.watch && (
-                    <PlatformDataModal
-                        watch={platformDataModal.watch}
-                        platform={platformDataModal.platform}
-                        isOpen={platformDataModal.isOpen}
-                        onClose={handlers.closePlatformDataModal}
-                        onNext={handlers.handleModalNext}
-                        onPrevious={handlers.handleModalPrevious}
-                    />
-                )}
+                {platformDataModal.watch && <PlatformDataModal watch={platformDataModal.watch} platform={platformDataModal.platform} isOpen={platformDataModal.isOpen} onClose={handlers.closePlatformDataModal} onNext={handlers.handleModalNext} onPrevious={handlers.handleModalPrevious} />}
 
                 {/* Single View Modal */}
-                <SingleViewModal
-                    isOpen={singleViewModal.isOpen}
-                    watch={singleViewModal.watch}
-                    selectedImageIndex={singleViewModal.selectedImageIndex}
-                    onClose={handlers.closeSingleViewModal}
-                    onThumbnailClick={handlers.handleThumbnailClick}
-                />
+                <SingleViewModal isOpen={singleViewModal.isOpen} watch={singleViewModal.watch} selectedImageIndex={singleViewModal.selectedImageIndex} onClose={handlers.closeSingleViewModal} onThumbnailClick={handlers.handleThumbnailClick} />
             </div>
         </Layout>
     );

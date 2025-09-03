@@ -13,6 +13,8 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Sleep;
 
 class ProcessMakeHookCatawiki implements ShouldQueue
 {
@@ -34,9 +36,7 @@ class ProcessMakeHookCatawiki implements ShouldQueue
         try {
             $this->handler();
         } catch (\Throwable $th) {
-
-            Log::error('Failed ai generate catawiki', $th->getMessage());
-
+            Log::error(__METHOD__, $th->getMessage());
             $this->updatePlatformStatus(PlatformData::STATUS_FAILED, ['message' => $th->getMessage()]);
         }
     }
@@ -66,16 +66,16 @@ class ProcessMakeHookCatawiki implements ShouldQueue
 
         $payload = array_filter($payload, fn($v) => $v !== null);
 
-        try {
-            $make = MakeAiHook::init()->generateCatawikiData($payload);
+        Sleep::for(10)->seconds();
 
-            if ($make->get('Status') === 'success') {
-                $this->handleSuccess($make);
-            } else {
-                $this->handleFailure($make);
-            }
-        } catch (\Throwable $th) {
-            $this->updatePlatformStatus(PlatformData::STATUS_FAILED, ['message' => $th->getMessage()]);
+        $make = Collection::fromJson(File::get(base_path('docs/data/catawiki-response.json')));
+
+        // $make = MakeAiHook::init()->generateCatawikiData($payload);
+
+        if ($make->get('Status') === 'success') {
+            $this->handleSuccess($make);
+        } else {
+            $this->handleFailure($make);
         }
     }
 

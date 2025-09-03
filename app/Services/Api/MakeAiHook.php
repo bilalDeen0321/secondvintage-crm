@@ -45,7 +45,7 @@ class MakeAiHook
 
             $response = $this->request($payload);
 
-            Log::info('MakeAiHook', $response->body());
+            Log::info(__METHOD__, $response->body());
 
             //send back
             return $response->collect()
@@ -73,7 +73,7 @@ class MakeAiHook
 
             $response = $this->request($payload);
 
-            Log::info('MakeAiHook - Catawiki Data Generation', $response->body());
+            Log::info(__METHOD__, $response->body());
 
             // Send back response
             return $response->collect()

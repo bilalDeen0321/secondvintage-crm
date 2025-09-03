@@ -12,6 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProcessPlatformEvent implements ShouldBroadcastNow
 {
@@ -22,7 +23,11 @@ class ProcessPlatformEvent implements ShouldBroadcastNow
      */
     public function __construct(public Watch $watch, public PlatformData $platform)
     {
-        //
+        Log::info(__METHOD__, [
+            'watch' => $this->watch->sku,
+            'platform' => $this->platform->name,
+            'platform_status' => $this->platform->status,
+        ]);
     }
 
     /**
@@ -32,15 +37,20 @@ class ProcessPlatformEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('platform.' . $this->watch->getRouteKey());
+        $routeKey = $this->watch->getRouteKey();
+
+        return [
+            new Channel("platform.{$routeKey}"),
+            new Channel("platform.fill.{$routeKey}"),
+        ];
     }
 
 
     /**
      * Data to broadcast to frontend.
      */
-    public function broadcastWith(): array
-    {
-        return $this->platform->toArray();
-    }
+    // public function broadcastWith(): array
+    // {
+    //     return $this->platform->toArray();
+    // }
 }

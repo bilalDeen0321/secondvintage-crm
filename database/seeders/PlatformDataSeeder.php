@@ -16,23 +16,35 @@ class PlatformDataSeeder extends Seeder
     public function run(): void
     {
 
+        Watch::query()->update(['platform' => null]);
+        PlatformData::query()->delete();
+
         $data = json_decode(File::get(base_path('/resources/data/platform_data.json')), true);
 
         Watch::query()->get()->each(function (Watch $watch) use ($data) {
+
             foreach ($data as $item) {
-                PlatformData::updateOrCreate(
-                    [
+
+                $status = fake()->randomElement([PlatformData::CATAWIKI,   PlatformData::TRADERA, null]);
+
+                if ($status === $item['name']) {
+
+                    $watch->update(['platform' => $status]);
+
+                    $attributes = [
                         'watch_id' => $watch->id,
                         'name' => $item['name'],
-                    ],
-                    [
-                        'data' => $item['data'],
-                        'status' => PlatformData::STATUS_REVIEW,
-                    ]
-                );
-            }
+                    ];
 
-            $watch->update(['platform' => fake()->randomElement(PlatformData::all_patforms())]);
+                    PlatformData::updateOrCreate(
+                        $attributes,
+                        [
+                            'data' => $item['data'],
+                            'status' => $status,
+                        ]
+                    );
+                }
+            }
         });
     }
 }
