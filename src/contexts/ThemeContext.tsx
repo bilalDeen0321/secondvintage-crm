@@ -24,6 +24,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
     const context = useContext(ThemeContext);
     if (!context) {
@@ -32,9 +33,7 @@ export const useTheme = () => {
     return context;
 };
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
-    children,
-}) => {
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [colorTheme, setColorTheme] = useState<ColorTheme>("default");
 
     useEffect(() => {

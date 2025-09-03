@@ -41,4 +41,7 @@ export type WatchResource = {
     ai_message?: null | string;
     brand: string | null;
     batch: any; // adjust to actual batch type if available
+
+    //new fields for platforms
+    platform?: string | null;
 };

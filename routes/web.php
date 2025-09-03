@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Currency;
 use App\Models\Location;
 use App\Models\Status;
+use App\Models\Watch;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +15,7 @@ use Inertia\Inertia;
 
 Route::get('test', function () {
 
-    return route('webhook.tradera-v1');
+    return Watch::query()->first()->platform_data;
 });
 
 // In routes/web.php

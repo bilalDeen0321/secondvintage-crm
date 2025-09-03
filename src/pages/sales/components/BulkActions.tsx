@@ -1,3 +1,4 @@
+import PlatformData from "@/app/models/PlatformData";
 import Status from "@/app/models/Status";
 import {
     Select,
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Edit } from "lucide-react";
 import React from "react";
-import { platforms } from "../_constraints";
+import { isDisablePlatform } from "../_helpers";
 
 interface BulkActionsProps {
     selectedWatches: string[];
@@ -23,16 +24,6 @@ const BulkActions: React.FC<BulkActionsProps> = ({
     batches,
     onBulkPlatformChange,
 }) => {
-    // Helper function to determine if a platform should be greyed out
-    const isGreyedOutPlatform = (platform: string) => {
-        return [
-            "eBay (Fixed Price)",
-            "eBay (Auction)",
-            "Chrono24 (Fixed Price)",
-            "Webshop (Fixed Price)",
-        ].includes(platform);
-    };
-
     if (selectedWatches.length === 0) {
         return null;
     }
@@ -103,17 +94,14 @@ const BulkActions: React.FC<BulkActionsProps> = ({
                         <SelectValue placeholder="Change Platform" />
                     </SelectTrigger>
                     <SelectContent>
-                        {platforms.map((platform) => (
+                        {["None", ...PlatformData.allPlatforms()].map((platform) => (
                             <SelectItem
                                 key={platform}
                                 value={platform}
-                                className={
-                                    isGreyedOutPlatform(platform)
-                                        ? "text-gray-400"
-                                        : ""
-                                }
+                                disabled={isDisablePlatform(platform)}
+                                className={isDisablePlatform(platform) ? "text-gray-400" : ""}
                             >
-                                {platform}
+                                {PlatformData.toLabel(platform)}
                             </SelectItem>
                         ))}
                     </SelectContent>

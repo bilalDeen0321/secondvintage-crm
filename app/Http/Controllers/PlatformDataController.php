@@ -22,24 +22,26 @@ class PlatformDataController extends Controller
     public function aiFill(Request $request, Watch $watch)
     {
 
+        dd($request->all());
+
         $request->validate([
-            'platform' => 'required|string|in:' . implode(',', PlatformData::PLATFORMS ?? []),
+            'platform' => 'required|string|in:' . implode(',', PlatformData::all_patforms() ?? []),
         ]);
 
-        $platform = $request->input('platform');
+        $platformName = $request->input('platform');
 
-        // Update watch table to set the platform name
-        $watch->update(['platform' => $platform]);
+        $platform = $watch->platforms()->where('name', $platformName)->first();
 
+        if (!$platform)  return back()->with('error', 'Platform not found for this watch.');
+
+        // Reset all platform statuses to default
         $watch->platforms()->getQuery()->update(['status' => PlatformData::STATUS_DEFAULT]);
 
-        $watch->platforms()
-            ->getQuery()
-            ->where('name', $platform)
-            ->update(['status' => PlatformData::STATUS_LOADING]);
+        // Update the specific platform status to loading
+        $platform->update(['status' => PlatformData::STATUS_LOADING]);
 
         // Dispatch the job to process AI data extraction
-        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch));
+        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform));
 
         return back()->with('success', 'AI data is being generating. This may take a moment.');
     }

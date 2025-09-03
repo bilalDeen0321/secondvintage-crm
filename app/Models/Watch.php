@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy(WatchObserver::class)]
@@ -50,6 +51,7 @@ class Watch extends Model
         'brand_id',
         'user_id',
         'batch_id',
+        'platform',
     ];
 
     /**
@@ -192,6 +194,8 @@ class Watch extends Model
     {
         return $this->hasMany(PlatformData::class);
     }
+
+
 
     /**
      * Get the transactions for this model

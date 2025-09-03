@@ -32,7 +32,7 @@ class PlatformDataSeeder extends Seeder
                 );
             }
 
-            $watch->update(['platform' => fake()->randomElement(PlatformData::PLATFORMS)]);
+            $watch->update(['platform' => fake()->randomElement(PlatformData::all_patforms())]);
         });
     }
 }

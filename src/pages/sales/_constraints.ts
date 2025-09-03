@@ -1,12 +1,3 @@
-export const platforms = [
-    "None",
-    "Catawiki (Auction)",
-    "Tradera (Auction)",
-    "eBay (Fixed Price)",
-    "eBay (Auction)",
-    "Chrono24 (Fixed Price)",
-    "Webshop (Fixed Price)",
-];
 
 
 export const watchPlatformsItems = {

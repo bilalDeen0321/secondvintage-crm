@@ -158,14 +158,16 @@ const MultiplatformSales = (props: Props) => {
                 {meta?.total > meta?.per_page && <TablePaginate links={meta.links} />}
 
                 {/* Platform Data Modal with Navigation */}
-                <PlatformDataModal
-                    watch={platformDataModal.watch}
-                    platform={platformDataModal.platform}
-                    isOpen={platformDataModal.isOpen}
-                    onClose={handlers.closePlatformDataModal}
-                    onNext={handlers.handleModalNext}
-                    onPrevious={handlers.handleModalPrevious}
-                />
+                {platformDataModal.watch && (
+                    <PlatformDataModal
+                        watch={platformDataModal.watch}
+                        platform={platformDataModal.platform}
+                        isOpen={platformDataModal.isOpen}
+                        onClose={handlers.closePlatformDataModal}
+                        onNext={handlers.handleModalNext}
+                        onPrevious={handlers.handleModalPrevious}
+                    />
+                )}
 
                 {/* Single View Modal */}
                 <SingleViewModal
