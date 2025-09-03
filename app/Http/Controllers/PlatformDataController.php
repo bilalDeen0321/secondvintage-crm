@@ -23,7 +23,7 @@ class PlatformDataController extends Controller
     {
 
         $request->validate([
-            'platform' => 'required|string|in:' . implode(',', PlatformData::all_patforms() ?? []),
+            'platform' => 'required|string|in:' . PlatformData::CATAWIKI,
         ]);
 
         $platformName = $request->input('platform');
@@ -43,9 +43,9 @@ class PlatformDataController extends Controller
         $platform->update(['status' => PlatformData::STATUS_LOADING]);
 
         // Dispatch the job to process AI data extraction
-        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform));
+        dispatch(new \App\Jobs\PlatformAidataJob($watch, $platform));
 
-        // return back()->with('success', 'AI data is being generating. This may take a moment.');
+        return back()->with('success', 'AI data is being generating.');
     }
 
     /**

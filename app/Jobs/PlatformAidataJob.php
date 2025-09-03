@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Sleep;
 
-class ProcessMakeHookCatawiki implements ShouldQueue
+class PlatformAidataJob implements ShouldQueue
 {
     use Queueable, Dispatchable, SerializesModels;
 
@@ -82,6 +82,7 @@ class ProcessMakeHookCatawiki implements ShouldQueue
             $this->handleFailure($make);
         }
     }
+
 
     private function handleSuccess(Collection $make): void
     {
