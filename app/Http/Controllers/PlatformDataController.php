@@ -59,4 +59,24 @@ class PlatformDataController extends Controller
 
         return $platform;
     }
+
+    /**
+     * Handle changes to platform data.
+     */
+    public function changes(Request $request, Watch $watch)
+    {
+        $platform = $request->input('platform');
+
+        if ($watch->platforms()->where('name', $platform)->exists()) {
+            return back();
+        }
+
+        if (in_array($platform, PlatformData::all_patforms())) {
+            return $this->aiFill($request, $watch);
+        }
+
+        $watch->update(['platform' => null]);
+
+        return back()->with('success', 'Platform was unselect.');
+    }
 }
