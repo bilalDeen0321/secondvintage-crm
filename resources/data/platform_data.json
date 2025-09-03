@@ -1,0 +1,406 @@
+[
+    {
+        "name": "catawiki",
+        "data": [
+            {
+                "field": "Status",
+                "value": "listed",
+                "type": "select",
+                "options": [
+                    "Draft",
+                    "Review",
+                    "Approved",
+                    "Platform Review",
+                    "Ready for listing",
+                    "Listed",
+                    "Reserved",
+                    "Sold",
+                    "Defect/Problem",
+                    "Standby"
+                ]
+            },
+            {
+                "field": "Description",
+                "value": "Elegant dress watch with moon phase complication. Automatic movement.",
+                "type": "textarea"
+            },
+            {
+                "field": "Catawiki - Your Reference Number (optional)",
+                "value": "LON-LMC-0001",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Your Reference Colour (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Auction Type (333) (optional)",
+                "value": "333",
+                "type": "select",
+                "options": [
+                    "333",
+                    "334",
+                    "335"
+                ]
+            },
+            {
+                "field": "Catawiki - Object type (18127)",
+                "value": "18127",
+                "type": "select",
+                "options": [
+                    "18127",
+                    "18128",
+                    "18129"
+                ]
+            },
+            {
+                "field": "Catawiki - Language",
+                "value": "English",
+                "type": "select",
+                "options": [
+                    "English",
+                    "Dutch",
+                    "German",
+                    "French"
+                ]
+            },
+            {
+                "field": "Catawiki - Description",
+                "value": "Elegant dress watch with moon phase complication. Automatic movement.",
+                "type": "textarea"
+            },
+            {
+                "field": "Catawiki - D: Brand",
+                "value": "Longines",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Model (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Reference Number (optional)",
+                "value": "LON-LMC-0001",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Shipped Insured",
+                "value": "Yes",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Period",
+                "value": "2020s",
+                "type": "select",
+                "options": [
+                    "1950s",
+                    "1960s",
+                    "1970s",
+                    "1980s",
+                    "1990s",
+                    "2000s",
+                    "2010s",
+                    "2020s"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Movement",
+                "value": "Automatic",
+                "type": "select",
+                "options": [
+                    "Automatic",
+                    "Manual",
+                    "Quartz"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Case material",
+                "value": "Stainless Steel",
+                "type": "select",
+                "options": [
+                    "Stainless Steel",
+                    "Gold",
+                    "Rose Gold",
+                    "Titanium",
+                    "Ceramic"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Case diameter",
+                "value": "40mm",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Condition",
+                "value": "Very Good",
+                "type": "select",
+                "options": [
+                    "New",
+                    "Very Good",
+                    "Good",
+                    "Fair",
+                    "Poor"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Gender",
+                "value": "Men",
+                "type": "select",
+                "options": [
+                    "Men",
+                    "Women",
+                    "Unisex"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Band material",
+                "value": "Stainless Steel",
+                "type": "select",
+                "options": [
+                    "Stainless Steel",
+                    "Leather",
+                    "Rubber",
+                    "Gold",
+                    "Ceramic"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Band length (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Repainted dial",
+                "value": "No",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Dial colour (optional)",
+                "value": "Black",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Original box included",
+                "value": "Yes",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Original papers included",
+                "value": "Yes",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Original warranty included",
+                "value": "No",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - D: Year (optional)",
+                "value": "2020",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Weight",
+                "value": "150g",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: Width lug/ watch band",
+                "value": "20mm",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - D: In working order (optional)",
+                "value": "Yes",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - Public photo URL",
+                "value": "/lovable-uploads/e42df4f6-4752-4442-9e7c-06e8184162be.png",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Estimated lot value",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Reserve price (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Start bidding from (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Pick up (optional)",
+                "value": "No",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - Combined shipping (optional)",
+                "value": "Yes",
+                "type": "select",
+                "options": [
+                    "Yes",
+                    "No"
+                ]
+            },
+            {
+                "field": "Catawiki - Shipping costs",
+                "value": "€0",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Shipping costs - Europe",
+                "value": "€15",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Shipping costs - Rest of World",
+                "value": "€25",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Country specific shipping price (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Shipping profile (optional)",
+                "value": "",
+                "type": "input"
+            },
+            {
+                "field": "Catawiki - Message to Expert (optional)",
+                "value": "",
+                "type": "textarea"
+            }
+        ]
+    },
+    {
+        "name": "tradera",
+        "data": [
+            {
+                "field": "Status",
+                "value": "listed",
+                "type": "select",
+                "options": [
+                    "Draft",
+                    "Review",
+                    "Approved",
+                    "Platform Review",
+                    "Ready for listing",
+                    "Listed",
+                    "Reserved",
+                    "Sold",
+                    "Defect/Problem",
+                    "Standby"
+                ]
+            },
+            {
+                "field": "Description",
+                "value": "Elegant dress watch with moon phase complication. Automatic movement.",
+                "type": "textarea"
+            },
+            {
+                "field": "Name",
+                "value": "Longines Master Collection",
+                "type": "input"
+            },
+            {
+                "field": "SKU",
+                "value": "LON-LMC-0001",
+                "type": "input"
+            },
+            {
+                "field": "Brand",
+                "value": "Longines",
+                "type": "input"
+            },
+            {
+                "field": "Location",
+                "value": "Vietnam",
+                "type": "input"
+            },
+            {
+                "field": "Buy It Now Price",
+                "value": "",
+                "type": "number"
+            },
+            {
+                "field": "Starting Bid",
+                "value": "",
+                "type": "number"
+            },
+            {
+                "field": "Listing Duration",
+                "value": "10 days",
+                "type": "select",
+                "options": [
+                    "3 days",
+                    "5 days",
+                    "7 days",
+                    "10 days"
+                ]
+            },
+            {
+                "field": "Payment Methods",
+                "value": "PayPal, Bank Transfer",
+                "type": "input"
+            },
+            {
+                "field": "Shipping Cost",
+                "value": "€15",
+                "type": "number"
+            },
+            {
+                "field": "Listing Fee",
+                "value": "€2.50",
+                "type": "number"
+            },
+            {
+                "field": "Final Value Fee",
+                "value": "8%",
+                "type": "input"
+            },
+            {
+                "field": "Category ID",
+                "value": "1234567",
+                "type": "input"
+            }
+        ]
+    }
+]

@@ -20,6 +20,8 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
         const data = getPlatformData(watch, platform);
         setPlatformData(data);
         setSelectedImageIndex(0);
+
+        console.log(platform, data);
     }, [watch, platform]);
 
     if (!watch) return null;

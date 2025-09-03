@@ -10,6 +10,30 @@ class PlatformData extends Model
     /** @use HasFactory<\Database\Factories\PlatformDataFactory> */
     use HasFactory;
 
+    // defines all status constants
+    const STATUS_REVIEW = 'review';
+    const STATUS_DEFAULT = 'default';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_LOADING = 'loading';
+    const STATUS_FAILED = 'failed';
+    const STATUS_SUCCESS = 'success';
+
+    //Contraints platform names.
+    const PlATFORM_CATAWIKI = 'catawiki';
+    const PlATFORM_TRADERA = 'tradera';
+    const PlATFORM_EBAY = 'eBay';
+    const PlATFORM_CHRONO24 = 'Chrono24';
+
+    /**
+     * All supported platforms.
+     */
+    const PLATFORMS = [
+        self::PlATFORM_CATAWIKI,
+        self::PlATFORM_TRADERA,
+        self::PlATFORM_EBAY,
+        self::PlATFORM_CHRONO24
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -17,7 +41,7 @@ class PlatformData extends Model
      */
     protected $fillable = [
         'watch_id',
-        'platform',
+        'name',
         'data',
         'status',
     ];

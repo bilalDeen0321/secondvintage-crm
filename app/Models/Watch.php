@@ -186,14 +186,6 @@ class Watch extends Model
     }
 
     /**
-     * Get the platform for this model
-     */
-    public function platform()
-    {
-        return $this->hasOne(WatchPlatform::class);
-    }
-
-    /**
      * Get the platform data for this model
      */
     public function platformData()
