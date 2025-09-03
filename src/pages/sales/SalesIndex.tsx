@@ -9,11 +9,11 @@ import { Head } from "@inertiajs/react";
 import { useState } from "react";
 import { watchPlatformsItems } from "./_constraints";
 import { createHandlers, SortDirection, SortField } from "./_handlers";
-import BulkActions from "./components/BulkActions";
 import EmptyState from "./components/EmptyState";
 import SaleExports from "./components/SaleExports";
 import SaleQuickSelectionActions from "./components/SaleQuickSelectionActions";
 import { SaleSearchFilter } from "./components/SaleSearchFilter";
+import SaleWatchBlukActions from "./components/SaleWatchBlukActions";
 import SingleViewModal from "./components/SingleViewModal";
 import WatchTable from "./components/WatchTable";
 
@@ -111,7 +111,7 @@ const MultiplatformSales = (props: Props) => {
                     <SaleQuickSelectionActions handleSelectAll={handlers.handleSelectAll} handleSelectByStatus={handlers.handleSelectByStatus} watcheLength={watches.length} />
 
                     {/* Bulk Actions */}
-                    <BulkActions selectedWatches={selectedWatches} locations={locations} batches={batches} onBulkPlatformChange={handlers.handleBulkPlatformChange} />
+                    <SaleWatchBlukActions ids={selectedWatches} locations={locations} batches={batches} onBulkPlatformChange={handlers.handleBulkPlatformChange} />
 
                     {/* Export Actions */}
                     <SaleExports selectedWatches={selectedWatches} watchPlatforms={watchPlatforms} watches={watches} />

@@ -42,6 +42,7 @@ Route::resource('watches', WatchController::class);
 Route::prefix('platform-data')->name('platform-data.')->group(function () {
     Route::post('ai-fill/{watch}', [PlatformDataController::class, 'aiFill'])->name('ai-fill');
     Route::post('changes/{watch}', [PlatformDataController::class, 'changes'])->name('changes');
+    Route::post('bulk-actions', [PlatformDataController::class, 'bulkActions'])->name('bulk-actions');
     Route::get('fetch/{watch}', [PlatformDataController::class, 'fetch'])->name('fetch');
 });
 Route::resource('sales', SaleController::class);

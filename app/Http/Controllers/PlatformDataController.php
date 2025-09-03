@@ -7,6 +7,7 @@ use App\Actions\Platform\ExtractMakeHookToCatawiki;
 use App\Models\PlatformData;
 use App\Models\Watch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlatformDataController extends Controller
 {
@@ -86,5 +87,37 @@ class PlatformDataController extends Controller
         $watch->update(['platform' => null]);
 
         return back()->with('success', 'Platform was unselect.');
+    }
+
+
+    /**
+     * Handle bulk actions on platform data.
+     */
+    public function bulkActions(Request $request)
+    {
+
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:watches,id',
+            'platform' => 'required|string',
+        ]);
+
+        $ids = $request->input('ids', []);
+        $platform = $request->input('platform', null);
+
+        DB::transaction(function () use ($ids, $platform) {
+            $watches = Watch::whereIn('id', $ids)->get();
+            foreach ($watches as $watch) {
+                if ($platform && in_array($platform, PlatformData::all_patforms())) {
+                    \App\Actions\Platform\WatchPlatformAction::execute($watch, $platform);
+                } else {
+                    // If platform is empty or invalid, remove the platform data
+                    // $watch->platforms()->delete();
+                    $watch->update(['platform' => null]);
+                }
+            }
+        });
+
+        return back()->with('success', 'Bulk platform changes action initiated.');
     }
 }
