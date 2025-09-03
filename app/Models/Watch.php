@@ -188,7 +188,7 @@ class Watch extends Model
     /**
      * Get the platform data for this model
      */
-    public function platformData()
+    public function platforms()
     {
         return $this->hasMany(PlatformData::class);
     }

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { router, usePage } from "@inertiajs/react";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPlatformData, PlatformDataModalProps, PlatformField } from "./_actions";
@@ -9,6 +10,7 @@ import { PlatformNavigation } from "./PlatformNavigation";
 import PlatformNotes from "./PlatformNotes";
 
 const PlatformDataModal = (props: PlatformDataModalProps) => {
+    const page = usePage();
     const { watch, platform, isOpen, onClose } = props;
     const [platformData, setPlatformData] = useState<PlatformField[]>([]);
     const [isAIProcessing, setIsAIProcessing] = useState(false);
@@ -24,16 +26,42 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
         console.log(platform, data);
     }, [watch, platform]);
 
+    // useEffect(() => {
+    //     const { success, error, aiData, platform: responsePlatform } = page.props as any;
+
+    //     if (success && aiData && responsePlatform === platform.toLowerCase()) {
+    //         console.log("AI Fill success:", aiData);
+    //         const updatedData = platformData.map((field) => {
+    //             if (aiData[field.field]) {
+    //                 return { ...field, value: aiData[field.field] };
+    //             }
+    //             return field;
+    //         });
+    //         setPlatformData(updatedData);
+    //         setIsAIProcessing(false);
+    //     }
+
+    //     if (error) {
+    //         console.error("AI Fill error:", error);
+    //         setIsAIProcessing(false);
+    //     }
+    // }, [pageProps, platform, platformData]);
+
     if (!watch) return null;
 
     const handleFillWithAI = () => {
+        if (isAIProcessing) return;
         setIsAIProcessing(true);
-        console.log("Filling data with AI for platform:", platform);
-
-        // Remove processing state after 3 seconds
-        setTimeout(() => {
-            setIsAIProcessing(false);
-        }, 3000);
+        const url = route("platform-data.ai-fill", watch.routeKey);
+        router.post(
+            url,
+            { platform: "catawiki" },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onFinish: () => setIsAIProcessing(false),
+            },
+        );
     };
 
     const handleSave = () => {

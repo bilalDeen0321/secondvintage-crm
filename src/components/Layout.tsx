@@ -22,9 +22,16 @@ const Layout = ({ children }: LayoutProps) => {
             toast.success(flash.error);
         }
         if (flash.message) {
-            toast(flash.message, { type: flash.status || 'info' });
+            toast(flash.message, { type: flash.status || "info" });
         }
     }, [flash]);
+
+    const errors = props.errors;
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            toast.error(errors[Object.keys(errors)[0]]);
+        }
+    }, [errors]);
 
     return (
         <div className="flex min-h-screen bg-background">

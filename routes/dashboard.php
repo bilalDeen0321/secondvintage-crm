@@ -6,6 +6,7 @@ use App\Http\Controllers\AgentWatchController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FullDataViewController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LogController;
@@ -37,6 +38,10 @@ Route::post('watches/bulk-action', [WatchController::class, 'bulkActions'])->nam
 Route::post('watches/{watch}/approve', [WatchController::class, 'approve'])->name('watches.approve');
 Route::resource('watches', WatchController::class);
 
+
+Route::prefix('platform-data')->name('platform-data.')->group(function () {
+    Route::post('ai-fill/{watch}', [PlatformDataController::class, 'aiFill'])->name('ai-fill');
+});
 Route::resource('sales', SaleController::class);
 Route::resource('brands', BrandController::class);
 Route::resource('batches', BatchController::class);
@@ -55,7 +60,7 @@ Route::resource('agent-watches', AgentWatchController::class);
 Route::resource('sellers', SellerController::class);
 Route::resource('invoices', InvoiceController::class);
 Route::resource('tools', ToolController::class);
-Route::resource('data', PlatformDataController::class);
+Route::resource('data', FullDataViewController::class);
 Route::resource('settings', SettingController::class);
 Route::resource('log', LogController::class);
 

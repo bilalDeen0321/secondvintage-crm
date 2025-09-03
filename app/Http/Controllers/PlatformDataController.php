@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePlatformDataRequest;
-use App\Http\Requests\UpdatePlatformDataRequest;
 use App\Models\PlatformData;
-use Inertia\Inertia;
+use App\Models\Watch;
+use Illuminate\Http\Request;
 
 class PlatformDataController extends Controller
 {
@@ -18,58 +17,30 @@ class PlatformDataController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Fill platform data using AI.
      */
-    public function index()
+    public function aiFill(Request $request, Watch $watch)
     {
-        return Inertia::render('FullDataView');
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $request->validate([
+            'platform' => 'required|string|in:' . implode(',', PlatformData::PLATFORMS ?? []),
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePlatformDataRequest $request)
-    {
-        //
-    }
+        $platform = $request->input('platform');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PlatformData $platformData)
-    {
-        //
-    }
+        // Update watch table to set the platform name
+        $watch->update(['platform' => $platform]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PlatformData $platformData)
-    {
-        //
-    }
+        $watch->platforms()->getQuery()->update(['status' => PlatformData::STATUS_DEFAULT]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePlatformDataRequest $request, PlatformData $platformData)
-    {
-        //
-    }
+        $watch->platforms()
+            ->getQuery()
+            ->where('name', $platform)
+            ->update(['status' => PlatformData::STATUS_LOADING]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PlatformData $platformData)
-    {
-        //
+        // Dispatch the job to process AI data extraction
+        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch));
+
+        return back()->with('success', 'AI data is being generating. This may take a moment.');
     }
 }
