@@ -13,13 +13,12 @@ export interface SaleTableWatchItemProps {
     onPlatformChange: WatchTableProps["onPlatformChange"];
     onSelectWatch: WatchTableProps["onSelectWatch"];
     onViewPlatformData: WatchTableProps["onViewPlatformData"];
-    processingWatches: Set<WatchResource["id"]>;
     selectedWatches: WatchResource["id"][];
     watch: SaleWatchResource;
     watchPlatforms: Record<string, string>;
 }
 
-export default function SaleTableWatchItem({ onOpenSingleView, onSelectWatch, onViewPlatformData, processingWatches, selectedWatches, watch, watchPlatforms }: SaleTableWatchItemProps) {
+export default function SaleTableWatchItem({ onOpenSingleView, onSelectWatch, onViewPlatformData, selectedWatches, watch, watchPlatforms }: SaleTableWatchItemProps) {
     const [platform, setPlatform] = useState<string>(watch.platform || "None");
     const [processing, setLoading] = useState(false);
 
@@ -30,7 +29,7 @@ export default function SaleTableWatchItem({ onOpenSingleView, onSelectWatch, on
     const onPlatformChange = (value: string) => {
         setPlatform(value);
         setLoading(true);
-        onSelectWatch(String(watch.id), false); // Deselect the watch when platform changes
+        onSelectWatch(watch.id, false); // Deselect the watch when platform changes
         setTimeout(() => {
             setLoading(false);
         }, 2000); // Simulate loading time
@@ -39,7 +38,7 @@ export default function SaleTableWatchItem({ onOpenSingleView, onSelectWatch, on
     return (
         <tr key={watch.id} className={`hover:bg-slate-50 ${selectedWatches.includes(watch.id) ? "bg-amber-50" : ""}`}>
             <td className="p-3">
-                <Checkbox checked={selectedWatches.includes(watch.id)} onCheckedChange={(checked) => onSelectWatch(String(watch.id), checked as boolean)} />
+                <Checkbox checked={selectedWatches.includes(watch.id)} onCheckedChange={(checked) => onSelectWatch(watch.id, checked as boolean)} />
             </td>
             <td className="p-3">
                 <div className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-slate-100 hover:opacity-80" onClick={() => onOpenSingleView(watch)}>

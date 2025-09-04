@@ -7,6 +7,8 @@
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
     <meta name="description" content="Lovable Generated Project" />
     <meta name="author" content="Lovable" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    </meta>
 
     <meta property="og:title" content="vintage-watch-compass" />
     <meta property="og:description" content="Lovable Generated Project" />

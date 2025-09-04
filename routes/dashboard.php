@@ -6,7 +6,7 @@ use App\Http\Controllers\AgentWatchController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ExportController;
+use App\Http\Controllers\Sale\ExportController;
 use App\Http\Controllers\FullDataViewController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\InvoiceController;
@@ -46,12 +46,13 @@ Route::prefix('platform-data')->name('platform-data.')->group(function () {
     Route::post('bulk-actions', [PlatformDataController::class, 'bulkActions'])->name('bulk-actions');
     Route::get('fetch/{watch}', [PlatformDataController::class, 'fetch'])->name('fetch');
 });
+
+Route::prefix('sales/exports')->name('sales.exports.')->group(function () {
+    Route::post('catawiki', [ExportController::class, 'catawiki'])->name('catawiki');
+});
 Route::resource('sales', SaleController::class);
 
-//create exports and import routes
-Route::prefix('exports')->name('exports.')->group(function () {
-    Route::get('catawiki', [ExportController::class, 'catawiki'])->name('catawiki');
-});
+
 Route::resource('brands', BrandController::class);
 Route::resource('batches', BatchController::class);
 

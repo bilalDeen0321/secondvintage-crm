@@ -1,9 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sale;
 
+use App\Http\Controllers\Controller;
 use App\Models\Watch;
+use App\Exports\CatawikiExport;
+use App\Models\PlatformData;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
 {
@@ -15,9 +19,22 @@ class ExportController extends Controller
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'exists:watches,id',
+            'platform' => 'string|in:catawiki,tradera'
         ]);
 
-        $watches = Watch::query()->whereIn('id', $request->ids)->get();
+        $ids = $request->input('ids', []);
+
+        if ($watch = Watch::whereIn('id', $ids)->whereNot('platform', PlatformData::CATAWIKI)->first()) {
+            return back()->with(
+                'error',
+                sprintf('Watch %s is not set to Catawiki platform.', $watch->name)
+            );
+        }
+
+        // Generate filename with timestamp
+        $filename = 'Catawiki_export_' . now()->format('Y-m-d') . '.csv';
+
+        return Excel::download(new CatawikiExport($ids), $filename);
     }
 
     /**

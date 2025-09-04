@@ -20,7 +20,7 @@ export interface WatchTableProps {
     onOpenSingleView: (watch: SaleWatchResource) => void;
 }
 
-const SaleWatchTable: React.FC<WatchTableProps> = ({ watches, selectedWatches, watchPlatforms, processingWatches, sortField, sortDirection, onSelectWatch, onSelectAll, onSort, onPlatformChange, onViewPlatformData, onOpenSingleView }) => {
+const SaleWatchTable: React.FC<WatchTableProps> = ({ watches, selectedWatches, watchPlatforms, sortField, sortDirection, onSelectWatch, onSelectAll, onSort, onPlatformChange, onViewPlatformData, onOpenSingleView }) => {
     const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
         <th className="cursor-pointer select-none p-3 text-xs font-medium text-slate-700 hover:bg-slate-100" onClick={() => onSort(field)}>
             <div className="flex items-center gap-1">
@@ -54,7 +54,7 @@ const SaleWatchTable: React.FC<WatchTableProps> = ({ watches, selectedWatches, w
                     </thead>
                     <tbody className="divide-y divide-slate-200 bg-white">
                         {watches.map((watch, key) => (
-                            <SaleTableWatchItem key={key} onOpenSingleView={onOpenSingleView} onPlatformChange={onPlatformChange} onSelectWatch={onSelectWatch} onViewPlatformData={onViewPlatformData} processingWatches={processingWatches} selectedWatches={selectedWatches} watch={watch} watchPlatforms={watchPlatforms} />
+                            <SaleTableWatchItem key={key} onOpenSingleView={onOpenSingleView} onPlatformChange={onPlatformChange} onSelectWatch={onSelectWatch} onViewPlatformData={onViewPlatformData} selectedWatches={selectedWatches} watch={watch} watchPlatforms={watchPlatforms} />
                         ))}
                     </tbody>
                 </table>
