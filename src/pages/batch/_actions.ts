@@ -305,7 +305,7 @@ export const useBatchActions = (
         }
 
         // Use originalId if available, otherwise use the ID
-        const watchIdForBackend = watch.originalId || watch.id || watchId;
+        const watchIdForBackend = watch.id;
 
         console.log('Using watch ID for backend:', watchIdForBackend); // Debug log
 
@@ -408,6 +408,7 @@ export const useBatchActions = (
 
     const openEditBatchModal = (batchId: string) => {
         const batch = batches.find((b) => b.id === batchId);
+        alert(batchId + ' - ' + batch?.name);
         if (batch) {
             setEditingBatch(batchId);
             setEditingBatchData({
