@@ -31,22 +31,6 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
 
     if (!watch) return null;
 
-    const handleSave = () => {
-        console.log("Saving platform data:", platformData);
-        // In real implementation, this would save the data to your backend
-        // You could also show a toast notification here
-    };
-
-    const handleApproveGoNext = () => {
-        console.log("Approving and going to next:", platformData);
-        // In real implementation, this would approve the watch
-        handleSave();
-        // Navigate to next watch without closing modal
-        if (onNext) {
-            onNext();
-        }
-    };
-
     const handlePrevious = () => {
         alert("Going to previous item");
     };
@@ -88,7 +72,7 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
                     <PlatformNotes platform={platform} />
 
                     {/* Footer with action buttons */}
-                    <PlatformFooterActions handleApproveGoNext={handleApproveGoNext} handleSave={handleSave} />
+                    <PlatformFooterActions platformData={platformData} watch={watch} platform={platform} />
                 </DialogContent>
             </Dialog>
         </>

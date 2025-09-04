@@ -121,4 +121,24 @@ class PlatformDataController extends Controller
 
         return back()->with('success', 'Bulk platform changes action initiated.');
     }
+
+    /**
+     * Save platform data for a specific watch.
+     */
+    public function save(Request $request, Watch $watch)
+    {
+        $request->validate([
+            'platform' => 'required|string|in:' . implode(',', PlatformData::all_patforms()),
+            'data' => 'required|array',
+            'data.*' => 'nullable',
+            'data.*type' => 'required|string',
+            'data.*field' => 'required|string',
+        ]);
+
+        $platform = $watch->platforms()->firstOrCreate(['name' => $request->input('platform')]);
+
+        $platform->update(['data' => $request->array('data')]);
+
+        return back()->with('success', 'Platform data saved successfully.');
+    }
 }
