@@ -21,14 +21,7 @@ class ProcessPlatformEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(public Watch $watch, public PlatformData $platform)
-    {
-        Log::info(__METHOD__, [
-            'watch' => $this->watch->sku,
-            'platform' => $this->platform->name,
-            'platform_status' => $this->platform->status,
-        ]);
-    }
+    public function __construct(protected Watch $watch, public PlatformData $platform) {}
 
     /**
      * Get the channels the event should broadcast on.
@@ -49,8 +42,10 @@ class ProcessPlatformEvent implements ShouldBroadcastNow
     /**
      * Data to broadcast to frontend.
      */
-    // public function broadcastWith(): array
-    // {
-    //     return $this->platform->toArray();
-    // }
+    public function broadcastWith(): array
+    {
+        return [
+            'platform' => $this->platform->only(['id', 'name', 'status', 'message']),
+        ];
+    }
 }

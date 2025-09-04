@@ -43,7 +43,7 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
         if (!watch?.routeKey) return;
         const channel = `platform.${watch.routeKey}`;
         const handler = (event: ProcessPlatformEvent) => {
-            // console.log("Received event from table:", event);
+            console.log("Received event from table:", event);
             setLoading(event?.platform?.status === PlatformData.STATUS_LOADING);
             if (event?.platform?.status === PlatformData.STATUS_FAILED) {
                 setMessage(event?.platform?.message || "There was an error");
