@@ -77,7 +77,8 @@ class PlatformDataController extends Controller
         $platform = $request->input('platform');
 
         if ($watch->platforms()->where('name', $platform)->exists()) {
-            return back();
+            $watch->update(['platform' => $platform]);
+            return back()->with('info', 'Platform was updated with existing data.');
         }
 
         if (in_array($platform, PlatformData::all_patforms())) {

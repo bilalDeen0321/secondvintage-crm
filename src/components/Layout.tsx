@@ -18,6 +18,9 @@ const Layout = ({ children }: LayoutProps) => {
         if (flash.success) {
             toast.success(flash.success);
         }
+        if (flash.info) {
+            toast.info(flash.info);
+        }
         if (flash.error) {
             toast.error(flash.error);
         }

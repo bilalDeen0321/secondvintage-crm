@@ -27,7 +27,7 @@ class ExportController extends Controller
         if ($watch = Watch::whereIn('id', $ids)->whereNot('platform', PlatformData::CATAWIKI)->first()) {
             return back()->with(
                 'error',
-                sprintf('Watch %s is not set to Catawiki platform.', $watch->name)
+                sprintf("Watch '%s' is not set to Catawiki platform.", $watch->name)
             );
         }
 

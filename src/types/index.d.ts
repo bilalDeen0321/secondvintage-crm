@@ -10,7 +10,9 @@ export type PageProps<
     ziggy: Config & { location: string };
     flash: {
         success: string | null;
-        error: string | null;
+        error?: string | null;
+        info?: string | null;
+        warning?: string | null;
         status?: 'success' | 'error' | null | 'info' | 'warning';
         message?: string | null;
         data: any | null;
