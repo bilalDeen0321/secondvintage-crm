@@ -7,6 +7,7 @@ use App\Models\Watch;
 use App\Exports\CatawikiExport;
 use App\Models\PlatformData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Sleep;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
@@ -24,12 +25,20 @@ class ExportController extends Controller
 
         $ids = $request->input('ids', []);
 
-        if ($watch = Watch::whereIn('id', $ids)->whereNot('platform', PlatformData::CATAWIKI)->first()) {
-            return back()->with(
-                'error',
-                sprintf("Watch '%s' is not set to Catawiki platform.", $watch->name)
-            );
+        // Check if all selected watches are set to Catawiki platform
+        $invalidWatch = Watch::query()
+            ->whereIn('id', $ids)
+            ->where(function ($q) {
+                $q->whereNull('platform')
+                    ->orWhere('platform', '!=', PlatformData::CATAWIKI);
+            })
+            ->first();
+
+        if ($invalidWatch) {
+            return back()->with('warning', "Watch '{$invalidWatch->name}' is not set to Catawiki platform.");
         }
+
+        Sleep::for(3)->seconds();
 
         // Generate filename with timestamp
         $filename = 'Catawiki_export_' . now()->format('Y-m-d') . '.csv';

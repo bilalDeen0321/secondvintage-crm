@@ -66,10 +66,10 @@ class ProcessMakeHookCatawiki implements ShouldQueue
 
         $payload = array_filter($payload, fn($v) => $v !== null);
 
-        Sleep::for(10)->seconds();
 
         if (app()->environment('local')) {
-            $make = Collection::fromJson(File::get(base_path('docs/data/catawiki-response.json')));
+            Sleep::for(10)->seconds();
+            $make = Collection::fromJson(File::get(base_path('resources/data/catawiki-response.json')));
         } else {
             $make = MakeAiHook::init()->generateCatawikiData($payload);
         }

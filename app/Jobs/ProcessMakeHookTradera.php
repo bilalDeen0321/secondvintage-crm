@@ -3,18 +3,15 @@
 namespace App\Jobs;
 
 use App\Actions\Platform\ExractMakeHookToTradera;
-use App\Actions\Platform\ExtractMakeHookToCatawiki;
 use App\Models\Log;
 use App\Models\PlatformData;
 use App\Models\Status;
 use App\Models\Watch;
-use App\Services\Api\MakeAiHook;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Sleep;
 
 class ProcessMakeHookTradera implements ShouldQueue
@@ -67,7 +64,7 @@ class ProcessMakeHookTradera implements ShouldQueue
 
         $payload = array_filter($payload, fn($v) => $v !== null);
 
-        Sleep::for(10)->seconds();
+        Sleep::for(6)->seconds();
 
         $this->platform->update([
             'status' => PlatformData::STATUS_SUCCESS,

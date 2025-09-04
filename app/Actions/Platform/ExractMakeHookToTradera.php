@@ -16,7 +16,6 @@ class ExractMakeHookToTradera
      */
     public static function execute(Collection $data, Watch $watch): array
     {
-        Sleep::for(3)->seconds();
 
         return [
             [

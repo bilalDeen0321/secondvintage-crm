@@ -13,28 +13,18 @@ const Layout = ({ children }: LayoutProps) => {
 
     const { props } = usePage();
 
-    const flash = props.flash;
     useEffect(() => {
-        if (flash.success) {
-            toast.success(flash.success);
-        }
-        if (flash.info) {
-            toast.info(flash.info);
-        }
-        if (flash.error) {
-            toast.error(flash.error);
-        }
-        if (flash.message) {
-            toast(flash.message, { type: flash.status || "info" });
-        }
-    }, [flash]);
+        const { flash, errors } = { flash: props?.flash, errors: props?.errors };
 
-    const errors = props.errors;
-    useEffect(() => {
-        if (Object.keys(errors).length > 0) {
-            toast.error(errors[Object.keys(errors)[0]]);
-        }
-    }, [errors]);
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.info) toast.info(flash.info);
+        if (flash?.error) toast.error(flash.error);
+        if (flash?.warning) toast.error(flash.warning);
+        if (flash?.message) toast(flash.message, { type: flash.status || "info" });
+
+        const errorKeys = Object.keys(errors || {});
+        if (errorKeys.length > 0) toast.error(errors[errorKeys[0]]);
+    }, [props.flash, props.errors]);
 
     return (
         <div className="flex min-h-screen bg-background">
