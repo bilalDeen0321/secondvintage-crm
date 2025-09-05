@@ -28,8 +28,8 @@ export class Currency extends Model {
             return '0.00';
         }
 
-        const user_rate = Number(currencies.find(c => c.code === currency).rate || 1);
-        const from_rate = Number(currencies.find(c => c.code === 'EUR').rate || 1);
+        const user_rate = Number(currencies.find(c => c.code === currency)?.rate || 1);
+        const from_rate = Number(currencies.find(c => c.code === 'EUR')?.rate || 1);
 
         // Convert TO EUR (since rates are "1 EUR = rate currency")
         const converted = (originalCost * from_rate / user_rate).toFixed(2);
