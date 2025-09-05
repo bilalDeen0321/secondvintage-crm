@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface CreateBatchFormProps {
@@ -18,12 +18,13 @@ interface CreateBatchFormProps {
 }
 
 export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
+    const {auth} = usePage().props
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         tracking_number: "",
-        origin: "",
-        destination: "",
-        status: "",
+        origin: auth?.user?.country || "Denmark",
+        destination: "Denmark",
+        status: "preparing",
         notes: "",
     });
 

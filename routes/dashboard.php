@@ -61,6 +61,7 @@ Route::resource('batches', BatchController::class);
 Route::patch('batches/{batch}/details', [BatchController::class, 'updateDetails'])->name('batches.updateDetails');
 Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWatches'])->name('batches.assignWatches');
 Route::delete('batches/{batch}/watches/{watch}', [BatchController::class, 'removeWatch'])->name('batches.removeWatch');
+Route::patch('batches/{batch}/status', [BatchController::class, 'updateStatus'])->name('batches.updateStatus');
 
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
