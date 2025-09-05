@@ -15,12 +15,34 @@ use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('test', function () {
+    $filePath = base_path('/resources/data/csv/catawiki_values.csv');
+    $data = Excel::toArray([], $filePath)[0];
 
-    $filePath = base_path('resources/data/csv/catawiki_values.csv'); // adjust path
+    if (empty($data)) {
+        return [];
+    }
 
-    $data = Excel::toArray([], $filePath);
+    $headers = array_shift($data); // Get first row as headers
+    $result = [];
 
-    return $data;
+    // Initialize arrays for each header
+    foreach ($headers as $header) {
+        $result[$header] = [];
+    }
+
+    // Process each data row
+    foreach ($data as $row) {
+        // Map values to their respective header arrays
+        foreach ($headers as $index => $header) {
+            $value = $row[$index] ?? null;
+            // Only add non-null values
+            if ($value !== null) {
+                $result[$header][] = $value;
+            }
+        }
+    }
+
+    return $result;
 });
 
 // In routes/web.php

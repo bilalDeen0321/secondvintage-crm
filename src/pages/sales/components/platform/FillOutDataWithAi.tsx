@@ -14,11 +14,27 @@ interface FillOutDataWithAiProps {
 
 export default function FillOutDataWithAi({ watch, platform }: FillOutDataWithAiProps) {
     //states
-    const [loading, setLoading] = useState(platform.status === PlatformData.STATUS_LOADING);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(platform?.status === PlatformData.STATUS_LOADING);
+    }, [platform]);
+
+    //listeners
+    useEffect(() => {
+        if (watch?.routeKey) {
+            const channel = `platform.fill.${watch.routeKey}`;
+            echo.listen(channel, "ProcessPlatformEvent", (event: ProcessPlatformEvent) => {
+                setLoading(event?.platform?.status === PlatformData.STATUS_LOADING);
+            });
+            return () => {
+                echo.leave(channel);
+            };
+        }
+    }, [watch?.routeKey]);
 
     //hanlders
-    const handleFillWithAI = () => {
-        // prevent multiple clicks
+    const onAiAction = () => {
         if (loading) return;
         setLoading(true);
         const data = { platform: watch.platform };
@@ -26,27 +42,13 @@ export default function FillOutDataWithAi({ watch, platform }: FillOutDataWithAi
         router.post(route("platform-data.ai-fill", watch?.routeKey), data, {
             preserveState: true,
             preserveScroll: true,
-            onFinish: () => setLoading(false),
+            // onFinish: () => setLoading(false),
         });
     };
 
-    //listeners
-    useEffect(() => {
-        //
-        if (!watch?.routeKey) return;
-        const channel = `platform.fill.${watch.routeKey}`;
-        const handler = (event: ProcessPlatformEvent) => {
-            setLoading(event?.platform?.status === PlatformData.STATUS_LOADING);
-        };
-        echo.listen(channel, "ProcessPlatformEvent", handler);
-        return () => {
-            echo.leave(channel);
-        };
-    }, [watch?.routeKey]);
-
     return (
         <div className="flex gap-2">
-            <Button onClick={handleFillWithAI} size="sm" disabled={loading} className="border border-orange-500 bg-white text-orange-500 hover:border-orange-600 hover:bg-gray-50 disabled:opacity-50">
+            <Button onClick={onAiAction} size="sm" disabled={loading} className="border border-orange-500 bg-white text-orange-500 hover:border-orange-600 hover:bg-gray-50 disabled:opacity-50">
                 {loading ? (
                     <>
                         <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent"></div>

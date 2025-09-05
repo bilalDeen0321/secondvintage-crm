@@ -87,7 +87,7 @@ class ProcessMakeHookCatawiki implements ShouldQueue
     {
         $this->platform->update([
             'status' => PlatformData::STATUS_SUCCESS,
-            'data'   => ExtractMakeHookToCatawiki::execute($make),
+            'data'   => ExtractMakeHookToCatawiki::execute($this->watch, $make),
         ]);
 
         event(new \App\Events\ProcessPlatformEvent($this->watch, $this->platform));
