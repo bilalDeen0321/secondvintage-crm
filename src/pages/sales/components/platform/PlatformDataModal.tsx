@@ -1,8 +1,10 @@
 import Str from "@/app/support/Str";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { PlatformResource } from "@/types/resources/platform-data";
+import { WatchResource } from "@/types/resources/watch";
+import { router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { PlatformDataModalProps, PlatformField } from "./_actions";
-import { fetchPlatformData } from "./fetch";
 import FillOutDataWithAi from "./FillOutDataWithAi";
 import { PlatformDataModalImageSection } from "./PlatformDataModalImageSection";
 import PlatformDataTable from "./PlatformDataTable";
@@ -10,24 +12,40 @@ import { PlatformFooterActions } from "./PlatformFooterActions";
 import { PlatformNavigation } from "./PlatformNavigation";
 import PlatformNotes from "./PlatformNotes";
 
+type PlatformViewResponse = {
+    platform: PlatformResource | null;
+    nextItem: WatchResource | null;
+    prevItem: WatchResource | null;
+};
+
 const PlatformDataModal = (props: PlatformDataModalProps) => {
     const { watch, platform, isOpen, onClose } = props;
-    const [platformData, setPlatformData] = useState<PlatformField[]>([]);
-    const [isAIProcessing, setIsAIProcessing] = useState(false);
+
+    const platformItemInit = watch?.platforms?.find((p) => p.name === platform) || null;
+    const [platformItem, setPlatformItem] = useState(platformItemInit);
+    const [platformData, setPlatformData] = useState<PlatformField[]>(platformItemInit?.data || []);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const onNext = props.onNext;
 
     //use callback to fetch platform data when watch or platform changes
-
     useEffect(() => {
-        (async () => {
-            if (!watch?.routeKey) return;
-            // const data = getPlatformData(watch, platform);
-            const data = await fetchPlatformData(watch.routeKey, platform);
-            if (data && data?.length > 0) setPlatformData(data);
-            // setSelectedImageIndex(0);
-        })();
-    }, [platform, watch]);
+        const data = { platform: platform };
+        router.get(route("platform-data.show", watch?.routeKey), data, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const response = page.props.flash?.data as PlatformViewResponse | undefined;
+                if (response?.platform) {
+                    // You can now access:
+                    setPlatformItem(response.platform);
+                    setPlatformData(response.platform?.data || []);
+                    // responseData.platform - the platform data
+                    // responseData.nextItem - next watch item
+                    // responseData.prevItem - previous watch item
+                }
+            },
+        });
+    }, [platform, watch?.routeKey]);
 
     if (!watch) return null;
 
@@ -58,7 +76,7 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
                                 <DialogTitle className="text-2xl font-bold text-slate-900">{Str.title(platform)} Platform Data</DialogTitle>
                             </div>
 
-                            <FillOutDataWithAi watch={watch} platform={platform} />
+                            <FillOutDataWithAi watch={watch} platform={platformItem} />
                         </div>
                     </DialogHeader>
 

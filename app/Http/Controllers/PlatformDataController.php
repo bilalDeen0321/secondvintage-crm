@@ -134,4 +134,28 @@ class PlatformDataController extends Controller
 
         return back()->with('success', 'Platform data saved successfully.');
     }
+
+    /**
+     * Show platform data for a specific watch.
+     */
+    public function show(Request $request, Watch $watch)
+    {
+        $request->validate(['platform' => 'required|string']);
+
+        $platformName = $request->input('platform');
+
+        $platform = $watch->platforms()->where('name', $platformName)->first();
+
+        //get the next watch for this platform
+        $nextItem = Watch::where('id', '>', $watch->id)->where('platform', $platformName)->orderBy('id')->first()?->only(['id', 'routeKey']);
+
+        //get the previous watch for this platform
+        $prevItem = Watch::where('id', '<', $watch->id)->where('platform', $platformName)->orderBy('id', 'desc')->first()?->only(['id', 'routeKey']);
+
+        return back()->with('data', [
+            'platform' => $platform,
+            'nextItem' => $nextItem,
+            'prevItem' => $prevItem,
+        ]);
+    }
 }

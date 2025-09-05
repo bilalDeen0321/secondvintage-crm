@@ -64,9 +64,12 @@ class SaleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Watch $sale)
     {
-        //
+        return Inertia::render('sales/SalesShow', [
+            'watch' => new WatchResource($sale->load(['platforms'])),
+            'platform' => $sale->platform,
+        ]);
     }
 
     /**

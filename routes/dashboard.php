@@ -46,6 +46,7 @@ Route::prefix('platform-data')->name('platform-data.')->group(function () {
     Route::post('bulk-actions', [PlatformDataController::class, 'bulkActions'])->name('bulk-actions');
     Route::get('fetch/{watch}', [PlatformDataController::class, 'fetch'])->name('fetch');
     Route::post('save/{watch}', [PlatformDataController::class, 'save'])->name('save');
+    Route::get('show/{watch}', [PlatformDataController::class, 'show'])->name('show');
 });
 
 Route::prefix('sales/exports')->name('sales.exports.')->group(function () {

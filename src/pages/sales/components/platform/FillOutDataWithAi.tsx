@@ -2,45 +2,28 @@ import { echo } from "@/app/echo";
 import PlatformData from "@/app/models/PlatformData";
 import { Button } from "@/components/ui/button";
 import { ProcessPlatformEvent } from "@/types/events/laravel-events";
+import { PlatformResource } from "@/types/resources/platform-data";
 import { router } from "@inertiajs/react";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PlatformDataModalProps } from "./_actions";
 interface FillOutDataWithAiProps {
     watch: PlatformDataModalProps["watch"];
-    platform: PlatformDataModalProps["platform"];
+    platform: PlatformResource;
 }
 
 export default function FillOutDataWithAi({ watch, platform }: FillOutDataWithAiProps) {
-    const [loading, setLoading] = useState(false);
-
-    // Initialize loading state based on isAIProcessing prop
-    useEffect(() => {
-        //the the current active platform item
-        const pitem = watch?.platforms?.find((p) => p.name === platform);
-
-        //set loading state based on the platform item status
-        setLoading(pitem?.status === PlatformData.STATUS_LOADING);
-
-        //cleanup function when component unmounts or platform/watch changes
-        // return () => setLoading(false);
-    }, [platform, watch?.platforms]);
+    //states
+    const [loading, setLoading] = useState(platform.status === PlatformData.STATUS_LOADING);
 
     //hanlders
     const handleFillWithAI = () => {
         // prevent multiple clicks
         if (loading) return;
-
-        //start processing
         setLoading(true);
-
-        //generate query params for the request
-        const rquestBody = {
-            platform,
-        };
-
+        const data = { platform: watch.platform };
         //make the request to fill out data with AI in background
-        router.post(route("platform-data.ai-fill", watch?.routeKey), rquestBody, {
+        router.post(route("platform-data.ai-fill", watch?.routeKey), data, {
             preserveState: true,
             preserveScroll: true,
             onFinish: () => setLoading(false),
@@ -51,21 +34,15 @@ export default function FillOutDataWithAi({ watch, platform }: FillOutDataWithAi
     useEffect(() => {
         //
         if (!watch?.routeKey) return;
-
         const channel = `platform.fill.${watch.routeKey}`;
         const handler = (event: ProcessPlatformEvent) => {
-            // console.log("Received event from fill:", event);
             setLoading(event?.platform?.status === PlatformData.STATUS_LOADING);
         };
-
         echo.listen(channel, "ProcessPlatformEvent", handler);
-
         return () => {
             echo.leave(channel);
         };
     }, [watch?.routeKey]);
-
-    if (!watch) return null;
 
     return (
         <div className="flex gap-2">

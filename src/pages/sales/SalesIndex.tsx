@@ -41,8 +41,6 @@ const MultiplatformSales = (props: Props) => {
     const { locations = [], batches = [], brands = [], currencies = [] } = props || {};
     const { data: watches = [], meta } = props.watches || {};
 
-    console.log("Watches with platforms:", watches);
-
     /**
      * ============================================================================
      * ============================================================================

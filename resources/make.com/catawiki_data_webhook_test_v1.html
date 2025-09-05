@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <h2>Test Make.com Webhook (with API key) 5-10 sec. response</h2>
+  <button onclick="send()">Test Generate Catawiki Data</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function send() {
+      const response = await fetch("https://hook.eu2.make.com/hryg6tsac65fa8ad15b0yap6pw7vhtn2", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-make-apikey": "..."
+        },
+        body: JSON.stringify({
+          AI_Action: "generate_catawiki_data",
+          SKU: "OME-SMP-0001",
+          Name: "Omega Speedmaster",
+          Brand: "Omega",
+          Serial: "87654321",
+          Ref: "311.30.42.30.01.005",
+          Case_Size: "42mm",
+          Caliber: "1861",
+          Timegrapher: "+5s/day, 290 amplitude",
+          Description: "The description.",
+          Platform: "Catawiki"
+        })
+      });
+
+      const resultText = await response.text();
+      document.getElementById("result").innerText = `Status: ${response.status}\n\n${resultText}`;
+    }
+  </script>
+</body>
+
+</html>
