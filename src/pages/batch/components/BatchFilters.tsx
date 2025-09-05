@@ -1,3 +1,4 @@
+import { Batch } from "@/app/models/Batch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -68,17 +69,18 @@ export const BatchFilters = ({
                         className="pl-10"
                     />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select
+                    value={statusFilter}
+                    onValueChange={(value) => setStatusFilter(value)}
+                >
                     <SelectTrigger className="w-48">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Statuses</SelectItem>
-                        <SelectItem value="Preparing">Preparing</SelectItem>
-                        <SelectItem value="Shipped">Shipped</SelectItem>
-                        <SelectItem value="In Transit">In Transit</SelectItem>
-                        <SelectItem value="Customs">Customs</SelectItem>
-                        <SelectItem value="Delivered">Delivered</SelectItem>
+                        { Batch.allStatuses().map((status) => (
+                        <SelectItem key={status} value={status}>{Batch.toHuman(status)}</SelectItem>
+                        )) }
                     </SelectContent>
                 </Select>
             </div>

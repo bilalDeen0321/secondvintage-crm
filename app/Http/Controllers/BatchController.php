@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BatchStatus;
 use App\Http\Requests\StoreBatchRequest;
 use App\Http\Requests\UpdateBatchRequest;
 use App\Http\Resources\BatchResource;
@@ -9,6 +10,7 @@ use App\Http\Resources\WatchResource;
 use App\Models\Batch;
 use App\Models\Brand;
 use App\Models\Watch;
+use App\Queries\BatchQuery;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -33,12 +35,14 @@ class BatchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $batches = Batch::query()
-            ->with(['watches.images', 'watches.brand'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+
+        // Get paginated results
+        $batches = BatchQuery::init()
+            ->execute($request)
+            ->paginate(20)
+            ->withQueryString();
 
         // Get available watches (unassigned to any batch)
         $availableWatches = Watch::query()
@@ -48,7 +52,8 @@ class BatchController extends Controller
 
         return Inertia::render('batch/BatchIndex', [
             'batches' => BatchResource::collection($batches),
-            'availableWatches' => WatchResource::collection($availableWatches)
+            'availableWatches' => WatchResource::collection($availableWatches),
+            'batchStastistics' => BatchQuery::init()->getStatistics()
         ]);
     }
 
@@ -145,7 +150,7 @@ class BatchController extends Controller
             'status' => [
                 'required',
                 'string',
-                Rule::in(['Preparing', 'Shipped', 'In Transit', 'Customs', 'Delivered'])
+                Rule::in(BatchStatus::allStatuses())
             ],
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -180,7 +185,7 @@ class BatchController extends Controller
                 'status' => [
                     'required',
                     'string',
-                    Rule::in(['Preparing', 'Shipped', 'In Transit', 'Customs', 'Delivered'])
+                    Rule::in(BatchStatus::allStatuses())
                 ],
                 'notes' => 'nullable|string|max:1000',
                 'shipped_date' => 'nullable|date',
@@ -196,6 +201,7 @@ class BatchController extends Controller
 
             return back()->with('success', 'Batch details updated successfully.');
         } catch (Exception $e) {
+            dd($e);
             Log::error('Error updating batch details: ' . $e->getMessage());
             return back()->with('error', 'Failed to update batch details. Please try again.');
         }
@@ -285,6 +291,37 @@ class BatchController extends Controller
     }
 
     /**
+     * Update batch status
+     */
+    public function updateStatus(Request $request, Batch $batch)
+    {
+        $request->validate([
+            'status' => [
+                'required',
+                'string',
+                Rule::in(BatchStatus::allStatuses())
+            ],
+        ]);
+        
+        if ($batch->status === $request->status) {
+            return back()->with('info', 'Batch status is already set to the selected value.');
+        }
+        
+        $batch->update(['status' => $request->status]);
+        
+        // Update location of all watches in the batch when status changes to "In Transit" or "Delivered"
+        if (in_array($request->status, [BatchStatus::IN_TRANSIT->value, BatchStatus::DELIVERED->value])) {
+            $newLocation = $request->status === BatchStatus::IN_TRANSIT->value 
+                ? 'In Transit' 
+                : $batch->destination; // Use batch destination when delivered
+            
+            $batch->watches()->update(['location' => $newLocation]);
+        }
+        
+        return back()->with('success', 'Batch status updated successfully.');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Batch $batch)
@@ -311,7 +348,8 @@ class BatchController extends Controller
 
         return Inertia::render('batch/BatchIndex', [
             'batches' => BatchResource::collection($batches),
-            'availableWatches' => WatchResource::collection($availableWatches)
+            'availableWatches' => WatchResource::collection($availableWatches),
+            'batchStastistics' => BatchQuery::init()->getStatistics(),
         ])->with($messageType, $message);
     }
 }
