@@ -2,8 +2,8 @@
 import { Batch } from "@/types/Batch";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
-import { router } from "@inertiajs/react";
-import { useState } from "react";
+import { router, useForm, usePage } from "@inertiajs/react";
+import { useState, useMemo } from "react";
 
 // Mock available watches (these would come from a separate API call)
 const mockAvailableWatches: WatchResource[] = [
@@ -51,7 +51,8 @@ const mockAvailableWatches: WatchResource[] = [
 
 export const useBatchActions = (
     serverBatches: BatchResource[] = [],
-    serverAvailableWatches: WatchResource[] = []
+    serverAvailableWatches: WatchResource[] = [],
+    serverBatchStastistics: any = []
 ) => {
     // Convert server batches to local Batch format
     const convertServerBatchesToLocal = (batches: BatchResource[]): Batch[] => {
@@ -77,7 +78,22 @@ export const useBatchActions = (
             })) || []
         }));
     };
-
+    const {page} = usePage().props;
+    
+    // Custom hook for URL parameters (React best practice)
+    const useUrlParams = () => {
+        return useMemo(() => {
+            const searchParams = new URLSearchParams(window.location.search);
+            return {
+                search: searchParams.get('search') || "",
+                status: searchParams.get('status') || "all",
+                page: parseInt(searchParams.get('page') || '1', 10)
+            };
+        }, [window.location.search]);
+    };
+    
+    const urlParams = useUrlParams();
+    
     // State management
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [selectedWatch, setSelectedWatch] = useState<WatchResource | null>(null);
@@ -85,8 +101,15 @@ export const useBatchActions = (
     const [editingBatch, setEditingBatch] = useState<string | null>(null);
     const [isAddWatchModalOpen, setIsAddWatchModalOpen] = useState(false);
     const [selectedBatchForWatch, setSelectedBatchForWatch] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState<string>("all");
+    const { data, setData } = useForm<{
+        search: string;
+        status: string;
+        page: number;
+    }>({
+        search: urlParams.search,
+        status: urlParams.status,
+        page: urlParams.page,
+    });
     const [watchSearchTerm, setWatchSearchTerm] = useState("");
     const [watchStatusFilter, setWatchStatusFilter] = useState<string>("all");
     const [batchWatchSortField, setBatchWatchSortField] = useState<string>("name");
@@ -96,6 +119,7 @@ export const useBatchActions = (
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [availableWatches] = useState<WatchResource[]>(serverAvailableWatches);
     const [batches, setBatches] = useState<Batch[]>(convertServerBatchesToLocal(serverBatches));
+    const [batchStastistics, setBatchStastistics] = useState<any>(serverBatchStastistics);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newBatch, setNewBatch] = useState<Partial<Batch>>({
         name: "",
@@ -136,13 +160,13 @@ export const useBatchActions = (
     // Computed values
     const filteredBatches = batches.filter((batch) => {
         const matchesSearch =
-            searchTerm === "" ||
-            batch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.origin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            batch.destination.toLowerCase().includes(searchTerm.toLowerCase());
+            data.search === "" ||
+            batch.name.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.trackingNumber.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.origin.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.destination.toLowerCase().includes(data.search.toLowerCase());
 
-        const matchesStatus = statusFilter === "all" || batch.status === statusFilter;
+        const matchesStatus = data.status === "all" || batch.status === data.status;
 
         return matchesSearch && matchesStatus;
     });
@@ -235,7 +259,11 @@ export const useBatchActions = (
     };
 
     const updateBatchStatus = (batchId: string, status: Batch["status"]) => {
-        setBatches(batches.map((batch) => (batch.id === batchId ? { ...batch, status } : batch)));
+        router.patch(route('batches.updateStatus', batchId), {
+            status: status,
+        }, {
+            preserveScroll: true,
+        });
     };
 
     const updateBatchDetails = () => {
@@ -473,10 +501,8 @@ export const useBatchActions = (
         setIsAddWatchModalOpen,
         selectedBatchForWatch,
         setSelectedBatchForWatch,
-        searchTerm,
-        setSearchTerm,
-        statusFilter,
-        setStatusFilter,
+        data,
+        setData,
         watchSearchTerm,
         setWatchSearchTerm,
         watchStatusFilter,
@@ -499,7 +525,7 @@ export const useBatchActions = (
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
         filteredBatches,
-
+        batchStastistics,
         // Functions
         getSortedBatchWatches,
         getStatusColor,

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Batch } from "@/app/models/Batch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -19,7 +20,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { Batch } from "@/types/Batch";
 import { WatchResource } from "@/types/resources/watch";
 import { useForm } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Plus, X } from "lucide-react";
@@ -224,7 +224,7 @@ export const EditBatchModal = ({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <label className="mb-1 block text-sm font-medium">Status</label>
                                 <Select
@@ -237,11 +237,9 @@ export const EditBatchModal = ({
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Preparing">Preparing</SelectItem>
-                                        <SelectItem value="Shipped">Shipped</SelectItem>
-                                        <SelectItem value="In Transit">In Transit</SelectItem>
-                                        <SelectItem value="Customs">Customs</SelectItem>
-                                        <SelectItem value="Delivered">Delivered</SelectItem>
+                                    { Batch.allStatuses().map((status) => (
+                                        <SelectItem key={status} value={status}>{Batch.toHuman(status)}</SelectItem>
+                                    )) }
                                     </SelectContent>
                                 </Select>
                                 {errors.status && (

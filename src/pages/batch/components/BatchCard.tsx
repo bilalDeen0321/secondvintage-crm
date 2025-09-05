@@ -62,11 +62,9 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Preparing">Preparing</SelectItem>
-                                <SelectItem value="Shipped">Shipped</SelectItem>
-                                <SelectItem value="In Transit">In Transit</SelectItem>
-                                <SelectItem value="Customs">Customs</SelectItem>
-                                <SelectItem value="Delivered">Delivered</SelectItem>
+                                { Batch.allStatuses().map((status) => (
+                                <SelectItem key={status} value={status}>{Batch.toHuman(status)}</SelectItem>
+                                )) }
                             </SelectContent>
                         </Select>
                     </div>

@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import WatchDetailModal from "@/components/WatchDetailModal";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
@@ -12,6 +12,8 @@ import { BatchList } from "./components/BatchList";
 import { BatchStats } from "./components/BatchStats";
 import { CreateBatchForm } from "./components/CreateBatchForm";
 import { EditBatchModal } from "./components/EditBatchModal";
+import TablePaginate from "@/components/ui/table/TablePaginate";
+import { useEffect, useRef } from "react";
 
 interface BatchManagementProps {
     batches: {
@@ -20,9 +22,10 @@ interface BatchManagementProps {
         meta: any;
     };
     availableWatches: WatchResource[];
+    batchStastistics: any;
 }
 
-const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchManagementProps) => {
+const BatchManagement = ({ batches: serverBatches, availableWatches , batchStastistics }: BatchManagementProps) => {
     const {
         // State
         viewMode,
@@ -35,10 +38,8 @@ const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchMana
         setEditingBatch,
         isAddWatchModalOpen,
         setIsAddWatchModalOpen,
-        searchTerm,
-        setSearchTerm,
-        statusFilter,
-        setStatusFilter,
+        data,
+        setData,
         watchSearchTerm,
         setWatchSearchTerm,
         watchStatusFilter,
@@ -79,7 +80,7 @@ const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchMana
         handleAddWatchSort,
         handleSelectAllWatches,
         handleSelectWatch,
-    } = useBatchActions(serverBatches.data, availableWatches);
+    } = useBatchActions(serverBatches.data, availableWatches, batchStastistics);
 
     const getSortIcon = (
         field: string,
@@ -94,21 +95,40 @@ const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchMana
         );
     };
 
+    const setFilterBatches = (key: string, value: string) => {
+        setData({ ...data, [key]: value , page: 1 });
+    }
+
+    const isInitialMount = useRef(true);
+    
+    useEffect(() => {
+        // Skip the first render to avoid duplicate requests on initial load
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+        
+        router.get(route("batches.index"), data , {
+            only: ["batches"],
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }, [data]);
     return (
         <Layout>
             <Head title="Batch Management" />
             <div className="p-8">
                 <BatchFilters
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    statusFilter={statusFilter}
-                    setStatusFilter={setStatusFilter}
+                    searchTerm={data.search}
+                    setSearchTerm={(term) => setFilterBatches("search", term)}
+                    statusFilter={data.status}
+                    setStatusFilter={(status) => setFilterBatches("status", status)}
                     viewMode={viewMode}
                     setViewMode={setViewMode}
                     onCreateBatch={() => setShowCreateForm(true)}
                 />
 
-                <BatchStats batches={batches} />
+                <BatchStats batchStastistics={batchStastistics} />
 
                 {showCreateForm && <CreateBatchForm onCancel={() => setShowCreateForm(false)} />}
 
@@ -123,7 +143,14 @@ const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchMana
                     getTrackingUrl={getTrackingUrl}
                 />
 
-                <EditBatchModal
+                {/* pagination */}
+                <div className="mt-4">
+                    <TablePaginate
+                        links={serverBatches?.meta?.links}
+                    />
+                </div>
+                
+                {editingBatch && <EditBatchModal
                     isOpen={editingBatch !== null}
                     onClose={() => setEditingBatch(null)}
                     batch={currentEditingBatch}
@@ -138,7 +165,7 @@ const BatchManagement = ({ batches: serverBatches, availableWatches }: BatchMana
                     onRemoveWatchFromBatch={removeWatchFromBatch}
                     getWatchStatusColor={getWatchStatusColor}
                     getSortedBatchWatches={getSortedBatchWatches}
-                />
+                />}
 
                 <AddWatchModal
                     isOpen={isAddWatchModalOpen}
