@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('test', function () {
 
-    $filePath = base_path('/resources/data/Catawiki_export_2025-09-03.csv'); // adjust path
+    $filePath = base_path('resources/data/csv/catawiki_values.csv'); // adjust path
 
     $data = Excel::toArray([], $filePath);
 

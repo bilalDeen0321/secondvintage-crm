@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\PlatformData;
 use App\Models\Watch;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -10,66 +11,84 @@ use Illuminate\Support\Collection;
 
 class CatawikiExport implements FromCollection, WithHeadings, WithMapping
 {
+    /**
+     * The attributes to be headers.
+     */
+    protected $headers = [
+        "Your Reference Number (optional)",
+        "Your Reference Colour (optional)",
+        "Auction Type (333) (optional)",
+        "Object type (18127)",
+        "Language",
+        "Description",
+        "D: Brand",
+        "D: Model (optional)",
+        "D: Reference Number (optional)",
+        "D: Shipped Insured",
+        "D: Period",
+        "D: Movement",
+        "D: Case material",
+        "D: Case diameter",
+        "D: Condition",
+        "D: Gender",
+        "D: Band material",
+        "D: Band length (optional)",
+        "D: Repainted dial",
+        "D: Dial colour (optional)",
+        "D: Original box included",
+        "D: Original papers included",
+        "D: Original warranty included",
+        "D: Year (optional)",
+        "D: Weight",
+        "D: Width lug/ watch band",
+        "D: In working order (optional)",
+        "Public photo URL",
+        "Estimated lot value",
+        "Reserve price (optional)",
+        "Start bidding from (optional)",
+        "Pick up (optional)",
+        "Combined shipping (optional)",
+        "Shipping costs -",
+        "Shipping costs - Europe",
+        "Shipping costs - Rest of World",
+        "Country specific shipping price (optional)",
+        "Shipping profile (optional)",
+        "Message to Expert (optional)"
+    ];
+
+
+    /**
+     * The watch IDs to be exported.
+     */
     protected $watchIds;
 
+    /**
+     * Constructor to initialize watch IDs.
+     */
     public function __construct(array $watchIds)
     {
         $this->watchIds = $watchIds;
     }
 
-    public function collection()
-    {
-        return Watch::whereIn('id', $this->watchIds)
-            ->with(['platforms' => function ($query) {
-                $query->where('name', 'catawiki');
-            }])
-            ->get();
-    }
-
+    /**
+     * Define the headers for the export.
+     */
     public function headings(): array
     {
-        return [
-            'Your Reference Number (optional)',
-            'Your Reference Colour (optional)',
-            'Auction Type (333) (optional)',
-            'Object type (18127)',
-            'Language',
-            'Description',
-            'D: Brand',
-            'D: Model (optional)',
-            'D: Reference Number (optional)',
-            'D: Shipped Insured',
-            'D: Period',
-            'D: Movement',
-            'D: Case material',
-            'D: Case diameter',
-            'D: Condition',
-            'D: Gender',
-            'D: Band material',
-            'D: Band length (optional)',
-            'D: Repainted dial',
-            'D: Dial colour (optional)',
-            'D: Original box included',
-            'D: Original papers included',
-            'D: Original warranty included',
-            'D: Year (optional)',
-            'D: Weight',
-            'D: Width lug/ watch band',
-            'D: In working order (optional)',
-            'Public photo URL',
-            'Estimated lot value',
-            'Reserve price (optional)',
-            'Start bidding from (optional)',
-            'Pick up (optional)',
-            'Combined shipping (optional)',
-            'Shipping costs',
-            'Shipping costs - Europe',
-            'Shipping costs - Rest of World',
-            'Country specific shipping price (optional)',
-            'Shipping profile (optional)',
-            'Message to Expert (optional)',
-        ];
+        return $this->headers;
     }
+
+    /**
+     * Fetch the collection of watches to be exported.
+     */
+    public function collection(): Collection
+    {
+        return Watch::whereIn('id', $this->watchIds)->with(['platforms' => function ($query) {
+            $query->where('name', PlatformData::CATAWIKI);
+        }])->get();
+    }
+
+
 
     public function map($watch): array
     {

@@ -3,7 +3,6 @@
 namespace App\Actions\Platform;
 
 use App\Models\Status;
-use App\Packages\Utils\Traits\CreateInstance;
 use App\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -40,22 +39,92 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - Auction Type (333) (optional)',
-                'value' => $data->get('Catawiki_Auction_Type', '333'),
+                'value' => $data->get('Catawiki_Auction_Type', 'Omega Watches'),
                 'type' => 'select',
                 'options' => [
-                    '333',
-                    '334',
-                    '335'
+                    'Antique Furniture',
+                    'Antique Religious Decor',
+                    'Art Nouveau & Art Deco Furniture',
+                    'Automobilia',
+                    'Automobilia Art & Posters',
+                    'Automobilia Car Parts',
+                    'Automobilia Literature',
+                    'Automobilia Signs & Lightboxes',
+                    'Aviation',
+                    'Boho Chic',
+                    'Bonsai Trees',
+                    'Breitling Watches',
+                    'Cartier Watches',
+                    'Christmas Decor',
+                    'Classic Home Decor',
+                    'Clocks',
+                    'Comic Figurines & Merchandise',
+                    'Comics (Private Collection)',
+                    'Comics (Risqué)',
+                    'Comics in Dutch',
+                    'Comics in French',
+                    'Comics in Italian',
+                    'Contemporary Design',
+                    'Decorative Salvage',
+                    'Designer Furniture',
+                    'Disney Animation',
+                    'Disney Comic Art',
+                    'Disney Figures & Merchandise',
+                    'English Country House',
+                    'Exclusive Antiques',
+                    'Exclusive Art Nouveau & Art Deco',
+                    'Exclusive Automobilia',
+                    'Exclusive Design',
+                    'Exclusive Watches',
+                    'Ferrari Automobilia',
+                    'French Elegance',
+                    'Garden Furniture & Decorations',
+                    'Hergé / Tintin Comic Books',
+                    'Hergé / Tintin Figures & Merchandise',
+                    'Hollywood Glamour',
+                    'Home Inspiration & Trends',
+                    'IWC Watches',
+                    'Industrial Design',
+                    'International Comics',
+                    'Japanese Figurines & Merchandise',
+                    'Longines Watches',
+                    'Mediterranean House',
+                    'Modern Home Decor',
+                    'Motobilia',
+                    'New Seller Watches',
+                    'Omega Watches',
+                    'Pocket Watches',
+                    'Porsche Automobilia',
+                    'Premium Watches',
+                    'Religious Decor',
+                    'Rolex Watches',
+                    'Seiko Watches',
+                    'TAG Heuer Watches',
+                    'Tudor Watches',
+                    'US Comics',
+                    'Unused Watches',
+                    'Vintage Furniture',
+                    'Vintage Watches',
+                    'Watch Accessories',
+                    'Zenith Watches'
                 ]
             ],
             [
                 'field' => 'Catawiki - Object type (18127)',
-                'value' => $data->get('Catawiki_Object_Type', '18127'),
+                'value' => $data->get('Catawiki_Object_Type', 'Watch'),
                 'type' => 'select',
                 'options' => [
-                    '18127',
-                    '18128',
-                    '18129'
+                    'Automaton pocket watch',
+                    'Chronograph pocket watch',
+                    'Chronograph watch',
+                    'Digital watch',
+                    'Erotic pocket watch',
+                    'Marriage watch',
+                    'Mechanical watch',
+                    'Pocket watch',
+                    'Smart watch',
+                    'Stopwatch',
+                    'Watch'
                 ]
             ],
             [
@@ -65,13 +134,17 @@ class ExtractMakeHookToCatawiki
                 'options' => [
                     'English',
                     'Dutch',
+                    'French',
                     'German',
-                    'French'
+                    'Italian',
+                    'Spanish',
+                    'Portuguese',
+                    'Polish'
                 ]
             ],
             [
                 'field' => 'Catawiki - Description',
-                'value' => '',
+                'value' => $data->get('Description', ''),
                 'type' => 'textarea'
             ],
             [
@@ -100,17 +173,20 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Period',
-                'value' => $data->get('Catawiki_Period', '2020s'),
+                'value' => $data->get('Catawiki_Period', '2020+'),
                 'type' => 'select',
                 'options' => [
-                    '1950s',
-                    '1960s',
-                    '1970s',
-                    '1980s',
-                    '1990s',
-                    '2000s',
-                    '2010s',
-                    '2020s'
+                    '1850-1900',
+                    '1900-1949',
+                    '1950-1959',
+                    '1960-1969',
+                    '1970-1979',
+                    '1980-1989',
+                    '1990-1999',
+                    '2000-2010',
+                    '2010-2020',
+                    '2020+',
+                    'Earlier than 1850'
                 ]
             ],
             [
@@ -119,20 +195,44 @@ class ExtractMakeHookToCatawiki
                 'type' => 'select',
                 'options' => [
                     'Automatic',
-                    'Manual',
+                    'Manual winding',
+                    'Other',
                     'Quartz'
                 ]
             ],
             [
                 'field' => 'Catawiki - D: Case material',
-                'value' => $data->get('Catawiki_Case_material', 'Stainless Steel'),
+                'value' => $data->get('Catawiki_Case_material', 'Stainless steel'),
                 'type' => 'select',
                 'options' => [
-                    'Stainless Steel',
+                    'Aluminium',
+                    'Argentan',
+                    'Bioceramic',
+                    'Bronze',
+                    'Carbon',
+                    'Ceramic',
+                    'Chromed',
+                    'Copper',
                     'Gold',
-                    'Rose Gold',
+                    'Gold/Steel',
+                    'Gold-filled',
+                    'Gold-plated',
+                    'Gunmetal',
+                    'Metal',
+                    'Palladium',
+                    'Pink gold',
+                    'Plastic',
+                    'Platinum',
+                    'Polycarbon',
+                    'Silver',
+                    'Silverplated',
+                    'Stainless steel',
+                    'Steel',
+                    'Tantalum',
                     'Titanium',
-                    'Ceramic'
+                    'Tungsten',
+                    'White gold',
+                    'Yellow gold'
                 ]
             ],
             [
@@ -142,14 +242,14 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Condition',
-                'value' => $data->get('Catawiki_Condition', 'Very Good'),
+                'value' => $data->get('Catawiki_Condition', 'Very good - minor signs of wear'),
                 'type' => 'select',
                 'options' => [
+                    'Fair - major signs of wear',
+                    'Good - visible signs of wear',
                     'New',
-                    'Very Good',
-                    'Good',
-                    'Fair',
-                    'Poor'
+                    'Unworn - no signs of wear',
+                    'Very good - minor signs of wear'
                 ]
             ],
             [
@@ -158,8 +258,8 @@ class ExtractMakeHookToCatawiki
                 'type' => 'select',
                 'options' => [
                     'Men',
-                    'Women',
-                    'Unisex'
+                    'Unisex',
+                    'Women'
                 ]
             ],
             [
@@ -167,17 +267,31 @@ class ExtractMakeHookToCatawiki
                 'value' => $data->get('Catawiki_Band_material', 'Stainless Steel'),
                 'type' => 'select',
                 'options' => [
-                    'Stainless Steel',
+                    'Bronze',
+                    'Ceramic',
+                    'Gold/steel',
                     'Leather',
+                    'Platinum',
+                    'Resin',
+                    'Rose gold',
                     'Rubber',
-                    'Gold',
-                    'Ceramic'
+                    'Steel',
+                    'Textile',
+                    'Titanium',
+                    'White gold',
+                    'Yellow gold'
                 ]
             ],
             [
                 'field' => 'Catawiki - D: Band length (optional)',
-                'value' => $data->get('Catawiki_Band length', ''),
-                'type' => 'input'
+                'value' => $data->get('Catawiki_Band_length', ''),
+                'type' => 'select',
+                'options' => [
+                    'Very short (under 160 mm)',
+                    'Short (160–170 mm)',
+                    'Regular (180–200 mm)',
+                    'Long (over 200 mm)'
+                ]
             ],
             [
                 'field' => 'Catawiki - D: Repainted dial',
@@ -191,7 +305,29 @@ class ExtractMakeHookToCatawiki
             [
                 'field' => 'Catawiki - D: Dial colour (optional)',
                 'value' => $data->get('Catawiki_Dial_colour', ''),
-                'type' => 'input'
+                'type' => 'select',
+                'options' => [
+                    'Black',
+                    'Blue',
+                    'Bronze',
+                    'Brown',
+                    'Champagne',
+                    'Gold',
+                    'Green',
+                    'Grey',
+                    'Mother of pearl',
+                    'Navy',
+                    'Orange',
+                    'Pink',
+                    'Purple',
+                    'Red',
+                    'Salmon',
+                    'Silver',
+                    'Skeleton',
+                    'Turquoise',
+                    'White',
+                    'Yellow'
+                ]
             ],
             [
                 'field' => 'Catawiki - D: Original box included',
@@ -246,7 +382,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - Public photo URL',
-                'value' => '',
+                'value' => $data->get('Catawiki_Public_photo_URL', ''),
                 'type' => 'input'
             ],
             [
