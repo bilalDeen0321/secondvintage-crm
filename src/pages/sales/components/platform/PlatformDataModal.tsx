@@ -58,7 +58,7 @@ const PlatformDataModal = (props: PlatformDataModalProps) => {
                                 <DialogTitle className="text-2xl font-bold text-slate-900">{Str.title(platform)} Platform Data</DialogTitle>
                             </div>
 
-                            <FillOutDataWithAi isAIProcessing={isAIProcessing} setIsAIProcessing={setIsAIProcessing} watch={watch} platform={platform} />
+                            <FillOutDataWithAi watch={watch} platform={platform} />
                         </div>
                     </DialogHeader>
 

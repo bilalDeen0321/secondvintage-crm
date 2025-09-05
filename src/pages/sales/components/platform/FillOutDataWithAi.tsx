@@ -7,8 +7,6 @@ import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PlatformDataModalProps } from "./_actions";
 interface FillOutDataWithAiProps {
-    isAIProcessing: boolean;
-    setIsAIProcessing: React.Dispatch<React.SetStateAction<boolean>>;
     watch: PlatformDataModalProps["watch"];
     platform: PlatformDataModalProps["platform"];
 }

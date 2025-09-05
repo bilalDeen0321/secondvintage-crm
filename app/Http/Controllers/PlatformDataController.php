@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Platform\ExractMakeHookToTradera;
-use App\Actions\Platform\ExtractMakeHookToCatawiki;
 use App\Models\PlatformData;
 use App\Models\Watch;
 use Illuminate\Http\Request;
@@ -25,19 +23,11 @@ class PlatformDataController extends Controller
     public function aiFill(Request $request, Watch $watch)
     {
 
-        $request->validate([
-            'platform' => 'required|string|in:' . PlatformData::CATAWIKI,
-        ]);
+        $request->validate(['platform' => 'required|string|in:' . PlatformData::CATAWIKI]);
 
         $platformName = $request->input('platform');
 
-        $platform = $watch->platforms()->where('name', $platformName)->first();
-
-        if (!$platform) {
-            $platform = $watch->platforms()->create([
-                'name' => $platformName,
-            ]);
-        };
+        $platform = $watch->platforms()->firstOrCreate(['name' => $platformName]);
 
         // Reset all platform statuses to default
         $watch->platforms()->getQuery()->update(['status' => PlatformData::STATUS_DEFAULT]);
@@ -45,14 +35,17 @@ class PlatformDataController extends Controller
         // Update the specific platform status to loading
         $platform->update(['status' => PlatformData::STATUS_LOADING]);
 
+        //update that watch platform to current platform
+        $watch->update(['platform' => $platformName]);
+
+        //refresh the model before send it to others
+        $watch->refresh();
+
         match ($platformName) {
             PlatformData::CATAWIKI => dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform)),
             PlatformData::TRADERA => dispatch(new \App\Jobs\ProcessMakeHookTradera($watch, $platform)),
-            default => null,
+            default => throw new \Exception('Unsupported platform: ' . $platformName),
         };
-
-        // Dispatch the job to process AI data extraction
-        dispatch(new \App\Jobs\ProcessMakeHookCatawiki($watch, $platform));
 
         return back()->with('success', 'AI data is being generating.');
     }
@@ -62,7 +55,7 @@ class PlatformDataController extends Controller
      */
     public function fetch(Request $request, Watch $watch)
     {
-        $request->validate(['platform' => 'required|string|']);
+        $request->validate(['platform' => 'required|string']);
 
         $platform = $watch->platforms()->where('name', $request->input('platform'))->first();
 
@@ -76,7 +69,7 @@ class PlatformDataController extends Controller
     {
         $platform = $request->input('platform');
 
-        if ($watch->platforms()->where('name', $platform)->exists()) {
+        if (count($watch->platforms()->where('name', $platform)?->data ?? [])) {
             $watch->update(['platform' => $platform]);
             return back()->with('info', 'Platform was updated with existing data.');
         }

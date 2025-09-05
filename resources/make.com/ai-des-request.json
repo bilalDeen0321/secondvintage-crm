@@ -1,0 +1,27 @@
+{
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json",
+    "x-make-apikey": "..."
+  },
+  "body": {
+    "AI_Action": "generate_description",
+    "Watch_ID": "1234",
+    "SKU": "OME-SMP-0001",
+    "Name": "Omega Speedmaster",
+    "Brand": "Omega",
+    "Serial": "87654321",
+    "Ref": "311.30.42.30.01.005",
+    "Case_Size": "42mm",
+    "Caliber": "1861",
+    "Timegrapher": "+5s/day, 290 amplitude",
+    "Image_URLs": [
+      "https://i.imgur.com/Rq8NO58.jpeg",
+      "https://i.imgur.com/NHn1Xq8.jpeg"
+    ],
+    "Platform": "Catawiki",
+    "Status_Selected": "Draft",
+    "AI_Instruction": "Write a premium product description highlighting condition and value.",
+    "Thread_ID": "abc123xyz"
+  }
+}

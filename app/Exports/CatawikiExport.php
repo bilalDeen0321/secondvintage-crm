@@ -56,7 +56,6 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping
         "Message to Expert (optional)"
     ];
 
-
     /**
      * The watch IDs to be exported.
      */
@@ -88,11 +87,9 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping
         }])->get();
     }
 
-
-
     public function map($watch): array
     {
-        $catawikiPlatform = $watch->platforms()->where('name', 'catawiki')->first();
+        $catawikiPlatform = $watch->platforms()->where('name', PlatformData::CATAWIKI)->first();
         $platformData = $catawikiPlatform ? $catawikiPlatform->data : [];
 
         // Convert platform data array to associative array for easier access
@@ -118,43 +115,43 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping
             }, $watch->images);
             $photoUrls = implode(';', array_filter($urls));
         } elseif ($getValue('Catawiki - Public photo URL')) {
-            $photoUrls = url($getValue('Catawiki - Public photo URL'));
+            $photoUrls = $getValue('Catawiki - Public photo URL');
         }
 
         return [
-            $getValue('Catawiki - Your Reference Number (optional)') ?: $watch->sku,
+            $getValue('Catawiki - Your Reference Number (optional)') ?: $watch->sku ?? '',
             $getValue('Catawiki - Your Reference Colour (optional)'),
-            $getValue('Catawiki - Auction Type (333) (optional)'),
-            $getValue('Catawiki - Object type (18127)'),
-            $getValue('Catawiki - Language'),
-            $getValue('Catawiki - Description') ?: $watch->description,
-            $getValue('Catawiki - D: Brand') ?: $watch->brand,
-            $getValue('Catawiki - D: Model (optional)') ?: $watch->model,
-            $getValue('Catawiki - D: Reference Number (optional)') ?: $watch->reference,
-            $getValue('Catawiki - D: Shipped Insured'),
-            $getValue('Catawiki - D: Period'),
-            $getValue('Catawiki - D: Movement'),
-            $getValue('Catawiki - D: Case material'),
-            $getValue('Catawiki - D: Case diameter'),
-            $getValue('Catawiki - D: Condition'),
-            $getValue('Catawiki - D: Gender'),
-            $getValue('Catawiki - D: Band material'),
+            $getValue('Catawiki - Auction Type (333) (optional)') ?: 'Vintage Watches',
+            $getValue('Catawiki - Object type (18127)') ?: 'Watch',
+            $getValue('Catawiki - Language') ?: 'English',
+            $getValue('Catawiki - Description') ?: $watch->description ?? '',
+            $getValue('Catawiki - D: Brand') ?: $watch->brand ?? '',
+            $getValue('Catawiki - D: Model (optional)') ?: $watch->model ?? '',
+            $getValue('Catawiki - D: Reference Number (optional)') ?: $watch->reference ?? '',
+            $getValue('Catawiki - D: Shipped Insured') ?: 'Yes',
+            $getValue('Catawiki - D: Period') ?: '',
+            $getValue('Catawiki - D: Movement') ?: '',
+            $getValue('Catawiki - D: Case material') ?: '',
+            $getValue('Catawiki - D: Case diameter') ?: '',
+            $getValue('Catawiki - D: Condition') ?: '',
+            $getValue('Catawiki - D: Gender') ?: '',
+            $getValue('Catawiki - D: Band material') ?: '',
             $getValue('Catawiki - D: Band length (optional)'),
-            $getValue('Catawiki - D: Repainted dial'),
+            $getValue('Catawiki - D: Repainted dial') ?: 'No',
             $getValue('Catawiki - D: Dial colour (optional)'),
-            $getValue('Catawiki - D: Original box included'),
-            $getValue('Catawiki - D: Original papers included'),
-            $getValue('Catawiki - D: Original warranty included'),
+            $getValue('Catawiki - D: Original box included') ?: 'No',
+            $getValue('Catawiki - D: Original papers included') ?: 'No',
+            $getValue('Catawiki - D: Original warranty included') ?: 'No',
             $getValue('Catawiki - D: Year (optional)'),
             $getValue('Catawiki - D: Weight'),
             $getValue('Catawiki - D: Width lug/ watch band'),
-            $getValue('Catawiki - D: In working order (optional)'),
+            $getValue('Catawiki - D: In working order (optional)') ?: 'Yes',
             $photoUrls,
             $getValue('Catawiki - Estimated lot value'),
             $getValue('Catawiki - Reserve price (optional)'),
             $getValue('Catawiki - Start bidding from (optional)'),
-            $getValue('Catawiki - Pick up (optional)'),
-            $getValue('Catawiki - Combined shipping (optional)'),
+            $getValue('Catawiki - Pick up (optional)') ?: 'No',
+            $getValue('Catawiki - Combined shipping (optional)') ?: 'No',
             $getValue('Catawiki - Shipping costs'),
             $getValue('Catawiki - Shipping costs - Europe'),
             $getValue('Catawiki - Shipping costs - Rest of World'),
