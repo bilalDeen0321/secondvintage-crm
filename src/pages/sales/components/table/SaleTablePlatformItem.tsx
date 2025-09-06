@@ -5,7 +5,7 @@ import { SaleTableWatchItemProps } from "./SaleTableWatchItem";
 
 import { echo } from "@/app/echo";
 import PlatformData from "@/app/models/PlatformData";
-import { Button } from "@/components/ui/button";
+import Link from "@/components/ui/Link";
 import { ProcessPlatformEvent } from "@/types/events/laravel-events";
 import { useEffect, useState } from "react";
 
@@ -80,10 +80,19 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
     return (
         <td className="p-2">
             {platform && platform !== "None" && (
-                <Button variant="ghost" size="sm" onClick={() => onViewPlatformData(watch, platform)} className="text-blue-600 hover:text-blue-800">
+                <Link
+                    href={route("sales.show", {
+                        watch: watch.routeKey,
+                        platform,
+                    })}
+                    variant="ghost"
+                    size="sm"
+                    // onClick={() => onViewPlatformData(watch, platform)}
+                    className="text-blue-600 hover:text-blue-800"
+                >
                     <Eye className="mr-1 h-4 w-4" />
                     Data
-                </Button>
+                </Link>
             )}
         </td>
     );

@@ -52,7 +52,7 @@ Route::prefix('platform-data')->name('platform-data.')->group(function () {
 Route::prefix('sales/exports')->name('sales.exports.')->group(function () {
     Route::post('catawiki', [ExportController::class, 'catawiki'])->name('catawiki');
 });
-Route::resource('sales', SaleController::class);
+Route::resource('sales', SaleController::class)->setParam('watch');
 
 
 Route::resource('brands', BrandController::class);

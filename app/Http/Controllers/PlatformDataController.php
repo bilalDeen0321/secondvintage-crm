@@ -121,14 +121,17 @@ class PlatformDataController extends Controller
     public function save(Request $request, Watch $watch)
     {
         $request->validate([
-            'platform' => 'required|string|in:' . implode(',', PlatformData::all_patforms()),
             'data' => 'required|array',
             'data.*' => 'nullable',
             'data.*type' => 'required|string',
             'data.*field' => 'required|string',
         ]);
 
-        $platform = $watch->platforms()->firstOrCreate(['name' => $request->input('platform')]);
+        if (!$watch->platform) {
+            return back()->with('error', 'Please select a platform first.');
+        }
+
+        $platform = $watch->platforms()->firstOrCreate(['name' => $watch->platform]);
 
         $platform->update(['data' => $request->array('data')]);
 
