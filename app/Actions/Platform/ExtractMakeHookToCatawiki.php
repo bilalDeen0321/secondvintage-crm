@@ -42,7 +42,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - Auction Type (333) (optional)',
-                'value' => $data->get('Catawiki_Auction_Type', 'Omega Watches'),
+                'value' => $data->get('Catawiki_Auction_Type', ''),
                 'type' => 'select',
                 'options' => PlatformOption::auction_type()
             ],
@@ -65,7 +65,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Brand',
-                'value' => $data->get('Catawiki_Brand', $watch->brand),
+                'value' => $data->get('Catawiki_Brand'),
                 'type' => 'select',
                 'options' => PlatformOption::d_brand()
             ],
@@ -88,7 +88,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Period',
-                'value' => $data->get('Catawiki_Period', '2020+'),
+                'value' => $data->get('Catawiki_Period', ''),
                 'type' => 'select',
                 'options' => PlatformOption::d_period()
             ],
@@ -100,7 +100,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Case material',
-                'value' => $data->get('Catawiki_Case_material', 'Stainless steel'),
+                'value' => $data->get('Catawiki_Case_material'),
                 'type' => 'select',
                 'options' => PlatformOption::d_case_material()
             ],
@@ -111,7 +111,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Condition',
-                'value' => $data->get('Catawiki_Condition', 'Very good - minor signs of wear'),
+                'value' => $data->get('Catawiki_Condition'),
                 'type' => 'select',
                 'options' => PlatformOption::d_condition(),
             ],
@@ -123,13 +123,13 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Band material',
-                'value' => $data->get('Catawiki_Band_material', 'Stainless Steel'),
+                'value' => $data->get('Catawiki_Band_material'),
                 'type' => 'select',
                 'options' => PlatformOption::d_band_material()
             ],
             [
                 'field' => 'Catawiki - D: Band length (optional)',
-                'value' => $data->get('Catawiki_Band_length', ''),
+                'value' => $data->get('Catawiki_Band_length'),
                 'type' => 'select',
                 'options' => PlatformOption::d_band_length()
             ],
@@ -141,7 +141,7 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Dial colour (optional)',
-                'value' => $data->get('Catawiki_Dial_colour', ''),
+                'value' => $data->get('Catawiki_Dial_colour'),
                 'type' => 'select',
                 'options' => PlatformOption::d_dial_colour()
             ],
@@ -165,18 +165,18 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - D: Year (optional)',
-                'value' => $data->get('Catawiki_Year', ''),
+                'value' => $data->get('Catawiki_Year'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - D: Weight',
-                'value' => $data->get('Catawiki_Weight', ''),
+                'value' => $data->get('Catawiki_Weight'),
                 'type' => 'select',
                 'options' => PlatformOption::d_weight()
             ],
             [
                 'field' => 'Catawiki - D: Width lug/ watch band',
-                'value' => $data->get('Catawiki_Width_lug_watch_band', ''),
+                'value' => $data->get('Catawiki_Width_lug_watch_band'),
                 'type' => 'select',
                 'options' => PlatformOption::d_width_lug_watch_band()
             ],
@@ -193,17 +193,17 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - Estimated lot value',
-                'value' => $data->get('Catawiki_Estimated_lot_value', ''),
+                'value' => $data->get('Catawiki_Estimated_lot_value', '1200'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Reserve price (optional)',
-                'value' => $data->get('Catawiki_Reserve_price', ''),
+                'value' => $data->get('Catawiki_Reserve_price'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Start bidding from (optional)',
-                'value' => $data->get('Catawiki_Start_bidding_from', ''),
+                'value' => $data->get('Catawiki_Start_bidding_from'),
                 'type' => 'input'
             ],
             [
@@ -220,33 +220,33 @@ class ExtractMakeHookToCatawiki
             ],
             [
                 'field' => 'Catawiki - Shipping costs',
-                'value' => $data->get('Catawiki_Shipping_Cost', ''),
+                'value' => $data->get('Catawiki_Shipping_Cost'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Shipping costs - Europe',
-                'value' => $data->get('Catawiki_Shipping_Cost_Europe', ''),
+                'value' => $data->get('Catawiki_Shipping_Cost_Europe'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Shipping costs - Rest of World',
-                'value' => $data->get('Catawiki_Shipping_Cost_Rest_of_World', ''),
+                'value' => $data->get('Catawiki_Shipping_Cost_Rest_of_World'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Country specific shipping price (optional)',
-                'value' => $data->get('Catawiki_Country_specific_shipping_price', ''),
+                'value' => $data->get('Catawiki_Country_specific_shipping_price'),
                 'type' => 'select',
                 'options' => PlatformOption::shipping_country_name()
             ],
             [
                 'field' => 'Catawiki - Shipping profile (optional)',
-                'value' => $data->get('Catawiki_Shipping_Shipping_profile', ''),
+                'value' => $data->get('Catawiki_Shipping_Shipping_profile'),
                 'type' => 'input'
             ],
             [
                 'field' => 'Catawiki - Message to Expert (optional)',
-                'value' => $data->get('Catawiki_Shipping_Message_to_Expert', ''),
+                'value' => $data->get('Catawiki_Shipping_Message_to_Expert'),
                 'type' => 'textarea'
             ]
         ];
