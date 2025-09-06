@@ -1,4 +1,5 @@
 import { PlatformTypes } from "@/app/models/PlatformData";
+import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import { SaleWatchResource, WatchResource } from "@/types/resources/watch";
 import { router, usePage } from "@inertiajs/react";
@@ -28,23 +29,21 @@ export function PlatformFooterActions({ platformData, watch, platform }: Props) 
         });
     };
 
+    const handleApproveGoNext = () => {
+        console.log("Approving and going to next:", platformData);
+        // In real implementation, this would approve the watch
+
+        // Navigate to next watch without closing modal
+        alert("The action is under development.");
+    };
+
     return (
         <div className="mt-6 flex items-center justify-end gap-2 border-t pt-4">
             <Button disabled={loading} onClick={onSave} variant="default" className="bg-green-600 hover:bg-green-700">
                 <Save className="mr-2 h-4 w-4" />
-                Save
+                {loading && <Loading />} Save
             </Button>
-            <Button
-                disabled={loading}
-                onClick={() => {
-                    onSave();
-                    if (nexItem) {
-                        router.visit(route("sales.show", nexItem.routeKey));
-                    }
-                }}
-                variant="default"
-                className="bg-blue-600 hover:bg-blue-700"
-            >
+            <Button onClick={handleApproveGoNext} variant="default" className="bg-blue-600 hover:bg-blue-700">
                 <Check className="mr-2 h-4 w-4" />
                 Approve - Go Next
             </Button>
