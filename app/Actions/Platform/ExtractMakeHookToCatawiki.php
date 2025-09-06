@@ -219,7 +219,7 @@ class ExtractMakeHookToCatawiki
                 'options' => ['Yes', 'No']
             ],
             [
-                'field' => 'Catawiki - Shipping costs',
+                'field' => 'Catawiki - Shipping costs -',
                 'value' => $data->get('Catawiki_Shipping_Cost'),
                 'type' => 'input'
             ],

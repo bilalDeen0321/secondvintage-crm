@@ -8,8 +8,10 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 
-class CatawikiExport implements FromCollection, WithHeadings, WithMapping
+class CatawikiExport implements FromCollection, WithHeadings, WithMapping, WithChunkReading, WithCustomCsvSettings
 {
     /**
      * The attributes to be headers.
@@ -78,24 +80,58 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping
     }
 
     /**
+     * Define the chunk size for reading data.
+     */
+    public function chunkSize(): int
+    {
+        return 100; // Adjust the chunk size as needed
+    }
+
+    /**
+     * Define custom CSV settings.
+     */
+    public function getCsvSettings(): array
+    {
+        return [
+            'enclosure'   => '',   // no forced quotes
+            'line_ending' => "\n", // Unix style like your older export
+        ];
+    }
+
+    /**
+     * Default values for certain fields if not provided in platform data.
+     */
+    protected $defaults = [
+        'Catawiki - Object type (18127)'       => 'Watch',
+        'Catawiki - Language'                  => 'English',
+        'Catawiki - D: Condition'              => 'Good - with signs of wear',
+        'Catawiki - D: Gender'                 => 'Men',
+        'Catawiki - Estimated lot value'       => '1200', // fallback minimal value
+        // 'Catawiki - Public photo URL'          => 'http://yourdomain.com/default-image.png',
+    ];
+
+
+    /**
      * Fetch the collection of watches to be exported.
      */
     public function collection(): Collection
     {
-        return Watch::whereIn('id', $this->watchIds)->with(['platforms' => function ($query) {
-            $query->where('name', PlatformData::CATAWIKI);
-        }])->get();
+        return PlatformData::query()
+            ->with('watch:id,description')
+            ->where('name', PlatformData::CATAWIKI)
+            ->whereIn('watch_id',  $this->watchIds)
+            ->get();
     }
 
-    public function map($watch): array
+    public function map($row): array
     {
-        $catawikiPlatform = $watch->platforms()->where('name', PlatformData::CATAWIKI)->first();
-        $platformData = $catawikiPlatform ? $catawikiPlatform->data : [];
+        /** @var \App\Models\PlatformData */
+        $platform = $row;
 
         // Convert platform data array to associative array for easier access
         $dataMap = [];
-        if (is_array($platformData)) {
-            foreach ($platformData as $item) {
+        if (is_array($platform->data)) {
+            foreach ($platform->data as $item) {
                 if (isset($item['field']) && isset($item['value'])) {
                     $dataMap[$item['field']] = $item['value'];
                 }
@@ -104,60 +140,55 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping
 
         // Helper function to get platform data value
         $getValue = function ($field) use ($dataMap) {
-            return $dataMap[$field] ?? '';
+
+            if (!empty($dataMap[$field])) {
+                return $dataMap[$field];
+            }
+
+            // Use fallback if defined
+            return $this->defaults[$field] ?? '';
         };
 
-        // Process public photo URLs - combine multiple image URLs with semicolon
-        $photoUrls = '';
-        if (isset($watch->images) && is_array($watch->images)) {
-            $urls = array_map(function ($image) {
-                return url($image['url'] ?? '');
-            }, $watch->images);
-            $photoUrls = implode(';', array_filter($urls));
-        } elseif ($getValue('Catawiki - Public photo URL')) {
-            $photoUrls = $getValue('Catawiki - Public photo URL');
-        }
-
         return [
-            $getValue('Catawiki - Your Reference Number (optional)') ?: $watch->sku ?? '',
+            $getValue('Catawiki - Your Reference Number (optional)'),
             $getValue('Catawiki - Your Reference Colour (optional)'),
-            $getValue('Catawiki - Auction Type (333) (optional)') ?: 'Vintage Watches',
-            $getValue('Catawiki - Object type (18127)') ?: 'Watch',
-            $getValue('Catawiki - Language') ?: 'English',
-            $getValue('Catawiki - Description') ?: $watch->description ?? '',
-            $getValue('Catawiki - D: Brand') ?: $watch->brand ?? '',
-            $getValue('Catawiki - D: Model (optional)') ?: $watch->model ?? '',
-            $getValue('Catawiki - D: Reference Number (optional)') ?: $watch->reference ?? '',
-            $getValue('Catawiki - D: Shipped Insured') ?: 'Yes',
-            $getValue('Catawiki - D: Period') ?: '',
-            $getValue('Catawiki - D: Movement') ?: '',
-            $getValue('Catawiki - D: Case material') ?: '',
-            $getValue('Catawiki - D: Case diameter') ?: '',
-            $getValue('Catawiki - D: Condition') ?: '',
-            $getValue('Catawiki - D: Gender') ?: '',
-            $getValue('Catawiki - D: Band material') ?: '',
+            $getValue('Catawiki - Auction Type (333) (optional)'),
+            $getValue('Catawiki - Object type (18127)'),
+            $getValue('Catawiki - Language'),
+            $getValue('Catawiki - Description'),
+            $getValue('Catawiki - D: Brand'),
+            $getValue('Catawiki - D: Model (optional)'),
+            $getValue('Catawiki - D: Reference Number (optional)'),
+            $getValue('Catawiki - D: Shipped Insured'),
+            $getValue('Catawiki - D: Period'),
+            $getValue('Catawiki - D: Movement'),
+            $getValue('Catawiki - D: Case material'),
+            $getValue('Catawiki - D: Case diameter'),
+            $getValue('Catawiki - D: Condition'),
+            $getValue('Catawiki - D: Gender'),
+            $getValue('Catawiki - D: Band material'),
             $getValue('Catawiki - D: Band length (optional)'),
-            $getValue('Catawiki - D: Repainted dial') ?: 'No',
+            $getValue('Catawiki - D: Repainted dial'),
             $getValue('Catawiki - D: Dial colour (optional)'),
-            $getValue('Catawiki - D: Original box included') ?: 'No',
-            $getValue('Catawiki - D: Original papers included') ?: 'No',
-            $getValue('Catawiki - D: Original warranty included') ?: 'No',
+            $getValue('Catawiki - D: Original box included'),
+            $getValue('Catawiki - D: Original papers included'),
+            $getValue('Catawiki - D: Original warranty included'),
             $getValue('Catawiki - D: Year (optional)'),
             $getValue('Catawiki - D: Weight'),
             $getValue('Catawiki - D: Width lug/ watch band'),
-            $getValue('Catawiki - D: In working order (optional)') ?: 'Yes',
-            $photoUrls,
+            $getValue('Catawiki - D: In working order (optional)'),
+            $getValue('Catawiki - Public photo URL'),
             $getValue('Catawiki - Estimated lot value'),
             $getValue('Catawiki - Reserve price (optional)'),
             $getValue('Catawiki - Start bidding from (optional)'),
-            $getValue('Catawiki - Pick up (optional)') ?: 'No',
-            $getValue('Catawiki - Combined shipping (optional)') ?: 'No',
-            $getValue('Catawiki - Shipping costs'),
+            $getValue('Catawiki - Pick up (optional)'),
+            $getValue('Catawiki - Combined shipping (optional)'),
+            $getValue('Catawiki - Shipping costs -'),
             $getValue('Catawiki - Shipping costs - Europe'),
             $getValue('Catawiki - Shipping costs - Rest of World'),
             $getValue('Catawiki - Country specific shipping price (optional)'),
             $getValue('Catawiki - Shipping profile (optional)'),
-            $getValue('Catawiki - Message to Expert (optional)'),
+            $getValue('Catawiki - Message to Expert (optional)')
         ];
     }
 }

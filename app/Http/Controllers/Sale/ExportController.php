@@ -43,7 +43,16 @@ class ExportController extends Controller
         // Generate filename with timestamp
         $filename = 'Catawiki_export_' . now()->format('Y-m-d') . '.csv';
 
-        return Excel::download(new CatawikiExport($ids), $filename);
+        return Excel::download(
+            new CatawikiExport($ids),
+            $filename,
+            \Maatwebsite\Excel\Excel::CSV,
+            [
+                'Content-Type' => 'text/csv',
+                'CsvEnclosure' => '',
+                'lineEnding' => "\n",
+            ]
+        );
     }
 
     /**

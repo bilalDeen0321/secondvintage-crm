@@ -2,8 +2,26 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+
 class PlatformOption
 {
+    // protected Collection $collection;
+
+    public function __construct()
+    {
+        // $filepath = base_path('resources/data/platform/option-values.json');
+        // $this->collection = collect(json_decode(File::get($filepath), true));
+    }
+
+    /**
+     * Get an item from the collection by key.
+     */
+    // public function get($key, $default = null)
+    // {
+    //     return $this->collection->get($key, $default);
+    // }
 
     public static function auction_type(): array
     {
