@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PlatformData;
+use App\Models\Status;
 use App\Models\Watch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -160,5 +161,17 @@ class PlatformDataController extends Controller
             'nextItem' => $nextItem,
             'prevItem' => $prevItem,
         ]);
+    }
+
+
+    /**
+     * Approve platform data for a specific watch.
+     */
+    public function approve(Watch $watch)
+    {
+
+        $watch->update(['status' => Status::APPROVED]);
+
+        return back()->with('success', 'Approved successfully.');
     }
 }

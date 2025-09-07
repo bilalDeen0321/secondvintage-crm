@@ -16,6 +16,7 @@ type Props = {
 export function PlatformFooterActions({ platformData, watch, platform }: Props) {
     // Start hooks and states
     const [loading, setLoading] = useState(false);
+    const [process, setProcess] = useState(false);
     const nexItem = usePage().props?.nextItem as Pick<WatchResource, "id" | "routeKey"> | null;
 
     //handler on save
@@ -24,28 +25,34 @@ export function PlatformFooterActions({ platformData, watch, platform }: Props) 
         const data = { platform: platform, data: platformData as any[] };
         router.post(route("platform-data.save", watch.routeKey), data, {
             // forceFormData: true,
-            onStart: () => setLoading(true),
-            onFinish: () => setLoading(false),
+            onStart: () => setProcess(true),
+            onFinish: () => setProcess(false),
         });
     };
 
     const handleApproveGoNext = () => {
-        console.log("Approving and going to next:", platformData);
-        // In real implementation, this would approve the watch
-
-        // Navigate to next watch without closing modal
-        alert("The action is under development.");
+        router.put(route("platform-data.approve", watch.routeKey), null, {
+            onStart: () => setLoading(true),
+            onFinish: () => setLoading(false),
+            onSuccess: () => {
+                if (nexItem) {
+                    router.visit(route("sales.show", nexItem.routeKey));
+                } else {
+                    router.visit(route("sales.index"));
+                }
+            },
+        });
     };
 
     return (
         <div className="mt-6 flex items-center justify-end gap-2 border-t pt-4">
-            <Button disabled={loading} onClick={onSave} variant="default" className="bg-green-600 hover:bg-green-700">
+            <Button disabled={process} onClick={onSave} variant="default" className="bg-green-600 hover:bg-green-700">
                 <Save className="mr-2 h-4 w-4" />
-                {loading && <Loading />} Save
+                {process && <Loading />} Save
             </Button>
-            <Button onClick={handleApproveGoNext} variant="default" className="bg-blue-600 hover:bg-blue-700">
+            <Button disabled={loading} onClick={handleApproveGoNext} variant="default" className="bg-blue-600 hover:bg-blue-700">
                 <Check className="mr-2 h-4 w-4" />
-                Approve - Go Next
+                {loading && <Loading />} Approve - Go Next
             </Button>
         </div>
     );
