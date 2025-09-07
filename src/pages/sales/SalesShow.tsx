@@ -17,13 +17,23 @@ import FillOutDataWithAi from "./components/platform/FillOutDataWithAi";
 type Props = {
     watch: SaleWatchResource;
     platform: PlatformResource;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params?: Record<string, any>;
 };
-export default function SalesShow({ watch, platform }: Props) {
+export default function SalesShow({ watch, platform, params = {} }: Props) {
     const [platformData, setPlatformData] = useState<PlatformField[]>(platform?.data || []);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     const watchImages = watch.images || [];
     const hasImages = watchImages.length > 0;
+
+    const handleBackToIndex = () => {
+        router.visit(route("sales.index"), {
+            data: params,
+            preserveState: false,
+            preserveScroll: true,
+        });
+    };
 
     return (
         <Layout>
@@ -41,7 +51,7 @@ export default function SalesShow({ watch, platform }: Props) {
 
                             <div className="flex items-center space-x-3">
                                 <FillOutDataWithAi watch={watch} platform={platform} />
-                                <button onClick={() => router.visit(route("sales.index"))} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                                <button onClick={handleBackToIndex} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                                     <X className="h-5 w-5" />
                                 </button>
                             </div>

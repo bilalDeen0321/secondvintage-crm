@@ -64,24 +64,29 @@ class SaleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Watch $watch)
+    public function show(Watch $watch, Request $request)
     {
 
         $platformName = $watch->platform;
 
         $platform = $watch->platforms()->where('name', $platformName)->first();
 
-        //get the next watch for this platform
-        $nextItem = Watch::where('id', '>', $watch->id)->where('platform', $platformName)->orderBy('id')->first()?->only(['id', 'routeKey']);
+        $nextItem = Watch::where('id', '<', $watch->id) // smaller id for next in latest-first
+            ->where('platform', $platformName)
+            // ->orderBy('id', 'desc')
+            ->first();
 
-        //get the previous watch for this platform
-        $prevItem = Watch::where('id', '<', $watch->id)->where('platform', $platformName)->orderBy('id', 'desc')->first()?->only(['id', 'routeKey']);
+        $prevItem = Watch::where('id', '>', $watch->id) // larger id for previous in latest-first
+            ->where('platform', $platformName)
+            // ->orderBy('id', 'asc')
+            ->first();
 
         return Inertia::render('sales/SalesShow', [
             'watch' => new WatchResource($watch->load('platforms:id,name,watch_id,status,message')),
             'platform' => $platform,
-            'nextItem' => $nextItem,
-            'prevItem' => $prevItem,
+            'nextItem' => $nextItem ? new WatchResource($nextItem) : null,
+            'prevItem' => $prevItem ? new WatchResource($prevItem) : null,
+            'params' => $request->query(), // Pass all query parameters
         ]);
     }
 

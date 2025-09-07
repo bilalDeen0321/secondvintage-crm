@@ -35,7 +35,7 @@ export function PlatformFooterActions({ platformData, watch, platform }: Props) 
             onStart: () => setLoading(true),
             onFinish: () => setLoading(false),
             onSuccess: () => {
-                if (nexItem) {
+                if (nexItem?.routeKey) {
                     router.visit(route("sales.show", nexItem.routeKey));
                 } else {
                     router.visit(route("sales.index"));

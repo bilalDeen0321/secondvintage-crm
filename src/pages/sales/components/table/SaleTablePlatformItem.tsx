@@ -6,6 +6,7 @@ import { SaleTableWatchItemProps } from "./SaleTableWatchItem";
 import { echo } from "@/app/echo";
 import PlatformData from "@/app/models/PlatformData";
 import Link from "@/components/ui/Link";
+import { cleanParams } from "@/pages/watches/_search";
 import { ProcessPlatformEvent } from "@/types/events/laravel-events";
 import { useEffect, useState } from "react";
 
@@ -81,10 +82,15 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
         <td className="p-2">
             {platform && platform !== "None" && (
                 <Link
-                    href={route("sales.show", {
-                        watch: watch.routeKey,
-                        platform,
-                    })}
+                    href={route(
+                        "sales.show",
+                        cleanParams({
+                            watch: watch.routeKey,
+                            page: new URLSearchParams(window.location.search).get("page"),
+                        })
+                    )}
+                    preserveState={false}
+                    preserveScroll={true}
                     variant="ghost"
                     size="sm"
                     // onClick={() => onViewPlatformData(watch, platform)}

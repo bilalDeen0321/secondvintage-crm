@@ -11,6 +11,8 @@ type PageProps = InertiaPageProps & {
 
 export function PlatformNavigation() {
     const { nextItem, prevItem } = usePage<PageProps>().props;
+
+    console.log({ nextItem, prevItem });
     return (
         <>
             {prevItem && (
