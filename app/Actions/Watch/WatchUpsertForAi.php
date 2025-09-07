@@ -27,21 +27,24 @@ class WatchUpsertForAi
                 $values['brand_id'] = Brand::firstOrCreate(['name' => $values['brand']])->id;
             }
 
-            if (empty($input['location'])) {
+            if (empty($values['location'])) {
                 $values['location'] = Location::DEFAULT_COUNTRY;
             }
 
-            // 2. Create Watch
-            $watch = Watch::query()->updateOrCreate(
-                [Watch::routeKeyName() => $routeKey],
-                Arr::except($values, Watch::tableName())
-            );
+            //get unique by SKU (route key)
+            $attributes = [Watch::routeKeyName() => $routeKey ?? $values['sku'] ?? ''];
+
+            $watch_data = Arr::except($values, ['sku', 'batch', 'brand', 'images']);
+
+            // 2. Create Watch - Use SKU to avoid duplicate entries
+            $watch = Watch::query()->updateOrCreate($attributes, $watch_data);
 
             // Handle update images
             if (!empty($values['images'])) {
-
                 (new WatchImageSyncAction)($watch, $values['images']);
             }
+
+            // $watch->refresh();
 
             return $watch;
         });
