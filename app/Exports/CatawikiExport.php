@@ -155,7 +155,7 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping, WithC
             $getValue('Catawiki - Auction Type (333) (optional)'),
             $getValue('Catawiki - Object type (18127)'),
             $getValue('Catawiki - Language'),
-            $getValue('Catawiki - Description'),
+            $this->addQuote($getValue('Catawiki - Description')),
             $getValue('Catawiki - D: Brand'),
             $getValue('Catawiki - D: Model (optional)'),
             $getValue('Catawiki - D: Reference Number (optional)'),
@@ -190,5 +190,15 @@ class CatawikiExport implements FromCollection, WithHeadings, WithMapping, WithC
             $getValue('Catawiki - Shipping profile (optional)'),
             $getValue('Catawiki - Message to Expert (optional)')
         ];
+    }
+
+    private function addQuote($value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        // Escape existing quotes by doubling them
+        return '"' . str_replace('"', '""', $value) . '"';
     }
 }
