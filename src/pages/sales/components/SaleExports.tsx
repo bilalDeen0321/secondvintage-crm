@@ -60,9 +60,9 @@ export default function SaleExports({ watch_ids }: Props) {
             <Button variant="outline" size="sm" onClick={() => onExport(PlatformData.TRADERA)} className="border-amber-300 text-amber-600 hover:bg-amber-100">
                 Tradera
             </Button>
-            <Button variant="outline" size="sm" onClick={() => alert("disabled")} className="border-amber-300 text-amber-600 hover:bg-amber-100">
+            {/* <Button variant="outline" size="sm" onClick={() => alert("disabled")} className="border-amber-300 text-amber-600 hover:bg-amber-100">
                 General CSV
-            </Button>
+            </Button> */}
         </div>
     );
 }
