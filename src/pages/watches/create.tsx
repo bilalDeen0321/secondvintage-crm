@@ -24,6 +24,7 @@ import { watchEscapeCallback, watchInitData } from "./_utils";
 import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
+import WatchWatermark from "./components/WatchWatermark";
 
 type Props = {
     watch?: WatchResource;
@@ -199,7 +200,14 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                             <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">Name *</label>
-                                    <input type="text" name="name" value={data.name} onChange={(e) => setData("name", e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={data.name}
+                                        onChange={(e) => setData("name", e.target.value)}
+                                        required
+                                        className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                    />
                                 </div>
 
                                 <AutoSkuGenerate value={data.sku} name={data.name} brand={data.brand} onChange={(value) => setData("sku", value)} />
@@ -215,7 +223,13 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                         <label className="text-sm font-medium text-slate-700">Currency dropdown</label>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <input type="number" value={data.original_cost} onChange={(e) => setData("original_cost", e.target.value)} placeholder="1.00" className="w-36 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                        <input
+                                            type="number"
+                                            value={data.original_cost}
+                                            onChange={(e) => setData("original_cost", e.target.value)}
+                                            placeholder="1.00"
+                                            className="w-36 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                        />
                                         <Select value={data.currency} onValueChange={(value) => setData("currency", value)}>
                                             <SelectTrigger className="w-40">
                                                 <SelectValue />
@@ -236,7 +250,13 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                             <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">Status *</label>
-                                    <select name="status" value={data.status} onChange={(e) => setData("status", e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <select
+                                        name="status"
+                                        value={data.status}
+                                        onChange={(e) => setData("status", e.target.value)}
+                                        required
+                                        className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                    >
                                         {statuses.map((status, index) => (
                                             <option key={index} value={status}>
                                                 {Status.toHuman(status)}
@@ -262,7 +282,9 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">Cost (€)</label>
-                                    <div className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-medium text-slate-900">{data.current_cost ? `€${parseFloat(data.current_cost).toFixed(2)}` : "€0.00"}</div>
+                                    <div className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-medium text-slate-900">
+                                        {data.current_cost ? `€${parseFloat(data.current_cost).toFixed(2)}` : "€0.00"}
+                                    </div>
                                 </div>
                             </div>
 
@@ -283,9 +305,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                             <UploadManager images={data.images} onChange={(images) => setData("images", images)} />
                                         </div>
                                         {/* Created by line */}
-                                        <div className="mt-2 text-xs text-slate-500">
-                                            Edited by <strong>Admin</strong> on 6/23/2025 | Seller: <strong>John Doe</strong> | Agent: <strong>Mike Smith</strong>
-                                        </div>
+                                        <WatchWatermark watch={watch} />
                                     </div>
                                 </div>
 
@@ -294,27 +314,57 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                     <div className="grid grid-cols-5 gap-2">
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Serial</label>
-                                            <input type="text" name="serial" value={data.serial_number} onChange={(e) => setData("serial_number", e.target.value)} className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                                            <input
+                                                type="text"
+                                                name="serial"
+                                                value={data.serial_number}
+                                                onChange={(e) => setData("serial_number", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
                                         </div>
 
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Ref</label>
-                                            <input type="text" name="ref" value={data.reference} onChange={(e) => setData("reference", e.target.value)} className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                                            <input
+                                                type="text"
+                                                name="ref"
+                                                value={data.reference}
+                                                onChange={(e) => setData("reference", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
                                         </div>
 
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Case Size</label>
-                                            <input type="text" name="case_size" value={data.case_size} onChange={(e) => setData("case_size", e.target.value)} className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                                            <input
+                                                type="text"
+                                                name="case_size"
+                                                value={data.case_size}
+                                                onChange={(e) => setData("case_size", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
                                         </div>
 
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Caliber</label>
-                                            <input type="text" name="caliber" value={data.caliber} onChange={(e) => setData("caliber", e.target.value)} className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                                            <input
+                                                type="text"
+                                                name="caliber"
+                                                value={data.caliber}
+                                                onChange={(e) => setData("caliber", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
                                         </div>
 
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Timegrapher</label>
-                                            <input type="text" name="timegrapher" value={data.timegrapher} onChange={(e) => setData("timegrapher", e.target.value)} className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500" />
+                                            <input
+                                                type="text"
+                                                name="timegrapher"
+                                                value={data.timegrapher}
+                                                onChange={(e) => setData("timegrapher", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
                                         </div>
                                     </div>
 
@@ -322,9 +372,16 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">
-                                            <span className="font-bold">Description</span> <span className="font-normal">(Remember to check Model, Case size, Serial, Reference, Timegrapher result)</span>
+                                            <span className="font-bold">Description</span>{" "}
+                                            <span className="font-normal">(Remember to check Model, Case size, Serial, Reference, Timegrapher result)</span>
                                         </label>
-                                        <Textarea value={data.description} name="description" onChange={(e) => setData("description", e.target.value)} className="min-h-[320px] w-full resize-y" disabled={data.ai_status === "loading"}></Textarea>
+                                        <Textarea
+                                            value={data.description}
+                                            name="description"
+                                            onChange={(e) => setData("description", e.target.value)}
+                                            className="min-h-[320px] w-full resize-y"
+                                            disabled={data.ai_status === "loading"}
+                                        ></Textarea>
                                     </div>
 
                                     <div>
@@ -358,7 +415,12 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                             <Button type="submit" className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`} disabled={processing || !hasChanges}>
                                 {loadName === "save" && processing ? "Saving..." : hasChanges ? "Save" : "Saved"}
                             </Button>
-                            <Button type="button" onClick={onSaveAndClose} className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`} disabled={processing || !hasChanges}>
+                            <Button
+                                type="button"
+                                onClick={onSaveAndClose}
+                                className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
+                                disabled={processing || !hasChanges}
+                            >
                                 {loadName === "save_and_close" && processing ? "Saving..." : "Save & Close"}
                             </Button>
                             <Button type="button" onClick={onClose} variant="outline" className="flex-1">

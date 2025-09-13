@@ -20,6 +20,7 @@ Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group
 
 Route::prefix('watches')->name('watches.')->group(function () {
     Route::get('/', fn() => WatchResource::collection(Watch::get()));
+    Route::get('/{watch}/with-authors', [WatchApiController::class, 'withAuthors'])->name('with-authors');
     Route::post('generate-sku/{oldSku?}', [WatchSkuController::class, 'generate'])->name('generate-sku');
 });
 
