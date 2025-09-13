@@ -1,17 +1,11 @@
 import { Batch } from "@/app/models/Batch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Grid3x3, List, Plus, Search } from "lucide-react";
 
-interface BatchFiltersProps {
+interface Props {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
     statusFilter: string;
@@ -19,32 +13,20 @@ interface BatchFiltersProps {
     viewMode: "grid" | "list";
     setViewMode: (mode: "grid" | "list") => void;
     onCreateBatch: () => void;
+    showCreateForm: boolean;
 }
 
-export const BatchFilters = ({
-    searchTerm,
-    setSearchTerm,
-    statusFilter,
-    setStatusFilter,
-    viewMode,
-    setViewMode,
-    onCreateBatch,
-}: BatchFiltersProps) => {
+export const BatchFilters = (props: Props) => {
+    const { searchTerm, setSearchTerm, statusFilter, setStatusFilter, viewMode, setViewMode, onCreateBatch, showCreateForm } = props;
     return (
         <div className="mb-6">
             <div className="mb-6 flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900">Batch Management</h1>
-                    <p className="mt-1 text-slate-600">
-                        Track watch shipments from Vietnam to Denmark
-                    </p>
+                    <p className="mt-1 text-slate-600">Track watch shipments from Vietnam to Denmark</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <ToggleGroup
-                        type="single"
-                        value={viewMode}
-                        onValueChange={(value) => value && setViewMode(value as "grid" | "list")}
-                    >
+                    <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "list")}>
                         <ToggleGroupItem value="list" aria-label="List view">
                             <List className="h-4 w-4" />
                         </ToggleGroupItem>
@@ -52,7 +34,7 @@ export const BatchFilters = ({
                             <Grid3x3 className="h-4 w-4" />
                         </ToggleGroupItem>
                     </ToggleGroup>
-                    <Button onClick={onCreateBatch} className="flex items-center gap-2">
+                    <Button onClick={onCreateBatch} disabled={showCreateForm} className="flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <Plus className="h-4 w-4" />
                         Create New Batch
                     </Button>
@@ -62,25 +44,19 @@ export const BatchFilters = ({
             <div className="flex gap-4">
                 <div className="relative max-w-md flex-1">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-slate-400" />
-                    <Input
-                        placeholder="Search batches..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                    />
+                    <Input placeholder="Search batches..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
                 </div>
-                <Select
-                    value={statusFilter}
-                    onValueChange={(value) => setStatusFilter(value)}
-                >
+                <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
                     <SelectTrigger className="w-48">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Statuses</SelectItem>
-                        { Batch.allStatuses().map((status) => (
-                        <SelectItem key={status} value={status}>{Batch.toHuman(status)}</SelectItem>
-                        )) }
+                        {Batch.allStatuses().map((status) => (
+                            <SelectItem key={status} value={status}>
+                                {Batch.toHuman(status)}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
             </div>

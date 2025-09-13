@@ -3,7 +3,7 @@ import { Batch } from "@/types/Batch";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { router, useForm, usePage } from "@inertiajs/react";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 // Mock available watches (these would come from a separate API call)
 const mockAvailableWatches: WatchResource[] = [
@@ -78,8 +78,8 @@ export const useBatchActions = (
             })) || []
         }));
     };
-    const {page} = usePage().props;
-    
+    const { page } = usePage().props;
+
     // Custom hook for URL parameters (React best practice)
     const useUrlParams = () => {
         return useMemo(() => {
@@ -91,9 +91,9 @@ export const useBatchActions = (
             };
         }, [window.location.search]);
     };
-    
+
     const urlParams = useUrlParams();
-    
+
     // State management
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [selectedWatch, setSelectedWatch] = useState<WatchResource | null>(null);
@@ -436,7 +436,6 @@ export const useBatchActions = (
 
     const openEditBatchModal = (batchId: string) => {
         const batch = batches.find((b) => b.id === batchId);
-        alert(batchId + ' - ' + batch?.name);
         if (batch) {
             setEditingBatch(batchId);
             setEditingBatchData({

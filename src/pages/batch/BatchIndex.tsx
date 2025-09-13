@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Layout from "@/components/Layout";
+import TablePaginate from "@/components/ui/table/TablePaginate";
 import WatchDetailModal from "@/components/WatchDetailModal";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router } from "@inertiajs/react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
 import { BatchFilters } from "./components/BatchFilters";
@@ -12,8 +14,6 @@ import { BatchList } from "./components/BatchList";
 import { BatchStats } from "./components/BatchStats";
 import { CreateBatchForm } from "./components/CreateBatchForm";
 import { EditBatchModal } from "./components/EditBatchModal";
-import TablePaginate from "@/components/ui/table/TablePaginate";
-import { useEffect, useRef } from "react";
 
 interface BatchManagementProps {
     batches: {
@@ -25,7 +25,7 @@ interface BatchManagementProps {
     batchStastistics: any;
 }
 
-const BatchManagement = ({ batches: serverBatches, availableWatches , batchStastistics }: BatchManagementProps) => {
+const BatchManagement = ({ batches: serverBatches, availableWatches, batchStastistics }: BatchManagementProps) => {
     const {
         // State
         viewMode,
@@ -82,33 +82,25 @@ const BatchManagement = ({ batches: serverBatches, availableWatches , batchStast
         handleSelectWatch,
     } = useBatchActions(serverBatches.data, availableWatches, batchStastistics);
 
-    const getSortIcon = (
-        field: string,
-        currentSortField: string,
-        currentSortDirection: "asc" | "desc",
-    ) => {
+    const getSortIcon = (field: string, currentSortField: string, currentSortDirection: "asc" | "desc") => {
         if (currentSortField !== field) return null;
-        return currentSortDirection === "asc" ? (
-            <ChevronUp className="ml-1 inline h-4 w-4" />
-        ) : (
-            <ChevronDown className="ml-1 inline h-4 w-4" />
-        );
+        return currentSortDirection === "asc" ? <ChevronUp className="ml-1 inline h-4 w-4" /> : <ChevronDown className="ml-1 inline h-4 w-4" />;
     };
 
     const setFilterBatches = (key: string, value: string) => {
-        setData({ ...data, [key]: value , page: 1 });
-    }
+        setData({ ...data, [key]: value, page: 1 });
+    };
 
     const isInitialMount = useRef(true);
-    
+
     useEffect(() => {
         // Skip the first render to avoid duplicate requests on initial load
         if (isInitialMount.current) {
             isInitialMount.current = false;
             return;
         }
-        
-        router.get(route("batches.index"), data , {
+
+        router.get(route("batches.index"), data, {
             only: ["batches"],
             preserveState: true,
             preserveScroll: true,
@@ -125,6 +117,7 @@ const BatchManagement = ({ batches: serverBatches, availableWatches , batchStast
                     setStatusFilter={(status) => setFilterBatches("status", status)}
                     viewMode={viewMode}
                     setViewMode={setViewMode}
+                    showCreateForm={showCreateForm}
                     onCreateBatch={() => setShowCreateForm(true)}
                 />
 
@@ -145,27 +138,27 @@ const BatchManagement = ({ batches: serverBatches, availableWatches , batchStast
 
                 {/* pagination */}
                 <div className="mt-4">
-                    <TablePaginate
-                        links={serverBatches?.meta?.links}
-                    />
+                    <TablePaginate links={serverBatches?.meta?.links} />
                 </div>
-                
-                {editingBatch && <EditBatchModal
-                    isOpen={editingBatch !== null}
-                    onClose={() => setEditingBatch(null)}
-                    batch={currentEditingBatch}
-                    editingBatchData={editingBatchData}
-                    setEditingBatchData={setEditingBatchData}
-                    availableWatches={actionAvailableWatches}
-                    batchWatchSortField={batchWatchSortField}
-                    batchWatchSortDirection={batchWatchSortDirection}
-                    onBatchWatchSort={handleBatchWatchSort}
-                    onUpdateBatchDetails={updateBatchDetails}
-                    onAddWatchToBatch={openAddWatchModal}
-                    onRemoveWatchFromBatch={removeWatchFromBatch}
-                    getWatchStatusColor={getWatchStatusColor}
-                    getSortedBatchWatches={getSortedBatchWatches}
-                />}
+
+                {editingBatch && (
+                    <EditBatchModal
+                        isOpen={editingBatch !== null}
+                        onClose={() => setEditingBatch(null)}
+                        batch={currentEditingBatch}
+                        editingBatchData={editingBatchData}
+                        setEditingBatchData={setEditingBatchData}
+                        availableWatches={actionAvailableWatches}
+                        batchWatchSortField={batchWatchSortField}
+                        batchWatchSortDirection={batchWatchSortDirection}
+                        onBatchWatchSort={handleBatchWatchSort}
+                        onUpdateBatchDetails={updateBatchDetails}
+                        onAddWatchToBatch={openAddWatchModal}
+                        onRemoveWatchFromBatch={removeWatchFromBatch}
+                        getWatchStatusColor={getWatchStatusColor}
+                        getSortedBatchWatches={getSortedBatchWatches}
+                    />
+                )}
 
                 <AddWatchModal
                     isOpen={isAddWatchModalOpen}
