@@ -33,7 +33,7 @@ export const hanldeBatchAction = () => {
     if (newBatch && newBatch.trim()) {
         // Direct Inertia POST request without page reload
 
-        router.post(route('batch.store'), { name: newBatch }, { fresh: false });
+        router.post(route('batches.store'), { name: newBatch }, { fresh: false });
     }
 };
 

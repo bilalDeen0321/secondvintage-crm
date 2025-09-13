@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Route;
 
+use function Psy\Test\Command\ListCommand\Fixtures\bar;
+
 class BatchController extends Controller
 {
     /**
@@ -70,40 +72,18 @@ class BatchController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'min:2',
-                'max:100',
-                Rule::unique(Batch::class, 'name'),
-            ],
-            'tracking_number' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique(Batch::class, 'tracking_number'),
-            ],
-            'origin' => 'required|string|max:100',
-            'destination' => 'required|string|max:100',
-            'status' => [
-                'required',
-                'string',
-                Rule::in(Batch::STATUSES)
-            ],
-            'notes' => 'nullable|string|max:1000',
+        $data = $request->validate([
+            'name'              => 'required|string|min:2|max:100|unique:batches,name',
+            'tracking_number'   => 'nullable|string|max:50|unique:batches,tracking_number',
+            'origin'            => 'nullable|string|max:100',
+            'destination'       => 'nullable|string|max:100',
+            'status'            => 'nullable|string|in:' . implode(',', Batch::STATUSES),
+            'notes'             => 'nullable|string|max:1000'
         ]);
 
-        Batch::create([
-            'name' => $validated['name'],
-            'tracking_number' => $validated['tracking_number'],
-            'origin' => $validated['origin'],
-            'destination' => $validated['destination'],
-            'status' => $validated['status'],
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        Batch::query()->create($data);
 
-        return redirect()->route('batches.index')->with('success', 'Batch created successfully.');
+        return back()->with('success', 'Batch created successfully.');
     }
 
     /**
@@ -302,22 +282,22 @@ class BatchController extends Controller
                 Rule::in(BatchStatus::allStatuses())
             ],
         ]);
-        
+
         if ($batch->status === $request->status) {
             return back()->with('info', 'Batch status is already set to the selected value.');
         }
-        
+
         $batch->update(['status' => $request->status]);
-        
+
         // Update location of all watches in the batch when status changes to "In Transit" or "Delivered"
         if (in_array($request->status, [BatchStatus::IN_TRANSIT->value, BatchStatus::DELIVERED->value])) {
-            $newLocation = $request->status === BatchStatus::IN_TRANSIT->value 
-                ? 'In Transit' 
+            $newLocation = $request->status === BatchStatus::IN_TRANSIT->value
+                ? 'In Transit'
                 : $batch->destination; // Use batch destination when delivered
-            
+
             $batch->watches()->update(['location' => $newLocation]);
         }
-        
+
         return back()->with('success', 'Batch status updated successfully.');
     }
 
