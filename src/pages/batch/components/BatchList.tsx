@@ -5,7 +5,7 @@ import { usePage } from "@inertiajs/react";
 import { BatchCard } from "./BatchCard";
 
 interface BatchListProps {
-    batches: Batch[];
+    batches: BatchResource[];
     viewMode: "grid" | "list";
     onWatchClick: (watchId: string) => void;
     onEditBatch: (batchId: string) => void;
@@ -15,15 +15,7 @@ interface BatchListProps {
     getTrackingUrl: (trackingNumber: string) => string;
 }
 
-export const BatchList = ({
-    viewMode,
-    onWatchClick,
-    onEditBatch,
-    onCreateInvoice,
-    onStatusUpdate,
-    getStatusColor,
-    getTrackingUrl,
-}: BatchListProps) => {
+export const BatchList = ({ viewMode, onWatchClick, onEditBatch, onCreateInvoice, onStatusUpdate, getStatusColor, getTrackingUrl }: BatchListProps) => {
     const { data: batches } = usePage().props.batches as PaginateData<BatchResource>;
 
     if (batches.length === 0) {
@@ -31,10 +23,7 @@ export const BatchList = ({
             <div className="py-12 text-center">
                 <div className="mb-4 text-6xl">📦</div>
                 <h3 className="mb-2 text-xl font-medium text-slate-900">No batches found</h3>
-                <p className="text-slate-600">
-                    Try adjusting your filters or create your first batch to start tracking
-                    shipments
-                </p>
+                <p className="text-slate-600">Try adjusting your filters or create your first batch to start tracking shipments</p>
             </div>
         );
     }

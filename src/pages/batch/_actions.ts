@@ -5,79 +5,14 @@ import { WatchResource } from "@/types/resources/watch";
 import { router, useForm, usePage } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 
-// Mock available watches (these would come from a separate API call)
-const mockAvailableWatches: WatchResource[] = [
-    {
-        id: 1,
-        name: "Rolex Datejust",
-        sku: "ROL-DAT-001",
-        brand: "Rolex",
-        status: "Ready for listing",
-        location: "Hørning",
-        description: "Classic timepiece",
-        images: [
-            {
-                id: "1",
-                url: "/lovable-uploads/0884f9b0-c02c-4735-9af7-ebe16f554fe8.png",
-                useForAI: false,
-            },
-        ],
-        serial_number: "",
-        reference: "",
-        case_size: "",
-        caliber: "",
-        timegrapher: "",
-        original_cost: "",
-        current_cost: "",
-        currency: "",
-        ai_instructions: "",
-        ai_thread_id: "",
-        ai_selected_images: "",
-        notes: "",
-        stage: "",
-        user_id: 0,
-        batch_id: 0,
-        brand_id: 0,
-        agent_id: 0,
-        seller_id: 0,
-        created_at: "",
-        updated_at: "",
-        image_urls: [],
-        routeKey: "",
-        batch: undefined
-    },
-    // ...existing watch data...
-];
+
 
 export const useBatchActions = (
     serverBatches: BatchResource[] = [],
     serverAvailableWatches: WatchResource[] = [],
     serverBatchStastistics: any = []
 ) => {
-    // Convert server batches to local Batch format
-    const convertServerBatchesToLocal = (batches: BatchResource[]): Batch[] => {
-        return batches.map(batch => ({
-            id: batch.id.toString(),
-            name: batch.name,
-            trackingNumber: batch.trackingNumber,
-            origin: batch.origin,
-            destination: batch.destination,
-            status: batch.status as Batch["status"],
-            notes: batch.notes,
-            shippedDate: batch.shippedDate,
-            estimatedDelivery: batch.estimatedDelivery,
-            actualDelivery: batch.actualDelivery,
-            watches: batch.watches?.map(watch => ({
-                id: watch.id.toString(), // Ensure ID is string but keep original ID
-                originalId: watch.id, // Keep original numeric ID for backend calls
-                name: watch.name,
-                sku: watch.sku,
-                brand: watch.brand,
-                routeKey: watch.routeKey || watch.id.toString(),
-                image: watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
-            })) || []
-        }));
-    };
+
     const { page } = usePage().props;
 
     // Custom hook for URL parameters (React best practice)
@@ -118,7 +53,7 @@ export const useBatchActions = (
     const [addWatchSortDirection, setAddWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [availableWatches] = useState<WatchResource[]>(serverAvailableWatches);
-    const [batches, setBatches] = useState<Batch[]>(convertServerBatchesToLocal(serverBatches));
+    const [batches, setBatches] = useState<BatchResource[]>((serverBatches));
     const [batchStastistics, setBatchStastistics] = useState<any>(serverBatchStastistics);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newBatch, setNewBatch] = useState<Partial<Batch>>({
@@ -436,6 +371,7 @@ export const useBatchActions = (
 
     const openEditBatchModal = (batchId: string) => {
         const batch = batches.find((b) => b.id === batchId);
+        alert(batchId + ' - ' + batch?.name);
         if (batch) {
             setEditingBatch(batchId);
             setEditingBatchData({

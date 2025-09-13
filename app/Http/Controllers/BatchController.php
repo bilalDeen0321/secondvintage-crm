@@ -182,45 +182,31 @@ class BatchController extends Controller
     }
 
     /**
-     * Assign watches to batch
+     * Assign watches to batch 
      */
     public function assignWatches(Request $request, Batch $batch)
     {
-        try {
-            $validated = $request->validate([
-                'watch_ids' => 'required|array|min:1',
-                'watch_ids.*' => 'exists:watches,id'
-            ], [
-                'watch_ids.required' => 'Please select at least one watch to assign.',
-                'watch_ids.min' => 'Please select at least one watch to assign.',
-                'watch_ids.*.exists' => 'One or more selected watches do not exist.',
-            ]);
 
-            // Check if watches are already assigned to other batches
-            $alreadyAssigned = Watch::whereIn('id', $validated['watch_ids'])
-                ->whereNotNull('batch_id')
-                ->where('batch_id', '!=', $batch->id)
-                ->count();
+        $request->validate([
+            'ids'  => 'required|array|min:1',
+            'ids.*' => 'exists:watches,id'
+        ]);
 
-            if ($alreadyAssigned > 0) {
-                return back()->with('error', 'Some watches are already assigned to other batches.');
-            }
 
-            // Update watches to assign them to this batch
-            $assignedCount = Watch::whereIn('id', $validated['watch_ids'])
-                ->whereNull('batch_id')
-                ->update(['batch_id' => $batch->id]);
+        $query = Watch::whereIn('id', $request->array('ids'));
 
-            if ($assignedCount === 0) {
-                return back()->with('warning', 'No watches were assigned. They may already be assigned to batches.');
-            }
+        // Check if watches are already assigned to other batches
+        $alreadyAssigned = $query->whereNotNull('batch_id')
+            ->where('batch_id', '!=', $batch->id)
+            ->count();
 
-            // Return fresh data
-            return $this->returnFreshData('success', "{$assignedCount} watch(es) assigned to batch successfully.");
-        } catch (Exception $e) {
-            Log::error('Error assigning watches to batch: ' . $e->getMessage());
-            return back()->with('error', 'Failed to assign watches. Please try again.');
+        if ($alreadyAssigned > 0) {
+            return back()->with('error', 'Some watches are already assigned to other batches.');
         }
+
+        $batch->watches()->saveMany((clone $query)->get());
+
+        return back()->with('success', 'Watches assigned to batch successfully.');
     }
 
     /**

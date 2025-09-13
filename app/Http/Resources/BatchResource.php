@@ -17,6 +17,7 @@ class BatchResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'routeKey' => $this->getRouteKey(),
             'trackingNumber' => $this->tracking_number,
             'origin' => $this->origin,
             'destination' => $this->destination,

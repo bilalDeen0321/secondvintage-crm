@@ -5,7 +5,6 @@ import WatchDetailModal from "@/components/WatchDetailModal";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router } from "@inertiajs/react";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
@@ -49,7 +48,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
         addWatchSortField,
         addWatchSortDirection,
         selectedWatchesToAdd,
-        batches,
         showCreateForm,
         setShowCreateForm,
         newBatch,
@@ -73,7 +71,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
         handleCreateInvoice,
         removeWatchFromBatch,
         handleAddSelectedWatchesToBatch,
-        handleAddWatchToBatch,
         openAddWatchModal,
         openEditBatchModal,
         handleBatchWatchSort,
@@ -81,11 +78,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
         handleSelectAllWatches,
         handleSelectWatch,
     } = useBatchActions(serverBatches.data, availableWatches, batchStastistics);
-
-    const getSortIcon = (field: string, currentSortField: string, currentSortDirection: "asc" | "desc") => {
-        if (currentSortField !== field) return null;
-        return currentSortDirection === "asc" ? <ChevronUp className="ml-1 inline h-4 w-4" /> : <ChevronDown className="ml-1 inline h-4 w-4" />;
-    };
 
     const setFilterBatches = (key: string, value: string) => {
         setData({ ...data, [key]: value, page: 1 });
@@ -161,6 +153,7 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
                 )}
 
                 <AddWatchModal
+                    batch={currentEditingBatch}
                     isOpen={isAddWatchModalOpen}
                     onClose={() => setIsAddWatchModalOpen(false)}
                     watchSearchTerm={watchSearchTerm}
@@ -175,7 +168,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
                     onSelectAllWatches={handleSelectAllWatches}
                     onSelectWatch={handleSelectWatch}
                     onAddSelectedWatches={handleAddSelectedWatchesToBatch}
-                    onAddSingleWatch={handleAddWatchToBatch}
                     getWatchStatusColor={getWatchStatusColor}
                 />
 

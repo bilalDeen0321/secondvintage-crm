@@ -1,3 +1,4 @@
+import Status from "@/app/models/Status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -5,12 +6,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
+import { router } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
 
-interface AddWatchModalProps {
+interface Props {
     isOpen: boolean;
     onClose: () => void;
+    batch: BatchResource;
     watchSearchTerm: string;
     setWatchSearchTerm: (term: string) => void;
     watchStatusFilter: string;
@@ -23,31 +27,38 @@ interface AddWatchModalProps {
     onSelectAllWatches: (checked: boolean) => void;
     onSelectWatch: (watchId: number, checked: boolean) => void;
     onAddSelectedWatches: () => void;
-    onAddSingleWatch: (watchId: number) => void;
     getWatchStatusColor: (status: WatchResource["status"]) => string;
 }
 
-export const AddWatchModal = ({
-    isOpen,
-    onClose,
-    watchSearchTerm,
-    setWatchSearchTerm,
-    watchStatusFilter,
-    setWatchStatusFilter,
-    filteredAndSortedWatches,
-    addWatchSortField,
-    addWatchSortDirection,
-    onAddWatchSort,
-    selectedWatchesToAdd,
-    onSelectAllWatches,
-    onSelectWatch,
-    onAddSelectedWatches,
-    onAddSingleWatch,
-    getWatchStatusColor,
-}: AddWatchModalProps) => {
+export const AddWatchModal = (props: Props) => {
+    const {
+        isOpen,
+        onClose,
+        batch,
+        watchSearchTerm,
+        setWatchSearchTerm,
+        watchStatusFilter,
+        setWatchStatusFilter,
+        filteredAndSortedWatches,
+        addWatchSortField,
+        addWatchSortDirection,
+        onAddWatchSort,
+        selectedWatchesToAdd,
+        onSelectAllWatches,
+        onSelectWatch,
+        onAddSelectedWatches,
+        getWatchStatusColor,
+    } = props;
     const getSortIcon = (field: string) => {
         if (addWatchSortField !== field) return null;
         return addWatchSortDirection === "asc" ? <ChevronUp className="ml-1 inline h-4 w-4" /> : <ChevronDown className="ml-1 inline h-4 w-4" />;
+    };
+
+    const onAssignWatches = () => {
+        const data = { ids: selectedWatchesToAdd };
+        router.post(route("batches.assignWatches", batch?.routekey), data, {
+            preserveState: false,
+        });
     };
 
     return (
@@ -69,15 +80,11 @@ export const AddWatchModal = ({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Statuses</SelectItem>
-                                <SelectItem value="Draft">Draft</SelectItem>
-                                <SelectItem value="Review">Review</SelectItem>
-                                <SelectItem value="Platform Review">Platform Review</SelectItem>
-                                <SelectItem value="Ready for listing">Ready for listing</SelectItem>
-                                <SelectItem value="Listed">Listed</SelectItem>
-                                <SelectItem value="Reserved">Reserved</SelectItem>
-                                <SelectItem value="Sold">Sold</SelectItem>
-                                <SelectItem value="Defect/Problem">Defect/Problem</SelectItem>
-                                <SelectItem value="Standby">Standby</SelectItem>
+                                {Status.allStatuses().map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {Status.toHuman(status)}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -89,7 +96,7 @@ export const AddWatchModal = ({
                                 {selectedWatchesToAdd.length} watch
                                 {selectedWatchesToAdd.length !== 1 ? "es" : ""} selected
                             </span>
-                            <Button onClick={onAddSelectedWatches} className="flex items-center gap-1" size="sm">
+                            <Button onClick={onAssignWatches} className="flex items-center gap-1" size="sm">
                                 <Plus className="h-3 w-3" />
                                 Add Selected
                             </Button>

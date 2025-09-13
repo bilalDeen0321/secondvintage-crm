@@ -3,6 +3,7 @@ import { WatchResource } from "./watch";
 export type BatchResource = {
     id: number;
     name: string;
+    routekey?: string | number;
     trackingNumber: string;
     origin: string;
     destination: string;
