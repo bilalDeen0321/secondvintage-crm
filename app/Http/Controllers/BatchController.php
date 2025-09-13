@@ -56,10 +56,7 @@ class BatchController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        return Inertia::render('batch/CreateBatch');
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -85,9 +82,7 @@ class BatchController extends Controller
      */
     public function show(Batch $batch)
     {
-        return Inertia::render('batch/ShowBatch', [
-            'batch' => $batch
-        ]);
+        return $this->edit($batch);
     }
 
     /**
@@ -95,91 +90,32 @@ class BatchController extends Controller
      */
     public function edit(Batch $batch)
     {
-        return Inertia::render('batch/EditBatch', [
-            'batch' => $batch
+        return Inertia::render('batch/BatchEdit', [
+            'batch' => new BatchResource($batch->load(['watches.images', 'watches.brand'])),
+            //available watches that are not assigned to any batch
+            'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->get()),
         ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in batch.
      */
     public function update(Request $request, Batch $batch)
     {
-        $validated = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'min:2',
-                'max:100',
-                Rule::unique(Batch::class, 'name')->ignore($batch->id),
-            ],
-            'tracking_number' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique(Batch::class, 'tracking_number')->ignore($batch->id),
-            ],
-            'origin' => 'required|string|max:100',
-            'destination' => 'required|string|max:100',
-            'status' => [
-                'required',
-                'string',
-                Rule::in(BatchStatus::allStatuses())
-            ],
-            'notes' => 'nullable|string|max:1000',
+        $data = $request->validate([
+            'name' => 'required|string|min:2|max:100|unique:batches,name,' . $batch->id,
+            'tracking_number'   => 'nullable|string|max:50|unique:batches,tracking_number',
+            'origin'            => 'nullable|string|max:100',
+            'destination'       => 'nullable|string|max:100',
+            'status'            => 'nullable|string|in:' . implode(',', Batch::STATUSES),
+            'notes'             => 'nullable|string|max:1000'
         ]);
 
-        $batch->update($validated);
+        $batch->update($data);
 
-        return redirect()->route('batches.index')->with('success', 'Batch updated successfully.');
+        return back()->with('success', 'Batch updated successfully.');
     }
 
-    /**
-     * Update batch details only
-     */
-    public function updateDetails(Request $request, Batch $batch)
-    {
-        try {
-            $validated = $request->validate([
-                'name' => [
-                    'required',
-                    'string',
-                    'min:2',
-                    'max:100',
-                    Rule::unique(Batch::class, 'name')->ignore($batch->id),
-                ],
-                'tracking_number' => [
-                    'required',
-                    'string',
-                    'max:50',
-                    Rule::unique(Batch::class, 'tracking_number')->ignore($batch->id),
-                ],
-                'origin' => 'required|string|max:100',
-                'destination' => 'required|string|max:100',
-                'status' => [
-                    'required',
-                    'string',
-                    Rule::in(BatchStatus::allStatuses())
-                ],
-                'notes' => 'nullable|string|max:1000',
-                'shipped_date' => 'nullable|date',
-                'estimated_delivery' => 'nullable|date|after_or_equal:shipped_date',
-                'actual_delivery' => 'nullable|date',
-            ], [
-                'estimated_delivery.after_or_equal' => 'Estimated delivery must be after or equal to shipped date.',
-                'name.unique' => 'A batch with this name already exists.',
-                'tracking_number.unique' => 'A batch with this tracking number already exists.',
-            ]);
-
-            $batch->update($validated);
-
-            return back()->with('success', 'Batch details updated successfully.');
-        } catch (Exception $e) {
-            dd($e);
-            Log::error('Error updating batch details: ' . $e->getMessage());
-            return back()->with('error', 'Failed to update batch details. Please try again.');
-        }
-    }
 
     /**
      * Assign watches to batch 

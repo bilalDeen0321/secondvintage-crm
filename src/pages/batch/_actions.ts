@@ -10,7 +10,6 @@ import { useMemo, useState } from "react";
 export const useBatchActions = (
     serverBatches: BatchResource[] = [],
     serverAvailableWatches: WatchResource[] = [],
-    serverBatchStastistics: any = []
 ) => {
 
     // Custom hook for URL parameters (React best practice)
@@ -28,7 +27,6 @@ export const useBatchActions = (
     const urlParams = useUrlParams();
 
     // State management
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [selectedWatch, setSelectedWatch] = useState<WatchResource | null>(null);
     const [isWatchModalOpen, setIsWatchModalOpen] = useState(false);
     const [editingBatch, setEditingBatch] = useState<string | null>(null);
@@ -46,8 +44,7 @@ export const useBatchActions = (
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [availableWatches] = useState<WatchResource[]>(serverAvailableWatches);
     const [batches, setBatches] = useState<BatchResource[]>((serverBatches));
-    const [batchStastistics, setBatchStastistics] = useState<any>(serverBatchStastistics);
-    const [showCreateForm, setShowCreateForm] = useState(false);
+
     const [newBatch, setNewBatch] = useState<Partial<Batch>>({
         name: "",
         trackingNumber: "",
@@ -82,7 +79,7 @@ export const useBatchActions = (
             }
         });
 
-    const currentEditingBatch = editingBatch ? batches.find((b) => String(b.id) === editingBatch) : null;
+    const currentEditingBatch = editingBatch ? batches.find((b) => String(b.id) === String(editingBatch)) : null;
 
     // Computed values
     const filteredBatches = batches.filter((batch) => {
@@ -115,7 +112,7 @@ export const useBatchActions = (
 
     const updateBatchDetails = () => {
         if (editingBatch && editingBatchData) {
-            router.patch(route('batches.updateDetails', editingBatch), {
+            router.put(route('batches.update', editingBatch), {
                 name: editingBatchData.name,
                 tracking_number: editingBatchData.trackingNumber,
                 origin: editingBatchData.origin,
@@ -176,24 +173,6 @@ export const useBatchActions = (
 
         const watchToAdd = availableWatches.find((w) => w.id === watchId);
         if (!watchToAdd) return;
-
-        const batchWatch = {
-            id: String(watchToAdd.id),
-            name: watchToAdd.name,
-            sku: watchToAdd.sku,
-            brand: watchToAdd.brand,
-            image:
-                watchToAdd.images?.[0]?.url ||
-                "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png",
-        };
-
-        setBatches(
-            batches.map((batch) =>
-                batch.id === selectedBatchForWatch
-                    ? { ...batch, watches: [...batch.watches, batchWatch] }
-                    : batch,
-            ),
-        );
     };
 
     const openAddWatchModal = (batchId: string) => {
@@ -203,7 +182,7 @@ export const useBatchActions = (
     };
 
     const openEditBatchModal = (batchId: string) => {
-        const batch = batches.find((b) => b.id === batchId);
+        const batch = batches.find((b) => String(b.id) === batchId);
         alert('editing batch');
         if (batch) {
             setEditingBatch(batchId);
@@ -257,8 +236,6 @@ export const useBatchActions = (
 
     return {
         // State
-        viewMode,
-        setViewMode,
         selectedWatch,
         setSelectedWatch,
         isWatchModalOpen,
@@ -284,8 +261,6 @@ export const useBatchActions = (
         availableWatches,
         batches,
         setBatches,
-        showCreateForm,
-        setShowCreateForm,
         newBatch,
         setNewBatch,
         editingBatchData,
@@ -293,7 +268,6 @@ export const useBatchActions = (
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
         filteredBatches,
-        batchStastistics,
         // Functions
         getSortedBatchWatches,
         updateBatchDetails,

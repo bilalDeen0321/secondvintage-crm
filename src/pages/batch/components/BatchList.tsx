@@ -28,13 +28,12 @@ export const BatchList = ({ viewMode, onWatchClick, onEditBatch }: Props) => {
 
     return (
         <div className="space-y-4">
-            {batches.map((batch) => (
+            {batches.map((batch, index) => (
                 <BatchCard
-                    key={batch.id}
+                    key={index}
                     batch={batch}
                     viewMode={viewMode}
                     onWatchClick={onWatchClick}
-                    onEditBatch={onEditBatch}
                 />
             ))}
         </div>

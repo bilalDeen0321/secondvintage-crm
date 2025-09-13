@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\AgentWatchController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\BatchWatchController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Sale\ExportController;
@@ -57,13 +58,15 @@ Route::resource('sales', SaleController::class)->setParam('watch');
 
 
 Route::resource('brands', BrandController::class);
-Route::resource('batches', BatchController::class);
 
-// Additional batch routes for watch management
-Route::patch('batches/{batch}/details', [BatchController::class, 'updateDetails'])->name('batches.updateDetails');
-Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWatches'])->name('batches.assignWatches');
-Route::delete('batches/{batch}/watches/{watch}', [BatchController::class, 'removeWatch'])->name('batches.removeWatch');
-Route::patch('batches/{batch}/status', [BatchController::class, 'updateStatus'])->name('batches.updateStatus');
+/**
+ * Batch routes
+ */
+Route::put('batches/{batch}/status', [BatchController::class, 'updateStatus'])->name('batches.status');
+Route::resource('batches', BatchController::class);
+Route::resource('batches.watches', BatchWatchController::class);
+
+// Route::delete('{batch}/{watch}', [BatchController::class, 'removeWatch'])->name('removeWatch');
 
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);

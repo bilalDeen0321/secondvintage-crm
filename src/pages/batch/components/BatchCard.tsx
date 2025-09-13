@@ -2,6 +2,7 @@ import { Batch } from "@/app/models/Batch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "@/components/ui/Link";
 import {
     Select,
     SelectContent,
@@ -26,16 +27,14 @@ interface Props {
     batch: BatchResource;
     viewMode: "grid" | "list";
     onWatchClick: (watchId: string) => void;
-    onEditBatch: (batchId: string) => void;
 }
 
-export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch }: Props) => {
+export const BatchCard = ({ batch, viewMode, onWatchClick }: Props) => {
     //
-    const onStatusUpdate = (routeKey: BatchResource["routekey"], status: string) => {
+    const onStatusUpdate = (routeKey: BatchResource["routeKey"], status: string) => {
         const data = { status };
-        router.patch(route("batches.updateStatus", routeKey), data, {
+        router.put(route("batches.status", routeKey), data, {
             preserveScroll: true,
-            preserveState: false,
         });
     };
 
@@ -77,18 +76,21 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch }: Props)
                         <Badge className={Batch.toColorClass(batch.status)}>
                             {Batch.toHuman(batch.status)}
                         </Badge>
-                        <Button
+                        <Link
                             variant="outline"
                             size="sm"
-                            onClick={() => onEditBatch(String(batch.id))}
+                            href={(() => {
+                                console.log("batch routeKey: ", batch.routeKey);
+                                return route("batches.show", batch.routeKey);
+                            })()}
                             className="flex items-center gap-1"
                         >
                             <Edit className="h-3 w-3" />
                             Edit batch
-                        </Button>
+                        </Link>
                         <Button
                             onClick={() =>
-                                alert(`Package invoice created for batch ${batch.routekey}`)
+                                alert(`Package invoice created for batch ${batch.routeKey}`)
                             }
                             variant="outline"
                             className="flex items-center gap-2"

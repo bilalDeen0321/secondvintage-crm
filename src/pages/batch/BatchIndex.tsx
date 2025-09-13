@@ -6,15 +6,14 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
-import { Head, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import { Head } from "@inertiajs/react";
+import { useState } from "react";
 import { useBatchActions } from "./_actions";
 import { AddWatchModal } from "./components/AddWatchModal";
 import { BatchFilters } from "./components/BatchFilters";
 import { BatchList } from "./components/BatchList";
 import { BatchStats } from "./components/BatchStats";
 import { CreateBatchForm } from "./components/CreateBatchForm";
-import { EditBatchModal } from "./components/EditBatchModal";
 
 interface BatchManagementProps {
     batches: PaginateData<BatchResource>;
@@ -32,8 +31,6 @@ const BatchManagement = ({
         setSelectedWatch,
         isWatchModalOpen,
         setIsWatchModalOpen,
-        editingBatch,
-        setEditingBatch,
         isAddWatchModalOpen,
         setIsAddWatchModalOpen,
         data,
@@ -42,55 +39,29 @@ const BatchManagement = ({
         setWatchSearchTerm,
         watchStatusFilter,
         setWatchStatusFilter,
-        batchWatchSortField,
-        batchWatchSortDirection,
         addWatchSortField,
         addWatchSortDirection,
         selectedWatchesToAdd,
-        showCreateForm,
-        setShowCreateForm,
-        editingBatchData,
-        setEditingBatchData,
         filteredAndSortedAvailableWatches,
         currentEditingBatch,
-        availableWatches: actionAvailableWatches,
         filteredBatches,
 
-        // Functions
-        getSortedBatchWatches,
-        updateBatchDetails,
         handleWatchClick,
         handleAddSelectedWatchesToBatch,
-        openAddWatchModal,
         openEditBatchModal,
-        handleBatchWatchSort,
         handleAddWatchSort,
         handleSelectAllWatches,
         handleSelectWatch,
-    } = useBatchActions(serverBatches.data, availableWatches, batchStastistics);
+    } = useBatchActions(serverBatches.data, availableWatches);
 
     //start of the complete state and consts list
     const [viewMode, setViewMode] = useLocalStorage<"list" | "grid">("watch_view_mode", "list");
+    const [showCreateForm, setShowCreateForm] = useState(false);
 
     const setFilterBatches = (key: string, value: string) => {
         setData({ ...data, [key]: value, page: 1 });
     };
 
-    const isInitialMount = useRef(true);
-
-    useEffect(() => {
-        // Skip the first render to avoid duplicate requests on initial load
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
-            return;
-        }
-
-        router.get(route("batches.index"), data, {
-            only: ["batches"],
-            preserveState: true,
-            preserveScroll: true,
-        });
-    }, [data]);
     return (
         <Layout>
             <Head title="Batch Management" />
@@ -121,23 +92,6 @@ const BatchManagement = ({
                 <div className="mt-4">
                     <TablePaginate links={serverBatches?.meta?.links} />
                 </div>
-
-                {editingBatch && (
-                    <EditBatchModal
-                        isOpen={editingBatch !== null}
-                        onClose={() => setEditingBatch(null)}
-                        batch={currentEditingBatch}
-                        editingBatchData={editingBatchData}
-                        setEditingBatchData={setEditingBatchData}
-                        availableWatches={actionAvailableWatches}
-                        batchWatchSortField={batchWatchSortField}
-                        batchWatchSortDirection={batchWatchSortDirection}
-                        onBatchWatchSort={handleBatchWatchSort}
-                        onUpdateBatchDetails={updateBatchDetails}
-                        onAddWatchToBatch={openAddWatchModal}
-                        getSortedBatchWatches={getSortedBatchWatches}
-                    />
-                )}
 
                 <AddWatchModal
                     batch={currentEditingBatch}
