@@ -3,21 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { WatchResource } from "@/types/resources/watch";
 import { ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
 
@@ -60,11 +47,7 @@ export const AddWatchModal = ({
 }: AddWatchModalProps) => {
     const getSortIcon = (field: string) => {
         if (addWatchSortField !== field) return null;
-        return addWatchSortDirection === "asc" ? (
-            <ChevronUp className="ml-1 inline h-4 w-4" />
-        ) : (
-            <ChevronDown className="ml-1 inline h-4 w-4" />
-        );
+        return addWatchSortDirection === "asc" ? <ChevronUp className="ml-1 inline h-4 w-4" /> : <ChevronDown className="ml-1 inline h-4 w-4" />;
     };
 
     return (
@@ -78,12 +61,7 @@ export const AddWatchModal = ({
                     <div className="flex gap-4">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-slate-400" />
-                            <Input
-                                placeholder="Search watches..."
-                                value={watchSearchTerm}
-                                onChange={(e) => setWatchSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
+                            <Input placeholder="Search watches..." value={watchSearchTerm} onChange={(e) => setWatchSearchTerm(e.target.value)} className="pl-10" />
                         </div>
                         <Select value={watchStatusFilter} onValueChange={setWatchStatusFilter}>
                             <SelectTrigger className="w-48">
@@ -111,19 +89,11 @@ export const AddWatchModal = ({
                                 {selectedWatchesToAdd.length} watch
                                 {selectedWatchesToAdd.length !== 1 ? "es" : ""} selected
                             </span>
-                            <Button
-                                onClick={onAddSelectedWatches}
-                                className="flex items-center gap-1"
-                                size="sm"
-                            >
+                            <Button onClick={onAddSelectedWatches} className="flex items-center gap-1" size="sm">
                                 <Plus className="h-3 w-3" />
                                 Add Selected
                             </Button>
-                            <Button
-                                onClick={() => onSelectAllWatches(false)}
-                                variant="outline"
-                                size="sm"
-                            >
+                            <Button onClick={() => onSelectAllWatches(false)} variant="outline" size="sm">
                                 Clear Selection
                             </Button>
                         </div>
@@ -135,43 +105,24 @@ export const AddWatchModal = ({
                                 <TableRow>
                                     <TableHead className="w-12">
                                         <Checkbox
-                                            checked={
-                                                selectedWatchesToAdd.length ===
-                                                    filteredAndSortedWatches.length &&
-                                                filteredAndSortedWatches.length > 0
-                                            }
+                                            checked={selectedWatchesToAdd.length === filteredAndSortedWatches.length && filteredAndSortedWatches.length > 0}
                                             onCheckedChange={onSelectAllWatches}
                                         />
                                     </TableHead>
                                     <TableHead className="w-16">Image</TableHead>
-                                    <TableHead
-                                        className="cursor-pointer hover:bg-slate-100"
-                                        onClick={() => onAddWatchSort("name")}
-                                    >
+                                    <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => onAddWatchSort("name")}>
                                         Name {getSortIcon("name")}
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer hover:bg-slate-100"
-                                        onClick={() => onAddWatchSort("sku")}
-                                    >
+                                    <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => onAddWatchSort("sku")}>
                                         SKU {getSortIcon("sku")}
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer hover:bg-slate-100"
-                                        onClick={() => onAddWatchSort("brand")}
-                                    >
+                                    <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => onAddWatchSort("brand")}>
                                         Brand {getSortIcon("brand")}
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer hover:bg-slate-100"
-                                        onClick={() => onAddWatchSort("status")}
-                                    >
+                                    <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => onAddWatchSort("status")}>
                                         Status {getSortIcon("status")}
                                     </TableHead>
-                                    <TableHead
-                                        className="cursor-pointer hover:bg-slate-100"
-                                        onClick={() => onAddWatchSort("location")}
-                                    >
+                                    <TableHead className="cursor-pointer hover:bg-slate-100" onClick={() => onAddWatchSort("location")}>
                                         Location {getSortIcon("location")}
                                     </TableHead>
                                     <TableHead className="w-16">Actions</TableHead>
@@ -181,19 +132,11 @@ export const AddWatchModal = ({
                                 {filteredAndSortedWatches.map((watch) => (
                                     <TableRow key={watch.id}>
                                         <TableCell>
-                                            <Checkbox
-                                                checked={selectedWatchesToAdd.includes(watch.id)}
-                                                onCheckedChange={(checked) =>
-                                                    onSelectWatch(watch.id, checked as boolean)
-                                                }
-                                            />
+                                            <Checkbox checked={selectedWatchesToAdd.includes(watch.id)} onCheckedChange={(checked) => onSelectWatch(watch.id, checked as boolean)} />
                                         </TableCell>
                                         <TableCell>
                                             <img
-                                                src={
-                                                    watch.images?.[0]?.url ||
-                                                    "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
-                                                }
+                                                src={watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"}
                                                 alt={watch.name}
                                                 className="h-12 w-12 rounded object-cover"
                                             />
@@ -202,17 +145,11 @@ export const AddWatchModal = ({
                                         <TableCell>{watch.sku}</TableCell>
                                         <TableCell>{watch.brand}</TableCell>
                                         <TableCell>
-                                            <Badge className={getWatchStatusColor(watch.status)}>
-                                                {watch.status}
-                                            </Badge>
+                                            <Badge className={getWatchStatusColor(watch.status)}>{watch.status}</Badge>
                                         </TableCell>
                                         <TableCell>{watch.location}</TableCell>
                                         <TableCell>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => onAddSingleWatch(watch.id)}
-                                                className="flex items-center gap-1"
-                                            >
+                                            <Button size="sm" onClick={() => onSelectWatch(watch.id, true)} className="flex items-center gap-1">
                                                 <Plus className="h-3 w-3" />
                                                 Add
                                             </Button>

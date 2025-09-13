@@ -29,9 +29,9 @@ class BatchController extends Controller
     {
         $this->middleware('permission:batchManagement');
 
-        Route::bind('watch', function ($value) {
-            return Watch::where('id', $value)->firstOrFail();
-        });
+        // Route::bind('watch', function ($value) {
+        //     return Watch::where('id', $value)->firstOrFail();
+        // });
     }
 
     /**
@@ -41,19 +41,13 @@ class BatchController extends Controller
     {
 
         // Get paginated results
-        $batches = BatchQuery::init()
-            ->execute($request)
-            ->paginate(20)
-            ->withQueryString();
+        $batches = BatchQuery::init()->execute($request)->paginate(10)->withQueryString();
 
         // Get available watches (unassigned to any batch)
-        $availableWatches = Watch::query()
-            ->whereNull('batch_id')
-            ->with(['images', 'brand'])
-            ->get();
+        $availableWatches = Watch::query()->whereNull('batch_id')->with(['images', 'brand'])->get();
 
         return Inertia::render('batch/BatchIndex', [
-            'batches' => BatchResource::collection($batches),
+            'batches' => BatchResource::collection($batches)->response()->getData(true),
             'availableWatches' => WatchResource::collection($availableWatches),
             'batchStastistics' => BatchQuery::init()->getStatistics()
         ]);
