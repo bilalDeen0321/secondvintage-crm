@@ -60,6 +60,29 @@ class Status extends Model
     }
 
     /**
+     * Convert internal database status to human-readable format.
+     */
+    public static function toHuman(string $status): string
+    {
+        // Map from your Status constants to display names
+        $statuses = [
+            'all' => 'All',
+            self::SOLD => 'Sold',
+            self::DRAFT => 'Draft',
+            self::LISTED => 'Listed',
+            self::REVIEW => 'Review',
+            self::LISTING => 'Ready for listing',
+            self::APPROVED => 'Approved',
+            self::RESERVED => 'Reserved',
+            self::PLATFORM_REVIEW => 'Platform Review',
+            self::STANDBY => 'Standby',
+            self::PROBLEM => 'Defect/Problem',
+        ];
+
+        return $statuses[$status] ?? $status;
+    }
+
+    /**
      * Convert external status string to internal database status.
      */
     public static function toDatabase(string $key): ?string

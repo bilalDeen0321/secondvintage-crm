@@ -22,7 +22,7 @@ class ExtractMakeHookToCatawiki
                 'field' => 'Status',
                 'value' => $data->get('Status_Selected', Status::DRAFT),
                 'type' => 'select',
-                'options' => Arr::map(Status::allStatuses(), fn($status) => Str::title($status))
+                'options' => Arr::map(Status::allStatuses(), fn($status) => Status::toHuman($status))
             ],
             [
                 'field' => 'Description',
