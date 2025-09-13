@@ -124,7 +124,7 @@ class WatchQuery
             'locations' => Location::query()->latest()->pluck('name')->unique()->values(),
             'statuses' => Status::query()->latest()->pluck('name')->unique()->values(),
             'batches' => Batch::query()->orderBy('name')->pluck('name')->unique()->values(),
-            'brands' => Brand::query()->latest()->pluck('name')->unique()->values(),
+            'brands' => Brand::query()->orderBy('name')->pluck('name')->unique()->values(),
         ];
     }
 }
