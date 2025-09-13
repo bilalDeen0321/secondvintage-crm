@@ -60,6 +60,27 @@ class Status extends Model
     }
 
     /**
+     * Convert external status string to internal database status.
+     */
+    public static function toDatabase(string $key): ?string
+    {
+        $statuses = [
+            "Draft" => self::DRAFT,
+            "Approved" => self::APPROVED,
+            "Listed" => self::LISTED,
+            "Ready for listing" => self::LISTING,
+            "Review" => self::REVIEW,
+            "Sold" => self::SOLD,
+            "Reserved" => self::RESERVED,
+            "Platform Review" => self::PLATFORM_REVIEW,
+            "Standby" => self::STANDBY,
+            "Defect/Problem" => self::PROBLEM,
+        ];
+
+        return $statuses[$key] ?? null; // return null if not found
+    }
+
+    /**
      * Get all watches that belong to this status.
      */
     public function watches(): HasMany

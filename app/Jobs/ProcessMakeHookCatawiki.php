@@ -90,6 +90,12 @@ class ProcessMakeHookCatawiki implements ShouldQueue
             'data'   => ExtractMakeHookToCatawiki::execute($this->watch, $make),
         ]);
 
+        $status = Status::toDatabase($make->get('Watch Status', Status::PLATFORM_REVIEW));
+
+        if ($this->watch->status != $status) {
+            $this->watch->update(['status' => $status]);
+        }
+
         event(new \App\Events\ProcessPlatformEvent($this->watch, $this->platform));
     }
 
