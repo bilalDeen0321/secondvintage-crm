@@ -107,7 +107,8 @@ class ExtractMakeHookToCatawiki
             [
                 'field' => 'Catawiki - D: Case diameter',
                 'value' => $data->get('Catawiki_Case_diameter', ''),
-                'type' => 'input'
+                'type' => 'select',
+                'options' => PlatformOption::d_case_diameter()
             ],
             [
                 'field' => 'Catawiki - D: Condition',
