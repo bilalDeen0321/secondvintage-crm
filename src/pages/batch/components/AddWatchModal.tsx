@@ -27,7 +27,6 @@ interface Props {
     onSelectAllWatches: (checked: boolean) => void;
     onSelectWatch: (watchId: number, checked: boolean) => void;
     onAddSelectedWatches: () => void;
-    getWatchStatusColor: (status: WatchResource["status"]) => string;
 }
 
 export const AddWatchModal = (props: Props) => {
@@ -46,8 +45,6 @@ export const AddWatchModal = (props: Props) => {
         selectedWatchesToAdd,
         onSelectAllWatches,
         onSelectWatch,
-        onAddSelectedWatches,
-        getWatchStatusColor,
     } = props;
     const getSortIcon = (field: string) => {
         if (addWatchSortField !== field) return null;
@@ -152,7 +149,7 @@ export const AddWatchModal = (props: Props) => {
                                         <TableCell>{watch.sku}</TableCell>
                                         <TableCell>{watch.brand}</TableCell>
                                         <TableCell>
-                                            <Badge className={getWatchStatusColor(watch.status)}>{watch.status}</Badge>
+                                            <Badge className={Status.toHuman(watch.status)}>{watch.status}</Badge>
                                         </TableCell>
                                         <TableCell>{watch.location}</TableCell>
                                         <TableCell>

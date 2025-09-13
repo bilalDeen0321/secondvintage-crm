@@ -2,7 +2,7 @@
 import { Batch } from "@/types/Batch";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
-import { router, useForm, usePage } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 
 
@@ -13,8 +13,6 @@ export const useBatchActions = (
     serverBatchStastistics: any = []
 ) => {
 
-    const { page } = usePage().props;
-
     // Custom hook for URL parameters (React best practice)
     const useUrlParams = () => {
         return useMemo(() => {
@@ -24,7 +22,7 @@ export const useBatchActions = (
                 status: searchParams.get('status') || "all",
                 page: parseInt(searchParams.get('page') || '1', 10)
             };
-        }, [window.location.search]);
+        }, []);
     };
 
     const urlParams = useUrlParams();
@@ -36,14 +34,8 @@ export const useBatchActions = (
     const [editingBatch, setEditingBatch] = useState<string | null>(null);
     const [isAddWatchModalOpen, setIsAddWatchModalOpen] = useState(false);
     const [selectedBatchForWatch, setSelectedBatchForWatch] = useState<string | null>(null);
-    const { data, setData } = useForm<{
-        search: string;
-        status: string;
-        page: number;
-    }>({
-        search: urlParams.search,
-        status: urlParams.status,
-        page: urlParams.page,
+    const { data, setData } = useForm({
+        search: urlParams.search, status: urlParams.status, page: urlParams.page,
     });
     const [watchSearchTerm, setWatchSearchTerm] = useState("");
     const [watchStatusFilter, setWatchStatusFilter] = useState<string>("all");
@@ -90,7 +82,7 @@ export const useBatchActions = (
             }
         });
 
-    const currentEditingBatch = editingBatch ? batches.find((b) => b.id === editingBatch) : null;
+    const currentEditingBatch = editingBatch ? batches.find((b) => String(b.id) === editingBatch) : null;
 
     // Computed values
     const filteredBatches = batches.filter((batch) => {
@@ -120,86 +112,6 @@ export const useBatchActions = (
         });
     };
 
-    const getStatusColor = (status: Batch["status"]) => {
-        switch (status) {
-            case "Preparing":
-                return "bg-yellow-100 text-yellow-800";
-            case "Shipped":
-                return "bg-blue-100 text-blue-800";
-            case "In Transit":
-                return "bg-purple-100 text-purple-800";
-            case "Customs":
-                return "bg-orange-100 text-orange-800";
-            case "Delivered":
-                return "bg-green-100 text-green-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
-
-    const getWatchStatusColor = (status: WatchResource["status"]) => {
-        switch (status) {
-            case "Draft":
-                return "bg-gray-100 text-gray-800";
-            case "Review":
-                return "bg-yellow-100 text-yellow-800";
-            case "Platform Review":
-                return "bg-orange-100 text-orange-800";
-            case "Ready for listing":
-                return "bg-blue-100 text-blue-800";
-            case "Listed":
-                return "bg-green-100 text-green-800";
-            case "Reserved":
-                return "bg-purple-100 text-purple-800";
-            case "Sold":
-                return "bg-slate-100 text-slate-800";
-            case "Defect/Problem":
-                return "bg-red-100 text-red-800";
-            case "Standby":
-                return "bg-amber-100 text-amber-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
-
-    const getTrackingUrl = (trackingNumber: string) => {
-        return `https://www.track-trace.com/trace?t=${trackingNumber}`;
-    };
-
-    // Action functions
-    const handleCreateBatch = () => {
-        if (newBatch.name && newBatch.trackingNumber) {
-            const batch: Batch = {
-                id: Date.now().toString(),
-                name: newBatch.name,
-                trackingNumber: newBatch.trackingNumber,
-                origin: newBatch.origin || "Ho Chi Minh City, Vietnam",
-                destination: newBatch.destination || "Hørning, Denmark",
-                status: (newBatch.status as Batch["status"]) || "Preparing",
-                watches: newBatch.watches || [],
-                notes: newBatch.notes,
-            };
-            setBatches([...batches, batch]);
-            setNewBatch({
-                name: "",
-                trackingNumber: "",
-                origin: "Ho Chi Minh City, Vietnam",
-                destination: "Hørning, Denmark",
-                status: "Preparing",
-                watches: [],
-                notes: "",
-            });
-            setShowCreateForm(false);
-        }
-    };
-
-    const updateBatchStatus = (batchId: string, status: Batch["status"]) => {
-        router.patch(route('batches.updateStatus', batchId), {
-            status: status,
-        }, {
-            preserveScroll: true,
-        });
-    };
 
     const updateBatchDetails = () => {
         if (editingBatch && editingBatchData) {
@@ -222,79 +134,14 @@ export const useBatchActions = (
         }
     };
 
-    const handleWatchClick = (watchId: string) => {
-        console.log("Watch clicked:", watchId);
-
-        let foundWatch: WatchResource | null = null;
-        for (const batch of batches) {
-            const watch = batch.watches.find((w) => w.id === watchId);
-            if (watch) {
-                foundWatch = {
-                    id: Number(watch.id),
-                    name: watch.name,
-                    sku: watch.sku,
-                    brand: watch.brand,
-                    status: "Listed" as WatchResource["status"],
-                    location: batch.destination,
-                    description: `Part of ${batch.name}`,
-                    images: watch.image ? [{ id: "1", url: watch.image, useForAI: false }] : [],
-                    // ...existing default properties...
-                };
-                break;
-            }
-        }
-
-        if (foundWatch) {
-            setSelectedWatch(foundWatch);
+    const handleWatchClick = (watchKey: WatchResource['routeKey']) => {
+        const findWatch = batches.flatMap(b => b.watches).find(w => w.routeKey === watchKey);
+        if (findWatch) {
+            setSelectedWatch(findWatch);
             setIsWatchModalOpen(true);
         }
     };
 
-    const handleCreateInvoice = (batchId: string) => {
-        console.log("Creating package invoice for batch:", batchId);
-        alert(`Package invoice created for batch ${batchId}`);
-    };
-
-    const removeWatchFromBatch = (batchId: string, watchId: string) => {
-        console.log('Removing watch:', { batchId, watchId }); // Debug log
-
-        // Find the watch to get the correct ID
-        const batch = batches.find(b => b.id === batchId);
-        const watch = batch?.watches.find(w => w.id === watchId);
-
-        if (!watch) {
-            console.error('Watch not found:', watchId);
-            return;
-        }
-
-        // Use originalId if available, otherwise use the ID
-        const watchIdForBackend = watch.id;
-
-        console.log('Using watch ID for backend:', watchIdForBackend); // Debug log
-
-        router.delete(route('batches.removeWatch', [batchId, watchIdForBackend]), {
-            preserveScroll: true,
-            onSuccess: (page) => {
-                // Update local state to reflect the change immediately
-                setBatches(prevBatches =>
-                    prevBatches.map(b =>
-                        b.id === batchId
-                            ? { ...b, watches: b.watches.filter(w => w.id !== watchId) }
-                            : b
-                    )
-                );
-
-                // Also update server data if available in page props
-                if (page.props.batches?.data) {
-                    const updatedServerBatches = page.props.batches.data as BatchResource[];
-                    setBatches(convertServerBatchesToLocal(updatedServerBatches));
-                }
-            },
-            onError: (errors) => {
-                console.error('Error removing watch:', errors);
-            }
-        });
-    };
 
     const handleAddSelectedWatchesToBatch = () => {
         if (!selectedBatchForWatch || selectedWatchesToAdd.length === 0) return;
@@ -315,20 +162,6 @@ export const useBatchActions = (
                         routeKey: watch.routeKey || watch.id.toString(),
                         image: watch.images?.[0]?.url || "/lovable-uploads/e4da5380-362e-422c-a981-6370f96719da.png"
                     }));
-
-                setBatches(prevBatches =>
-                    prevBatches.map(batch =>
-                        batch.id === selectedBatchForWatch
-                            ? { ...batch, watches: [...batch.watches, ...watchesToAdd] }
-                            : batch
-                    )
-                );
-
-                // Also update from server data if available
-                if (page.props.batches?.data) {
-                    const updatedServerBatches = page.props.batches.data as BatchResource[];
-                    setBatches(convertServerBatchesToLocal(updatedServerBatches));
-                }
 
                 setIsAddWatchModalOpen(false);
                 setSelectedBatchForWatch(null);
@@ -371,7 +204,7 @@ export const useBatchActions = (
 
     const openEditBatchModal = (batchId: string) => {
         const batch = batches.find((b) => b.id === batchId);
-        alert(batchId + ' - ' + batch?.name);
+        alert('editing batch');
         if (batch) {
             setEditingBatch(batchId);
             setEditingBatchData({
@@ -463,15 +296,8 @@ export const useBatchActions = (
         batchStastistics,
         // Functions
         getSortedBatchWatches,
-        getStatusColor,
-        getWatchStatusColor,
-        getTrackingUrl,
-        handleCreateBatch,
-        updateBatchStatus,
         updateBatchDetails,
         handleWatchClick,
-        handleCreateInvoice,
-        removeWatchFromBatch,
         handleAddSelectedWatchesToBatch,
         handleAddWatchToBatch,
         openAddWatchModal,

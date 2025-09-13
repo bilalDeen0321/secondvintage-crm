@@ -2,22 +2,43 @@ import { Batch } from "@/app/models/Batch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { BatchResource } from "@/types/resources/batch";
-import { Calendar, Edit, ExternalLink, FileText, MapPin, Package, Receipt, Truck } from "lucide-react";
+import { router } from "@inertiajs/react";
+import {
+    Calendar,
+    Edit,
+    ExternalLink,
+    FileText,
+    MapPin,
+    Package,
+    Receipt,
+    Truck,
+} from "lucide-react";
 
-interface BatchCardProps {
+interface Props {
     batch: BatchResource;
     viewMode: "grid" | "list";
     onWatchClick: (watchId: string) => void;
     onEditBatch: (batchId: string) => void;
-    onCreateInvoice: (batchId: string) => void;
-    onStatusUpdate: (batchId: string, status: string) => void;
-    getStatusColor: (status: string) => string;
-    getTrackingUrl: (trackingNumber: string) => string;
 }
 
-export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreateInvoice, onStatusUpdate, getStatusColor, getTrackingUrl }: BatchCardProps) => {
+export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch }: Props) => {
+    //
+    const onStatusUpdate = (routeKey: BatchResource["routekey"], status: string) => {
+        const data = { status };
+        router.patch(route("batches.updateStatus", routeKey), data, {
+            preserveScroll: true,
+            preserveState: false,
+        });
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -30,7 +51,12 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                         <div className="mt-2 flex items-center gap-4 text-sm text-slate-600">
                             <div className="flex items-center gap-1">
                                 <Truck className="h-4 w-4" />
-                                <a href={getTrackingUrl(batch.trackingNumber)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline">
+                                <a
+                                    href={`https://www.track-trace.com/trace?t=${batch.trackingNumber}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                                >
                                     {batch.trackingNumber}
                                     <ExternalLink className="h-3 w-3" />
                                 </a>
@@ -48,23 +74,42 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Badge className={Batch.toColorClass(batch.status)}>{Batch.toHuman(batch.status)}</Badge>
-                        <Button variant="outline" size="sm" onClick={() => onEditBatch(String(batch.id))} className="flex items-center gap-1">
+                        <Badge className={Batch.toColorClass(batch.status)}>
+                            {Batch.toHuman(batch.status)}
+                        </Badge>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onEditBatch(String(batch.id))}
+                            className="flex items-center gap-1"
+                        >
                             <Edit className="h-3 w-3" />
                             Edit batch
                         </Button>
-                        <Button onClick={() => onCreateInvoice(String(batch.id))} variant="outline" className="flex items-center gap-2" size="sm">
+                        <Button
+                            onClick={() =>
+                                alert(`Package invoice created for batch ${batch.routekey}`)
+                            }
+                            variant="outline"
+                            className="flex items-center gap-2"
+                            size="sm"
+                        >
                             <Receipt className="h-3 w-3" />
                             Invoice
                         </Button>
-                        <Select value={batch.status} onValueChange={(value) => onStatusUpdate(String(batch.id), value)}>
+                        <Select
+                            value={batch.status}
+                            onValueChange={(value) => onStatusUpdate(String(batch.id), value)}
+                        >
                             <SelectTrigger className="w-32">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                { Batch.allStatuses().map((status) => (
-                                <SelectItem key={status} value={status}>{Batch.toHuman(status)}</SelectItem>
-                                )) }
+                                {Batch.allStatuses().map((status) => (
+                                    <SelectItem key={status} value={status}>
+                                        {Batch.toHuman(status)}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -74,15 +119,26 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                 <div className="space-y-4">
                     {/* Watches in batch */}
                     <div>
-                        <h4 className="mb-3 font-medium">Watches in this batch ({batch.watches.length})</h4>
+                        <h4 className="mb-3 font-medium">
+                            Watches in this batch ({batch.watches.length})
+                        </h4>
                         {viewMode === "list" ? (
                             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                 {batch.watches.map((watch) => (
-                                    <div key={watch.id} className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-slate-50" onClick={() => onWatchClick(String(watch.id))}>
-                                        <div className="truncate text-sm font-medium" title={watch.name}>
+                                    <div
+                                        key={watch.id}
+                                        className="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-slate-50"
+                                        onClick={() => onWatchClick(String(watch.id))}
+                                    >
+                                        <div
+                                            className="truncate text-sm font-medium"
+                                            title={watch.name}
+                                        >
                                             {watch.name}
                                         </div>
-                                        <div className="truncate text-xs text-slate-600">{watch.sku}</div>
+                                        <div className="truncate text-xs text-slate-600">
+                                            {watch.sku}
+                                        </div>
                                         <div className="text-xs text-slate-500">{watch.brand}</div>
                                     </div>
                                 ))}
@@ -90,12 +146,27 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                         ) : (
                             <div className="grid grid-cols-5 gap-2 md:grid-cols-10">
                                 {batch.watches.map((watch) => (
-                                    <div key={watch.id} className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-slate-50" onClick={() => onWatchClick(String(watch.id))} title={`${watch.name} - ${watch.sku}`}>
+                                    <div
+                                        key={watch.id}
+                                        className="cursor-pointer rounded-lg border p-2 transition-colors hover:bg-slate-50"
+                                        onClick={() => onWatchClick(String(watch.id))}
+                                        title={`${watch.name} - ${watch.sku}`}
+                                    >
                                         <div className="mb-1 aspect-square overflow-hidden rounded-md">
-                                            <img src={watch.image_urls[0] || "/images/placeholder.png"} alt={watch.name} className="h-full w-full object-cover" />
+                                            <img
+                                                src={
+                                                    watch.image_urls[0] || "/images/placeholder.png"
+                                                }
+                                                alt={watch.name}
+                                                className="h-full w-full object-cover"
+                                            />
                                         </div>
-                                        <div className="truncate text-xs font-medium">{watch.brand}</div>
-                                        <div className="truncate text-xs text-slate-500">{watch.sku}</div>
+                                        <div className="truncate text-xs font-medium">
+                                            {watch.brand}
+                                        </div>
+                                        <div className="truncate text-xs text-slate-500">
+                                            {watch.sku}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -108,13 +179,17 @@ export const BatchCard = ({ batch, viewMode, onWatchClick, onEditBatch, onCreate
                             {batch.estimatedDelivery && (
                                 <div>
                                     <span className="text-slate-600">Est. Delivery: </span>
-                                    <span className="font-medium">{new Date(batch.estimatedDelivery).toLocaleDateString()}</span>
+                                    <span className="font-medium">
+                                        {new Date(batch.estimatedDelivery).toLocaleDateString()}
+                                    </span>
                                 </div>
                             )}
                             {batch.actualDelivery && (
                                 <div>
                                     <span className="text-slate-600">Actual Delivery: </span>
-                                    <span className="font-medium">{new Date(batch.actualDelivery).toLocaleDateString()}</span>
+                                    <span className="font-medium">
+                                        {new Date(batch.actualDelivery).toLocaleDateString()}
+                                    </span>
                                 </div>
                             )}
                         </div>

@@ -2,6 +2,8 @@
 import Layout from "@/components/Layout";
 import TablePaginate from "@/components/ui/table/TablePaginate";
 import WatchDetailModal from "@/components/WatchDetailModal";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { PaginateData } from "@/types/laravel";
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { Head, router } from "@inertiajs/react";
@@ -15,20 +17,17 @@ import { CreateBatchForm } from "./components/CreateBatchForm";
 import { EditBatchModal } from "./components/EditBatchModal";
 
 interface BatchManagementProps {
-    batches: {
-        data: BatchResource[];
-        links: any;
-        meta: any;
-    };
+    batches: PaginateData<BatchResource>;
     availableWatches: WatchResource[];
     batchStastistics: any;
 }
 
-const BatchManagement = ({ batches: serverBatches, availableWatches, batchStastistics }: BatchManagementProps) => {
+const BatchManagement = ({
+    batches: serverBatches,
+    availableWatches,
+    batchStastistics,
+}: BatchManagementProps) => {
     const {
-        // State
-        viewMode,
-        setViewMode,
         selectedWatch,
         setSelectedWatch,
         isWatchModalOpen,
@@ -50,8 +49,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
         selectedWatchesToAdd,
         showCreateForm,
         setShowCreateForm,
-        newBatch,
-        setNewBatch,
         editingBatchData,
         setEditingBatchData,
         filteredAndSortedAvailableWatches,
@@ -61,15 +58,8 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
 
         // Functions
         getSortedBatchWatches,
-        getStatusColor,
-        getWatchStatusColor,
-        getTrackingUrl,
-        handleCreateBatch,
-        updateBatchStatus,
         updateBatchDetails,
         handleWatchClick,
-        handleCreateInvoice,
-        removeWatchFromBatch,
         handleAddSelectedWatchesToBatch,
         openAddWatchModal,
         openEditBatchModal,
@@ -78,6 +68,9 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
         handleSelectAllWatches,
         handleSelectWatch,
     } = useBatchActions(serverBatches.data, availableWatches, batchStastistics);
+
+    //start of the complete state and consts list
+    const [viewMode, setViewMode] = useLocalStorage<"list" | "grid">("watch_view_mode", "list");
 
     const setFilterBatches = (key: string, value: string) => {
         setData({ ...data, [key]: value, page: 1 });
@@ -122,10 +115,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
                     viewMode={viewMode}
                     onWatchClick={handleWatchClick}
                     onEditBatch={openEditBatchModal}
-                    onCreateInvoice={handleCreateInvoice}
-                    onStatusUpdate={updateBatchStatus}
-                    getStatusColor={getStatusColor}
-                    getTrackingUrl={getTrackingUrl}
                 />
 
                 {/* pagination */}
@@ -146,8 +135,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
                         onBatchWatchSort={handleBatchWatchSort}
                         onUpdateBatchDetails={updateBatchDetails}
                         onAddWatchToBatch={openAddWatchModal}
-                        onRemoveWatchFromBatch={removeWatchFromBatch}
-                        getWatchStatusColor={getWatchStatusColor}
                         getSortedBatchWatches={getSortedBatchWatches}
                     />
                 )}
@@ -168,7 +155,6 @@ const BatchManagement = ({ batches: serverBatches, availableWatches, batchStasti
                     onSelectAllWatches={handleSelectAllWatches}
                     onSelectWatch={handleSelectWatch}
                     onAddSelectedWatches={handleAddSelectedWatchesToBatch}
-                    getWatchStatusColor={getWatchStatusColor}
                 />
 
                 <WatchDetailModal
