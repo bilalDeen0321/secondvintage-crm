@@ -305,7 +305,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                         </div>
                                     </div>
 
-                                    <GenerateAiDescription watch={watch} data={data} setData={setData} />
+                                    <GenerateAiDescription watch={watch} data={data} setData={setData} setSavedData={setSavedData} />
 
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">
