@@ -71,6 +71,18 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
         const successcallback = (res: Page<PageProps>) => {
             setSavedData(data);
 
+            // Force update of watch data in the parent component/list
+            if (res.props?.flash?.data) {
+                // Update any parent state or cache with the new watch data
+                const updatedWatch = res.props.flash.data;
+
+                // If this is an update operation, ensure the list view gets fresh data
+                if (watch?.routeKey && updatedWatch) {
+                    // Trigger a partial reload or state update to refresh the list
+                    router.reload({ only: ["watches"] });
+                }
+            }
+
             if (typeof handler === "function") {
                 handler(res.props?.flash?.data);
             } else if (typeof handler === "string") {
@@ -87,6 +99,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                 { ...putDate, _method: "put" },
                 {
                     forceFormData: true,
+                    preserveState: false, // Changed to false to ensure fresh data
                     onSuccess: successcallback,
                 }
             );

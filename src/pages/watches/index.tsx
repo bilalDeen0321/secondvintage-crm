@@ -7,8 +7,8 @@ import WatchListView from "@/components/WatchListView";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PaginateData } from "@/types/laravel";
 import { WatchResource } from "@/types/resources/watch";
-import { Head, useForm, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { useEffect, useState } from "react";
 import { deleteWatch } from "./_actions";
 import WatchBulkActions from "./components/WatchBulkActions";
 import WatchHeaderRight from "./components/WatchHeaderRight";
@@ -48,6 +48,25 @@ const WatchManagement = (props: Props) => {
         direction: "asc",
     });
 
+    // Add effect to handle data refresh when coming back from edit
+    useEffect(() => {
+        let wasHidden = false;
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "hidden") {
+                wasHidden = true;
+            } else if (document.visibilityState === "visible" && wasHidden) {
+                // Only refresh if the page was actually hidden and is now visible
+                // This prevents unnecessary reloads on initial page load
+                router.reload({ only: ["watches", "watch_count"] });
+                wasHidden = false;
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, []);
+
     const handleSelectWatch = (watchId: string, checked: boolean) => {
         if (checked) {
             setSelectedWatches([...selectedWatches, watchId]);
@@ -73,36 +92,19 @@ const WatchManagement = (props: Props) => {
                     <div className="mb-6 flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-slate-900">Watch Management</h1>
-                            <p className="mt-1 text-slate-600">
-                                Manage your watch inventory and track status
-                            </p>
+                            <p className="mt-1 text-slate-600">Manage your watch inventory and track status</p>
                         </div>
                         <WatchHeaderRight viewMode={viewMode} setViewMode={setViewMode} />
                     </div>
 
                     {/* Multi-select Status Filter */}
-                    <WatchMultiselectStatusFilter
-                        data={data}
-                        setData={setData}
-                        watch_count={watch_count}
-                    />
+                    <WatchMultiselectStatusFilter data={data} setData={setData} watch_count={watch_count} />
 
                     {/* Search and Filters */}
-                    <WatchSearchAndFilter
-                        data={data}
-                        setData={setData}
-                        batches={batches}
-                        brands={brands}
-                        locations={locations}
-                    />
+                    <WatchSearchAndFilter data={data} setData={setData} batches={batches} brands={brands} locations={locations} />
 
                     {/* Bulk Actions */}
-                    <WatchBulkActions
-                        batches={batches}
-                        locations={locations}
-                        selectedWatches={selectedWatches}
-                        setSelectedWatches={setSelectedWatches}
-                    />
+                    <WatchBulkActions batches={batches} locations={locations} selectedWatches={selectedWatches} setSelectedWatches={setSelectedWatches} />
 
                     {/* Results info and pagination controls */}
                     <div className="mb-4 flex items-center justify-between">
@@ -121,21 +123,13 @@ const WatchManagement = (props: Props) => {
                         ))}
                     </div>
                 ) : (
-                    <WatchListView
-                        watches={watches}
-                        onDelete={deleteWatch}
-                        selectedWatches={selectedWatches}
-                        onSelectWatch={handleSelectWatch}
-                        onSelectAll={handleSelectAll}
-                    />
+                    <WatchListView watches={watches} onDelete={deleteWatch} selectedWatches={selectedWatches} onSelectWatch={handleSelectWatch} onSelectAll={handleSelectAll} />
                 )}
 
                 {watches.length === 0 && (
                     <div className="py-12 text-center">
                         <div className="mb-4 text-6xl">⌚</div>
-                        <h3 className="mb-2 text-xl font-medium text-slate-900">
-                            No watches found
-                        </h3>
+                        <h3 className="mb-2 text-xl font-medium text-slate-900">No watches found</h3>
                         <p className="text-slate-600">Try adjusting your search or filters</p>
                     </div>
                 )}

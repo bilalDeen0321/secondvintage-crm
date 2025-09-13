@@ -21,8 +21,12 @@ export function deleteWatch(routeKey: string | number) {
  */
 export function onBulkAction(action: BulkActions, value: string, ids: (string | number)[]) {
     router.post(route('watches.bulk-actions'), { action, value, ids }, {
-        // preserveScroll: true,
-        // preserveState: false,
+        preserveState: false, // Ensure fresh data after bulk operations
+        preserveScroll: true,
+        onSuccess: () => {
+            // Force refresh of watch list to show updated thumbnails
+            router.reload({ only: ['watches', 'watch_count'] });
+        }
     });
 }
 
