@@ -14,12 +14,10 @@ class HelperSeeder extends Seeder
      */
     public function run(): void
     {
-        // Watch::query()->delete();
-
-        // WatchSeeder::createDemoResoruces();
-
-        Artisan::call('migrate:refresh', [
-            '--path' => 'database/migrations/2025_07_31_023310_create_batches_table.php'
-        ]);
+        //clear all watches platform  and platform data
+        Watch::query()->update(['platform' => null]);
+        Watch::query()->get()->each(function (Watch $watch) {
+            $watch->platforms()->delete();
+        });
     }
 }
