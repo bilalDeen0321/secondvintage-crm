@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('ai_thread_id')->nullable();
             $table->json('ai_selected_images')->nullable(); // Images selected for AI processing
 
-            $table->enum('status', Status::allStatuses())->default(Status::DRAFT);
+            $table->string('status')->default(Status::DRAFT);
             $table->text('notes')->nullable();
             $table->string('stage')->nullable();
             $table->string('location')->default(Location::DEFAULT_COUNTRY);
