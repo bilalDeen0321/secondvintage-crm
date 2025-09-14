@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Sleep;
 
 class ProcessMakeHookCatawiki implements ShouldQueue
@@ -67,13 +68,13 @@ class ProcessMakeHookCatawiki implements ShouldQueue
         $payload = array_filter($payload, fn($v) => $v !== null);
 
 
-        if (app()->environment('local')) {
-            Sleep::for(10)->seconds();
-            $make = Collection::fromJson(File::get(base_path('resources/make.com/catawiki-response.json')));
-        } else {
-            $make = MakeAiHook::init()->generateCatawikiData($payload);
-        }
+        // if (app()->environment('local')) {
+        //     Sleep::for(10)->seconds();
+        //     $make = Collection::fromJson(File::get(base_path('resources/make.com/catawiki-response.json')));
+        // } else {
+        // }
 
+        $make = MakeAiHook::init()->generateCatawikiData($payload);
         // $make = MakeAiHook::init()->generateCatawikiData($payload);
 
         if ($make->get('Status') === 'success') {
@@ -92,7 +93,12 @@ class ProcessMakeHookCatawiki implements ShouldQueue
 
         $status = Status::toDatabase($make->get('Status_Selected')) ?? $this->watch->status;
 
-        if ($this->watch->status != $status) {
+        FacadesLog::info(__METHOD__, [
+            'status' => $status,
+            'watch_status' => $this->watch->status,
+        ]);
+
+        if ($status && $this->watch->status != $status) {
             $this->watch->update(['status' => $status]);
         }
 
