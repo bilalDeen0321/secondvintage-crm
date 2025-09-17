@@ -322,20 +322,29 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                     formData.append('image', editingItem.imageFile);
                 } 
                 //formData.append('_method', 'POST');
-              await await axios.post(`/wishlist/${editingItem.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    });
-                    // setWishList(
-                    //     wishList.map((item) =>
-                    //         item.id === editingItem.id ? editingItem : item,
-                    //     ),
-                    // );
-                    setIsEditDialogOpen(false);
-                        toast({
-                        title: "Success",
-                        description: "Form submitted successfully.",
-                        variant: "default", // or "success" if you have that variant configured
-                        });
+              const response = await axios.post(
+                                `/wishlist/${editingItem.id}`,
+                                formData,
+                                {
+                                headers: { 'Content-Type': 'multipart/form-data' },
+                                params: { _method: 'PUT' },
+                                }
+                            );
+                const updatedItem = response.data.item;
+
+                console.log('returned response : ', updatedItem);
+
+                //update the editted item back into the List and hench the UI
+                setWishList(wishList.map((item) => item.id === updatedItem.id ? updatedItem : item));
+
+                // close the modal
+                setIsEditDialogOpen(false);
+
+                toast({
+                    title: "Success",
+                    description: "Form submitted successfully.",
+                    variant: "default", // or "success" if you have that variant configured
+                });
 
             } catch (error) {
                 alert('else');
@@ -489,8 +498,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
   setItem,
   isEdit = false,
 }: {
-  item: Omit<WishListItem, "id" | "dateAdded"> | WishListItem;
-  setItem: React.Dispatch<React.SetStateAction<WishListItem>>;
+  item: any, //Omit<WishListItem, "id" | "dateAdded"> | WishListItem;
+  setItem: any, //React.Dispatch<React.SetStateAction<WishListItem>>;
 
   isEdit?: boolean;
 }) => {
@@ -515,8 +524,13 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
         <Label htmlFor="brand">Brand</Label>
         <BrandSelect
                 brands={brands}
-                value={newItem.brand_id} // bind directly to state
-                onChange={(val) => setNewItem({ ...newItem, brand_id: val })}
+                value={localItem.brand_id} // bind directly to state
+                onChange={(val) => {
+                    // console.log('{ ...localItem, brand_id: val }', { ...localItem, brand_id: val }, localItem, brands);
+                    const updated = { ...localItem, brand_id: Number(val) };
+                    setLocalItem(updated);
+                    setItem(updated);
+                }}
                 />
       </div>
 
@@ -571,9 +585,11 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
         <Select
           name="priority"
           value={localItem.priority}
-          onValueChange={(val: "High" | "Medium" | "Low") =>
-            handleChange("priority", val)
-          }
+          onValueChange={(val: "High" | "Medium" | "Low") => {
+            const updated = { ...localItem, priority: val };
+            setLocalItem(updated);
+            setItem(updated);
+        }}
         >
           <SelectTrigger>
             <SelectValue />
