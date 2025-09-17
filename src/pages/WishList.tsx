@@ -7,7 +7,27 @@ import {
     Search,
     Trash2,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import axios from "axios";
+import { usePage } from '@inertiajs/react';
+import { Check } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { router } from '@inertiajs/react'; 
+
+
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+ 
 import Layout from "../components/Layout";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -33,6 +53,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+
 import {
     Sheet,
     SheetContent,
@@ -47,8 +69,8 @@ interface WishListItem {
     brand: string;
     model: string;
     description: string;
-    minBudget: number;
-    maxBudget: number;
+    price_range_min: number;
+    price_range_max: number;
     priority: "High" | "Medium" | "Low";
     dateAdded: string;
     image?: string;
@@ -56,104 +78,108 @@ interface WishListItem {
 
 const WishList = () => {
     const isMobile = useIsMobile();
-    const [wishList, setWishList] = useState<WishListItem[]>([
-        {
-            id: "1",
-            brand: "Rolex",
-            model: "Submariner",
-            description:
-                "Black dial, ceramic bezel, steel bracelet. No date preferred.",
-            minBudget: 10000,
-            maxBudget: 12000,
-            priority: "High",
-            dateAdded: "2024-01-15",
-            image: "/lovable-uploads/c9668ac2-5bda-49b2-9679-1759280598e1.png",
-        },
-        {
-            id: "2",
-            brand: "Omega",
-            model: "Speedmaster",
-            description:
-                "Moonwatch Professional. Manual wind, hesalite crystal.",
-            minBudget: 5500,
-            maxBudget: 6500,
-            priority: "Medium",
-            dateAdded: "2024-01-20",
-            image: "/lovable-uploads/8a246750-c18b-4b1c-b6af-25185e84d3d7.png",
-        },
-        {
-            id: "3",
-            brand: "Tudor",
-            model: "Black Bay",
-            description: "Blue dial variant. 39mm case size preferred.",
-            minBudget: 3200,
-            maxBudget: 3800,
-            priority: "Low",
-            dateAdded: "2024-01-25",
-            image: "/lovable-uploads/27ec6583-00c5-4c9f-bf57-429e50240830.png",
-        },
-        {
-            id: "4",
-            brand: "Patek Philippe",
-            model: "Calatrava",
-            description:
-                "Classic dress watch with white gold case. Looking for ref. 5196.",
-            minBudget: 22000,
-            maxBudget: 25000,
-            priority: "High",
-            dateAdded: "2024-01-30",
-            image: "/lovable-uploads/cd305798-ab49-4a3b-9157-fb8db777bd8f.png",
-        },
-        {
-            id: "5",
-            brand: "Audemars Piguet",
-            model: "Royal Oak",
-            description: "Steel case with blue dial. 39mm or 41mm preferred.",
-            minBudget: 32000,
-            maxBudget: 35000,
-            priority: "High",
-            dateAdded: "2024-02-05",
-            image: "/lovable-uploads/c3abfafa-8986-4b30-bd89-3d163701cb64.png",
-        },
-        {
-            id: "6",
-            brand: "Cartier",
-            model: "Santos",
-            description:
-                "Medium size in steel and gold. Square case classic design.",
-            minBudget: 7500,
-            maxBudget: 8500,
-            priority: "Medium",
-            dateAdded: "2024-02-10",
-            image: "/lovable-uploads/e42df4f6-4752-4442-9e7c-06e8184162be.png",
-        },
-        {
-            id: "7",
-            brand: "Vacheron Constantin",
-            model: "Overseas",
-            description:
-                "Sports watch with integrated bracelet. Blue dial preferred.",
-            minBudget: 25000,
-            maxBudget: 28000,
-            priority: "Medium",
-            dateAdded: "2024-02-15",
-            image: "/lovable-uploads/5557d546-574f-45fb-bd5a-014ec53e5792.png",
-        },
-    ]);
-
+    // const [wishList, setWishList] = useState<WishListItem[]>([
+    //     {
+    //         id: "1",
+    //         brand: "Rolex",
+    //         model: "Submariner",
+    //         description:
+    //             "Black dial, ceramic bezel, steel bracelet. No date preferred.",
+    //         price_range_min: 10000,
+    //         price_range_max: 12000,
+    //         priority: "High",
+    //         dateAdded: "2024-01-15",
+    //         image: "/lovable-uploads/c9668ac2-5bda-49b2-9679-1759280598e1.png",
+    //     },
+    //     {
+    //         id: "2",
+    //         brand: "Omega",
+    //         model: "Speedmaster",
+    //         description:
+    //             "Moonwatch Professional. Manual wind, hesalite crystal.",
+    //         price_range_min: 5500,
+    //         price_range_max: 6500,
+    //         priority: "Medium",
+    //         dateAdded: "2024-01-20",
+    //         image: "/lovable-uploads/8a246750-c18b-4b1c-b6af-25185e84d3d7.png",
+    //     },
+    //     {
+    //         id: "3",
+    //         brand: "Tudor",
+    //         model: "Black Bay",
+    //         description: "Blue dial variant. 39mm case size preferred.",
+    //         price_range_min: 3200,
+    //         price_range_max: 3800,
+    //         priority: "Low",
+    //         dateAdded: "2024-01-25",
+    //         image: "/lovable-uploads/27ec6583-00c5-4c9f-bf57-429e50240830.png",
+    //     },
+    //     {
+    //         id: "4",
+    //         brand: "Patek Philippe",
+    //         model: "Calatrava",
+    //         description:
+    //             "Classic dress watch with white gold case. Looking for ref. 5196.",
+    //         price_range_min: 22000,
+    //         price_range_max: 25000,
+    //         priority: "High",
+    //         dateAdded: "2024-01-30",
+    //         image: "/lovable-uploads/cd305798-ab49-4a3b-9157-fb8db777bd8f.png",
+    //     },
+    //     {
+    //         id: "5",
+    //         brand: "Audemars Piguet",
+    //         model: "Royal Oak",
+    //         description: "Steel case with blue dial. 39mm or 41mm preferred.",
+    //         price_range_min: 32000,
+    //         price_range_max: 35000,
+    //         priority: "High",
+    //         dateAdded: "2024-02-05",
+    //         image: "/lovable-uploads/c3abfafa-8986-4b30-bd89-3d163701cb64.png",
+    //     },
+    //     {
+    //         id: "6",
+    //         brand: "Cartier",
+    //         model: "Santos",
+    //         description:
+    //             "Medium size in steel and gold. Square case classic design.",
+    //         price_range_min: 7500,
+    //         price_range_max: 8500,
+    //         priority: "Medium",
+    //         dateAdded: "2024-02-10",
+    //         image: "/lovable-uploads/e42df4f6-4752-4442-9e7c-06e8184162be.png",
+    //     },
+    //     {
+    //         id: "7",
+    //         brand: "Vacheron Constantin",
+    //         model: "Overseas",
+    //         description:
+    //             "Sports watch with integrated bracelet. Blue dial preferred.",
+    //         price_range_min: 25000,
+    //         price_range_max: 28000,
+    //         priority: "Medium",
+    //         dateAdded: "2024-02-15",
+    //         image: "/lovable-uploads/5557d546-574f-45fb-bd5a-014ec53e5792.png",
+    //     },
+    // ]);
+    const { toast } = useToast(); 
+     const { props } = usePage();
+    // Use props AFTER you have them
+    const [wishList, setWishList] = useState<WishListItem[]>(props.wishlist);
+   
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [searchTerm, setSearchTerm] = useState("");
     const [priorityFilter, setPriorityFilter] = useState<string>("all");
     const [budgetFilter, setBudgetFilter] = useState<string>("all");
     const [sortBy, setSortBy] = useState<string>("dateAdded");
     const [showFilters, setShowFilters] = useState(false);
-
+ 
     const filteredWishList = wishList
         .filter((item) => {
             const matchesSearch =
-                item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.description
+                (item.brand ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item?.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item?.description
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase());
 
@@ -164,18 +190,18 @@ const WishList = () => {
             if (budgetFilter !== "all") {
                 switch (budgetFilter) {
                     case "under5k":
-                        matchesBudget = item.maxBudget < 5000;
+                        matchesBudget = item.price_range_max < 5000;
                         break;
                     case "5k-15k":
                         matchesBudget =
-                            item.maxBudget >= 5000 && item.maxBudget <= 15000;
+                            item.price_range_max >= 5000 && item.price_range_max <= 15000;
                         break;
                     case "15k-30k":
                         matchesBudget =
-                            item.maxBudget > 15000 && item.maxBudget <= 30000;
+                            item.price_range_max > 15000 && item.price_range_max <= 30000;
                         break;
                     case "over30k":
-                        matchesBudget = item.maxBudget > 30000;
+                        matchesBudget = item.price_range_max > 30000;
                         break;
                 }
             }
@@ -185,9 +211,9 @@ const WishList = () => {
         .sort((a, b) => {
             switch (sortBy) {
                 case "brand":
-                    return a.brand.localeCompare(b.brand);
+                    return a.brand?.localeCompare(b.brand);
                 case "budget":
-                    return b.maxBudget - a.maxBudget;
+                    return b.price_range_max - a.price_range_max;
                 case "priority": {
                     const priorityOrder = { High: 3, Medium: 2, Low: 1 };
                     return (
@@ -206,35 +232,75 @@ const WishList = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<WishListItem | null>(null);
-    const [newItem, setNewItem] = useState<
-        Omit<WishListItem, "id" | "dateAdded">
-    >({
-        brand: "",
-        model: "",
-        description: "",
-        minBudget: 0,
-        maxBudget: 0,
-        priority: "Medium",
-        image: "",
-    });
+  interface WishListFormItem {
+  brand_id: string;
+  model: string;
+  description: string;
+  price_range_min: number;
+  price_range_max: number;
+  priority: "High" | "Medium" | "Low";
+  image?: string;
+  imageFile?: File | null;
+}
 
-    const handleAddItem = () => {
-        const item: WishListItem = {
-            ...newItem,
-            id: Date.now().toString(),
-            dateAdded: new Date().toISOString().split("T")[0],
-        };
-        setWishList([...wishList, item]);
-        setNewItem({
-            brand: "",
-            model: "",
-            description: "",
-            minBudget: 0,
-            maxBudget: 0,
-            priority: "Medium",
-            image: "",
+const [newItem, setNewItem] = useState<WishListFormItem>({
+  brand_id: "",
+  model: "",
+  description: "",
+  price_range_min: 0,
+  price_range_max: 0,
+  priority: "Medium",
+  image: "",
+  imageFile: null,
+});
+
+   const handleAddItem = async () => { 
+       try {
+        const formData = new FormData();  
+        formData.append('brand_id', newItem.brand_id);
+        formData.append('model', newItem.model);
+        formData.append('description', newItem.description);
+        formData.append('price_range_min', String(newItem.price_range_min));
+        formData.append('price_range_max', String(newItem.price_range_max));
+        formData.append('priority', newItem.priority);
+        if (newItem.imageFile) {
+            formData.append('image', newItem.imageFile);
+        }
+ 
+             // Send to create route
+          let  response = await axios.post('/wishlist', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+        // Get saved item from backend response
+        const savedItem = response.data.item; 
+         
+            setWishList([...wishList, savedItem]);
+            setNewItem({
+                brand_id: "",
+                model: "",
+                description: "",
+                price_range_min: 0,
+                price_range_max: 0,
+                priority: "Medium",
+                image: "",
+                imageFile: null,
+            });
+            setIsAddDialogOpen(false);
+        
+      toast({
+            title: "Success",
+            description: "Form submitted successfully.",
+            variant: "default", // or "success" if you have that variant configured
+            });
+    } catch (error) {
+        toast({
+        title: "Error",
+        description: error.response?.data?.message || "Something went wrong.",
+        variant: "destructive",
         });
-        setIsAddDialogOpen(false);
+    }
+        //setIsAddDialogOpen(false);
     };
 
     const handleEditItem = (item: WishListItem) => {
@@ -242,40 +308,97 @@ const WishList = () => {
         setIsEditDialogOpen(true);
     };
 
-    const handleUpdateItem = () => {
-        if (editingItem) {
-            setWishList(
-                wishList.map((item) =>
-                    item.id === editingItem.id ? editingItem : item,
-                ),
-            );
-            setIsEditDialogOpen(false);
-            setEditingItem(null);
+    const handleUpdateItem = async () => {
+        if (editingItem) { 
+            try {
+                const formData = new FormData();   
+                formData.append('brand_id', editingItem.brand_id);
+                formData.append('model', editingItem.model);
+                formData.append('description', editingItem.description);
+                formData.append('price_range_min', String(editingItem.price_range_min));
+                formData.append('price_range_max', String(editingItem.price_range_max));
+                formData.append('priority', editingItem.priority);
+                if (editingItem.imageFile) {
+                    formData.append('image', editingItem.imageFile);
+                } 
+                //formData.append('_method', 'POST');
+              await await axios.post(`/wishlist/${editingItem.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    });
+                    // setWishList(
+                    //     wishList.map((item) =>
+                    //         item.id === editingItem.id ? editingItem : item,
+                    //     ),
+                    // );
+                    setIsEditDialogOpen(false);
+                        toast({
+                        title: "Success",
+                        description: "Form submitted successfully.",
+                        variant: "default", // or "success" if you have that variant configured
+                        });
+
+            } catch (error) {
+                alert('else');
+                    toast({
+                    title: "Error",
+                    description: error.response?.data?.message || "Something went wrong.",
+                    variant: "destructive",
+                    });
+                }  
         }
     };
 
     const handleDeleteItem = (id: string) => {
-        setWishList(wishList.filter((item) => item.id !== id));
+        const confirmed = window.confirm("Are you sure you want to delete this item?");
+        if (!confirmed) return; // exit if user cancels 
+        try {
+            axios.delete(`/wishlist/${id}`).then(() => {
+            setWishList(wishList.filter((item) => item.id !== id));
+
+            toast({
+                title: "Deleted",
+                description: "Item has been deleted successfully.",
+                variant: "destructive",
+            });
+            });
+        } catch (error) {
+            toast({
+            title: "Error",
+            description: error.response?.data?.message || "Something went wrong.",
+            variant: "destructive",
+            });
+  }
+
     };
 
-    const handleImageUpload = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        isEdit: boolean = false,
-    ) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const imageUrl = event.target?.result as string;
-                if (isEdit && editingItem) {
-                    setEditingItem({ ...editingItem, image: imageUrl });
-                } else {
-                    setNewItem({ ...newItem, image: imageUrl });
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+ const handleImageUpload = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  isEdit: boolean = false
+) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const imageUrl = event.target?.result as string;
+
+    if (isEdit && editingItem) {
+      setEditingItem((prev) => ({
+        ...prev!,
+        image: imageUrl,   // Preview
+        imageFile: file,   // File for upload
+      }));
+    } else {
+      setNewItem((prev) => ({
+        ...prev,
+        image: imageUrl,   // Preview
+        imageFile: file,   // File for upload
+      }));
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
@@ -332,12 +455,12 @@ const WishList = () => {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Budgets</SelectItem>
-                        <SelectItem value="under5k">Under €5,000</SelectItem>
-                        <SelectItem value="5k-15k">€5,000 - €15,000</SelectItem>
-                        <SelectItem value="15k-30k">
-                            €15,000 - €30,000
-                        </SelectItem>
-                        <SelectItem value="over30k">Over €30,000</SelectItem>
+                        <SelectItem value="under5">Under €500</SelectItem>
+                        <SelectItem value="5so-1k">€500 - €1000</SelectItem>
+                        <SelectItem value="15so-2k">€1500 - €2000</SelectItem>
+                        <SelectItem value="2k-5k">€2000 - €5000</SelectItem>
+                        <SelectItem value="5k-10k">€5000 - €10,000</SelectItem>
+                        <SelectItem value="over10k">Over €10,000</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -361,115 +484,202 @@ const WishList = () => {
         </div>
     );
 
-    const ItemFormContent = ({
-        item,
-        setItem,
-        isEdit = false,
-    }: {
-        item: Omit<WishListItem, "id" | "dateAdded"> | WishListItem;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setItem: (item: any) => void;
-        isEdit?: boolean;
-    }) => (
-        <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4"}>
-            <div className="space-y-2">
-                <Label htmlFor="brand">Brand</Label>
-                <Input
-                    id="brand"
-                    value={item.brand}
-                    onChange={(e) =>
-                        setItem({ ...item, brand: e.target.value })
-                    }
+  const ItemFormContent = ({
+  item,
+  setItem,
+  isEdit = false,
+}: {
+  item: Omit<WishListItem, "id" | "dateAdded"> | WishListItem;
+  setItem: React.Dispatch<React.SetStateAction<WishListItem>>;
+
+  isEdit?: boolean;
+}) => {
+  const [localItem, setLocalItem] = useState({ ...item });
+
+  // Sync local state if parent changes (e.g., editingItem updates)
+  useEffect(() => {
+    setLocalItem({ ...item });
+  }, [item]);
+
+  const handleChange = (key: string, value: string | number) => {
+    setLocalItem({ ...localItem, [key]: value });
+  };
+
+  const handleBlur = () => {
+    setItem(localItem); // update parent on blur
+  };
+
+  return (
+    <div className={isMobile ? "space-y-4" : "grid grid-cols-2 gap-4"}>
+      <div className="space-y-2">
+        <Label htmlFor="brand">Brand</Label>
+        <BrandSelect
+                brands={brands}
+                value={newItem.brand_id} // bind directly to state
+                onChange={(val) => setNewItem({ ...newItem, brand_id: val })}
                 />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="model">Model</Label>
-                <Input
-                    id="model"
-                    value={item.model}
-                    onChange={(e) =>
-                        setItem({ ...item, model: e.target.value })
-                    }
-                />
-            </div>
-            <div className={`space-y-2 ${isMobile ? "" : "col-span-2"}`}>
-                <Label htmlFor="description">Description</Label>
-                <Input
-                    id="description"
-                    value={item.description}
-                    onChange={(e) =>
-                        setItem({ ...item, description: e.target.value })
-                    }
-                />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="minBudget">Min Budget (€)</Label>
-                <Input
-                    id="minBudget"
-                    type="number"
-                    value={item.minBudget}
-                    onChange={(e) =>
-                        setItem({
-                            ...item,
-                            minBudget: parseInt(e.target.value) || 0,
-                        })
-                    }
-                />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="maxBudget">Max Budget (€)</Label>
-                <Input
-                    id="maxBudget"
-                    type="number"
-                    value={item.maxBudget}
-                    onChange={(e) =>
-                        setItem({
-                            ...item,
-                            maxBudget: parseInt(e.target.value) || 0,
-                        })
-                    }
-                />
-            </div>
-            <div className="space-y-2">
-                <Label>Priority</Label>
-                <Select
-                    value={item.priority}
-                    onValueChange={(value: "High" | "Medium" | "Low") =>
-                        setItem({ ...item, priority: value })
-                    }
-                >
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Low">Low</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="space-y-2">
-                <Label>Image</Label>
-                <div className="flex items-center space-x-2">
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, isEdit)}
-                        className="flex-1"
-                    />
-                </div>
-                {item.image && (
-                    <div className="mt-2">
-                        <img
-                            src={item.image}
-                            alt="Preview"
-                            className="h-16 w-16 rounded object-cover"
-                        />
-                    </div>
-                )}
-            </div>
-        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="model">Model</Label>
+        <Input
+          id="model"
+          value={localItem.model}
+          onChange={(e) => handleChange("model", e.target.value)}
+          onBlur={handleBlur}
+        />
+      </div>
+
+      <div className={`space-y-2 ${isMobile ? "" : "col-span-2"}`}>
+        <Label htmlFor="description">Description</Label>
+        <Input
+          id="description"
+          value={localItem.description}
+          onChange={(e) => handleChange("description", e.target.value)}
+          onBlur={handleBlur}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="price_range_min">Min Budget (€)</Label>
+        <Input
+          id="price_range_min"
+          type="number"
+          value={localItem.price_range_min}
+          onChange={(e) =>
+            handleChange("price_range_min", Number(e.target.value))
+          }
+          onBlur={handleBlur}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="price_range_max">Max Budget (€)</Label>
+        <Input
+          id="price_range_max"
+          type="number"
+          value={localItem.price_range_max}
+          onChange={(e) =>
+            handleChange("price_range_max", Number(e.target.value))
+          }
+          onBlur={handleBlur}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Priority</Label>
+        <Select
+          name="priority"
+          value={localItem.priority}
+          onValueChange={(val: "High" | "Medium" | "Low") =>
+            handleChange("priority", val)
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="High">High</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="Low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+     <div className="space-y-2">
+  <Label>Image</Label>
+  <div className="flex items-center space-x-2">
+    <input
+      key={localItem.imageFile ? localItem.imageFile.name : "file-input"}
+      type="file"
+      accept="image/*"
+      onChange={(e) => handleImageUpload(e, isEdit)}
+      className="flex-1"
+    />
+  </div>
+  {localItem.image && (
+    <div className="mt-2">
+      <img
+        src={localItem.image}
+        alt="Preview"
+        className="h-16 w-16 rounded object-cover"
+      />
+    </div>
+  )}
+</div>
+
+    </div>
+  );
+};
+
+// Debounced router update
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    router.get(
+      route("wishlist.index"),
+      {
+        search: searchTerm || undefined,
+        priority: priorityFilter !== "all" ? priorityFilter : undefined,
+        budget: budgetFilter !== "all" ? budgetFilter : undefined,
+        sortBy: sortBy || undefined,
+      },
+      { preserveState: true, replace: true }
     );
+  }, 300);
+
+  return () => clearTimeout(timeout);
+}, [searchTerm, priorityFilter, budgetFilter, sortBy]);
+
+
+  const items = props.items as any[];   // data from Laravel
+  const brands = props.brands as any[]; // data from Laravel
+
+function BrandSelect({ brands, value, onChange }: { 
+    brands: { id: string; name: string; code: string }[];
+    value: string;
+    onChange: (val: string) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const selected = brands.find((b) => b.id === value);
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <button
+                    type="button"
+                    className="w-full border rounded px-3 py-2 text-left flex justify-between items-center"
+                >
+                    {selected ? `${selected.name} (${selected.code})` : "Select brand"}
+                </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[250px] p-0">
+                <Command>
+                    <CommandInput placeholder="Search brand..." />
+                    <CommandEmpty>No brand found.</CommandEmpty>
+                    <CommandGroup>
+                        {brands.map((brand) => (
+                            <CommandItem
+                                key={brand.id}
+                                value={brand.id} // only ID
+                                onSelect={() => {
+                                    onChange(brand.id); // update form state
+                                    setOpen(false);
+                                }}
+                            >
+                                <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                        value === brand.id ? "opacity-100" : "opacity-0"
+                                    }`}
+                                />
+                                {brand.name} ({brand.code})
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+}
 
     return (
         <Layout>
@@ -645,10 +855,10 @@ const WishList = () => {
                                             key={item.id}
                                             className="transition-shadow hover:shadow-lg"
                                         >
-                                            {item.image && (
+                                            {item.image_url && (
                                                 <div className="aspect-square overflow-hidden rounded-t-lg">
                                                     <img
-                                                        src={item.image}
+                                                        src={item.image_url}
                                                         alt={`${item.brand} ${item.model}`}
                                                         className="h-full w-full object-cover"
                                                     />
@@ -681,9 +891,9 @@ const WishList = () => {
                                                 <div className="mb-3">
                                                     <span className="text-lg font-semibold text-primary">
                                                         €
-                                                        {item.minBudget.toLocaleString()}{" "}
+                                                        {item?.price_range_min?.toLocaleString() ?? "0"}
                                                         - €
-                                                        {item.maxBudget.toLocaleString()}
+                                                       {(item?.price_range_max ?? 0).toLocaleString()}
                                                     </span>
                                                 </div>
                                                 <div className="flex space-x-2">
@@ -720,10 +930,10 @@ const WishList = () => {
                                         <Card key={item.id}>
                                             <CardContent className="p-4">
                                                 <div className="flex items-center space-x-4">
-                                                    {item.image && (
+                                                    {item.image_url && (
                                                         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
                                                             <img
-                                                                src={item.image}
+                                                                src={item.image_url}
                                                                 alt={`${item.brand} ${item.model}`}
                                                                 className="h-full w-full object-cover"
                                                             />
@@ -757,9 +967,10 @@ const WishList = () => {
                                                             <div>
                                                                 <span className="text-lg font-semibold text-primary">
                                                                     €
-                                                                    {item.minBudget.toLocaleString()}{" "}
+                                                                     {(item?.price_range_min ?? 0).toLocaleString()}
+                                                                     
                                                                     - €
-                                                                    {item.maxBudget.toLocaleString()}
+                                                                   {(item?.price_range_max ?? 0).toLocaleString()}
                                                                 </span>
                                                             </div>
                                                             <div className="flex space-x-2">
@@ -795,6 +1006,13 @@ const WishList = () => {
                                     ))}
                                 </div>
                             )}
+                            {filteredWishList.length === 0 && (
+                                <div className="py-12 text-center">
+                                    <div className="mb-4 text-6xl">⌚</div>
+                                    <h3 className="mb-2 text-xl font-medium text-slate-900">No Wishlist found</h3>
+                                    <p className="text-slate-600">Try adjusting your search or filters</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -813,10 +1031,10 @@ const WishList = () => {
                                     key={item.id}
                                     className="transition-shadow hover:shadow-lg"
                                 >
-                                    {item.image && (
+                                    {item.image_url && (
                                         <div className="aspect-square overflow-hidden rounded-t-lg">
                                             <img
-                                                src={item.image}
+                                                src={item.image_url}
                                                 alt={`${item.brand} ${item.model}`}
                                                 className="h-full w-full object-cover"
                                             />
@@ -850,9 +1068,9 @@ const WishList = () => {
                                         <div className="mb-3">
                                             <div className="text-sm font-semibold text-primary">
                                                 €
-                                                {item.minBudget.toLocaleString()}{" "}
+                                                {(item?.price_range_min ?? 0).toLocaleString()}
                                                 - €
-                                                {item.maxBudget.toLocaleString()}
+                                                {(item?.price_range_max ?? 0).toLocaleString()}
                                             </div>
                                         </div>
                                         <div className="flex space-x-2">
@@ -888,10 +1106,10 @@ const WishList = () => {
                                 <Card key={item.id}>
                                     <CardContent className="p-3">
                                         <div className="flex items-start space-x-3">
-                                            {item.image && (
+                                            {item.image_url && (
                                                 <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
                                                     <img
-                                                        src={item.image}
+                                                        src={item.image_url}
                                                         alt={`${item.brand} ${item.model}`}
                                                         className="h-full w-full object-cover"
                                                     />
@@ -924,9 +1142,9 @@ const WishList = () => {
                                                     <div>
                                                         <div className="text-xs font-semibold text-primary">
                                                             €
-                                                            {item.minBudget.toLocaleString()}{" "}
+                                                            {(item?.price_range_min ?? 0).toLocaleString()}
                                                             - €
-                                                            {item.maxBudget.toLocaleString()}
+                                                            {item.price_range_max.toLocaleString()}
                                                         </div>
                                                     </div>
                                                     <div className="flex space-x-1">

@@ -5,7 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWishlistRequest;
 use App\Http\Requests\UpdateWishlistRequest;
 use App\Models\Wishlist;
+use App\Models\Brand;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Filters\WishlistFilter;
+use App\Queries\WishlistQuery;
+use App\Http\Resources\WishlistResource;
 
 class WishlistController extends Controller
 {
@@ -20,10 +27,18 @@ class WishlistController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return Inertia::render('WishList');
-    }
+        public function index(Request $request)
+        {
+             $query = WishlistFilter::apply($request);
+             
+             $wishlist = $query->get();
+            //    dd(WishlistResource::collection($wishlist)->toArray($request));
+              return Inertia::render('WishList', [
+                'wishlist' => WishlistResource::collection($wishlist),
+                'brands'   => Brand::all(),
+            ]);
+                 
+        }
 
     /**
      * Show the form for creating a new resource.
@@ -36,10 +51,16 @@ class WishlistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreWishlistRequest $request)
+    public function store(StoreWishlistRequest $request, WishlistQuery $query)
     {
-        //
-    }
+         
+        $wishlist = $query->create($request->validated(), $request->file('image'));
+
+            return response()->json([
+                'message' => 'Wishlist item created successfully',
+                'item' => $wishlist
+            ], 200);
+     } 
 
     /**
      * Display the specified resource.
@@ -62,14 +83,38 @@ class WishlistController extends Controller
      */
     public function update(UpdateWishlistRequest $request, Wishlist $wishlist)
     {
-        //
+       
+         $data = $request->validated();
+ 
+    // Handle image if uploaded
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('wishlist_images', 'public');
+        $data['image_url'] = asset('storage/' . $path);
+    }
+    dd($data);
+    $wishlist->update($data);
+
+    return response()->json([
+        'message' => 'Wishlist item updated successfully',
+        'item' => $wishlist,
+    ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Wishlist $wishlist)
+    public function destroy($id)
     {
-        //
+       $wishlist = Wishlist::find($id);
+
+        if (!$wishlist) {
+            return response()->json(['message' => 'Item not found'], 404);
+        }
+
+        $wishlist->delete();
+
+        return response()->json([
+            'message' => 'Wishlist item deleted successfully'
+        ], 200);
     }
 }

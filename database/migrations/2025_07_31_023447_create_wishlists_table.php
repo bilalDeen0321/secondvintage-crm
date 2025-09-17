@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->string('model')->nullable();
+            $table->text('description')->nullable();
             $table->decimal('price_range_min', 10, 2)->nullable();
             $table->decimal('price_range_max', 10, 2)->nullable();
+            $table->enum('priority', ['Low', 'Medium', 'High'])->default('Medium');
             $table->string('currency', 10)->default('USD');
             $table->string('image_url')->nullable();
             $table->timestamps();

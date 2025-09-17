@@ -15,15 +15,8 @@ class Wishlist extends Model
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'user_id',
-        'brand_id',
-        'name',
-        'price_range_min',
-        'price_range_max',
-        'currency',
-        'image_url',
-    ];
+  protected $guarded = [];
+
 
     /**
      * Get the attributes that should be cast.

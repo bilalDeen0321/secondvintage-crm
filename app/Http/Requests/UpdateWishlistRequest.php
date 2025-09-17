@@ -11,7 +11,7 @@ class UpdateWishlistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class UpdateWishlistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+           'brand_id' => 'required|integer|exists:brands,id',
+            'model' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'price_range_min' => 'required|numeric|min:0',
+            'price_range_max' => 'required|numeric|min:0|gte:price_range_min',
+            'priority' => 'required|in:High,Medium,Low',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }
