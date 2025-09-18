@@ -52,8 +52,7 @@ class WishlistController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreWishlistRequest $request, WishlistQuery $query)
-    {
-         
+    {    
         $wishlist = $query->create($request->validated(), $request->file('image'));
 
             return response()->json([
@@ -91,12 +90,12 @@ class WishlistController extends Controller
         $path = $request->file('image')->store('wishlist_images', 'public');
         $data['image_url'] = asset('storage/' . $path);
     }
-    dd($data);
+    // dd($data);
     $wishlist->update($data);
 
     return response()->json([
         'message' => 'Wishlist item updated successfully',
-        'item' => $wishlist,
+        'item' => new WishlistResource($wishlist->fresh(['brand', 'user']))
     ], 200);
     }
 
