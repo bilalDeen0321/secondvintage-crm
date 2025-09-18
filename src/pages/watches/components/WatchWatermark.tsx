@@ -21,11 +21,11 @@ export default function WatchWatermark({ watch: initialWatch }: Props) {
         if (!initialWatch?.routeKey) return;
         setLoading(true);
         axios
-            .get(route("api.watches.with-authors", initialWatch.routeKey))
+            .get(route("api.watches.with-authors", initialWatch?.routeKey))
             .then((res) => setWatch(res.data))
             .catch((err) => toast.error(getError(err)))
             .finally(() => setLoading(false));
-    }, [initialWatch.routeKey]);
+    }, [initialWatch?.routeKey]);
 
     if (!watch?.routeKey) return null;
     if (loading) return <div>Loading...</div>;

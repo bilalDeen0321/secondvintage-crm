@@ -92,7 +92,7 @@ const WatchManagement = (props: Props) => {
                     <div className="mb-6 flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-slate-900">Watch Management</h1>
-                            <p className="mt-1 text-slate-600">dManage your watch inventory and track status</p>
+                            <p className="mt-1 text-slate-600">Manage your watch inventory and track status</p>
                         </div>
                         <WatchHeaderRight viewMode={viewMode} setViewMode={setViewMode} />
                     </div>

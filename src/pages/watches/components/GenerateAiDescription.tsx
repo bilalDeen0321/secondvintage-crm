@@ -16,11 +16,12 @@ type Props = {
     data: ReturnType<typeof watchInitData>;
     setData: (key: keyof ReturnType<typeof watchInitData>, value: any) => void;
     setSavedData?: (data: any) => void;
+    setAiProcessing?: (state: boolean) => void;
+    
 };
 
 export default function GenerateAiDescription(props: Props) {
-    const { data, setData, watch = {} as WatchResource, setSavedData } = props;
-
+    const { data, setData, watch = {} as WatchResource, setSavedData, setAiProcessing  } = props; 
     //state
     const [loading, setLoading] = useState(false);
 
@@ -42,14 +43,18 @@ export default function GenerateAiDescription(props: Props) {
     // generate ai description
     const onGenerate = async () => {
         if (!data.images.some((i) => i.useForAI)) return;
-        setLoading(true);
+           setLoading(true);
+           setAiProcessing?.(true);
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
             forceFormData: true,
             preserveScroll: true,
             preserveState: !watch?.routeKey,
-            onFinish: () => setLoading(false),
+           onFinish: () => {
+                    setLoading(false);
+                    setAiProcessing?.(false);
+                },
             onSuccess: (response) => {
-                const aidata = response.props.flash.data;
+                const aidata = response?.props?.flash?.data;
                 if (!aidata) return;
                 const allow_keys = ["routeKey", "status", "ai_thread_id", "sku", "description", "ai_status"];
                 Object.keys(aidata)
@@ -72,10 +77,12 @@ export default function GenerateAiDescription(props: Props) {
     useEffect(() => {
         if (data?.ai_status === "loading") {
             setLoading(true);
+            setAiProcessing?.(true);
         } else {
             setLoading(false);
+            setAiProcessing?.(false);
         }
-    }, [data.ai_status]);
+    }, [data.ai_status, setAiProcessing]);
 
     //listeners
     useEffect(() => {

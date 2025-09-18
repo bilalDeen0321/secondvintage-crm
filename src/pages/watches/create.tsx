@@ -38,7 +38,7 @@ type Props = {
 export default function CreateWatch({ watch, auth, ...props }: Props) {
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
-
+    const [aiProcessing, setAiProcessing] = useState(false);
     const formRef = useKeyboard<HTMLDivElement>("Escape", watchEscapeCallback);
 
     //local states
@@ -182,7 +182,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                 <div ref={formRef} tabIndex={-1} className="flex max-h-[98vh] w-full max-w-[90vw] flex-col overflow-hidden rounded-xl bg-white shadow-xl">
                     <div className="flex-shrink-0 border-b border-slate-200 p-3">
-                        <h2 className="text-lg font-bold text-slate-900">{"Add New Watch"}</h2>
+                        <h2 className="text-lg font-bold text-slate-900">{watch?.routeKey ? "Update the Watch" : "Add New Watch"}</h2>
                     </div>
                     {Object.keys(errors).length > 0 && (
                         <div className="flex-shrink-0 border-b border-slate-200 p-3">
@@ -367,9 +367,9 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                             />
                                         </div>
                                     </div>
-
-                                    <GenerateAiDescription watch={watch} data={data} setData={setData} setSavedData={setSavedData} />
-
+                                    
+                                    <GenerateAiDescription watch={watch} data={data} setData={setData} setSavedData={setSavedData} setAiProcessing={setAiProcessing}/>
+                                      
                                     <div className="flex flex-col">
                                         <label className="mb-2 block text-sm font-medium text-slate-700">
                                             <span className="font-bold">Description</span>{" "}
@@ -412,14 +412,13 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Approve
                             </Button>
-                            <Button type="submit" className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`} disabled={processing || !hasChanges}>
+                            <Button type="submit" className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`} disabled={processing || aiProcessing || !hasChanges}>
                                 {loadName === "save" && processing ? "Saving..." : hasChanges ? "Save" : "Saved"}
                             </Button>
                             <Button
                                 type="button"
                                 onClick={onSaveAndClose}
-                                className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`}
-                                disabled={processing || !hasChanges}
+                                className={`flex-1 ${!hasChanges ? "cursor-not-allowed bg-gray-400 text-gray-600" : ""}`} disabled={processing || aiProcessing || !hasChanges}
                             >
                                 {loadName === "save_and_close" && processing ? "Saving..." : "Save & Close"}
                             </Button>

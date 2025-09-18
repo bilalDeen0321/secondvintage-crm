@@ -41,7 +41,7 @@ class WatchController extends Controller
         $watches = WatchQuery::init()
             ->execute($request)
             ->paginate($request->input('per_page', 10))
-            ->withQueryString(); 
+            ->withQueryString();
         return Inertia::render('watches/index', [
             ...WatchQuery::init()->crudData(),
             'watches' => WatchResource::collection($watches)->response()->getData(true),
