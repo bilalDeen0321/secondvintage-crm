@@ -16,7 +16,8 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
+
 
 use function Psy\Test\Command\ListCommand\Fixtures\bar;
 
@@ -102,14 +103,26 @@ class BatchController extends Controller
      */
     public function update(Request $request, Batch $batch)
     {
+        
         $data = $request->validate([
-            'name' => 'required|string|min:2|max:100|unique:batches,name,' . $batch->id,
-            'tracking_number'   => 'nullable|string|max:50|unique:batches,tracking_number',
-            'origin'            => 'nullable|string|max:100',
-            'destination'       => 'nullable|string|max:100',
-            'status'            => 'nullable|string|in:' . implode(',', Batch::STATUSES),
-            'notes'             => 'nullable|string|max:1000'
-        ]);
+    'name' => [
+        'required',
+        'string',
+        'min:2',
+        'max:100',
+        Rule::unique('batches', 'name')->ignore($batch->id),
+    ],
+    'tracking_number' => [
+        'nullable',
+        'string',
+        'max:50',
+        Rule::unique('batches', 'tracking_number')->ignore($batch->id),
+    ],
+    'origin' => 'nullable|string|max:100',
+    'destination' => 'nullable|string|max:100',
+    'status' => 'nullable|string|in:' . implode(',', Batch::STATUSES),
+    'notes' => 'nullable|string|max:1000',
+]);
 
         $batch->update($data);
 

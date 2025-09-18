@@ -13,7 +13,7 @@ interface CreateBatchFormProps {
 
 export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
     const { auth } = usePage().props;
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset  } = useForm({
         name: "",
         tracking_number: "",
         origin: auth?.user?.country || "Denmark",
@@ -21,12 +21,22 @@ export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
         status: "preparing",
         notes: "",
     });
-
+    
     const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
+        e.preventDefault(); 
         post(route("batches.store"), {
             preserveScroll: true,
-            preserveState: false,
+            preserveState: true,
+             onSuccess: () => {
+                 setData({
+                    name: "",
+                    tracking_number: "",
+                    origin: auth?.user?.country || "Denmark",
+                    destination: auth?.user?.country || "Denmark",
+                    status: "preparing",
+                    notes: "",
+                });
+                },
         });
     };
 

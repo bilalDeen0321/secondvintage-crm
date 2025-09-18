@@ -35,13 +35,17 @@ export default function PlatformDataTable({ platformData, setPlatformData }: Pro
             case "select":
                 return (
                     <Select
-                        value={field.value}
-                        onValueChange={(value) => handleFieldChange(index, value)}
+                        value={field.value ?? ""}
+                        onValueChange={(value) => handleFieldChange(index, value || null)}
                     >
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
+                        </SelectTrigger> 
+                        {/* Actual placeholder as selectable option */}                            
                         <SelectContent>
+                            <SelectItem value="">
+                                Select...
+                            </SelectItem>
                             {field.options?.map((option) => (
                                 <SelectItem key={option} value={option}>
                                     {option}
