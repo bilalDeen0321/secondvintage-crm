@@ -10,6 +10,7 @@ use App\Http\Resources\WatchResource;
 use App\Models\Batch;
 use App\Models\Brand;
 use App\Models\Watch;
+use App\Models\Location;
 use App\Queries\BatchQuery;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -40,7 +41,7 @@ class BatchController extends Controller
      */
     public function index(Request $request)
     {
-
+ 
         // Get paginated results
         $batches = BatchQuery::init()->execute($request)->paginate(10)->withQueryString();
 
@@ -50,7 +51,8 @@ class BatchController extends Controller
         return Inertia::render('batch/BatchIndex', [
             'batches' => BatchResource::collection($batches)->response()->getData(true),
             'availableWatches' => WatchResource::collection($availableWatches),
-            'batchStastistics' => BatchQuery::init()->getStatistics()
+            'batchStastistics' => BatchQuery::init()->getStatistics(),
+            'locations' => Location::all()
         ]);
     }
 
@@ -69,10 +71,10 @@ class BatchController extends Controller
             'tracking_number'   => 'nullable|string|max:50|unique:batches,tracking_number',
             'origin'            => 'nullable|string|max:100',
             'destination'       => 'nullable|string|max:100',
+            'location' => 'nullable|string',
             'status'            => 'nullable|string|in:' . implode(',', Batch::STATUSES),
             'notes'             => 'nullable|string|max:1000'
-        ]);
-
+        ]); 
         Batch::query()->create($data);
 
         return back()->with('success', 'Batch created successfully.');
@@ -90,11 +92,12 @@ class BatchController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Batch $batch)
-    {
-        return Inertia::render('batch/BatchEdit', [
+    {  
+       return Inertia::render('batch/BatchEdit', [
             'batch' => new BatchResource($batch->load(['watches.images', 'watches.brand'])),
             //available watches that are not assigned to any batch
             'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->get()),
+            'locations' => Location::all(),
         ]);
     }
 
@@ -120,6 +123,7 @@ class BatchController extends Controller
     ],
     'origin' => 'nullable|string|max:100',
     'destination' => 'nullable|string|max:100',
+    'location' => 'nullable|string',
     'status' => 'nullable|string|in:' . implode(',', Batch::STATUSES),
     'notes' => 'nullable|string|max:1000',
 ]);
@@ -135,20 +139,20 @@ class BatchController extends Controller
      */
     public function assignWatches(Request $request, Batch $batch)
     {
-
+ 
         $request->validate([
             'ids'  => 'required|array|min:1',
             'ids.*' => 'exists:watches,id'
         ]);
 
-
+         
         $query = Watch::whereIn('id', $request->array('ids'));
-
+         
         // Check if watches are already assigned to other batches
         $alreadyAssigned = $query->whereNotNull('batch_id')
             ->where('batch_id', '!=', $batch->id)
             ->count();
-
+        
         if ($alreadyAssigned > 0) {
             return back()->with('error', 'Some watches are already assigned to other batches.');
         }

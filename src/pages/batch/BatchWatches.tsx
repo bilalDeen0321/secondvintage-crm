@@ -226,6 +226,7 @@ export default function BatchWatches(props: Props) {
                                         <TableCell>
                                             <Button
                                                 size="sm"
+                                                 disabled={selectedWatchesToAdd.includes(watch.id)}
                                                 onClick={() => onSelectWatch(watch.id, true)}
                                                 className="flex items-center gap-1"
                                             >

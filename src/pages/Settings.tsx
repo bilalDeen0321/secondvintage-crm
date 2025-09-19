@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage, useForm  } from "@inertiajs/react";
 import {
     Bell,
     Globe,
@@ -27,6 +27,7 @@ import {
     TabsTrigger,
 } from "../components/ui/tabs";
 import { ColorTheme, useTheme } from "../contexts/ThemeContext";
+import axios from 'axios'
 
 const colorThemes = [
     { id: "default" as ColorTheme, name: "Default", color: "#d97706" },
@@ -45,13 +46,48 @@ const colorThemes = [
     { id: "dark-slate" as ColorTheme, name: "Dark Slate", color: "#475569" },
     { id: "dark-green" as ColorTheme, name: "Dark Green", color: "#059669" },
 ];
-
+interface Currency {
+  id: number
+  code: string
+  name: string
+}
+                
 const Settings = () => {
     const [emailNotifications, setEmailNotifications] = useState(true);
     const [pushNotifications, setPushNotifications] = useState(false);
     const [autoBackup, setAutoBackup] = useState(true);
     const { colorTheme, setColorTheme } = useTheme();
+      
+   const { props } = usePage()
+   const currencies = (props.currencies as Currency[]) ?? []
+   const user = props.user
 
+  const generalForm = useForm({
+    name: user.name || "",
+    currency: user.currency || "",
+    form_type: "general",
+  });
+const passwordForm = useForm({
+    current_password: "",
+    password: "",
+    password_confirmation: "",
+    form_type: "password",
+  });
+
+  function submitGeneral(e: React.FormEvent) {
+    e.preventDefault();
+     generalForm.put(`/settings/${user.id}`, {
+      preserveScroll: true,
+    });
+  }
+
+  function submitPassword(e: React.FormEvent) {
+    e.preventDefault();
+    passwordForm.put(`/settings/${user.id}`, {
+      preserveScroll: true,
+      onSuccess: () => passwordForm.reset(),
+    });
+  }
     return (
         <Layout>
             <Head title="Settings" />
@@ -66,17 +102,19 @@ const Settings = () => {
                 <Tabs defaultValue="general" className="space-y-6">
                     <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="general">General</TabsTrigger>
+                         <TabsTrigger value="security">Security</TabsTrigger>
                         <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                        <TabsTrigger value="notifications">
+                        <TabsTrigger value="notifications" disabled="disabled">
                             Notifications
                         </TabsTrigger>
-                        <TabsTrigger value="security">Security</TabsTrigger>
-                        <TabsTrigger value="integrations">
+                       
+                        <TabsTrigger value="integrations" disabled="disabled">
                             Integrations
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="general" className="space-y-6">
+                         <form onSubmit={submitGeneral}>
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center">
@@ -90,12 +128,15 @@ const Settings = () => {
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="company-name">
-                                            Company Name
+                                        <Label htmlFor="full-name">
+                                            Full Name
                                         </Label>
                                         <Input
-                                            id="company-name"
-                                            defaultValue="Second Vintage"
+                                            id="full-name"
+                                            value={generalForm.data.name}
+                                            onChange={(e) =>
+                                            generalForm.setData("name", e.target.value)
+                                            }
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -105,8 +146,9 @@ const Settings = () => {
                                         <Input
                                             id="company-email"
                                             type="email"
-                                            defaultValue="info@secondvintage.com"
-                                        />
+                                           value={user.email}
+                                                disabled
+                                            />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-6">
@@ -116,6 +158,7 @@ const Settings = () => {
                                         </Label>
                                         <select
                                             id="timezone"
+                                            disabled="disabled"
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         >
                                             <option>UTC+1 (Copenhagen)</option>
@@ -127,21 +170,109 @@ const Settings = () => {
                                         <Label htmlFor="currency">
                                             Default Currency
                                         </Label>
-                                        <select
+                                         <select
                                             id="currency"
+                                            value={generalForm.data.currency}
+                                            onChange={(e) =>
+                                            generalForm.setData("currency", e.target.value)
+                                            }
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         >
-                                            <option>EUR - Euro</option>
-                                            <option>USD - US Dollar</option>
-                                            <option>DKK - Danish Krone</option>
+                                            <option value="">Select a currency</option>
+                                            {currencies.map((c) => (
+                                            <option key={c.code} value={c.code}>
+                                                {c.code} - {c.name}
+                                            </option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
-                                <Button>Save Changes</Button>
+                               <Button type="submit" disabled={generalForm.processing}>
+                                    Save Changes
+                                </Button>
                             </CardContent>
                         </Card>
+                        </form>
                     </TabsContent>
 
+  <TabsContent value="security" className="space-y-6">
+      <form onSubmit={submitPassword}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center">
+                                    <Lock className="mr-2 h-5 w-5" />
+                                    Security Settings
+                                </CardTitle>
+                                <CardDescription>
+                                    Manage account security and access
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label htmlFor="current-password">
+                                            Current Password
+                                        </Label>
+                                        <Input
+                                            id="current-password"
+                                            type="password" 
+                                            onChange={e =>  passwordForm.setData("current_password", e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="new-password">
+                                            New Password
+                                        </Label>
+                                        <Input
+                                            id="new-password"
+                                            type="password" 
+                                            onChange={e => passwordForm.setData("password", e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="confirm-password">
+                                            Confirm New Password
+                                        </Label>
+                                        <Input
+                                            id="confirm-password"
+                                            type="password" 
+                                            onChange={e => passwordForm.setData('password_confirmation', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <Label>Two-Factor Authentication</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            Add an extra layer of security
+                                        </p>
+                                    </div>
+                                    <Badge variant="outline">Not Enabled</Badge>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <Label>Auto Backup</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            Automatically backup data daily
+                                        </p>
+                                    </div>
+                                    <Switch
+                                        // checked={autoBackup}
+                                        checked={false}
+                                        disabled="disabled"
+                                        onCheckedChange={setAutoBackup}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                     <Button type="submit" disabled={passwordForm.processing}>Update Password</Button>
+                                    <Button variant="outline" disabled="disabled">
+                                        Enable 2FA
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        </form>
+                    </TabsContent>
                     <TabsContent value="appearance" className="space-y-6">
                         <Card>
                             <CardHeader>
@@ -289,77 +420,7 @@ const Settings = () => {
                         </Card>
                     </TabsContent>
 
-                    <TabsContent value="security" className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center">
-                                    <Lock className="mr-2 h-5 w-5" />
-                                    Security Settings
-                                </CardTitle>
-                                <CardDescription>
-                                    Manage account security and access
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="space-y-4">
-                                    <div>
-                                        <Label htmlFor="current-password">
-                                            Current Password
-                                        </Label>
-                                        <Input
-                                            id="current-password"
-                                            type="password"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="new-password">
-                                            New Password
-                                        </Label>
-                                        <Input
-                                            id="new-password"
-                                            type="password"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="confirm-password">
-                                            Confirm New Password
-                                        </Label>
-                                        <Input
-                                            id="confirm-password"
-                                            type="password"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <Label>Two-Factor Authentication</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Add an extra layer of security
-                                        </p>
-                                    </div>
-                                    <Badge variant="outline">Not Enabled</Badge>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <Label>Auto Backup</Label>
-                                        <p className="text-sm text-muted-foreground">
-                                            Automatically backup data daily
-                                        </p>
-                                    </div>
-                                    <Switch
-                                        checked={autoBackup}
-                                        onCheckedChange={setAutoBackup}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Button>Update Password</Button>
-                                    <Button variant="outline">
-                                        Enable 2FA
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                  
 
                     <TabsContent value="integrations" className="space-y-6">
                         <Card>

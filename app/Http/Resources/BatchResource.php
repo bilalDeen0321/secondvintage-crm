@@ -22,6 +22,7 @@ class BatchResource extends JsonResource
             'origin' => $this->origin,
             'destination' => $this->destination,
             'status' => $this->status,
+            'location' => $this->location,
             'notes' => $this->notes,
             'shippedDate' => $this->shipped_date,
             'estimatedDelivery' => $this->estimated_delivery,

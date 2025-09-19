@@ -6,18 +6,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
+interface Location {
+  id: number
+  name: string
+  country_code: string
+}
 
 interface CreateBatchFormProps {
     onCancel?: () => void;
+     locations: Location[]
 }
 
-export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
+export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) => {
     const { auth } = usePage().props;
     const { data, setData, post, processing, errors, reset  } = useForm({
         name: "",
         tracking_number: "",
         origin: auth?.user?.country || "Denmark",
         destination: auth?.user?.country || "Denmark",
+        location: "",
         status: "preparing",
         notes: "",
     });
@@ -78,8 +85,9 @@ export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
                         </div>
                     </div>
 
-                    <div>
-                        <label className="mb-1 block text-sm font-medium">Status</label>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                         <div> 
+                            <label className="mb-1 block text-sm font-medium">Status</label>
                         <Select value={data.status} onValueChange={(value) => setData("status", value)}>
                             <SelectTrigger className={errors.status ? "border-red-500" : ""}>
                                 <SelectValue />
@@ -93,6 +101,25 @@ export const CreateBatchForm = ({ onCancel }: CreateBatchFormProps) => {
                             </SelectContent>
                         </Select>
                         {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
+                    </div>
+                      <div>
+                           <label className="mb-1 block text-sm font-medium">Location</label>
+                             <Select value={data.location} onValueChange={(location) => setData("location", location)}>
+                            <SelectTrigger className={errors.status ? "border-red-500" : ""}>
+                               <SelectValue placeholder="Select location..." />
+                            </SelectTrigger>
+                            <SelectContent> 
+                                <SelectItem value="none">-</SelectItem>
+                                {locations.map((loc) => (
+                                <SelectItem key={loc.name} value={String(loc.name)}>
+                                    {loc.name}  
+                                </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
+                    
+                      </div>
                     </div>
 
                     <div>

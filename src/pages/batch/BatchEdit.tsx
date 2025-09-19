@@ -28,11 +28,17 @@ import { router, useForm } from "@inertiajs/react";
 import { ChevronDown, ChevronUp, Edit, Plus, X } from "lucide-react";
 import { useState } from "react";
 
+interface Location {
+  id: number
+  name: string
+  country_code: string
+}
 interface Props {
     batch: BatchResource;
     watches: WatchResource[];
+    locations: Location[];
 }
-export default function BatchEdit({ batch, watches }: Props) {
+export default function BatchEdit({ batch, watches, locations }: Props) {
     const [batchWatchSortField, setBatchWatchSortField] = useState<string>("name");
     const [batchWatchSortDirection, setBatchWatchSortDirection] = useState<"asc" | "desc">("asc");
     const { data, setData, put, processing, errors } = useForm({
@@ -41,12 +47,12 @@ export default function BatchEdit({ batch, watches }: Props) {
         origin: batch.origin,
         destination: batch?.destination || "",
         status: batch.status || Batch.STATUS_PREPARING,
+        location: batch.location || "",
         notes: batch.notes || "",
         shipped_date: batch.shippedDate || "",
         estimated_delivery: batch.estimatedDelivery || "",
         actual_delivery: batch.actualDelivery || "",
-    });
-
+    });  
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         put(route("batches.update", batch.id));
@@ -55,8 +61,8 @@ export default function BatchEdit({ batch, watches }: Props) {
     const onWatchRemove = (
         routeKey: BatchResource["routeKey"],
         watchKey: WatchResource["routeKey"]
-    ) => {
-        router.delete(route("batches.removeWatch", [routeKey, watchKey]));
+    ) => { 
+         router.delete(route("batches.removeWatch", [routeKey, watchKey]));
     };
 
     // Sorting functions
@@ -217,6 +223,29 @@ export default function BatchEdit({ batch, watches }: Props) {
                                         <p className="mt-1 text-sm text-red-500">{errors.status}</p>
                                     )}
                                 </div>
+                                   <div>
+                                    <label className="mb-1 block text-sm font-medium">Location</label>
+                                    <Select
+                                        value={data.location}
+                                        onValueChange={(value) => setData("location", value)}
+                                    >
+                                        <SelectTrigger
+                                            className={errors.location ? "border-red-500" : ""}
+                                        >
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {locations.map((loc) => (
+                                                <SelectItem key={loc.name} value={loc.name}>
+                                                    {loc.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.location && (
+                                        <p className="mt-1 text-sm text-red-500">{errors.location}</p>
+                                    )}
+                                </div>  
                                 <div>
                                     <label className="mb-1 block text-sm font-medium">
                                         Actual Delivery

@@ -14,17 +14,23 @@ import { BatchFilters } from "./components/BatchFilters";
 import { BatchList } from "./components/BatchList";
 import { BatchStats } from "./components/BatchStats";
 import { CreateBatchForm } from "./components/CreateBatchForm";
-
+interface Location {
+  id: number
+  name: string
+  country_code: string
+}
 interface BatchManagementProps {
     batches: PaginateData<BatchResource>;
     availableWatches: WatchResource[];
     batchStastistics: any;
+    locations: Location[]
 }
 
 const BatchManagement = ({
     batches: serverBatches,
     availableWatches,
     batchStastistics,
+    locations,
 }: BatchManagementProps) => {
     const {
         selectedWatch,
@@ -61,7 +67,7 @@ const BatchManagement = ({
     const setFilterBatches = (key: string, value: string) => {
         setData({ ...data, [key]: value, page: 1 });
     };
-
+ 
     return (
         <Layout>
             <Head title="Batch Management" />
@@ -79,7 +85,7 @@ const BatchManagement = ({
 
                 <BatchStats batchStastistics={batchStastistics} />
 
-                {showCreateForm && <CreateBatchForm onCancel={() => setShowCreateForm(false)} />}
+                {showCreateForm && <CreateBatchForm onCancel={() => setShowCreateForm(false)}  locations={locations} />}
 
                 <BatchList
                     batches={filteredBatches}

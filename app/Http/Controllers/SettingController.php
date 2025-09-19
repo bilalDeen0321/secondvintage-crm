@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Setting;
+use App\Models\Currency; 
+use App\Models\User;
 use Inertia\Inertia;
+use Auth;
 
 class SettingController extends Controller
 {
@@ -22,7 +26,12 @@ class SettingController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Settings');
+         $user = auth()->user();
+         $currencies = Currency::get(); 
+        return Inertia::render('Settings',[
+             'user' => $user,
+             'currencies' => $currencies
+        ]);
     }
 
     /**
@@ -60,10 +69,40 @@ class SettingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSettingRequest $request, Setting $setting)
-    {
-        //
+    public function update(UpdateSettingRequest $request, User $user)
+    { 
+         $user = auth()->user(); 
+        if ($request->form_type === 'password') {
+         $request->validate([
+        'current_password' => 'required',
+        'password' => 'required|confirmed|min:4',
+    ]); 
+    if (! Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors([
+            'current_password' => 'Your current password is incorrect.',
+        ]);
+    } 
+    $user->password = Hash::make($request->password);
+    $user->save();
+        return back()->with('success', 'Password updated successfully.');
     }
+      if ($request->form_type === 'general') {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'currency' => 'required|exists:currencies,code',
+        ]);
+       
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
+        }
+        if (isset($data['currency'])) {
+            $user->currency = $data['currency'];
+        }
+         $user->save();
+        return back()->with('success', 'Profile updated successfully.');
+    }
+    
+}
 
     /**
      * Remove the specified resource from storage.

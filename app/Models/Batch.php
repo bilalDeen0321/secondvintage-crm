@@ -41,6 +41,7 @@ class Batch extends Model
         'origin',
         'destination',
         'status',
+        'location',
         'notes',
         'shipped_date',
         'estimated_delivery',
