@@ -28,7 +28,7 @@ class BatchController extends Controller
      * Create a new controller instance.
      */
     public function __construct()
-    {
+    {  
         $this->middleware('permission:batchManagement');
 
         // Route::bind('watch', function ($value) {
@@ -146,7 +146,7 @@ class BatchController extends Controller
         ]);
 
          
-        $query = Watch::whereIn('id', $request->array('ids'));
+        $query = Watch::whereIn('id', $request->input('ids'));
          
         // Check if watches are already assigned to other batches
         $alreadyAssigned = $query->whereNotNull('batch_id')

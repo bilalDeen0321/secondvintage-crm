@@ -69,13 +69,13 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
 
             {/* Profile */}
             <div className="border-t border-slate-700 p-4">
-                <Link
+                {/* <Link
                     href={route("profile.edit")}
                     className="flex w-full items-center rounded-lg px-3 py-3 text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
                 >
                     <User className="mr-3 h-5 w-5" />
                     <span>Profile</span>
-                </Link>
+                </Link> */}
                 <Link
                     href={route("logout")}
                     className="flex w-full items-center rounded-lg px-3 py-3 text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"

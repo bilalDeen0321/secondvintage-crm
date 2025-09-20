@@ -38,26 +38,20 @@ export const menus = [
         icon: PackageOpen,
         path: "/batches",
     },
-    {
-        name: "Promote / Social Media",
-        permission: "promote",
-        icon: Calendar,
-        path: "/promote",
-        opacity: "opacity-50",
-    },
+    // {
+    //     name: "Promote / Social Media",
+    //     permission: "promote",
+    //     icon: Calendar,
+    //     path: "/promote",
+    //     opacity: "opacity-50",
+    // },
     {
         name: "Sales History / Stats",
         permission: "salesHistory",
         icon: BadgeEuro,
         path: "/history",
     },
-    {
-        name: "Performance Tracking",
-        permission: "performanceTracking",
-        icon: Gauge,
-        path: "/performance",
-        opacity: "opacity-50",
-    },
+   
     {
         name: "Wish List",
         permission: "wishList",
@@ -82,14 +76,20 @@ export const menus = [
         icon: Store,
         path: "/sellers",
     },
+   /* 
     {
+        name: "Performance Tracking",
+        permission: "performanceTracking",
+        icon: Gauge,
+        path: "/performance",
+        opacity: "opacity-50",
+    },{
         name: "Invoices",
         permission: "invoices",
         icon: File,
         path: "/invoices",
         opacity: "opacity-50",
     },
-    { name: "Users", permission: "users", icon: Users, path: "/users" },
     {
         name: "Tools",
         permission: "tools",
@@ -97,6 +97,9 @@ export const menus = [
         path: "/tools",
         opacity: "opacity-50",
     },
+    */
+    { name: "Users", permission: "users", icon: Users, path: "/users" },
+    
     {
         name: "Full Data View",
         permission: "fullDataView",

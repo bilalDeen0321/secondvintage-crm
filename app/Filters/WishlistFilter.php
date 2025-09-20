@@ -30,25 +30,57 @@ class WishlistFilter
 
         if ($request->filled('budget') && $request->budget !== 'all') {
             switch ($request->budget) {
-                case 'under5':
-                    $query->where('price_range_min', '<', 500);
-                    break;
-                case '5so-1k':
-                    $query->whereBetween('price_range_min', [500, 1000]);
-                    break;
-                case '15so-2k':
-                    $query->whereBetween('price_range_min', [1500, 2000]);
-                    break;
-                case '2k-5k':
-                    $query->whereBetween('price_range_min', [2000, 5000]);
-                    break;
-                case '5k-10k':
-                    $query->whereBetween('price_range_min', [5000, 10000]);
-                    break;
-                case 'over10k':
-                    $query->where('price_range_min', '>', 10000);
-                    break;
-            }
+                    case 'under5':
+                        $query->where('price_range_max', '<=', 500); // any watch that touches ≤ 500
+                        break;
+                    case '5so-1k':
+                        $query->where(function($q) {
+                            $q->whereBetween('price_range_min', [500, 1000])
+                            ->orWhereBetween('price_range_max', [500, 1000])
+                            ->orWhere(function($q2) {
+                                $q2->where('price_range_min', '<', 500)
+                                    ->where('price_range_max', '>', 1000);
+                            });
+                        });
+                        break;
+                    case '15so-2k':
+                        $query->where(function($q) {
+                            $q->whereBetween('price_range_min', [1500, 2000])
+                            ->orWhereBetween('price_range_max', [1500, 2000])
+                            ->orWhere(function($q2) {
+                                $q2->where('price_range_min', '<', 1500)
+                                    ->where('price_range_max', '>', 2000);
+                            });
+                        });
+                        break;
+                    case '2k-5k':
+                        $query->where(function($q) {
+                            $q->whereBetween('price_range_min', [2000, 5000])
+                            ->orWhereBetween('price_range_max', [2000, 5000])
+                            ->orWhere(function($q2) {
+                                $q2->where('price_range_min', '<', 2000)
+                                    ->where('price_range_max', '>', 5000);
+                            });
+                        });
+                        break;
+                    case '5k-10k':
+                        $query->where(function($q) {
+                            $q->whereBetween('price_range_min', [5000, 10000])
+                            ->orWhereBetween('price_range_max', [5000, 10000])
+                            ->orWhere(function($q2) {
+                                $q2->where('price_range_min', '<', 5000)
+                                    ->where('price_range_max', '>', 10000);
+                            });
+                        });
+                        break;
+                    case 'over10k': 
+                         $query->where(function($q) {
+                             $q->where('price_range_min', '>', 10000)
+                                 ->orwhere('price_range_max', '>', 10000);
+                        });
+                        break;
+                }
+
         }
 
         if ($request->filled('sortBy')) {

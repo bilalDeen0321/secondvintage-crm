@@ -67,12 +67,15 @@ Route::resource('batches', BatchController::class);
 Route::resource('batches.watches', BatchWatchController::class);
 
  Route::delete('{batch}/{watch}', [BatchController::class, 'removeWatch'])->name('batches.removeWatch');
- Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWatches'])->name('batches.assignWatches');
+Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWatches'])->name('batches.assignWatches');
 
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
 Route::resource('performance', PerformanceController::class);
 Route::resource('wishlist', WishlistController::class);
+Route::prefix('batches')->group(function () {
+  Route::delete('/wishlist/{wishlist}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+});
 Route::resource('payments', PaymentController::class);
 Route::resource('agent-watches', AgentWatchController::class);
 Route::resource('sellers', SellerController::class);

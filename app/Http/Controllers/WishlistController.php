@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Filters\WishlistFilter;
 use App\Queries\WishlistQuery;
-use App\Http\Resources\WishlistResource;
+use App\Http\Resources\WishlistResource; 
 
 class WishlistController extends Controller
 {
@@ -29,10 +29,8 @@ class WishlistController extends Controller
      */
         public function index(Request $request)
         {
-             $query = WishlistFilter::apply($request);
-             
+             $query = WishlistFilter::apply($request); 
              $wishlist = $query->get();
-            //    dd(WishlistResource::collection($wishlist)->toArray($request));
               return Inertia::render('WishList', [
                 'wishlist' => WishlistResource::collection($wishlist),
                 'brands'   => Brand::all(),
@@ -54,7 +52,6 @@ class WishlistController extends Controller
     public function store(StoreWishlistRequest $request, WishlistQuery $query)
     {    
         $wishlist = $query->create($request->validated(), $request->file('image'));
-
             return response()->json([
                 'message' => 'Wishlist item created successfully',
                 'item' => $wishlist
@@ -86,8 +83,8 @@ class WishlistController extends Controller
          $data = $request->validated();
  
     // Handle image if uploaded
-    if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('wishlist_images', 'public');
+    if ($request->hasFile('image_url')) {
+        $path = $request->file('image_url')->store('wishlist_images', 'public');
         $data['image_url'] = asset('storage/' . $path);
     }
     // dd($data);
@@ -103,17 +100,9 @@ class WishlistController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
-       $wishlist = Wishlist::find($id);
-
-        if (!$wishlist) {
-            return response()->json(['message' => 'Item not found'], 404);
+        {
+            $wishlist = Wishlist::findOrFail($id);
+            $wishlist->delete();
+            return response()->json(['message' => 'Wishlist item deleted successfully']);
         }
-
-        $wishlist->delete();
-
-        return response()->json([
-            'message' => 'Wishlist item deleted successfully'
-        ], 200);
-    }
 }

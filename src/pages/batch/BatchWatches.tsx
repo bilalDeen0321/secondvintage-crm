@@ -78,7 +78,7 @@ export default function BatchWatches(props: Props) {
         }
     };
 
-    const onAssignWatches = () => {
+    const onAssignWatches = () => { 
         const data = { ids: selectedWatchesToAdd };
         router.post(route("batches.assignWatches", batch?.routeKey), data, {
             preserveState: false,

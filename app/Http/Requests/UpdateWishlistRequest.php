@@ -28,7 +28,7 @@ class UpdateWishlistRequest extends FormRequest
             'price_range_min' => 'required|numeric|min:0',
             'price_range_max' => 'required|numeric|min:0|gte:price_range_min',
             'priority' => 'required|in:High,Medium,Low',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image_url' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

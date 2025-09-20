@@ -20,7 +20,7 @@ class WishlistQuery
         if ($image) {
             $path = $image->store('wishlist_images', 'public');
             $data['image_url'] = asset('storage/' . $path);
-        } 
+        }  
         return Wishlist::create($data); 
     }
 }

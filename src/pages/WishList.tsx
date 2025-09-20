@@ -77,91 +77,7 @@ interface WishListItem {
 }
 
 const WishList = () => {
-    const isMobile = useIsMobile();
-    // const [wishList, setWishList] = useState<WishListItem[]>([
-    //     {
-    //         id: "1",
-    //         brand: "Rolex",
-    //         model: "Submariner",
-    //         description:
-    //             "Black dial, ceramic bezel, steel bracelet. No date preferred.",
-    //         price_range_min: 10000,
-    //         price_range_max: 12000,
-    //         priority: "High",
-    //         dateAdded: "2024-01-15",
-    //         image: "/lovable-uploads/c9668ac2-5bda-49b2-9679-1759280598e1.png",
-    //     },
-    //     {
-    //         id: "2",
-    //         brand: "Omega",
-    //         model: "Speedmaster",
-    //         description:
-    //             "Moonwatch Professional. Manual wind, hesalite crystal.",
-    //         price_range_min: 5500,
-    //         price_range_max: 6500,
-    //         priority: "Medium",
-    //         dateAdded: "2024-01-20",
-    //         image: "/lovable-uploads/8a246750-c18b-4b1c-b6af-25185e84d3d7.png",
-    //     },
-    //     {
-    //         id: "3",
-    //         brand: "Tudor",
-    //         model: "Black Bay",
-    //         description: "Blue dial variant. 39mm case size preferred.",
-    //         price_range_min: 3200,
-    //         price_range_max: 3800,
-    //         priority: "Low",
-    //         dateAdded: "2024-01-25",
-    //         image: "/lovable-uploads/27ec6583-00c5-4c9f-bf57-429e50240830.png",
-    //     },
-    //     {
-    //         id: "4",
-    //         brand: "Patek Philippe",
-    //         model: "Calatrava",
-    //         description:
-    //             "Classic dress watch with white gold case. Looking for ref. 5196.",
-    //         price_range_min: 22000,
-    //         price_range_max: 25000,
-    //         priority: "High",
-    //         dateAdded: "2024-01-30",
-    //         image: "/lovable-uploads/cd305798-ab49-4a3b-9157-fb8db777bd8f.png",
-    //     },
-    //     {
-    //         id: "5",
-    //         brand: "Audemars Piguet",
-    //         model: "Royal Oak",
-    //         description: "Steel case with blue dial. 39mm or 41mm preferred.",
-    //         price_range_min: 32000,
-    //         price_range_max: 35000,
-    //         priority: "High",
-    //         dateAdded: "2024-02-05",
-    //         image: "/lovable-uploads/c3abfafa-8986-4b30-bd89-3d163701cb64.png",
-    //     },
-    //     {
-    //         id: "6",
-    //         brand: "Cartier",
-    //         model: "Santos",
-    //         description:
-    //             "Medium size in steel and gold. Square case classic design.",
-    //         price_range_min: 7500,
-    //         price_range_max: 8500,
-    //         priority: "Medium",
-    //         dateAdded: "2024-02-10",
-    //         image: "/lovable-uploads/e42df4f6-4752-4442-9e7c-06e8184162be.png",
-    //     },
-    //     {
-    //         id: "7",
-    //         brand: "Vacheron Constantin",
-    //         model: "Overseas",
-    //         description:
-    //             "Sports watch with integrated bracelet. Blue dial preferred.",
-    //         price_range_min: 25000,
-    //         price_range_max: 28000,
-    //         priority: "Medium",
-    //         dateAdded: "2024-02-15",
-    //         image: "/lovable-uploads/5557d546-574f-45fb-bd5a-014ec53e5792.png",
-    //     },
-    // ]);
+    const isMobile = useIsMobile(); 
     const { toast } = useToast(); 
      const { props } = usePage();
     // Use props AFTER you have them
@@ -174,61 +90,8 @@ const WishList = () => {
     const [sortBy, setSortBy] = useState<string>("dateAdded");
     const [showFilters, setShowFilters] = useState(false);
  
-    const filteredWishList = wishList
-        .filter((item) => {
-            const matchesSearch =
-                (item.brand ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item?.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item?.description
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase());
-
-            const matchesPriority =
-                priorityFilter === "all" || item.priority === priorityFilter;
-
-            let matchesBudget = true;
-            if (budgetFilter !== "all") {
-                switch (budgetFilter) {
-                    case "under5k":
-                        matchesBudget = item.price_range_max < 5000;
-                        break;
-                    case "5k-15k":
-                        matchesBudget =
-                            item.price_range_max >= 5000 && item.price_range_max <= 15000;
-                        break;
-                    case "15k-30k":
-                        matchesBudget =
-                            item.price_range_max > 15000 && item.price_range_max <= 30000;
-                        break;
-                    case "over30k":
-                        matchesBudget = item.price_range_max > 30000;
-                        break;
-                }
-            }
-
-            return matchesSearch && matchesPriority && matchesBudget;
-        })
-        .sort((a, b) => {
-            switch (sortBy) {
-                case "brand":
-                    return a.brand?.localeCompare(b.brand);
-                case "budget":
-                    return b.price_range_max - a.price_range_max;
-                case "priority": {
-                    const priorityOrder = { High: 3, Medium: 2, Low: 1 };
-                    return (
-                        priorityOrder[b.priority] - priorityOrder[a.priority]
-                    );
-                }
-                case "dateAdded":
-                default:
-                    return (
-                        new Date(b.dateAdded).getTime() -
-                        new Date(a.dateAdded).getTime()
-                    );
-            }
-        });
-
+    const filteredWishList = wishList; 
+ 
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<WishListItem | null>(null);
@@ -264,7 +127,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
         formData.append('price_range_max', String(newItem.price_range_max));
         formData.append('priority', newItem.priority);
         if (newItem.imageFile) {
-            formData.append('image', newItem.imageFile);
+            formData.append("image", newItem.imageFile); // send file only
         }
  
              // Send to create route
@@ -274,7 +137,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
 
         // Get saved item from backend response
         const savedItem = response.data.item; 
-         
+         console.log(savedItem);
             setWishList([...wishList, savedItem]);
             setNewItem({
                 brand_id: "",
@@ -319,9 +182,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                 formData.append('price_range_max', String(editingItem.price_range_max));
                 formData.append('priority', editingItem.priority);
                 if (editingItem.imageFile) {
-                    formData.append('image', editingItem.imageFile);
-                } 
-                //formData.append('_method', 'POST');
+                    formData.append('image_url', editingItem.imageFile);
+                }  
               const response = await axios.post(
                                 `/wishlist/${editingItem.id}`,
                                 formData,
@@ -330,9 +192,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                                 params: { _method: 'PUT' },
                                 }
                             );
-                const updatedItem = response.data.item;
-
-                console.log('returned response : ', updatedItem);
+                const updatedItem = response.data.item; 
 
                 //update the editted item back into the List and hench the UI
                 setWishList(wishList.map((item) => item.id === updatedItem.id ? updatedItem : item));
@@ -359,24 +219,15 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
 
     const handleDeleteItem = (id: string) => {
         const confirmed = window.confirm("Are you sure you want to delete this item?");
-        if (!confirmed) return; // exit if user cancels 
-        try {
-            axios.delete(`/wishlist/${id}`).then(() => {
-            setWishList(wishList.filter((item) => item.id !== id));
-
+        if (!confirmed) return; 
+        axios.delete(route('wishlist.destroy', id)).then(() => {
+            setWishList(wishList.filter(item => item.id !== id));
             toast({
                 title: "Deleted",
                 description: "Item has been deleted successfully.",
-                variant: "destructive",
+                variant: "success",
             });
-            });
-        } catch (error) {
-            toast({
-            title: "Error",
-            description: error.response?.data?.message || "Something went wrong.",
-            variant: "destructive",
-            });
-  }
+});
 
     };
 
@@ -394,13 +245,13 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
     if (isEdit && editingItem) {
       setEditingItem((prev) => ({
         ...prev!,
-        image: imageUrl,   // Preview
+        image_url: imageUrl,   // Preview
         imageFile: file,   // File for upload
       }));
     } else {
       setNewItem((prev) => ({
         ...prev,
-        image: imageUrl,   // Preview
+        image_url: imageUrl,   // Preview
         imageFile: file,   // File for upload
       }));
     }
@@ -434,6 +285,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-8"
+                        
                     />
                 </div>
             </div>
@@ -478,9 +330,12 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                 <Label>Sort By</Label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
+                            <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                    <SelectContent> 
+                        <SelectItem value="none" disabled>
+                            Select an option
+                            </SelectItem>
                         <SelectItem value="dateAdded">Date Added</SelectItem>
                         <SelectItem value="brand">Brand</SelectItem>
                         <SelectItem value="budget">
@@ -613,10 +468,11 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
       className="flex-1"
     />
   </div>
-  {localItem.image && (
+  
+  {localItem.image_url &&  (
     <div className="mt-2">
       <img
-        src={localItem.image}
+        src={localItem.image_url}
         alt="Preview"
         className="h-16 w-16 rounded object-cover"
       />
@@ -639,7 +495,14 @@ useEffect(() => {
         budget: budgetFilter !== "all" ? budgetFilter : undefined,
         sortBy: sortBy || undefined,
       },
-      { preserveState: true, replace: true }
+      {
+        preserveState: true,
+        replace: true,
+        onSuccess: (page) => {
+          // update state with new data from backend
+          setWishList(page.props.wishlist || []);
+        },
+      }
     );
   }, 300);
 
