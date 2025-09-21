@@ -26,7 +26,7 @@ class WatchImageFactory extends Factory
             'watch_id' => Watch::factory(),
             'filename' => $filename,
             'public_url' => 'https://placehold.co/600x600/png?text=Watch',
-            'order' => $this->faker->numberBetween(1, 5),
+            'order_index' => $this->faker->numberBetween(1, 5),
         ];
     }
 
