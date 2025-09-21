@@ -28,7 +28,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     ArrowUpDown,
     DollarSign,
@@ -38,7 +38,7 @@ import {
     TrendingUp,
     Upload,
 } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Bar,
     BarChart,
@@ -53,6 +53,7 @@ import {
     YAxis,
 } from "recharts";
 import Layout from "../components/Layout";
+import { useSearchParams } from "@/hooks/useSearchParams";
 
 interface SaleRecord {
     id: string;
@@ -413,9 +414,29 @@ const SalesHistory = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [platformFilter, setPlatformFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
-    const [timeRange, setTimeRange] = useState("All Time");
+
+    // dropdown filters
+    const [searchParams, setSearchParams] = useSearchParams();
+    const defaultFilter = searchParams.get('filter') || 'all-time';
+    const [timeRange, setTimeRange] = useState(defaultFilter);
+
     const [sortField, setSortField] = useState<SortField>("saleDate");
     const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
+    const { props } = usePage();
+
+    console.log('page props: ', props);
+
+    useEffect(() => {
+        if (timeRange) {
+            setSearchParams({ filter: timeRange });
+        }
+    }, [timeRange, setSearchParams]);
+
+     const dateFilterOptions = Object.entries(props.filters).map(
+        ([value, label]) => ({ value, label })
+    );
+        
 
     // Calculate min and max prices for the slider
     const priceStats = useMemo(() => {
@@ -698,7 +719,19 @@ const SalesHistory = () => {
                                 <SelectTrigger className="w-48">
                                     <SelectValue placeholder="Select time range" />
                                 </SelectTrigger>
+                                
                                 <SelectContent>
+                                 {dateFilterOptions.map((option) => (
+                                     <SelectItem
+                                     key={option.value}
+                                     value={option.value}
+                                     >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                                </SelectContent>
+
+                                {/* <SelectContent>
                                     <SelectItem value="All Time">
                                         All Time
                                     </SelectItem>
@@ -720,7 +753,7 @@ const SalesHistory = () => {
                                     <SelectItem value="Last year">
                                         Last year
                                     </SelectItem>
-                                </SelectContent>
+                                </SelectContent> */}
                             </Select>
                         </div>
                     </CardContent>
@@ -730,70 +763,67 @@ const SalesHistory = () => {
                 <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Total Sales
-                            </CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+                        <Package className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {stats.totalSales}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                +12% from last month
-                            </p>
+                        <div className="text-2xl font-bold">{props.totalSales?.value?.toLocaleString() || 0}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {props.totalSales?.change !== undefined
+                            ? `${props.totalSales.change >= 0 ? '+' : ''}${props.totalSales.change}% from last 30 days`
+                            : '0% from last 30 days'}
+                        </p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Total Revenue
-                            </CardTitle>
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                €{stats.totalRevenue.toLocaleString()}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                +8% from last month
-                            </p>
+                        <div className="text-2xl font-bold">
+                            €{props.totalRevenue?.value?.toLocaleString() || '0'}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            {props.totalRevenue?.change !== undefined
+                            ? `${props.totalRevenue.change >= 0 ? '+' : ''}${props.totalRevenue.change}% from last 30 days`
+                            : '0% from last 30 days'}
+                        </p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Total Profit
-                            </CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                €{stats.totalProfit.toLocaleString()}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                +15% from last month
-                            </p>
+                        <div className="text-2xl font-bold">
+                            €{props.totalProfit?.value?.toLocaleString() || '0'}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            {props.totalProfit?.change !== undefined
+                            ? `${props.totalProfit.change >= 0 ? '+' : ''}${props.totalProfit.change}% from last 30 days`
+                            : '0% from last 30 days'}
+                        </p>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                Avg Profit Margin
-                            </CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Avg Profit Margin</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">
-                                {stats.avgProfitMargin}%
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                +2% from last month
-                            </p>
+                        <div className="text-2xl font-bold">
+                            {props.avgProfitMargin?.value || '0'}%
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            {props.avgProfitMargin?.change !== undefined
+                            ? `${props.avgProfitMargin.change >= 0 ? '+' : ''}${props.avgProfitMargin.change}% from last 30 days`
+                            : '0% from last 30 days'}
+                        </p>
                         </CardContent>
                     </Card>
-                </div>
-
+                    </div>
                 {/* Charts */}
                 <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <Card>

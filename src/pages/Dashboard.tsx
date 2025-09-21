@@ -240,7 +240,7 @@ const Dashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-blue-900">
-                                {props.metrics.total_revenue.value}
+                                {props.metrics.total_revenue.value.toLocaleString()}
                             </div>
                             <p className="mt-1 text-xs text-blue-600">
                                 {props.metrics.total_revenue.label }
@@ -257,7 +257,7 @@ const Dashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-green-900">
-                                { props.metrics?.total_inventory.value }
+                                { props.metrics?.total_inventory.value.toLocaleString() }
                             </div>
                             <p className="mt-1 text-xs text-green-600">
                                 { props.metrics?.total_inventory.watches } watches
@@ -274,7 +274,7 @@ const Dashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-amber-900">
-                                {props.metrics?.denmark_inventory.value}
+                                {props.metrics?.denmark_inventory.value.toLocaleString()}
                             </div>
                             <p className="mt-1 text-xs text-amber-600">
                                 {props.metrics?.denmark_inventory.watches} watches
@@ -291,7 +291,7 @@ const Dashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-purple-900">
-                                {props.metrics?.external_inventory.value}
+                                {props.metrics?.external_inventory.value.toLocaleString()}
                             </div>
                             <p className="mt-1 text-xs text-purple-600">
                                 {props.metrics?.external_inventory.watches} watches
@@ -309,7 +309,7 @@ const Dashboard = () => {
                                     Total Watches
                                 </p>
                                 <p className="text-3xl font-bold text-slate-900">
-                                    { props.metrics?.total_watches }
+                                    { props.metrics?.total_watches.toLocaleString() }
                                 </p>
                             </div>
                             <div className="text-4xl">⌚</div>
