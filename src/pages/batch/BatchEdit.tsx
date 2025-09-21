@@ -62,7 +62,9 @@ export default function BatchEdit({ batch, watches, locations }: Props) {
         routeKey: BatchResource["routeKey"],
         watchKey: WatchResource["routeKey"]
     ) => { 
+        if (window.confirm("Are you sure you want to remove this watch?")) {
          router.delete(route("batches.removeWatch", [routeKey, watchKey]));
+        }
     };
 
     // Sorting functions

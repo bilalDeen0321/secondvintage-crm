@@ -137,7 +137,6 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
 
         // Get saved item from backend response
         const savedItem = response.data.item; 
-         console.log(savedItem);
             setWishList([...wishList, savedItem]);
             setNewItem({
                 brand_id: "",

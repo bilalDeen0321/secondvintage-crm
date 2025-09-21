@@ -1,4 +1,5 @@
 import Status from "@/app/models/Status";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,8 +23,9 @@ import {
 import { BatchResource } from "@/types/resources/batch";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
+import { useToast } from "@/components/ui/use-toast"; 
 import { ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
-import { useState } from "react";
+
 
 interface Props {
     batch: BatchResource;
@@ -32,6 +34,16 @@ interface Props {
 
 export default function BatchWatches(props: Props) {
     const { batch, watches } = props;
+    const { toast } = useToast();
+     const flash = props.flash;
+       useEffect(() => {
+        if (flash?.success) {
+        toast({ description: flash.success, variant: "default" });
+        }
+        if (flash?.error) {
+        toast({ description: flash.error, variant: "destructive" });
+        }
+    }, [flash]);
     // State management
 
     const [watchSearchTerm, setWatchSearchTerm] = useState("");
@@ -82,6 +94,12 @@ export default function BatchWatches(props: Props) {
         const data = { ids: selectedWatchesToAdd };
         router.post(route("batches.assignWatches", batch?.routeKey), data, {
             preserveState: false,
+             onSuccess: (flash) => { 
+             toast({ description: 'success', variant: "default" });
+            },
+            onError: (errors) => {
+            // handle validation errors
+            }
         });
     };
 

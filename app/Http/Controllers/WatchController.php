@@ -37,7 +37,7 @@ class WatchController extends Controller
      */
     public function index(Request $request)
     {
-        // Get paginated results
+        // Get paginated results 
         $watches = WatchQuery::init()
             ->execute($request)
             ->paginate($request->input('per_page', 10))
@@ -119,7 +119,7 @@ class WatchController extends Controller
      * @param \Illuminate\Http\Request $request
      */
     public function update(Watch $watch, UpdateWatchRequest $request, UpdateWatchAction $action)
-    {
+    { 
         // Validate the request
         $input = $request->validated();
 

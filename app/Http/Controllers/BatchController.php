@@ -137,30 +137,32 @@ class BatchController extends Controller
     /**
      * Assign watches to batch 
      */
+    
     public function assignWatches(Request $request, Batch $batch)
     {
- 
         $request->validate([
             'ids'  => 'required|array|min:1',
             'ids.*' => 'exists:watches,id'
         ]);
-
+ 
          
-        $query = Watch::whereIn('id', $request->input('ids'));
+       $baseQuery = Watch::whereIn('id', $request->input('ids'));
          
         // Check if watches are already assigned to other batches
-        $alreadyAssigned = $query->whereNotNull('batch_id')
+       $alreadyAssigned = (clone $baseQuery)
+             ->whereNotNull('batch_id')
             ->where('batch_id', '!=', $batch->id)
             ->count();
         
         if ($alreadyAssigned > 0) {
             return back()->with('error', 'Some watches are already assigned to other batches.');
         }
-
-        $batch->watches()->saveMany((clone $query)->get());
-
+         $baseQuery->update(['batch_id' => $batch->id]);       
+       // $batch->watches()->saveMany((clone $query)->get());
+        
         return back()->with('success', 'Watches assigned to batch successfully.');
     }
+
 
     /**
      * Remove watch from batch
