@@ -16,7 +16,7 @@ jobs:
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "20" # Specify your Node.js version heres
+                  node-version: "20" # Specify your Node.js version here
 
             - name: Install and build with npm
               run: |
@@ -32,10 +32,11 @@ jobs:
 
             - name: Install Composer dependencies
               run: composer install
+
             - name: Deploy to server
               uses: easingthemes/ssh-deploy@main
               with:
-                  SSH_PRIVATE_KEY: ${{ secrets.SV_CRM_REPO_KEY }}
+                  SSH_PRIVATE_KEY: ${{ secrets.SV_CRM_REPO_KEY }}
                   ARGS: "-rlgoDzvc -i"
                   SOURCE: "./"
                   REMOTE_HOST: 46.202.158.95
@@ -50,9 +51,7 @@ jobs:
                       cd /home/u495568265/domains/test.secondvintage.com/public_html
                       rm -rf *.sh
 
-                      php artisan putenv APP_ENV="local"
-                      php artisan migrate
+                      php artisan migrate --force
                       php artisan storage:link &> /dev/null
                       php artisan optimize:clear
-                      php artisan db:seed --class=HelperSeeder
-                      php artisan putenv APP_ENV="production"
+                      php artisan db:seed --class=HelperSeeder --force
