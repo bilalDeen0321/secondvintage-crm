@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Queries\DashboardQuery;
 
 class DashboardController extends Controller
 {
@@ -18,9 +19,22 @@ class DashboardController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(DashboardQuery $query)
     {
-        return Inertia::render('Dashboard');
+        $filter = request()->input('filter', 'all-time');
+        
+        return Inertia::render('Dashboard', [
+            'filters' => $query->allFilters(),
+            'selectedFilter' => $filter,
+            'metrics' => $query->getDashboardMetrics($filter),
+            'recentActivity' => $query->getRecentActivity($filter),
+            'brands_profit' => $query->getTopBrandsByProfit($filter),
+            'profitable_countries' => $query->getTopProfitableCountries($filter),
+            'revenueData' => $query->getRevenueData($filter),
+            'watchInventoryBrandDistribution' => $query->getWatchInventoryByBrand($filter),
+            'watchesSoldPerMonth' => $query->getWatchesSoldPerMonth($filter),
+            'platformSalesDistribution' => $query->getSalesByPlatform($filter),
+        ]);
     }
 
     /**

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Queries\HistoryQuery;
 
 class HistoryController extends Controller
 {
@@ -18,9 +19,17 @@ class HistoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(HistoryQuery $query)
     {
-        return Inertia::render('SalesHistory');
+        $filter = request()->input('filter', 'all-time');
+
+        return Inertia::render('SalesHistory', [
+            'filters' => $query->allFilters(),
+            'totalSales' => $query->getTotalSales($filter),
+            'totalRevenue' => $query->getTotalRevenue($filter),
+            'totalProfit' => $query->getTotalProfit($filter),
+            'avgProfitMargin' => $query->getAvgProfitMargin($filter),
+        ]);
     }
 
     /**
