@@ -135,9 +135,7 @@ class WatchImage extends Model
             'order_index' => $nextIndex,
         ]);
     }
-
-
-
+  
     /**
      * Save a base64 image for a given watch
      */
