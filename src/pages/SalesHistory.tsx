@@ -436,8 +436,7 @@ const SalesHistory = () => {
      const dateFilterOptions = Object.entries(props.filters).map(
         ([value, label]) => ({ value, label })
     );
-        
-
+  
     // Calculate min and max prices for the slider
     const priceStats = useMemo(() => {
         const prices = sales.map((sale) => sale.salePrice);
@@ -475,14 +474,16 @@ const SalesHistory = () => {
     }, [sales]);
 
     // Prepare chart data with stacked bars and proper formatting
-    const monthlyData = useMemo(() => {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-        return months.map((month) => ({
-            month,
-            revenue: Math.floor(Math.random() * 20000) + 5000,
-            profit: Math.floor(Math.random() * 8000) + 2000,
-        }));
-    }, []);
+    // const monthlyData = useMemo(() => {
+    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    //     return months.map((month) => ({
+    //         month,
+    //         revenue: Math.floor(Math.random() * 20000) + 5000,
+    //         profit: Math.floor(Math.random() * 8000) + 2000,
+    //     }));
+    // }, []);
+
+    const monthlyData = props.monthlyData;
 
     // Monthly sales count data
     const monthlySalesCount = useMemo(() => {
@@ -494,21 +495,23 @@ const SalesHistory = () => {
     }, []);
 
     // New profit per platform chart data
-    const profitPerPlatformData = useMemo(() => {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-        const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
+    // const profitPerPlatformData = useMemo(() => {
+    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    //     const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
 
-        return months.map((month) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const monthData: any = { month };
-            platforms.forEach((platform) => {
-                // Generate realistic profit data for each platform per month
-                const baseProfit = Math.floor(Math.random() * 3000) + 1000;
-                monthData[platform] = baseProfit;
-            });
-            return monthData;
-        });
-    }, []);
+    //     return months.map((month) => {
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         const monthData: any = { month };
+    //         platforms.forEach((platform) => {
+    //             // Generate realistic profit data for each platform per month
+    //             const baseProfit = Math.floor(Math.random() * 3000) + 1000;
+    //             monthData[platform] = baseProfit;
+    //         });
+    //         return monthData;
+    //     });
+    // }, []);
+
+    const profitPerPlatformData = props.profitPerPlatform;
 
     // Prepare platform data with sales count and profit
     const platformData = useMemo(() => {
@@ -649,11 +652,15 @@ const SalesHistory = () => {
     };
 
     const profitChartConfig = {
-        Chrono24: { label: "Chrono24", color: "#0088FE" },
-        eBay: { label: "eBay", color: "#00C49F" },
-        Catawiki: { label: "Catawiki", color: "#FFBB28" },
-        Tradera: { label: "Tradera", color: "#FF8042" },
+        "Catawiki (Auction)": { label: "Catawiki (Auction)", color: "#FFBB28" },
+        "Tradera (Auction)": { label: "Tradera (Auction)", color: "#FF8042" },
+        "Chrono24": { label: "Chrono24", color: "#0088FE" },
+        "eBay (Fixed Price)": { label: "eBay (Fixed Price)", color: "#00C49F" },
+        "eBay (Auction)": { label: "eBay (Auction)", color: "#EC4899" },
+        "Webshop (Fixed Price)": { label: "Webshop (Fixed Price)", color: "#22D3EE" },
+        "Unknown": { label: "Unknown", color: "#9CA3AF" },
     };
+
 
     const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -884,37 +891,22 @@ const SalesHistory = () => {
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="month" />
                                         <YAxis
-                                            tickFormatter={(value) =>
-                                                `€${value.toLocaleString()}`
-                                            }
+                                        tickFormatter={(value) => `€${value.toLocaleString()}`}
                                         />
-                                        <ChartTooltip
-                                            content={<ChartTooltipContent />}
-                                        />
+                                        <ChartTooltip content={<ChartTooltipContent />} />
+
+                                        {Object.entries(profitChartConfig).map(([key, cfg]) => (
                                         <Line
+                                            key={key}
                                             type="monotone"
-                                            dataKey="Chrono24"
-                                            stroke="var(--color-Chrono24)"
+                                            dataKey={key}
+                                            stroke={cfg.color}
                                             strokeWidth={2}
+                                            dot={true}
+                                            activeDot={{ r: 6 }}
                                         />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="eBay"
-                                            stroke="var(--color-eBay)"
-                                            strokeWidth={2}
-                                        />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="Catawiki"
-                                            stroke="var(--color-Catawiki)"
-                                            strokeWidth={2}
-                                        />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="Tradera"
-                                            stroke="var(--color-Tradera)"
-                                            strokeWidth={2}
-                                        />
+                                        ))}
+                                       
                                     </LineChart>
                                 </ResponsiveContainer>
                             </ChartContainer>

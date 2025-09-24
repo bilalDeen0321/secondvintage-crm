@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             LogSeeder::class,
             WatchLogSeeder::class,
             PlatformDataSeeder::class,
+            SaleSeeder::class,
         ]);
     }
 }

@@ -29,6 +29,8 @@ class HistoryController extends Controller
             'totalRevenue' => $query->getTotalRevenue($filter),
             'totalProfit' => $query->getTotalProfit($filter),
             'avgProfitMargin' => $query->getAvgProfitMargin($filter),
+            'monthlyData' => $query->getMonthlyRevenueProfit($filter),
+            'profitPerPlatform' => $query->getProfitPerPlatform($filter),
         ]);
     }
 
