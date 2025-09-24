@@ -19,7 +19,7 @@ class WishlistResource extends JsonResource
             'price_range_max'  => $this->price_range_max ?? 0,
             'priority'   => $this->priority ?? 'Medium',
             'dateAdded'  => optional($this->created_at)->toDateString(),
-            'image_url'      => $this->image_url ?? '/lovable-uploads/placeholder.png',
+            'image_url'      => $this->image_url,
         ];
     }
 }

@@ -27,13 +27,16 @@ class Wishlist extends Model
     {
         return [];
     }
-   public function getImageUrlAttribute($value)
-{
-    if (!empty($value)) {
-        return $value; // already has image
+ public function getImageUrlAttribute($value)
+    { 
+        if (!empty($value)) {
+            if (preg_match('/^https?:\/\//', $value)) {
+                return $value;
+            }
+            return asset($value);
+        }
+     return asset('storage/wishlist_images/placeholder.png'); 
     }
-    return asset('lovable-uploads/02bcd7a1-2bd6-4118-ac09-c5414b210a1f.png');
-}
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -80,6 +80,8 @@ const WishList = () => {
     const isMobile = useIsMobile(); 
     const { toast } = useToast(); 
      const { props } = usePage();
+     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     // Use props AFTER you have them
     const [wishList, setWishList] = useState<WishListItem[]>(props.wishlist);
    
@@ -95,6 +97,7 @@ const WishList = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<WishListItem | null>(null);
+
   interface WishListFormItem {
   brand_id: string;
   model: string;
@@ -117,8 +120,23 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
   imageFile: null,
 });
 
+const validateForm = () => {
+  let newErrors: { [key: string]: string } = {};
+
+  if (!newItem.brand_id) newErrors.brand_id = "Brand is required";
+  if (!newItem.model) newErrors.model = "Model is required";
+  if (!newItem.description) newErrors.description = "Description is required";
+  if (!newItem.price_range_min) newErrors.price_range_min = "Min budget is required";
+  if (!newItem.price_range_max) newErrors.price_range_max = "Max budget is required";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0; // return true if valid
+};
+
    const handleAddItem = async () => { 
        try {
+        if (!validateForm()) return;
+        setIsSubmitting(true);
         const formData = new FormData();  
         formData.append('brand_id', newItem.brand_id);
         formData.append('model', newItem.model);
@@ -126,15 +144,13 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
         formData.append('price_range_min', String(newItem.price_range_min));
         formData.append('price_range_max', String(newItem.price_range_max));
         formData.append('priority', newItem.priority);
-        if (newItem.imageFile) {
-            formData.append("image", newItem.imageFile); // send file only
-        }
- 
+         if (newItem.imageFile) {
+                    formData.append('image', newItem.imageFile);
+                }  
              // Send to create route
           let  response = await axios.post('/wishlist', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-
         // Get saved item from backend response
         const savedItem = response.data.item; 
             setWishList([...wishList, savedItem]);
@@ -149,30 +165,46 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                 imageFile: null,
             });
             setIsAddDialogOpen(false);
-        
+        setIsSubmitting(false);
       toast({
             title: "Success",
             description: "Form submitted successfully.",
             variant: "default", // or "success" if you have that variant configured
             });
     } catch (error) {
+        setIsSubmitting(false);
         toast({
         title: "Error",
         description: error.response?.data?.message || "Something went wrong.",
         variant: "destructive",
         });
+    }finally {
+        setIsSubmitting(false); // re-enable button
     }
-        //setIsAddDialogOpen(false);
     };
 
     const handleEditItem = (item: WishListItem) => {
         setEditingItem(item);
         setIsEditDialogOpen(true);
     };
+const validateEditForm = () => {
+  let newErrors: { [key: string]: string } = {};
+
+  if (!editingItem.brand_id) newErrors.brand_id = "Brand is required";
+  if (!editingItem.model) newErrors.model = "Model is required";
+  if (!editingItem.description) newErrors.description = "Description is required";
+  if (!editingItem.price_range_min) newErrors.price_range_min = "Min budget is required";
+  if (!editingItem.price_range_max) newErrors.price_range_max = "Max budget is required";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0; // return true if valid
+};
 
     const handleUpdateItem = async () => {
         if (editingItem) { 
             try {
+                if (!validateEditForm()) return;
+                setIsSubmitting(true);
                 const formData = new FormData();   
                 formData.append('brand_id', editingItem.brand_id);
                 formData.append('model', editingItem.model);
@@ -181,7 +213,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                 formData.append('price_range_max', String(editingItem.price_range_max));
                 formData.append('priority', editingItem.priority);
                 if (editingItem.imageFile) {
-                    formData.append('image_url', editingItem.imageFile);
+                    formData.append('image', editingItem.imageFile);
                 }  
               const response = await axios.post(
                                 `/wishlist/${editingItem.id}`,
@@ -198,7 +230,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
 
                 // close the modal
                 setIsEditDialogOpen(false);
-
+                setIsSubmitting(false);
                 toast({
                     title: "Success",
                     description: "Form submitted successfully.",
@@ -206,13 +238,15 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                 });
 
             } catch (error) {
-                alert('else');
+                setIsSubmitting(false);
                     toast({
                     title: "Error",
                     description: error.response?.data?.message || "Something went wrong.",
                     variant: "destructive",
                     });
-                }  
+                }  finally {
+                    setIsSubmitting(false); // re-enable button
+                }
         }
     };
 
@@ -386,6 +420,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
                     setItem(updated);
                 }}
                 />
+           {errors.brand_id && <p className="text-sm text-red-500">{errors.brand_id}</p>}
+
       </div>
 
       <div className="space-y-2">
@@ -396,6 +432,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
           onChange={(e) => handleChange("model", e.target.value)}
           onBlur={handleBlur}
         />
+          {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
+
       </div>
 
       <div className={`space-y-2 ${isMobile ? "" : "col-span-2"}`}>
@@ -406,6 +444,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
           onChange={(e) => handleChange("description", e.target.value)}
           onBlur={handleBlur}
         />
+          {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+
       </div>
 
       <div className="space-y-2">
@@ -419,6 +459,10 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
           }
           onBlur={handleBlur}
         />
+        {errors.price_range_min && <p className="text-sm text-red-500">{errors.price_range_min}</p>}
+
+          
+
       </div>
 
       <div className="space-y-2">
@@ -432,6 +476,8 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
           }
           onBlur={handleBlur}
         />
+        {errors.price_range_max && <p className="text-sm text-red-500">{errors.price_range_max}</p>}
+
       </div>
 
       <div className="space-y-2">
@@ -511,6 +557,7 @@ useEffect(() => {
 
   const items = props.items as any[];   // data from Laravel
   const brands = props.brands as any[]; // data from Laravel
+const [isSubmitting, setIsSubmitting] = useState(false);
 
 function BrandSelect({ brands, value, onChange }: { 
     brands: { id: string; name: string; code: string }[];
@@ -648,7 +695,14 @@ function BrandSelect({ brands, value, onChange }: {
                         <h1 className="text-3xl font-bold">Wish List</h1>
                         <Dialog
                             open={isAddDialogOpen}
-                            onOpenChange={setIsAddDialogOpen}
+                            onOpenChange={(open) => {
+                            setIsAddDialogOpen(open);
+
+                            if (!open) {
+                            // Clear validation errors
+                            setErrors({});
+                            }
+                        }}
                         >
                             <DialogTrigger asChild>
                                 <Button>
@@ -669,8 +723,9 @@ function BrandSelect({ brands, value, onChange }: {
                                 <Button
                                     onClick={handleAddItem}
                                     className="mt-4"
+                                     disabled={isSubmitting}
                                 >
-                                    Add Item
+                                     {isSubmitting ? "Adding..." : "Add Item"}
                                 </Button>
                             </DialogContent>
                         </Dialog>
@@ -1064,7 +1119,13 @@ function BrandSelect({ brands, value, onChange }: {
                 {/* Edit Item Dialog */}
                 <Dialog
                     open={isEditDialogOpen}
-                    onOpenChange={setIsEditDialogOpen}
+                   onOpenChange={(open) => {
+                    setIsEditDialogOpen(open);
+
+                        if (!open) {
+                        setErrors({});
+                        }
+                    }}
                 >
                     <DialogContent>
                         <DialogHeader>
@@ -1080,8 +1141,9 @@ function BrandSelect({ brands, value, onChange }: {
                                 <Button
                                     onClick={handleUpdateItem}
                                     className="mt-4"
+                                    disabled={isSubmitting}
                                 >
-                                    Update Item
+                                     {isSubmitting ? "Updating..." : "Update Item"}
                                 </Button>
                             </>
                         )}

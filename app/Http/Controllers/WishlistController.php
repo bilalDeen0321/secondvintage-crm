@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Filters\WishlistFilter;
 use App\Queries\WishlistQuery;
+use App\Services\FileUploadService;
 use App\Http\Resources\WishlistResource; 
 
 class WishlistController extends Controller
@@ -51,10 +52,12 @@ class WishlistController extends Controller
      */
     public function store(StoreWishlistRequest $request, WishlistQuery $query)
     {    
-        $wishlist = $query->create($request->validated(), $request->file('image'));
+    
+        $wishlist  =$query->create($request->validated(), $request->file('image'));
+        $wishlist_data  = new WishlistResource($wishlist->fresh());
             return response()->json([
                 'message' => 'Wishlist item created successfully',
-                'item' => $wishlist
+                'item' => $wishlist_data,
             ], 200);
      } 
 
@@ -83,11 +86,12 @@ class WishlistController extends Controller
          $data = $request->validated();
  
     // Handle image if uploaded
-    if ($request->hasFile('image_url')) {
-        $path = $request->file('image_url')->store('wishlist_images', 'public');
-        $data['image_url'] = asset('storage/' . $path);
-    }
-    // dd($data);
+        if ($request->hasFile('image')) {
+            $old = $wishlist->getRawOriginal('image'); // raw DB value
+            FileUploadService::delete($old);
+
+            $data['image_url'] = FileUploadService::upload($request->image, 'wishlist_images');
+        }
     $wishlist->update($data);
 
     return response()->json([
@@ -102,6 +106,8 @@ class WishlistController extends Controller
     public function destroy($id)
         {
             $wishlist = Wishlist::findOrFail($id);
+             $old = $wishlist->getRawOriginal('image_url'); // raw DB value
+            FileUploadService::delete($old);
             $wishlist->delete();
             return response()->json(['message' => 'Wishlist item deleted successfully']);
         }

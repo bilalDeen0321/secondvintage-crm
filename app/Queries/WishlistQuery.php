@@ -6,6 +6,8 @@ use App\Models\Wishlist;
 use Illuminate\Http\UploadedFile;
 use App\Filters\WishlistFilter;
 use Illuminate\Support\Facades\Auth;
+use App\Services\FileUploadService;
+
 
 class WishlistQuery
 {
@@ -18,9 +20,9 @@ class WishlistQuery
         $data['user_id'] = Auth::id();
 
         if ($image) {
-            $path = $image->store('wishlist_images', 'public');
-            $data['image_url'] = asset('storage/' . $path);
-        }  
-        return Wishlist::create($data); 
+            $data['image_url'] = FileUploadService::upload($image, 'wishlist_images');
+        }    
+       $wishlist =  Wishlist::create($data);
+       return $wishlist->fresh();
     }
 }
