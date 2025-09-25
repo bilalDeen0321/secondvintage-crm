@@ -486,13 +486,15 @@ const SalesHistory = () => {
     const monthlyData = props.monthlyData;
 
     // Monthly sales count data
-    const monthlySalesCount = useMemo(() => {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-        return months.map((month) => ({
-            month,
-            count: Math.floor(Math.random() * 15) + 5,
-        }));
-    }, []);
+    // const monthlySalesCount = useMemo(() => {
+    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    //     return months.map((month) => ({
+    //         month,
+    //         count: Math.floor(Math.random() * 15) + 5,
+    //     }));
+    // }, []);
+
+    const monthlySalesCount = props.monthlySalesCount;
 
     // New profit per platform chart data
     // const profitPerPlatformData = useMemo(() => {
@@ -514,40 +516,42 @@ const SalesHistory = () => {
     const profitPerPlatformData = props.profitPerPlatform;
 
     // Prepare platform data with sales count and profit
-    const platformData = useMemo(() => {
-        const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
-        const totalSales = sales.filter(
-            (sale) => sale.status === "Sold",
-        ).length;
+    // const platformData2 = useMemo(() => {
+    //     const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
+    //     const totalSales = sales.filter(
+    //         (sale) => sale.status === "Sold",
+    //     ).length;
 
-        return platforms
-            .map((platform) => {
-                const platformSales = sales.filter(
-                    (sale) =>
-                        sale.platform === platform && sale.status === "Sold",
-                );
-                const revenue = platformSales.reduce(
-                    (sum, sale) => sum + sale.salePrice,
-                    0,
-                );
-                const profit = platformSales.reduce(
-                    (sum, sale) => sum + sale.profit,
-                    0,
-                );
-                const count = platformSales.length;
-                const percentage =
-                    totalSales > 0 ? Math.round((count / totalSales) * 100) : 0;
+    //     return platforms
+    //         .map((platform) => {
+    //             const platformSales = sales.filter(
+    //                 (sale) =>
+    //                     sale.platform === platform && sale.status === "Sold",
+    //             );
+    //             const revenue = platformSales.reduce(
+    //                 (sum, sale) => sum + sale.salePrice,
+    //                 0,
+    //             );
+    //             const profit = platformSales.reduce(
+    //                 (sum, sale) => sum + sale.profit,
+    //                 0,
+    //             );
+    //             const count = platformSales.length;
+    //             const percentage =
+    //                 totalSales > 0 ? Math.round((count / totalSales) * 100) : 0;
 
-                return {
-                    platform,
-                    sales: count,
-                    revenue,
-                    profit,
-                    percentage,
-                };
-            })
-            .filter((item) => item.sales > 0); // Only show platforms with sales
-    }, [sales]);
+    //             return {
+    //                 platform,
+    //                 sales: count,
+    //                 revenue,
+    //                 profit,
+    //                 percentage,
+    //             };
+    //         })
+    //         .filter((item) => item.sales > 0); // Only show platforms with sales
+    // }, [sales]);
+
+    const platformData = props.salesByPlatform;
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
