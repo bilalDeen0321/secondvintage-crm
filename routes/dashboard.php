@@ -26,8 +26,7 @@ use App\Http\Controllers\WatchController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
+
 
 
 /**
@@ -94,15 +93,4 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
 //fallback route
 Route::fallback(fn() => Inertia::render('NotFound'));
 
-Route::get('/storage/{folder}/{subfolder}/{filename}', function ($folder, $subfolder, $filename) {
-    $path = storage_path("app/public/{$folder}/{$subfolder}/{$filename}");
 
-    if (!File::exists($path)) {
-        abort(404);
-    }
-
-    $file = File::get($path);
-    $type = File::mimeType($path);
-
-    return Response::make($file, 200)->header("Content-Type", $type);
-});
