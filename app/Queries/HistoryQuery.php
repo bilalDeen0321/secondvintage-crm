@@ -263,6 +263,118 @@ class HistoryQuery
         return array_values($result);
     }
 
+    /**
+     * Fetch number of watches sold per month.
+     */
+    public function getMonthlySalesCount(string $filter = 'all-time'): array
+    {
+        $query = Sale::query()
+            ->selectRaw("
+                YEAR(sales.created_at) as year,
+                MONTH(sales.created_at) as month_num,
+                COUNT(*) as count
+            ")->join('watches as w', 'sales.watch_id', '=', 'w.id');
+
+
+        // Apply date filters
+        [$start, $end] = $this->getDateRange($filter);
+        if ($start && $end) {
+            $query->whereBetween('sales.created_at', [$start, $end]);
+        } elseif ($start) {
+            $query->where('sales.created_at', '>=', $start);
+        } elseif ($end) {
+            $query->where('sales.created_at', '<=', $end);
+        }
+
+        $rows = $query
+            ->groupByRaw('YEAR(sales.created_at), MONTH(sales.created_at)')
+            ->orderByRaw('YEAR(sales.created_at), MONTH(sales.created_at)')
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return [];
+        }
+
+        // Determine period from query results
+        $startDate = $rows->min(fn ($r) => Carbon::create($r->year, $r->month_num, 1));
+        $endDate   = $rows->max(fn ($r) => Carbon::create($r->year, $r->month_num, 1));
+        $period    = CarbonPeriod::create($startDate, '1 month', $endDate);
+
+        // Build skeleton: all months initialized with 0 count
+        $result = [];
+        foreach ($period as $date) {
+            $key = $date->format('Y-m');
+            $label = ($filter === 'all-time')
+                ? $date->format('M Y')
+                : $date->format('M');
+            $result[$key] = [
+                'month' => $label,
+                'count' => 0,
+            ];
+        }
+
+        // Fill actual counts
+        foreach ($rows as $row) {
+            $key = sprintf('%04d-%02d', $row->year, $row->month_num);
+            if (isset($result[$key])) {
+                $result[$key]['count'] = (int) $row->count;
+            }
+        }
+
+        return array_values($result);
+    }
+
+
+    /**
+     * Fetch sales distribution by platform with counts, profit and percentage.
+     */
+    public function getSalesByPlatform(string $filter = 'all-time'): array
+    {
+        $query = Sale::query()
+            ->selectRaw("
+                COALESCE(w.platform, 'Unknown') as platform,
+                COUNT(*) as sales,
+                SUM(sales.price) as revenue,
+                SUM(sales.price - COALESCE(w.original_cost, 0)) as profit
+            ")
+            ->join('watches as w', 'sales.watch_id', '=', 'w.id');
+            // ->where('sales.status', 'Sold');
+
+        // Apply date filters
+        [$start, $end] = $this->getDateRange($filter);
+        if ($start && $end) {
+            $query->whereBetween('sales.created_at', [$start, $end]);
+        } elseif ($start) {
+            $query->where('sales.created_at', '>=', $start);
+        } elseif ($end) {
+            $query->where('sales.created_at', '<=', $end);
+        }
+
+        $rows = $query
+            ->groupBy('platform')
+            ->get();
+
+        if ($rows->isEmpty()) {
+            return [];
+        }
+
+        // Calculate total sales for percentages
+        $totalSales = $rows->sum('sales');
+
+        return $rows->map(function ($row) use ($totalSales) {
+            return [
+                'platform'   => PlatformData::toLabel($row->platform),
+                'sales'      => (int) $row->sales,
+                'revenue'    => (float) $row->revenue,
+                'profit'     => (float) $row->profit,
+                'percentage' => $totalSales > 0
+                    ? round(($row->sales / $totalSales) * 100)
+                    : 0,
+            ];
+        })->values()->all();
+    }
+
+
 
     /**
      * Fetch sales records with watch details and derived fields.
