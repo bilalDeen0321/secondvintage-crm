@@ -51,9 +51,12 @@ import {
     ResponsiveContainer,
     XAxis,
     YAxis,
-} from "recharts";
+} from "recharts"; 
+import axios from "axios";
+
 import Layout from "../components/Layout";
 import { useSearchParams } from "@/hooks/useSearchParams";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface SaleRecord {
     id: string;
@@ -87,6 +90,47 @@ type SortField =
 type SortDirection = "asc" | "desc";
 
 const SalesHistory = () => {
+     const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorRows, setErrorRows] = useState<string[]>([]);
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setLoading(true);
+    setSuccessMessage(null);
+    setErrorRows([]); 
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+  try { 
+      const { data } = await axios.post("/sales/import", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+        setSuccessMessage(data.success);
+        setErrorRows(data.errorsList || []); 
+        // Auto-close after 2s if successful and no errors
+        if (data.success && (!data.errorsList || data.errorsList.length === 0)) {
+            setTimeout(() => {
+            setOpen(false);
+            setFile(null);
+            setSuccessMessage(null);
+            }, 2000);
+        }
+        } catch (err: any) { 
+        // Handle network/validation errors
+        const message =
+            err.response?.data?.message || "Upload failed due to server error";
+        setErrorRows([message]);
+        } finally {
+        setLoading(false);
+        }
+  };
+
     // Sample sales data with additional watches
     const [sales] = useState<SaleRecord[]>([
         {
@@ -705,12 +749,72 @@ const SalesHistory = () => {
                             Track your sales performance and revenue
                         </p>
                     </div>
-                    <Button>
+                    <Button onClick={() => setOpen(true)}>
                         <Upload className="mr-2 h-4 w-4" />
                         Import Catawiki Sales Data
                     </Button>
                 </div>
+                <Dialog open={open} onOpenChange={setOpen}>
+                         <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
 
+                        <DialogHeader>
+                            <DialogTitle>Import Catawiki Sales Data</DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                            <input
+                            type="file"
+                            accept=".csv,.xlsx"
+                            onChange={(e) => setFile(e.target.files?.[0] || null)}
+                            className="block w-full rounded-md border p-2"
+                            />
+
+                            {successMessage && (
+                            <p className="text-green-600 font-medium">{successMessage}</p>
+                            )}
+
+                            {errorRows.length > 0 && (
+                            <div className="bg-red-50 border border-red-200 rounded-md p-2 text-red-600 text-sm">
+                                <p className="font-semibold">These rows could not be imported:</p>
+                                <ul className="list-disc pl-5">
+                                {errorRows.map((err, i) => (
+                                    <li key={i}>{err}</li>
+                                ))}
+                                </ul>
+                            </div>
+                            )}
+
+                            <Button
+                            onClick={handleUpload}
+                            disabled={!file || loading}
+                            className="w-full"
+                            >
+                            {loading ? (
+                                <span className="flex items-center">
+                                <svg
+                                    className="animate-spin h-4 w-4 mr-2"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v8H4z"
+                                    ></path>
+                                </svg>
+                                Uploading...
+                                </span>
+                            ) : (
+                                "Upload"
+                            )}
+                            </Button>
+                        </div>
+                        </DialogContent>
+                    </Dialog>
                 {/* Time Range Filter */}
                 <Card className="mb-8">
                     <CardHeader>

@@ -72,6 +72,9 @@ Route::post('batches/{batch}/assign-watches', [BatchController::class, 'assignWa
 
 Route::resource('promote', PromoteController::class);
 Route::resource('history', HistoryController::class);
+// Custom route for file import
+Route::post('/sales/import', [HistoryController::class, 'import'])->name('history.import');
+
 Route::resource('performance', PerformanceController::class);
 Route::resource('wishlist', WishlistController::class);
 Route::prefix('batches')->group(function () {
