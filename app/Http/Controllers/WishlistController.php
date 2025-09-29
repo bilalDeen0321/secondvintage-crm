@@ -32,9 +32,15 @@ class WishlistController extends Controller
         {
              $query = WishlistFilter::apply($request); 
              $wishlist = $query->get();
-              return Inertia::render('WishList', [
+              return Inertia::render('wishlist/index', [
                 'wishlist' => WishlistResource::collection($wishlist),
                 'brands'   => Brand::all(),
+                 'filters' => [
+                        'search'   => $request->get('search', ''),
+                        'priority' => $request->get('priority', 'all'),
+                        'budget'   => $request->get('budget', 'all'),
+                        'sortBy'   => $request->get('sortBy', 'dateAdded'),
+                    ],
             ]);
                  
         }

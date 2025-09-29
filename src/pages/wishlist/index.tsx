@@ -28,31 +28,31 @@ import {
   CommandItem,
 } from "@/components/ui/command";
  
-import Layout from "../components/Layout";
-import { Badge } from "../components/ui/badge";
-import { Button } from "../components/ui/button";
+import Layout from "@/components/Layout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-} from "../components/ui/card";
+} from "@/components/ui/card";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "../components/ui/dialog";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "../components/ui/select";
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 
 import {
@@ -61,8 +61,9 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "../components/ui/sheet";
-import { useIsMobile } from "../hooks/use-mobile";
+} from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { FiltersContent } from "./filtersContent.tsx";
 
 interface WishListItem {
     id: string;
@@ -82,9 +83,16 @@ const WishList = () => {
      const { props } = usePage();
      const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+     const filters = props.filters || {
+        search: "",
+        priority: "all",
+        budget: "all",
+        sortBy: "dateAdded",
+        };
     // Use props AFTER you have them
     const [wishList, setWishList] = useState<WishListItem[]>(props.wishlist);
    
+
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [searchTerm, setSearchTerm] = useState("");
     const [priorityFilter, setPriorityFilter] = useState<string>("all");
@@ -119,7 +127,7 @@ const [newItem, setNewItem] = useState<WishListFormItem>({
   image: "",
   imageFile: null,
 });
-
+ 
 const validateForm = () => {
   let newErrors: { [key: string]: string } = {};
 
@@ -292,7 +300,7 @@ const validateEditForm = () => {
   reader.readAsDataURL(file);
 };
 
-
+ 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case "High":
@@ -305,82 +313,7 @@ const validateEditForm = () => {
                 return "default";
         }
     };
-
-    const FiltersContent = () => (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="search">Search</Label>
-                <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        id="search"
-                        placeholder="Search brand, model, or description..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-8"
-                        
-                    />
-                </div>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Priority</Label>
-                <Select
-                    value={priorityFilter}
-                    onValueChange={setPriorityFilter}
-                >
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Priorities</SelectItem>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Low">Low</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Budget Range</Label>
-                <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-                    <SelectTrigger>
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Budgets</SelectItem>
-                        <SelectItem value="under5">Under €500</SelectItem>
-                        <SelectItem value="5so-1k">€500 - €1000</SelectItem>
-                        <SelectItem value="15so-2k">€1500 - €2000</SelectItem>
-                        <SelectItem value="2k-5k">€2000 - €5000</SelectItem>
-                        <SelectItem value="5k-10k">€5000 - €10,000</SelectItem>
-                        <SelectItem value="over10k">Over €10,000</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Sort By</Label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                        </SelectTrigger>
-                    <SelectContent> 
-                        <SelectItem value="none" disabled>
-                            Select an option
-                            </SelectItem>
-                        <SelectItem value="dateAdded">Date Added</SelectItem>
-                        <SelectItem value="brand">Brand</SelectItem>
-                        <SelectItem value="budget">
-                            Budget (High to Low)
-                        </SelectItem>
-                        <SelectItem value="priority">Priority</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-        </div>
-    );
-
+ 
   const ItemFormContent = ({
   item,
   setItem,
@@ -528,33 +461,7 @@ const validateEditForm = () => {
     </div>
   );
 };
-
-// Debounced router update
-useEffect(() => {
-  const timeout = setTimeout(() => {
-    router.get(
-      route("wishlist.index"),
-      {
-        search: searchTerm || undefined,
-        priority: priorityFilter !== "all" ? priorityFilter : undefined,
-        budget: budgetFilter !== "all" ? budgetFilter : undefined,
-        sortBy: sortBy || undefined,
-      },
-      {
-        preserveState: true,
-        replace: true,
-        onSuccess: (page) => {
-          // update state with new data from backend
-          setWishList(page.props.wishlist || []);
-        },
-      }
-    );
-  }, 300);
-
-  return () => clearTimeout(timeout);
-}, [searchTerm, priorityFilter, budgetFilter, sortBy]);
-
-
+ 
   const items = props.items as any[];   // data from Laravel
   const brands = props.brands as any[]; // data from Laravel
 const [isSubmitting, setIsSubmitting] = useState(false);
@@ -660,7 +567,12 @@ function BrandSelect({ brands, value, onChange }: {
                                         <SheetTitle>Filters</SheetTitle>
                                     </SheetHeader>
                                     <div className="mt-6">
-                                        <FiltersContent />
+                                        <FiltersContent
+                                        initialSearch={filters.search}
+                                        initialPriority={filters.priority}
+                                        initialBudget={filters.budget}
+                                        initialSort={filters.sortBy}
+                                    />
                                     </div>
                                 </SheetContent>
                             </Sheet>
@@ -741,7 +653,12 @@ function BrandSelect({ brands, value, onChange }: {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <FiltersContent />
+                                     <FiltersContent
+                                    initialSearch={filters.search}
+                                    initialPriority={filters.priority}
+                                    initialBudget={filters.budget}
+                                    initialSort={filters.sortBy}
+                                    />
                                 </CardContent>
                             </Card>
                         </div>

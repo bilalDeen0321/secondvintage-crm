@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+ 
 import {
     Select,
     SelectContent,
@@ -26,14 +27,18 @@ import { router } from "@inertiajs/react";
 import { useToast } from "@/components/ui/use-toast"; 
 import { ChevronDown, ChevronUp, Plus, Search } from "lucide-react";
 
-
+interface LocationResource {
+  name: string;
+  country_code: string;
+}
 interface Props {
     batch: BatchResource;
     watches: WatchResource[];
+     locations: LocationResource[];
 }
 
 export default function BatchWatches(props: Props) {
-    const { batch, watches } = props;
+    const { batch, watches, locations  } = props;
     const { toast } = useToast();
      const flash = props.flash;
        useEffect(() => {
@@ -48,12 +53,48 @@ export default function BatchWatches(props: Props) {
 
     const [watchSearchTerm, setWatchSearchTerm] = useState("");
     const [watchStatusFilter, setWatchStatusFilter] = useState<string>("all");
+   const [watchLocationFilter, setWatchLocationFilter] = useState<string>("all");
+
     const [batchWatchSortField, setBatchWatchSortField] = useState<string>("name");
     const [batchWatchSortDirection, setBatchWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [addWatchSortField, setAddWatchSortField] = useState<string>("name");
     const [addWatchSortDirection, setAddWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [batches, setBatches] = useState<BatchResource[]>([]);
+
+     // Filtering logic
+  const filteredWatches = watches
+    .filter((watch) => {
+      // Search filter
+      if (watchSearchTerm.trim()) {
+        const term = watchSearchTerm.toLowerCase();
+        const match =
+          watch.name?.toLowerCase().includes(term) ||
+          watch.brand?.toLowerCase().includes(term) ||
+          watch.sku?.toLowerCase().includes(term) ||
+          watch.description?.toLowerCase().includes(term);
+        if (!match) return false;
+      }
+
+      // Location filter
+      if (watchLocationFilter !== "all" && watch.location !== watchLocationFilter) {
+        return false;
+      }
+
+      // Status filter
+      if (watchStatusFilter !== "all" && watch.status !== watchStatusFilter) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      const fieldA = (a as any)[addWatchSortField];
+      const fieldB = (b as any)[addWatchSortField];
+      if (fieldA < fieldB) return addWatchSortDirection === "asc" ? -1 : 1;
+      if (fieldA > fieldB) return addWatchSortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
 
     const onAddWatchSort = (field: string) => {
         if (addWatchSortField === field) {
@@ -124,6 +165,21 @@ export default function BatchWatches(props: Props) {
                                 className="pl-10"
                             />
                         </div>
+                       <Select value={watchLocationFilter} onValueChange={setWatchLocationFilter}>
+
+                            <SelectTrigger className="w-48">
+                                <SelectValue placeholder="Filter by location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Locations</SelectItem>
+                                {locations.map((loc) => (
+                                    <SelectItem key={loc.name} value={loc.name}>
+                                    {loc.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
                         <Select value={watchStatusFilter} onValueChange={setWatchStatusFilter}>
                             <SelectTrigger className="w-48">
                                 <SelectValue placeholder="Filter by status" />
@@ -212,7 +268,7 @@ export default function BatchWatches(props: Props) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {watches.map((watch) => (
+                                {filteredWatches.map((watch) => (
                                     <TableRow key={watch.id}>
                                         <TableCell>
                                             <Checkbox
@@ -236,7 +292,7 @@ export default function BatchWatches(props: Props) {
                                         <TableCell>{watch.sku}</TableCell>
                                         <TableCell>{watch.brand}</TableCell>
                                         <TableCell>
-                                            <Badge className={Status.toHuman(watch.status)}>
+                                            <Badge className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${Status.toColorClass(watch.status)}`}>
                                                 {watch.status}
                                             </Badge>
                                         </TableCell>

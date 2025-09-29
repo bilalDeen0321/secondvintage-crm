@@ -16,4 +16,9 @@ class Sale extends Model
      * @var list<string>
      */
     protected $guarded  = [];
+
+    public function watch()
+        {
+            return $this->belongsTo(Watch::class);
+        }
 }

@@ -6,6 +6,7 @@ use App\Http\Resources\BatchResource;
 use App\Http\Resources\WatchResource;
 use App\Models\Batch;
 use App\Models\Watch;
+use App\Models\Location;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,9 +17,11 @@ class BatchWatchController extends Controller
      */
     public function index(Batch $batch)
     {
+         
         return Inertia::render('batch/BatchWatches', [
             'batch' => new BatchResource($batch->load(['watches.images', 'watches.brand'])),
             'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->get()),
+            'locations' => Location::all(),
         ]);
     }
 

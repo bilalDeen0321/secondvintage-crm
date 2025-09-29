@@ -29,17 +29,7 @@ return new class extends Migration
             $table->string('buyer_city')->nullable();
             $table->string('buyer_country')->nullable();
             $table->string('buyer_postal_code')->nullable();
-            $table->string('buyer_iso_code')->nullable();
-           // $table->string('condition')->nullable();
-           // $table->string('gender')->nullable();
-           // $table->string('movement')->nullable();
-           // $table->string('case_material')->nullable();
-            //$table->string('dial_color')->nullable();
-           // $table->boolean('original_box')->default(false);
-            //$table->boolean('original_papers')->default(false);
-            //$table->boolean('original_warranty')->default(false);
-            //$table->boolean('working_order')->default(true);
-            //$table->boolean('repainted_dial')->default(false);
+            $table->string('buyer_iso_code')->nullable(); 
             // Catawiki specific
             $table->string('currency')->nullable();
             $table->string('catawiki_object_number')->nullable();

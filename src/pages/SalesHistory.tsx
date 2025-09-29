@@ -59,21 +59,40 @@ import { useSearchParams } from "@/hooks/useSearchParams";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface SaleRecord {
-    id: string;
-    watchName: string;
-    brand: string;
-    sku: string;
-    salePrice: number;
-    acquisitionCost: number;
-    profit: number;
-    profitMargin: number;
-    saleDate: string;
-    platform: string;
-    buyer: string;
-    country: string;
-    paymentMethod: string;
-    status: "Sold" | "Reserved" | "Pending" | "Refunded";
+  id: number | string;
+  watchName: string;
+  buyer_country: string;
+  original_price: string;
+  currency: number;
+  buyer_name: number;
+  buyer_email: number;
+  buyer_address: number;
+  buyer_city: string; // ISO date string
+  buyer_postal_code: string;
+  country: string;
+  status: string;
 }
+
+interface Props {
+  sales: SaleRecord[];
+}
+
+// interface SaleRecord {
+//     id: string;
+//     watchName: string;
+//     brand: string;
+//     sku: string;
+//     salePrice: number;
+//     acquisitionCost: number;
+//     profit: number;
+//     profitMargin: number;
+//     saleDate: string;
+//     platform: string;
+//     buyer: string;
+//     country: string;
+//     paymentMethod: string;
+//     status: "Sold" | "Reserved" | "Pending" | "Refunded";
+// }
 
 type SortField =
     | "watchName"
@@ -90,6 +109,8 @@ type SortField =
 type SortDirection = "asc" | "desc";
 
 const SalesHistory = () => {
+      const { sales } = usePage<{ sales: SaleRecord[] }>().props;
+
      const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -132,328 +153,328 @@ const SalesHistory = () => {
   };
 
     // Sample sales data with additional watches
-    const [sales] = useState<SaleRecord[]>([
-        {
-            id: "1",
-            watchName: "Rolex Submariner 116610LN",
-            brand: "Rolex",
-            sku: "ROL-SUB-001",
-            salePrice: 12500,
-            acquisitionCost: 8500,
-            profit: 4000,
-            profitMargin: 32,
-            saleDate: "2024-01-15",
-            platform: "Chrono24",
-            buyer: "John Smith",
-            country: "USA",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "2",
-            watchName: "Omega Speedmaster Professional",
-            brand: "Omega",
-            sku: "OME-SPE-002",
-            salePrice: 4800,
-            acquisitionCost: 3200,
-            profit: 1600,
-            profitMargin: 33.3,
-            saleDate: "2024-01-20",
-            platform: "eBay",
-            buyer: "Mike Johnson",
-            country: "Canada",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "3",
-            watchName: "TAG Heuer Monaco",
-            brand: "TAG Heuer",
-            sku: "TAG-MON-003",
-            salePrice: 4200,
-            acquisitionCost: 2800,
-            profit: 1400,
-            profitMargin: 33.3,
-            saleDate: "2024-01-25",
-            platform: "Catawiki",
-            buyer: "David Wilson",
-            country: "UK",
-            paymentMethod: "Credit Card",
-            status: "Sold",
-        },
-        {
-            id: "4",
-            watchName: "Breitling Navitimer",
-            brand: "Breitling",
-            sku: "BRE-NAV-004",
-            salePrice: 6500,
-            acquisitionCost: 4200,
-            profit: 2300,
-            profitMargin: 35.4,
-            saleDate: "2024-02-01",
-            platform: "Tradera",
-            buyer: "Lars Hansen",
-            country: "Sweden",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "5",
-            watchName: "IWC Pilot Mark XVIII",
-            brand: "IWC",
-            sku: "IWC-PIL-005",
-            salePrice: 5800,
-            acquisitionCost: 3800,
-            profit: 2000,
-            profitMargin: 34.5,
-            saleDate: "2024-02-10",
-            platform: "Chrono24",
-            buyer: "Andreas Mueller",
-            country: "Germany",
-            paymentMethod: "Wire Transfer",
-            status: "Reserved",
-        },
-        {
-            id: "6",
-            watchName: "Tudor Black Bay 58",
-            brand: "Tudor",
-            sku: "TUD-BB-006",
-            salePrice: 3200,
-            acquisitionCost: 2400,
-            profit: 800,
-            profitMargin: 25,
-            saleDate: "2024-02-15",
-            platform: "eBay",
-            buyer: "Sarah Connor",
-            country: "Australia",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "7",
-            watchName: "Seiko Prospex Diver",
-            brand: "Seiko",
-            sku: "SEI-PRO-007",
-            salePrice: 450,
-            acquisitionCost: 320,
-            profit: 130,
-            profitMargin: 28.9,
-            saleDate: "2024-03-01",
-            platform: "Catawiki",
-            buyer: "Pierre Dubois",
-            country: "France",
-            paymentMethod: "Credit Card",
-            status: "Sold",
-        },
-        {
-            id: "8",
-            watchName: "Cartier Tank Solo",
-            brand: "Cartier",
-            sku: "CAR-TAN-008",
-            salePrice: 2800,
-            acquisitionCost: 2100,
-            profit: 700,
-            profitMargin: 25,
-            saleDate: "2024-03-10",
-            platform: "Tradera",
-            buyer: "Erik Svensson",
-            country: "Sweden",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "9",
-            watchName: "Panerai Luminor Marina",
-            brand: "Panerai",
-            sku: "PAN-LUM-009",
-            salePrice: 7200,
-            acquisitionCost: 5400,
-            profit: 1800,
-            profitMargin: 25,
-            saleDate: "2024-03-15",
-            platform: "Chrono24",
-            buyer: "Marco Rossi",
-            country: "Italy",
-            paymentMethod: "Wire Transfer",
-            status: "Sold",
-        },
-        {
-            id: "10",
-            watchName: "Zenith El Primero",
-            brand: "Zenith",
-            sku: "ZEN-ELP-010",
-            salePrice: 5500,
-            acquisitionCost: 4000,
-            profit: 1500,
-            profitMargin: 27.3,
-            saleDate: "2024-03-20",
-            platform: "eBay",
-            buyer: "Hans Schmidt",
-            country: "Germany",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "11",
-            watchName: "Longines Master Collection Moonphase",
-            brand: "Longines",
-            sku: "LON-MAS-011",
-            salePrice: 2200,
-            acquisitionCost: 1600,
-            profit: 600,
-            profitMargin: 27.3,
-            saleDate: "2024-03-25",
-            platform: "Chrono24",
-            buyer: "François Leroy",
-            country: "France",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "12",
-            watchName: "Omega Seamaster Planet Ocean",
-            brand: "Omega",
-            sku: "OME-SEA-012",
-            salePrice: 3800,
-            acquisitionCost: 2800,
-            profit: 1000,
-            profitMargin: 26.3,
-            saleDate: "2024-04-01",
-            platform: "eBay",
-            buyer: "Robert Taylor",
-            country: "USA",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "13",
-            watchName: "Seiko Grand Seiko Heritage",
-            brand: "Seiko",
-            sku: "SEI-GS-013",
-            salePrice: 3200,
-            acquisitionCost: 2400,
-            profit: 800,
-            profitMargin: 25,
-            saleDate: "2024-04-05",
-            platform: "Catawiki",
-            buyer: "Takeshi Yamamoto",
-            country: "Japan",
-            paymentMethod: "Credit Card",
-            status: "Sold",
-        },
-        {
-            id: "14",
-            watchName: "Longines HydroConquest",
-            brand: "Longines",
-            sku: "LON-HYD-014",
-            salePrice: 1400,
-            acquisitionCost: 1000,
-            profit: 400,
-            profitMargin: 28.6,
-            saleDate: "2024-04-10",
-            platform: "Tradera",
-            buyer: "Nils Andersson",
-            country: "Sweden",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "15",
-            watchName: "Omega De Ville Prestige",
-            brand: "Omega",
-            sku: "OME-DEV-015",
-            salePrice: 2100,
-            acquisitionCost: 1500,
-            profit: 600,
-            profitMargin: 28.6,
-            saleDate: "2024-04-15",
-            platform: "Chrono24",
-            buyer: "Antonio Garcia",
-            country: "Spain",
-            paymentMethod: "Wire Transfer",
-            status: "Sold",
-        },
-        {
-            id: "16",
-            watchName: "Seiko Samurai SRPD Automatic",
-            brand: "Seiko",
-            sku: "SEI-SAM-016",
-            salePrice: 380,
-            acquisitionCost: 280,
-            profit: 100,
-            profitMargin: 26.3,
-            saleDate: "2024-04-20",
-            platform: "eBay",
-            buyer: "Michael Brown",
-            country: "Canada",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "17",
-            watchName: "Longines Spirit Aviation",
-            brand: "Longines",
-            sku: "LON-SPI-017",
-            salePrice: 2600,
-            acquisitionCost: 1900,
-            profit: 700,
-            profitMargin: 26.9,
-            saleDate: "2024-04-25",
-            platform: "Catawiki",
-            buyer: "Klaus Weber",
-            country: "Germany",
-            paymentMethod: "Credit Card",
-            status: "Reserved",
-        },
-        {
-            id: "18",
-            watchName: "Omega Constellation Co-Axial",
-            brand: "Omega",
-            sku: "OME-CON-018",
-            salePrice: 3400,
-            acquisitionCost: 2500,
-            profit: 900,
-            profitMargin: 26.5,
-            saleDate: "2024-05-01",
-            platform: "Tradera",
-            buyer: "Per Lindström",
-            country: "Sweden",
-            paymentMethod: "Bank Transfer",
-            status: "Sold",
-        },
-        {
-            id: "19",
-            watchName: "Seiko 5 Sports Field Watch",
-            brand: "Seiko",
-            sku: "SEI-5SP-019",
-            salePrice: 220,
-            acquisitionCost: 160,
-            profit: 60,
-            profitMargin: 27.3,
-            saleDate: "2024-05-05",
-            platform: "eBay",
-            buyer: "David Kim",
-            country: "South Korea",
-            paymentMethod: "PayPal",
-            status: "Sold",
-        },
-        {
-            id: "20",
-            watchName: "Longines Flagship Heritage",
-            brand: "Longines",
-            sku: "LON-FLA-020",
-            salePrice: 1800,
-            acquisitionCost: 1300,
-            profit: 500,
-            profitMargin: 27.8,
-            saleDate: "2024-05-10",
-            platform: "Chrono24",
-            buyer: "Jean-Luc Martin",
-            country: "France",
-            paymentMethod: "Wire Transfer",
-            status: "Reserved",
-        },
-    ]);
+    // const [sales] = useState<SaleRecord[]>([
+    //     {
+    //         id: "1",
+    //         watchName: "Rolex Submariner 116610LN",
+    //         brand: "Rolex",
+    //         sku: "ROL-SUB-001",
+    //         salePrice: 12500,
+    //         acquisitionCost: 8500,
+    //         profit: 4000,
+    //         profitMargin: 32,
+    //         saleDate: "2024-01-15",
+    //         platform: "Chrono24",
+    //         buyer: "John Smith",
+    //         country: "USA",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "2",
+    //         watchName: "Omega Speedmaster Professional",
+    //         brand: "Omega",
+    //         sku: "OME-SPE-002",
+    //         salePrice: 4800,
+    //         acquisitionCost: 3200,
+    //         profit: 1600,
+    //         profitMargin: 33.3,
+    //         saleDate: "2024-01-20",
+    //         platform: "eBay",
+    //         buyer: "Mike Johnson",
+    //         country: "Canada",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "3",
+    //         watchName: "TAG Heuer Monaco",
+    //         brand: "TAG Heuer",
+    //         sku: "TAG-MON-003",
+    //         salePrice: 4200,
+    //         acquisitionCost: 2800,
+    //         profit: 1400,
+    //         profitMargin: 33.3,
+    //         saleDate: "2024-01-25",
+    //         platform: "Catawiki",
+    //         buyer: "David Wilson",
+    //         country: "UK",
+    //         paymentMethod: "Credit Card",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "4",
+    //         watchName: "Breitling Navitimer",
+    //         brand: "Breitling",
+    //         sku: "BRE-NAV-004",
+    //         salePrice: 6500,
+    //         acquisitionCost: 4200,
+    //         profit: 2300,
+    //         profitMargin: 35.4,
+    //         saleDate: "2024-02-01",
+    //         platform: "Tradera",
+    //         buyer: "Lars Hansen",
+    //         country: "Sweden",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "5",
+    //         watchName: "IWC Pilot Mark XVIII",
+    //         brand: "IWC",
+    //         sku: "IWC-PIL-005",
+    //         salePrice: 5800,
+    //         acquisitionCost: 3800,
+    //         profit: 2000,
+    //         profitMargin: 34.5,
+    //         saleDate: "2024-02-10",
+    //         platform: "Chrono24",
+    //         buyer: "Andreas Mueller",
+    //         country: "Germany",
+    //         paymentMethod: "Wire Transfer",
+    //         status: "Reserved",
+    //     },
+    //     {
+    //         id: "6",
+    //         watchName: "Tudor Black Bay 58",
+    //         brand: "Tudor",
+    //         sku: "TUD-BB-006",
+    //         salePrice: 3200,
+    //         acquisitionCost: 2400,
+    //         profit: 800,
+    //         profitMargin: 25,
+    //         saleDate: "2024-02-15",
+    //         platform: "eBay",
+    //         buyer: "Sarah Connor",
+    //         country: "Australia",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "7",
+    //         watchName: "Seiko Prospex Diver",
+    //         brand: "Seiko",
+    //         sku: "SEI-PRO-007",
+    //         salePrice: 450,
+    //         acquisitionCost: 320,
+    //         profit: 130,
+    //         profitMargin: 28.9,
+    //         saleDate: "2024-03-01",
+    //         platform: "Catawiki",
+    //         buyer: "Pierre Dubois",
+    //         country: "France",
+    //         paymentMethod: "Credit Card",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "8",
+    //         watchName: "Cartier Tank Solo",
+    //         brand: "Cartier",
+    //         sku: "CAR-TAN-008",
+    //         salePrice: 2800,
+    //         acquisitionCost: 2100,
+    //         profit: 700,
+    //         profitMargin: 25,
+    //         saleDate: "2024-03-10",
+    //         platform: "Tradera",
+    //         buyer: "Erik Svensson",
+    //         country: "Sweden",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "9",
+    //         watchName: "Panerai Luminor Marina",
+    //         brand: "Panerai",
+    //         sku: "PAN-LUM-009",
+    //         salePrice: 7200,
+    //         acquisitionCost: 5400,
+    //         profit: 1800,
+    //         profitMargin: 25,
+    //         saleDate: "2024-03-15",
+    //         platform: "Chrono24",
+    //         buyer: "Marco Rossi",
+    //         country: "Italy",
+    //         paymentMethod: "Wire Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "10",
+    //         watchName: "Zenith El Primero",
+    //         brand: "Zenith",
+    //         sku: "ZEN-ELP-010",
+    //         salePrice: 5500,
+    //         acquisitionCost: 4000,
+    //         profit: 1500,
+    //         profitMargin: 27.3,
+    //         saleDate: "2024-03-20",
+    //         platform: "eBay",
+    //         buyer: "Hans Schmidt",
+    //         country: "Germany",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "11",
+    //         watchName: "Longines Master Collection Moonphase",
+    //         brand: "Longines",
+    //         sku: "LON-MAS-011",
+    //         salePrice: 2200,
+    //         acquisitionCost: 1600,
+    //         profit: 600,
+    //         profitMargin: 27.3,
+    //         saleDate: "2024-03-25",
+    //         platform: "Chrono24",
+    //         buyer: "François Leroy",
+    //         country: "France",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "12",
+    //         watchName: "Omega Seamaster Planet Ocean",
+    //         brand: "Omega",
+    //         sku: "OME-SEA-012",
+    //         salePrice: 3800,
+    //         acquisitionCost: 2800,
+    //         profit: 1000,
+    //         profitMargin: 26.3,
+    //         saleDate: "2024-04-01",
+    //         platform: "eBay",
+    //         buyer: "Robert Taylor",
+    //         country: "USA",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "13",
+    //         watchName: "Seiko Grand Seiko Heritage",
+    //         brand: "Seiko",
+    //         sku: "SEI-GS-013",
+    //         salePrice: 3200,
+    //         acquisitionCost: 2400,
+    //         profit: 800,
+    //         profitMargin: 25,
+    //         saleDate: "2024-04-05",
+    //         platform: "Catawiki",
+    //         buyer: "Takeshi Yamamoto",
+    //         country: "Japan",
+    //         paymentMethod: "Credit Card",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "14",
+    //         watchName: "Longines HydroConquest",
+    //         brand: "Longines",
+    //         sku: "LON-HYD-014",
+    //         salePrice: 1400,
+    //         acquisitionCost: 1000,
+    //         profit: 400,
+    //         profitMargin: 28.6,
+    //         saleDate: "2024-04-10",
+    //         platform: "Tradera",
+    //         buyer: "Nils Andersson",
+    //         country: "Sweden",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "15",
+    //         watchName: "Omega De Ville Prestige",
+    //         brand: "Omega",
+    //         sku: "OME-DEV-015",
+    //         salePrice: 2100,
+    //         acquisitionCost: 1500,
+    //         profit: 600,
+    //         profitMargin: 28.6,
+    //         saleDate: "2024-04-15",
+    //         platform: "Chrono24",
+    //         buyer: "Antonio Garcia",
+    //         country: "Spain",
+    //         paymentMethod: "Wire Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "16",
+    //         watchName: "Seiko Samurai SRPD Automatic",
+    //         brand: "Seiko",
+    //         sku: "SEI-SAM-016",
+    //         salePrice: 380,
+    //         acquisitionCost: 280,
+    //         profit: 100,
+    //         profitMargin: 26.3,
+    //         saleDate: "2024-04-20",
+    //         platform: "eBay",
+    //         buyer: "Michael Brown",
+    //         country: "Canada",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "17",
+    //         watchName: "Longines Spirit Aviation",
+    //         brand: "Longines",
+    //         sku: "LON-SPI-017",
+    //         salePrice: 2600,
+    //         acquisitionCost: 1900,
+    //         profit: 700,
+    //         profitMargin: 26.9,
+    //         saleDate: "2024-04-25",
+    //         platform: "Catawiki",
+    //         buyer: "Klaus Weber",
+    //         country: "Germany",
+    //         paymentMethod: "Credit Card",
+    //         status: "Reserved",
+    //     },
+    //     {
+    //         id: "18",
+    //         watchName: "Omega Constellation Co-Axial",
+    //         brand: "Omega",
+    //         sku: "OME-CON-018",
+    //         salePrice: 3400,
+    //         acquisitionCost: 2500,
+    //         profit: 900,
+    //         profitMargin: 26.5,
+    //         saleDate: "2024-05-01",
+    //         platform: "Tradera",
+    //         buyer: "Per Lindström",
+    //         country: "Sweden",
+    //         paymentMethod: "Bank Transfer",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "19",
+    //         watchName: "Seiko 5 Sports Field Watch",
+    //         brand: "Seiko",
+    //         sku: "SEI-5SP-019",
+    //         salePrice: 220,
+    //         acquisitionCost: 160,
+    //         profit: 60,
+    //         profitMargin: 27.3,
+    //         saleDate: "2024-05-05",
+    //         platform: "eBay",
+    //         buyer: "David Kim",
+    //         country: "South Korea",
+    //         paymentMethod: "PayPal",
+    //         status: "Sold",
+    //     },
+    //     {
+    //         id: "20",
+    //         watchName: "Longines Flagship Heritage",
+    //         brand: "Longines",
+    //         sku: "LON-FLA-020",
+    //         salePrice: 1800,
+    //         acquisitionCost: 1300,
+    //         profit: 500,
+    //         profitMargin: 27.8,
+    //         saleDate: "2024-05-10",
+    //         platform: "Chrono24",
+    //         buyer: "Jean-Luc Martin",
+    //         country: "France",
+    //         paymentMethod: "Wire Transfer",
+    //         status: "Reserved",
+    //     },
+    // ]);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [platformFilter, setPlatformFilter] = useState("All");
@@ -482,119 +503,44 @@ const SalesHistory = () => {
     );
   
     // Calculate min and max prices for the slider
-    const priceStats = useMemo(() => {
-        const prices = sales.map((sale) => sale.salePrice);
-        return {
-            min: Math.min(...prices),
-            max: Math.max(...prices),
-        };
-    }, [sales]);
-
-    // Calculate summary statistics
-    const stats = useMemo(() => {
-        const completedSales = sales.filter((sale) => sale.status === "Sold");
-        const totalRevenue = completedSales.reduce(
-            (sum, sale) => sum + sale.salePrice,
-            0,
-        );
-        const totalProfit = completedSales.reduce(
-            (sum, sale) => sum + sale.profit,
-            0,
-        );
-        const avgProfitMargin =
-            completedSales.length > 0
-                ? completedSales.reduce(
-                      (sum, sale) => sum + sale.profitMargin,
-                      0,
-                  ) / completedSales.length
-                : 0;
-
-        return {
-            totalSales: completedSales.length,
-            totalRevenue,
-            totalProfit,
-            avgProfitMargin: Math.round(avgProfitMargin * 100) / 100,
-        };
-    }, [sales]);
-
-    // Prepare chart data with stacked bars and proper formatting
-    // const monthlyData = useMemo(() => {
-    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    //     return months.map((month) => ({
-    //         month,
-    //         revenue: Math.floor(Math.random() * 20000) + 5000,
-    //         profit: Math.floor(Math.random() * 8000) + 2000,
-    //     }));
-    // }, []);
-
-    const monthlyData = props.monthlyData;
-
-    // Monthly sales count data
-    // const monthlySalesCount = useMemo(() => {
-    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    //     return months.map((month) => ({
-    //         month,
-    //         count: Math.floor(Math.random() * 15) + 5,
-    //     }));
-    // }, []);
-
-    const monthlySalesCount = props.monthlySalesCount;
-
-    // New profit per platform chart data
-    // const profitPerPlatformData = useMemo(() => {
-    //     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    //     const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
-
-    //     return months.map((month) => {
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         const monthData: any = { month };
-    //         platforms.forEach((platform) => {
-    //             // Generate realistic profit data for each platform per month
-    //             const baseProfit = Math.floor(Math.random() * 3000) + 1000;
-    //             monthData[platform] = baseProfit;
-    //         });
-    //         return monthData;
-    //     });
-    // }, []);
-
-    const profitPerPlatformData = props.profitPerPlatform;
-
-    // Prepare platform data with sales count and profit
-    // const platformData2 = useMemo(() => {
-    //     const platforms = ["Chrono24", "eBay", "Catawiki", "Tradera"];
-    //     const totalSales = sales.filter(
-    //         (sale) => sale.status === "Sold",
-    //     ).length;
-
-    //     return platforms
-    //         .map((platform) => {
-    //             const platformSales = sales.filter(
-    //                 (sale) =>
-    //                     sale.platform === platform && sale.status === "Sold",
-    //             );
-    //             const revenue = platformSales.reduce(
-    //                 (sum, sale) => sum + sale.salePrice,
-    //                 0,
-    //             );
-    //             const profit = platformSales.reduce(
-    //                 (sum, sale) => sum + sale.profit,
-    //                 0,
-    //             );
-    //             const count = platformSales.length;
-    //             const percentage =
-    //                 totalSales > 0 ? Math.round((count / totalSales) * 100) : 0;
-
-    //             return {
-    //                 platform,
-    //                 sales: count,
-    //                 revenue,
-    //                 profit,
-    //                 percentage,
-    //             };
-    //         })
-    //         .filter((item) => item.sales > 0); // Only show platforms with sales
+    // const priceStats = useMemo(() => {
+    //     const prices = sales.map((sale) => sale.salePrice);
+    //     return {
+    //         min: Math.min(...prices),
+    //         max: Math.max(...prices),
+    //     };
     // }, [sales]);
 
+    // Calculate summary statistics
+    // const stats = useMemo(() => {
+    //     const completedSales = sales.filter((sale) => sale.status === "Sold");
+    //     const totalRevenue = completedSales.reduce(
+    //         (sum, sale) => sum + sale.salePrice,
+    //         0,
+    //     );
+    //     const totalProfit = completedSales.reduce(
+    //         (sum, sale) => sum + sale.profit,
+    //         0,
+    //     );
+    //     const avgProfitMargin =
+    //         completedSales.length > 0
+    //             ? completedSales.reduce(
+    //                   (sum, sale) => sum + sale.profitMargin,
+    //                   0,
+    //               ) / completedSales.length
+    //             : 0;
+
+    //     return {
+    //         totalSales: completedSales.length,
+    //         totalRevenue,
+    //         totalProfit,
+    //         avgProfitMargin: Math.round(avgProfitMargin * 100) / 100,
+    //     };
+    // }, [sales]);
+
+    const monthlyData = props.monthlyData;
+    const monthlySalesCount = props.monthlySalesCount;
+    const profitPerPlatformData = props.profitPerPlatform;
     const platformData = props.salesByPlatform;
 
     const handleSort = (field: SortField) => {
@@ -612,7 +558,7 @@ const SalesHistory = () => {
                 sale.watchName
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                sale.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                sale.platform?.includes(searchTerm.toLowerCase()) ||
                 sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesPlatform =
                 platformFilter === "All" || sale.platform === platformFilter;
@@ -1162,22 +1108,7 @@ const SalesHistory = () => {
                                 <SelectItem value="Tradera">Tradera</SelectItem>
                             </SelectContent>
                         </Select>
-
-                        <Select
-                            value={statusFilter}
-                            onValueChange={setStatusFilter}
-                        >
-                            <SelectTrigger className="w-40">
-                                <SelectValue placeholder="Status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="All">All Status</SelectItem>
-                                <SelectItem value="Reserved">
-                                    Reserved
-                                </SelectItem>
-                                <SelectItem value="Sold">Sold</SelectItem>
-                            </SelectContent>
-                        </Select>
+ 
 
                         <Button variant="outline">
                             <Download className="mr-2 h-4 w-4" />
@@ -1195,9 +1126,7 @@ const SalesHistory = () => {
                                     <SortableHeader field="watchName">
                                         Watch Name
                                     </SortableHeader>
-                                    <SortableHeader field="brand">
-                                        Brand
-                                    </SortableHeader>
+                                    
                                     <SortableHeader field="sku">
                                         SKU
                                     </SortableHeader>
@@ -1205,17 +1134,15 @@ const SalesHistory = () => {
                                         Cost
                                     </SortableHeader>
                                     <SortableHeader field="salePrice">
-                                        Sale Price
+                                        Currency
                                     </SortableHeader>
                                     <SortableHeader field="profit">
-                                        Profit
+                                        Buyer Name
                                     </SortableHeader>
                                     <SortableHeader field="profitMargin">
-                                        Margin
+                                        Buyer Email
                                     </SortableHeader>
-                                    <SortableHeader field="saleDate">
-                                        Date
-                                    </SortableHeader>
+                                   
                                     <SortableHeader field="platform">
                                         Platform
                                     </SortableHeader>
@@ -1223,9 +1150,8 @@ const SalesHistory = () => {
                                         Buyer
                                     </SortableHeader>
                                     <TableHead>Country</TableHead>
-                                    <SortableHeader field="status">
-                                        Status
-                                    </SortableHeader>
+                                    <TableHead>Status</TableHead>
+                                    
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -1234,28 +1160,22 @@ const SalesHistory = () => {
                                         <TableCell className="font-medium">
                                             {sale.watchName}
                                         </TableCell>
-                                        <TableCell>{sale.brand}</TableCell>
-                                        <TableCell className="text-slate-600">
+                                         <TableCell className="text-slate-600">
                                             {sale.sku}
                                         </TableCell>
                                         <TableCell>
                                             €
-                                            {sale.acquisitionCost.toLocaleString()}
+                                            {sale.original_price.toLocaleString()}
                                         </TableCell>
                                         <TableCell className="font-semibold">
-                                            €{sale.salePrice.toLocaleString()}
+                                            €{sale.buyer_name}
                                         </TableCell>
                                         <TableCell className="font-semibold text-green-600">
-                                            €{sale.profit.toLocaleString()}
+                                            €{sale.currency}
                                         </TableCell>
                                         <TableCell>
-                                            {sale.profitMargin.toFixed(1)}%
-                                        </TableCell>
-                                        <TableCell>
-                                            {new Date(
-                                                sale.saleDate,
-                                            ).toLocaleDateString()}
-                                        </TableCell>
+                                            {sale.buyer_email}%
+                                        </TableCell> 
                                         <TableCell>{sale.platform}</TableCell>
                                         <TableCell>{sale.buyer}</TableCell>
                                         <TableCell>{sale.country}</TableCell>

@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Facades\Excel; // if you use maatwebsite/excel
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Watch;
+use App\Http\Resources\SaleResource;
 use Illuminate\Database\QueryException;
 
 class HistoryController extends Controller
@@ -27,7 +28,7 @@ class HistoryController extends Controller
     public function index(HistoryQuery $query)
     {
         $filter = request()->input('filter', 'all-time');
-
+        $sales = Sale::with('watch')->latest()->get();
         return Inertia::render('SalesHistory', [
             'filters' => $query->allFilters(),
             'totalSales' => $query->getTotalSales($filter),
@@ -38,6 +39,7 @@ class HistoryController extends Controller
             'profitPerPlatform' => $query->getProfitPerPlatform($filter),
             'monthlySalesCount' => $query->getMonthlySalesCount($filter),
             'salesByPlatform' => $query->getSalesByPlatform($filter),
+            'sales' => SaleResource::collection($sales),
         ]);
     }
 
