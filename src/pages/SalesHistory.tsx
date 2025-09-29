@@ -1133,9 +1133,7 @@ const SalesHistory = () => {
                                     <SortableHeader field="acquisitionCost">
                                         Cost
                                     </SortableHeader>
-                                    <SortableHeader field="salePrice">
-                                        Currency
-                                    </SortableHeader>
+                                   
                                     <SortableHeader field="profit">
                                         Buyer Name
                                     </SortableHeader>
@@ -1150,6 +1148,9 @@ const SalesHistory = () => {
                                         Buyer
                                     </SortableHeader>
                                     <TableHead>Country</TableHead>
+                                    <TableHead>Catawiki Obj Number</TableHead>
+                                    <TableHead>Catawiki Invoice Number</TableHead>
+                                    <TableHead>Invoice URL</TableHead>
                                     <TableHead>Status</TableHead>
                                     
                                 </TableRow>
@@ -1167,18 +1168,19 @@ const SalesHistory = () => {
                                             €
                                             {sale.original_price.toLocaleString()}
                                         </TableCell>
-                                        <TableCell className="font-semibold">
-                                            €{sale.buyer_name}
-                                        </TableCell>
+                                        
                                         <TableCell className="font-semibold text-green-600">
-                                            €{sale.currency}
+                                            {sale.buyer_name}
                                         </TableCell>
                                         <TableCell>
-                                            {sale.buyer_email}%
+                                            {sale.buyer_email}
                                         </TableCell> 
                                         <TableCell>{sale.platform}</TableCell>
                                         <TableCell>{sale.buyer}</TableCell>
                                         <TableCell>{sale.country}</TableCell>
+                                        <TableCell>{sale.catawiki_object_number}</TableCell>
+                                        <TableCell>{sale.catawiki_invoice_number}</TableCell>
+                                        <TableCell>{sale.catawiki_invoice_url}</TableCell>
                                         <TableCell>
                                             <Badge
                                                 className={
