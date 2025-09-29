@@ -73,7 +73,7 @@ class HistoryController extends Controller
                 continue;
                 }
 
-                $watch = Watch::where('sku', $sku)->first();
+                $watch = Watch::where('sku', $sku)->whereNot('status', 'sold')->first();
                  if (!$watch) {
                     $errors[] = "Row ".($i+2).": Watch not found for SKU {$sku}";
                     continue;
@@ -109,8 +109,7 @@ class HistoryController extends Controller
                     'buyer_name'               => $customer,
                     'buyer_email'              => $row['Email'] ?? null,
                     'buyer_address'            => trim(($row['Address 1'] ?? '').' '.($row['Address 2'] ?? '').' '.($row['Address 3'] ?? '')),
-                    'buyer_city'               => $row['City'] ?? null,
-                    'buyer_country'            => $country,
+                    'buyer_city'               => $row['City'] ?? null, 
                     'buyer_postal_code'        => $row['Postal code'] ?? null,
                     'buyer_iso_code'           => $row['ISO code'] ?? null,
                      'sold_by'                 => 1,
