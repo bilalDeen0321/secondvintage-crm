@@ -53,11 +53,11 @@ export const FiltersContent = ({
           preserveScroll: true,
           replace: true,
         });
-      }, 300),
+      }, 500),
     []
   );
 
-  // 🟢 Trigger router.get only inside onChange handlers
+  //  Trigger router.get only inside onChange handlers
   const triggerNavigate = (params: Partial<Record<string, string>>) => {
     debouncedNavigate({
       search: searchTerm,
@@ -124,13 +124,14 @@ export const FiltersContent = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Budgets</SelectItem>
-            <SelectItem value="under5">Under €500</SelectItem>
-            <SelectItem value="5so-1k">€500 - €1000</SelectItem>
-            <SelectItem value="15so-2k">€1500 - €2000</SelectItem>
-            <SelectItem value="2k-5k">€2000 - €5000</SelectItem>
-            <SelectItem value="5k-10k">€5000 - €10,000</SelectItem>
-            <SelectItem value="over10k">Over €10,000</SelectItem>
+             <SelectItem value="all">All Budgets</SelectItem>
+                <SelectItem value="under250">Under €250</SelectItem>
+                <SelectItem value="250-500">€250 - €500</SelectItem>
+                <SelectItem value="500-1000">€500 - €1000</SelectItem>
+                <SelectItem value="1000-1500">€1000 - €1500</SelectItem>
+                <SelectItem value="1500-2000">€1500 - €2000</SelectItem>
+                <SelectItem value="2000-5000">€2000 - €5000</SelectItem>
+                <SelectItem value="over5000">Over €5000</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -9,6 +9,8 @@ use App\Models\PlatformData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Sleep;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Status;
+
 
 class ExportController extends Controller
 {
@@ -16,7 +18,7 @@ class ExportController extends Controller
      * Export to catawiki to csv.
      */
     public function catawiki(Request $request)
-    {
+    { 
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'exists:watches,id',
@@ -24,10 +26,11 @@ class ExportController extends Controller
         ]);
 
         $ids = $request->input('ids', []);
-
+        
         // Check if all selected watches are set to Catawiki platform
         $invalidWatch = Watch::query()
             ->whereIn('id', $ids)
+            ->where('status', '!=', Status::LISTING)
             ->where(function ($q) {
                 $q->whereNull('platform')
                     ->orWhere('platform', '!=', PlatformData::CATAWIKI);
@@ -35,7 +38,7 @@ class ExportController extends Controller
             ->first();
 
         if ($invalidWatch) {
-            return back()->with('warning', "Watch '{$invalidWatch->name}' is not set to Catawiki platform.");
+            return back()->with('warning', "Watch '{$invalidWatch->name}' is not set to Catawiki platform or status is not Ready for listing.");
         }
 
         Sleep::for(3)->seconds();

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "@/components/ui/Link";
+import { useToast } from "@/components/ui/use-toast"; 
+
 import {
     Select,
     SelectContent,
@@ -41,6 +43,8 @@ interface Props {
 export default function BatchEdit({ batch, watches, locations }: Props) {
     const [batchWatchSortField, setBatchWatchSortField] = useState<string>("name");
     const [batchWatchSortDirection, setBatchWatchSortDirection] = useState<"asc" | "desc">("asc");
+        const { toast } = useToast();
+    
     const { data, setData, put, processing, errors } = useForm({
         name: batch.name || "",
         tracking_number: batch.trackingNumber || "",
@@ -60,11 +64,23 @@ export default function BatchEdit({ batch, watches, locations }: Props) {
 
     const onWatchRemove = (
         routeKey: BatchResource["routeKey"],
-        watchKey: WatchResource["routeKey"]
+        watchKey: WatchResource["routeKey"],
+        e,
     ) => { 
-        if (window.confirm("Are you sure you want to remove this watch?")) {
-         router.delete(route("batches.removeWatch", [routeKey, watchKey]));
-        }
+        console.log(routeKey);
+        console.log(watchKey);
+         console.log(batch.watches); 
+    e.preventDefault(); // stop default navigation/reload
+
+    if (window.confirm("Are you sure you want to remove this watch?")) {
+      router.delete(route("batches.removeWatch", [routeKey, watchKey]), {
+        preserveState: true,
+        onSuccess: () => {            
+            toast({ description: 'Watch removed successfully', variant: "default" });
+          batch.watches = batch.watches.filter((w) => w.key !== watchKey)
+        },
+      })
+    } 
     };
 
     // Sorting functions
@@ -365,10 +381,11 @@ export default function BatchEdit({ batch, watches, locations }: Props) {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={() =>
+                                                        onClick={(e) =>
                                                             onWatchRemove(
                                                                 batch.routeKey,
-                                                                watch.routeKey
+                                                                watch.routeKey,
+                                                                e,
                                                             )
                                                         }
                                                         className="text-red-600 hover:text-red-700"

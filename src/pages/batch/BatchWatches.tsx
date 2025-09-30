@@ -293,7 +293,7 @@ export default function BatchWatches(props: Props) {
                                         <TableCell>{watch.brand}</TableCell>
                                         <TableCell>
                                             <Badge className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${Status.toColorClass(watch.status)}`}>
-                                                {watch.status}
+                                                 {Status.toHuman(watch.status)}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>{watch.location}</TableCell>

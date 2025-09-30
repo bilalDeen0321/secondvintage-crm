@@ -26,6 +26,9 @@ class SaleResource extends JsonResource
             'buyer_city'        => $this->buyer_city,
             'buyer_postal_code'           => $this->buyer_postal_code,
             'country'         => $this->country, 
+            'catawiki_object_number'         => $this->catawiki_object_number, 
+            'catawiki_invoice_number'         => $this->catawiki_invoice_number, 
+            'catawiki_invoice_url'         => $this->catawiki_invoice_url, 
             'status'          => $this->watch?->status,
         ];
     }

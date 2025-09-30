@@ -18,7 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Head, usePage } from "@inertiajs/react";
-import { Crown, DollarSign, Filter, Globe, Package } from "lucide-react";
+import { Crown, Euro, Filter, Globe, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
     Bar,
@@ -180,9 +180,13 @@ const Dashboard = () => {
     const dateFilterOptions = Object.entries(props.filters).map(
         ([value, label]) => ({ value, label })
     );
-    
-    console.log("datefilteroptions: ", dateFilterOptions);
-
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 0,
+        }).format(value);
+        };
     // const dateFilterOptions = [
     //     { value: "all-time", label: "All Time" },
     //     { value: "this-year", label: "This Year" },
@@ -235,8 +239,8 @@ const Dashboard = () => {
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-blue-800">
                                 Total Revenue
-                            </CardTitle>
-                            <DollarSign className="h-5 w-5 text-blue-600" />
+                            </CardTitle> 
+                            <Euro className="h-5 w-5 text-blue-600" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-blue-900">
@@ -634,12 +638,11 @@ const Dashboard = () => {
                                             </div>
                                             <div className="text-right">
                                                 <div className="font-bold text-green-600">
-                                                    €
-                                                    {brand.total_profit}
+                                                     {formatCurrency(brand.total_profit)}
                                                 </div>
                                                 <div className="text-xs text-slate-500">
-                                                    €
-                                                    {brand.total_revenue} {" "}
+                                                    
+                                                    {formatCurrency(brand.total_profit)} {" "}
                                                     avg
                                                 </div>
                                             </div>
@@ -685,12 +688,12 @@ const Dashboard = () => {
                                                 </div>
                                                 <div className="text-right">
                                                     <div className="font-bold text-green-600">
-                                                        €
-                                                        {country.profit}
+                                                        
+                                                        {formatCurrency(country.profit)}
                                                     </div>
                                                     <div className="text-xs text-slate-500">
-                                                        €
-                                                        {country.revenue}{" "}
+                                                        
+                                                        {formatCurrency(country.revenue)}{" "}
                                                         revenue
                                                     </div>
                                                 </div>
