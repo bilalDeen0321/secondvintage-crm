@@ -4,10 +4,9 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MakeAiHookController;
 use App\Http\Controllers\Api\WatchApiController;
 use App\Http\Controllers\Api\WatchSkuController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Resources\WatchResource;
 use App\Models\Watch;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 /**
  * Register all api routes
@@ -26,21 +25,3 @@ Route::prefix('watches')->name('watches.')->group(function () {
 });
 
 Route::resource('locations', LocationController::class);
-
-Route::get('/check-sku', function (Request $request) {
-    $sku = $request->query('sku');
-
-    $defaultUrl = "https://secondvintage.com/thankyou/{$sku}";
-
-    if (!$sku) {
-        return response()->json(['redirect' => $defaultUrl]);
-    }
-
-    $watch = Watch::where('sku', $sku)->first();
-    
-    if ($watch) {
-        return response()->json(['redirect' => "https://secondvintage.com/watches/{$sku}", 'data' => $watch]);
-    }
-
-    return response()->json(['redirect' => $defaultUrl]);
-});
