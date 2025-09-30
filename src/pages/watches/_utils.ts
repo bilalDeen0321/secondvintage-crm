@@ -5,6 +5,8 @@ import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 /**
  * Watch Escape callback with routing
@@ -76,7 +78,7 @@ export const getServerSku = async (name: string, brand: string, oldSku?: string 
  * @param brand - Watch brand (optional)
  * @param sku   - SKU string (required)
  */
-export const printWatchSku = (name: string, brand: string, sku: string): void => {
+export const printWatchSkuOld = (name: string, brand: string, sku: string): void => {
   // Prevent printing if SKU is missing
   if (!sku) {
     alert("No SKU available to print");
@@ -144,3 +146,81 @@ export const printWatchSku = (name: string, brand: string, sku: string): void =>
     printWindow.document.close();
   }
 };
+
+export async function printWatchSku(name: string, brand: string, sku: string) {
+  if (!sku) {
+    alert("No SKU available to print");
+    return;
+  }
+  console.log('second vintage sku: ', sku);
+  try {
+    // Generate QR code
+    const qrCodeUrl = `http://qr.secondvintage.com/${sku}`;
+    const qrCodeDataURL = await QRCode.toDataURL(qrCodeUrl, {
+      width: 400,
+      margin: 1,
+      color: {
+        dark: "#000000",
+        light: "#FFFFFF",
+      },
+    });
+
+    // Create PDF (29 × 39 mm)
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: [29, 39],
+      putOnlyUsedFonts: true,
+      floatPrecision: 16,
+    });
+
+    // SKU text at top
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(sku, 14.5, 5.08, { align: "center" });
+
+    // QR Code (25x25mm)
+    pdf.addImage(qrCodeDataURL, "PNG", 2.03, 7.55, 25, 25);
+
+    // Try to add logo
+    try {
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      await new Promise<void>((resolve, reject) => {
+        logoImg.onload = () => resolve();
+        logoImg.onerror = () => reject();
+        logoImg.src = "/lovable-uploads/514150da-8678-460a-bcbc-ee548d8d6098.png";
+      });
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = logoImg.width;
+      canvas.height = logoImg.height;
+      ctx.drawImage(logoImg, 0, 0);
+      const logoDataURL = canvas.toDataURL("image/png");
+
+      const logoAspectRatio = logoImg.height / logoImg.width;
+      const logoWidth = 22;
+      const logoHeight = logoWidth * logoAspectRatio;
+
+      pdf.addImage(
+        logoDataURL,
+        "PNG",
+        (29 - logoWidth) / 2,
+        39 - logoHeight - 0.5,
+        logoWidth,
+        logoHeight
+      );
+    } catch (error) {
+      pdf.setFontSize(2);
+      pdf.setFont("helvetica", "normal");
+      pdf.text("Second Vintage", 14.5, 36, { align: "center" });
+    }
+
+    // Save file
+    pdf.save(`${sku}-label.pdf`);
+  } catch (error) {
+    console.error("Error generating PDF label:", error);
+    alert("Error generating PDF label");
+  }
+}
