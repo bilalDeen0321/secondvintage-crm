@@ -67,7 +67,7 @@ export default function SalesShow({ watch, platform, params = {} }: Props) {
                         <PlatformDataTable setPlatformData={setPlatformData} platformData={platformData} />
 
                         {/* Platform Notes */}
-                        <PlatformNotes platform={platform?.name} />
+                        {/* <PlatformNotes platform={platform?.name} /> */}
 
                         {/* Footer with action buttons */}
                         <PlatformFooterActions platformData={platformData} watch={watch} />

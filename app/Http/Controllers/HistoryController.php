@@ -25,10 +25,15 @@ class HistoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(HistoryQuery $query)
+    public function index(Request $request, HistoryQuery $query)
     {
         $filter = request()->input('filter', 'all-time');
-        $sales = Sale::with('watch')->latest()->get();
+        $perPage = (int) $request->input('per_page', 10);
+        $salesQuery = Sale::with('watch')->latest();
+       
+        $sales = $salesQuery->paginate($perPage)->appends($request->query());
+        $salesPayload = SaleResource::collection($sales)->response()->getData(true);
+         
         return Inertia::render('SalesHistory', [
             'filters' => $query->allFilters(),
             'totalSales' => $query->getTotalSales($filter),
@@ -39,7 +44,7 @@ class HistoryController extends Controller
             'profitPerPlatform' => $query->getProfitPerPlatform($filter),
             'monthlySalesCount' => $query->getMonthlySalesCount($filter),
             'salesByPlatform' => $query->getSalesByPlatform($filter),
-            'sales' => SaleResource::collection($sales),
+            'sales' => $salesPayload,
         ]);
     }
 

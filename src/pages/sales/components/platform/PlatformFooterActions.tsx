@@ -52,7 +52,7 @@ export function PlatformFooterActions({ platformData, watch, platform }: Props) 
             </Button>
             <Button disabled={loading} onClick={handleApproveGoNext} variant="default" className="bg-blue-600 hover:bg-blue-700">
                 <Check className="mr-2 h-4 w-4" />
-                {loading && <Loading />} Approve - Go Next
+                {loading && <Loading />} Ready for listing - Go Next
             </Button>
         </div>
     );

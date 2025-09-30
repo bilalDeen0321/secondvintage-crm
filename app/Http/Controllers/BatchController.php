@@ -193,7 +193,7 @@ class BatchController extends Controller
             ]);
 
             // Return fresh data
-            return $this->returnFreshData('success', 'Watch removed from batch successfully.');
+            //return $this->returnFreshData('success', 'Watch removed from batch successfully.');
         } catch (Exception $e) {
             Log::error('Error removing watch from batch: ' . $e->getMessage(), [
                 'batch_id' => $batch->id,

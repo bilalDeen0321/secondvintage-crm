@@ -15,7 +15,7 @@ import SaleQuickSelectionActions from "./components/SaleQuickSelectionActions";
 import { SaleSearchFilter } from "./components/SaleSearchFilter";
 import SaleWatchBlukActions from "./components/SaleWatchBlukActions";
 import SingleViewModal from "./components/SingleViewModal";
-import WatchTable from "./components/WatchTable";
+import WatchTable from "./components/WatchTable"; 
 
 export type SaleSearchData = {
     column: string;
