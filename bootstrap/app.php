@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     Route::name('api.')->prefix('api')->group(base_path('routes/api.php'));
                 });
             });
+
+            Route::name('api.')->prefix('api')->group(base_path('routes/public_api.php'));
         }
     )->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [

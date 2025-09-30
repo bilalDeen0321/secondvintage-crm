@@ -4,9 +4,9 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\MakeAiHookController;
 use App\Http\Controllers\Api\WatchApiController;
 use App\Http\Controllers\Api\WatchSkuController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Resources\WatchResource;
 use App\Models\Watch;
-use Illuminate\Support\Facades\Route;
 
 /**
  * Register all api routes
@@ -23,6 +23,5 @@ Route::prefix('watches')->name('watches.')->group(function () {
     Route::get('/{watch}/with-authors', [WatchApiController::class, 'withAuthors'])->name('with-authors');
     Route::post('generate-sku/{oldSku?}', [WatchSkuController::class, 'generate'])->name('generate-sku');
 });
-
 
 Route::resource('locations', LocationController::class);
