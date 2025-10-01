@@ -39,7 +39,8 @@ const SaleWatchTable: React.FC<WatchTableProps> = ({ watches, selectedWatches, w
                             <th className="w-8 p-3 text-xs font-medium text-slate-700">
                                 <Checkbox checked={selectedWatches.length === watches.length && watches.length > 0} onCheckedChange={onSelectAll} />
                             </th>
-                            <th className="w-16 p-3 text-xs font-medium text-slate-700">Image</th>
+                            {/* <th className="w-16 p-3 text-xs font-medium text-slate-700">Image</th> */}
+                            <SortableHeader field="created_at">Image</SortableHeader>
                             <SortableHeader field="name">Name</SortableHeader>
                             <SortableHeader field="sku">SKU</SortableHeader>
                             <SortableHeader field="brand">Brand</SortableHeader>

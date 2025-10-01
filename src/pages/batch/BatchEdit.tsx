@@ -371,7 +371,7 @@ export default function BatchEdit({ batch, watches, locations }: Props) {
                                                             watch?.status || "Draft"
                                                         )}
                                                     >
-                                                        {watch?.status || "Unknown"}
+                                                        {Status.toHuman(watch?.status|| "Unknown") }
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>

@@ -46,6 +46,7 @@ export function watchFilter(key: string, value: any, query: Record<string, any> 
         brand: searchParams.get('brand'),
         search: searchParams.get('search'),
         location: searchParams.get('location'),
+        per_page: searchParams.get('per_page'),
         ...query,
         [key]: value,
     };

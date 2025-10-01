@@ -1,120 +1,124 @@
 import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import React from "react";
 
 type LaravelPaginationLink = {
-    url: string | null;
-    label: string; // e.g. "&laquo; Previous", "1", "2", "Next &raquo;"
-    active: boolean;
+  url: string | null;
+  label: string;
+  active: boolean;
 };
 
 type TablePaginateProps = {
-    links: LaravelPaginationLink[];
-    className?: string;
+  links: LaravelPaginationLink[];
+  className?: string;
 };
 
-/**
- * TablePaginate
- * Renders pagination UI from Laravel's `meta.links` array
- * using your Pagination component styles.
- *
- * Uses <a href="..."> links that Inertia will intercept.
- */
 const TablePaginate: React.FC<TablePaginateProps> = ({ links, className }) => {
-    if (!links || links.length === 0) return null;
+  if (!links || links.length === 0) return null;
 
-    return (
-        <Pagination className={cn("mt-4", className)}>
-            <PaginationContent>
-                {links.map((link, index) => {
-                    // Normalize label to lowercase string for checks
-                    const labelStr = String(link.label).toLowerCase().trim();
+  // Extract Laravel structure
+  const previous = links[0];
+  const next = links[links.length - 1];
+  const pageLinks = links.slice(1, -1); // just the middle (numbers + ellipsis)
 
-                    // Detect types of links
-                    const isPrevious =
-                        labelStr.includes("previous") ||
-                        labelStr.includes("«") ||
-                        labelStr.includes("&laquo;");
-                    const isNext =
-                        labelStr.includes("next") ||
-                        labelStr.includes("»") ||
-                        labelStr.includes("&raquo;");
-                    const isEllipsis = labelStr === "...";
+  // Find current page
+  const currentPage = pageLinks.find((l) => l.active);
+  const current = currentPage ? parseInt(currentPage.label) : 1;
 
-                    if (isEllipsis) {
-                        return (
-                            <PaginationItem key={index}>
-                                <PaginationEllipsis />
-                            </PaginationItem>
-                        );
-                    }
+  // Find last page
+  const last = parseInt(pageLinks[pageLinks.length - 1].label);
 
-                    if (isPrevious) {
-                        return (
-                            <PaginationItem key={index}>
-                                <PaginationPrevious
-                                    href={link.url ?? "#"}
-                                    className={
-                                        !link.url
-                                            ? "pointer-events-none opacity-50"
-                                            : ""
-                                    }
-                                    aria-disabled={!link.url}
-                                />
-                            </PaginationItem>
-                        );
-                    }
+  const windowSize = 7;
+  let start = Math.max(1, current - Math.floor(windowSize / 2));
+  let end = start + windowSize - 1;
+  if (end > last) {
+    end = last;
+    start = Math.max(1, end - windowSize + 1);
+  }
 
-                    if (isNext) {
-                        return (
-                            <PaginationItem key={index}>
-                                <PaginationNext
-                                    href={link.url ?? "#"}
-                                    className={
-                                        !link.url
-                                            ? "pointer-events-none opacity-50"
-                                            : ""
-                                    }
-                                    aria-disabled={!link.url}
-                                />
-                            </PaginationItem>
-                        );
-                    }
+  const pages: number[] = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
 
-                    // Regular page number link
-                    return (
-                        <PaginationItem key={index}>
-                            <PaginationLink
-                                href={link.url ?? "#"}
-                                isActive={link.active}
-                                className={
-                                    !link.url
-                                        ? "pointer-events-none opacity-50"
-                                        : ""
-                                }
-                                aria-current={link.active ? "page" : undefined}
-                            >
-                                {/* Render label as raw HTML to support Laravel's encoded entities */}
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            </PaginationLink>
-                        </PaginationItem>
-                    );
-                })}
-            </PaginationContent>
-        </Pagination>
-    );
+  return (
+    <Pagination className={cn("mt-4", className)}>
+      <PaginationContent>
+        {/* Previous */}
+        <PaginationItem>
+          <PaginationPrevious
+            href={previous.url ?? "#"}
+            className={!previous.url ? "pointer-events-none opacity-50" : ""}
+            aria-disabled={!previous.url}
+          />
+        </PaginationItem>
+
+        {/* First page + ellipsis if needed */}
+        {start > 1 && (
+          <>
+            <PaginationItem>
+              <PaginationLink href={links.find((l) => l.label === "1")?.url ?? "#"}>
+                1
+              </PaginationLink>
+            </PaginationItem>
+            {start > 2 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+          </>
+        )}
+
+        {/* Sliding window */}
+        {pages.map((page) => {
+          const link = pageLinks.find((l) => l.label === String(page));
+          return (
+            <PaginationItem key={page}>
+              <PaginationLink
+                href={link?.url ?? "#"}
+                isActive={page === current}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          );
+        })}
+
+        {/* Last page + ellipsis if needed */}
+        {end < last && (
+          <>
+            {end < last - 1 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+            <PaginationItem>
+              <PaginationLink href={links.find((l) => l.label === String(last))?.url ?? "#"}>
+                {last}
+              </PaginationLink>
+            </PaginationItem>
+          </>
+        )}
+
+        {/* Next */}
+        <PaginationItem>
+          <PaginationNext
+            href={next.url ?? "#"}
+            className={!next.url ? "pointer-events-none opacity-50" : ""}
+            aria-disabled={!next.url}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
 };
 
 export default TablePaginate;

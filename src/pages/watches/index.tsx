@@ -14,6 +14,7 @@ import WatchBulkActions from "./components/WatchBulkActions";
 import WatchHeaderRight from "./components/WatchHeaderRight";
 import WatchMultiselectStatusFilter from "./components/WatchMultiselectStatusFilter";
 import WatchSearchAndFilter from "./components/WatchSearchAndFilter";
+import { getSelectSearch, watchFilter } from "./_search";
 
 type StatusKey = (typeof Status.statuses)[number];
 type WatchCount = Record<StatusKey, number>;
@@ -36,6 +37,8 @@ const WatchManagement = (props: Props) => {
     const page = usePage();
     const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>;
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
+    const perPage = page.props.perPage as number;
+
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
 
     const { data, setData } = useForm({
@@ -47,6 +50,7 @@ const WatchManagement = (props: Props) => {
         location: "All",
         direction: "asc",
     });
+   
 
     // Add effect to handle data refresh when coming back from edit
     useEffect(() => {
@@ -66,7 +70,19 @@ const WatchManagement = (props: Props) => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
     }, []);
-
+    const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        router.get(
+            route("watches.index"), // your route name
+            {
+                ...data, // 🔹 keep filters/search applied
+                per_page: e.target.value,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            }
+        );
+    };
     const handleSelectWatch = (watchId: string, checked: boolean) => {
         if (checked) {
             setSelectedWatches([...selectedWatches, watchId]);
@@ -82,7 +98,11 @@ const WatchManagement = (props: Props) => {
             setSelectedWatches([]);
         }
     };
-
+     
+ 
+// useEffect(() => {
+//   fetchData({ perPage });
+// }, [perPage]);
     return (
         <Layout>
             <Head title="Watch Management" />
@@ -107,12 +127,38 @@ const WatchManagement = (props: Props) => {
                     <WatchBulkActions batches={batches} locations={locations} selectedWatches={selectedWatches} setSelectedWatches={setSelectedWatches} />
 
                     {/* Results info and pagination controls */}
-                    <div className="mb-4 flex items-center justify-between">
-                        <div className="w-full text-sm text-slate-600">
-                            Showing {meta.from ?? 0}-{meta.to ?? 0} of {meta.total} watches
+                 <div className="mb-4 flex items-center justify-between">
+                    {/* Left side: showing text + per page dropdown */}
+                    <div className="flex items-center gap-6 text-sm text-slate-600">
+                        <span>
+                        Showing {meta.from ?? 0}-{meta.to ?? 0} of {meta.total} watches
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                        <span className="whitespace-nowrap">Per Page:</span>
+                        <select
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            value={perPage}
+                           onChange={(e) => {
+                                        watchFilter("per_page", e.target.value); // ✅ correct for native select
+                                    }}
+                        >
+                            {[20, 50, 100, 200, 500].map((num) => (
+                            <option key={num} value={num}>
+                                {num}
+                            </option>
+                            ))}
+                        </select>
                         </div>
-                        <TablePaginate links={meta.links} className="block w-full" />
                     </div>
+
+                    {/* Right side: pagination always aligned right */}
+                    <div className="flex-shrink-0">
+                        <TablePaginate links={meta.links} />
+                    </div>
+                    </div>
+
+
                 </div>
 
                 {/* Content */}
