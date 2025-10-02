@@ -509,7 +509,7 @@ const FullDataView = () => {
 
     return (
         <Layout>
-            <Head title="Full Data View" />
+            <Head title="SV - Full Data View" />
             <div className="min-h-screen bg-slate-50">
                 <div className="p-8">
                     <div className="mb-8">

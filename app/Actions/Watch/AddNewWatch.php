@@ -32,6 +32,7 @@ class AddNewWatch
                 'serial_number'   => $data['serial_number'],
                 'reference'       => $data['reference'],
                 'case_size'       => $data['case_size'],
+                'wrist_size'       => $data['wrist_size'],
                 'caliber'         => $data['caliber'],
                 'timegrapher'     => $data['timegrapher'],
                 'original_cost'   => $data['original_cost'],

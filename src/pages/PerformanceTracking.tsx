@@ -212,7 +212,7 @@ const PerformanceTracking = () => {
 
     return (
         <Layout>
-            <Head title="Performance Tracking" />
+            <Head title="SV - Performance Tracking" />
             <div className="p-8">
                 {/* Header */}
                 <div className="mb-8">

@@ -38,13 +38,15 @@ const WatchManagement = (props: Props) => {
     const { data: watches = [], meta } = page.props.watches as PaginateData<WatchResource>;
     const watch_count: Partial<WatchCount> = page.props.watch_count || {};
     const perPage = page.props.perPage as number;
+    
 
     const [selectedWatches, setSelectedWatches] = useState<string[]>([]);
+    const { status: initialStatus } = props;
 
     const { data, setData } = useForm({
         column: "",
         search: "",
-        status: ["all"],
+        status: initialStatus?.length ? initialStatus : ["all"],
         brand: "All",
         batch: "All",
         location: "All",
@@ -74,7 +76,7 @@ const WatchManagement = (props: Props) => {
         router.get(
             route("watches.index"), // your route name
             {
-                ...data, // 🔹 keep filters/search applied
+                ...data, //  keep filters/search applied
                 per_page: e.target.value,
             },
             {
@@ -97,15 +99,10 @@ const WatchManagement = (props: Props) => {
         } else {
             setSelectedWatches([]);
         }
-    };
-     
- 
-// useEffect(() => {
-//   fetchData({ perPage });
-// }, [perPage]);
+    };  
     return (
         <Layout>
-            <Head title="Watch Management" />
+            <Head title="SV - Watch Management" />
             <div className="p-8">
                 {/* Header */}
                 <div className="mb-8">
@@ -118,7 +115,7 @@ const WatchManagement = (props: Props) => {
                     </div>
 
                     {/* Multi-select Status Filter */}
-                    <WatchMultiselectStatusFilter data={data} setData={setData} watch_count={watch_count} />
+                    <WatchMultiselectStatusFilter data={data}  setData={setData} watch_count={watch_count} />
 
                     {/* Search and Filters */}
                     <WatchSearchAndFilter data={data} setData={setData} batches={batches} brands={brands} locations={locations} />
@@ -140,7 +137,7 @@ const WatchManagement = (props: Props) => {
                             className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                             value={perPage}
                            onChange={(e) => {
-                                        watchFilter("per_page", e.target.value); // ✅ correct for native select
+                                        watchFilter("per_page", e.target.value); //correct for native select
                                     }}
                         >
                             {[20, 50, 100, 200, 500].map((num) => (

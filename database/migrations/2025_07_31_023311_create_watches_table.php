@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('serial_number')->nullable();
             $table->string('reference')->nullable();
             $table->string('case_size')->nullable();
+            $table->string('wrist_size')->nullable();
             $table->string('caliber')->nullable();
             $table->string('timegrapher')->nullable();
 

@@ -66,7 +66,7 @@ const Tools = () => {
 
     return (
         <Layout>
-            <Head title="Tools & Utilities" />
+            <Head title="SV - Tools & Utilities" />
             <div className="space-y-6 p-6">
                 <div>
                     <h1 className="text-3xl font-bold">Tools & Utilities</h1>

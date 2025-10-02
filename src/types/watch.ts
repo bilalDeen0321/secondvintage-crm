@@ -10,6 +10,7 @@ export interface Watch {
     serial_number: string | null;
     reference: string | null;
     case_size: string | null;
+    wrist_size: string | null;
     caliber: string | null;
     timegrapher: string | null;
     original_cost: string | number;

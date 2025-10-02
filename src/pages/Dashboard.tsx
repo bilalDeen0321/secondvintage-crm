@@ -42,7 +42,7 @@ const Dashboard = () => {
     const [dateFilter, setDateFilter] = useState(defaultFilter);
     const { props } = usePage();
 
-    console.log('kpis: ', props);
+     
 
     useEffect(() => {
         if (dateFilter) {
@@ -106,7 +106,7 @@ const Dashboard = () => {
 
     const platformSalesData = props.platformSalesDistribution;
 
-    console.log('platformSalesData', platformSalesData);
+      
     
     // [
     //     { platform: "Catawiki", sales: 12, percentage: 46.2 },
@@ -199,7 +199,7 @@ const Dashboard = () => {
 
     return (
         <Layout>
-            <Head title="Dashboard" />
+            <Head title="SV - Dashboard" />
             <div className="p-8">
                 <div className="mb-8 flex items-start justify-between">
                     <div>

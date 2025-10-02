@@ -161,8 +161,6 @@ const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
 
     const { props } = usePage();
 
-    console.log('page props: ', props);
-
     useEffect(() => {
         if (timeRange) {
             setSearchParams({ filter: timeRange });
@@ -326,7 +324,7 @@ const formatCurrency = (value) => {
 
     return (
         <Layout>
-            <Head title="Sales History & Statistics" />
+            <Head title="SV - Sales History & Statistics" />
             <div className="p-8">
                 {/* Header */}
                 <div className="mb-8 flex items-center justify-between">

@@ -28,6 +28,7 @@ class Watch extends Model
         'serial_number',
         'reference',
         'case_size',
+        'wrist_size',
         'caliber',
         'timegrapher',
         'original_cost',

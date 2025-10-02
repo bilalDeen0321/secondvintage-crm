@@ -27,6 +27,7 @@ export const watchInitData = (watch?: WatchResource | null, user?: User) => ({
   serial_number: watch?.serial_number || "",
   reference: watch?.reference || "",
   case_size: watch?.case_size || "",
+  wrist_size: watch?.wrist_size || "",
   caliber: watch?.caliber || "",
   timegrapher: watch?.timegrapher || "",
   original_cost: watch?.original_cost || "",

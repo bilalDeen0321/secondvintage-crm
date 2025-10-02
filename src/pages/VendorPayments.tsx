@@ -847,7 +847,7 @@ const VendorPayments = () => {
 
     return (
         <Layout>
-            <Head title="Agent Balance" />
+            <Head title="SV - Agent Balance" />
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>

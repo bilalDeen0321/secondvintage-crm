@@ -136,7 +136,7 @@ const Invoices = () => {
 
     return (
         <Layout>
-            <Head title="Invoices" />
+            <Head title="SV - Invoices" />
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>

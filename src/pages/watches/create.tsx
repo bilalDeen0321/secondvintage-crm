@@ -344,6 +344,16 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                                 className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
                                             />
                                         </div>
+                                        <div>
+                                            <label className="mb-1 block text-sm font-medium text-slate-700">Wrist Size</label>
+                                            <input
+                                                type="text"
+                                                name="wrist_size"
+                                                value={data.wrist_size}
+                                                onChange={(e) => setData("wrist_size", e.target.value)}
+                                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:border-transparent focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                            />
+                                        </div>
 
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Caliber</label>

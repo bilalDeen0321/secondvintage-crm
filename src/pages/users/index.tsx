@@ -77,7 +77,7 @@ const Users = () => {
 
     return (
         <Layout>
-            <Head title="User Management" />
+            <Head title="SV - User Management" />
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>

@@ -32,7 +32,7 @@ export default function ResetPassword({
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <Head title="SV - Reset Password" />
 
             <div className="mb-8 text-center">
                 <h3 className="mb-2 text-3xl font-bold text-foreground">

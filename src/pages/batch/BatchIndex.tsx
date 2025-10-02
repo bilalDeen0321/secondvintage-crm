@@ -70,7 +70,7 @@ const BatchManagement = ({
  
     return (
         <Layout>
-            <Head title="Batch Management" />
+            <Head title="SV - Batch Management" />
             <div className="p-8">
                 <BatchFilters
                     searchTerm={data.search}

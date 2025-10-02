@@ -90,7 +90,7 @@ const passwordForm = useForm({
   }
     return (
         <Layout>
-            <Head title="Settings" />
+            <Head title="SV - Settings" />
             <div className="space-y-6 p-6">
                 <div>
                     <h1 className="text-3xl font-bold">Settings</h1>

@@ -156,7 +156,7 @@ export default function SalesHistoryIndex({ sales, stats, filters }: Props) {
 
     return (
         <Layout>
-            <Head title="Sales History" />
+            <Head title="SV - Sales History" />
 
             <div className="p-8">
                 {/* Header */}

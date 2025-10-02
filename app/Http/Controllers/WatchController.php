@@ -37,23 +37,28 @@ class WatchController extends Controller
      */
     public function index(Request $request)
     {
+          $status = $request->get('status', []);
+          
         $perPage = $request->get('per_page', 50);
-         $allowed = [20, 50, 100, 200, 500];
-    if (!in_array($perPage, $allowed)) {
-        $perPage = 50;
-    }
+        $allowed = [20, 50, 100, 200, 500];
+        if (!in_array($perPage, $allowed)) {
+            $perPage = 50;
+        }
         // Get paginated results  
         $watches = WatchQuery::init()
             ->execute($request)
-            ->paginate($perPage)
-            ->withQueryString();
-        return Inertia::render('watches/index', [
-            ...WatchQuery::init()->crudData(),
-            'watches' => WatchResource::collection($watches)->response()->getData(true),
-            'filters' => WatchQuery::init()->getFiltersColumns($request),
-            'watch_count' => WatchQuery::init()->getCounts(),
-            'perPage' => $perPage,
-        ]);
+            ->paginate($perPage)->appends($request->query()); 
+       return Inertia::render('watches/index', array_merge(
+            WatchQuery::init()->crudData(),
+            [
+                'watches'     => WatchResource::collection($watches),
+                'filters'     => WatchQuery::init()->getFiltersColumns($request),
+                'watch_count' => WatchQuery::init()->getCounts(),
+                'perPage'     => $perPage,
+                'status'      => $status,
+            ]
+        ));
+
     }
 
     /**

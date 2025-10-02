@@ -956,7 +956,7 @@ const AgentWatches = () => {
 
     return (
         <Layout>
-            <Head title="Agent Watches" />
+            <Head title="SV - Agent Watches" />
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div>

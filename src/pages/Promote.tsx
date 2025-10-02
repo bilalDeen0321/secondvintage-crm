@@ -269,7 +269,7 @@ Perfect for collectors and enthusiasts alike.
 
     return (
         <Layout>
-            <Head title="Promote / Social Media" />
+            <Head title="SV - Promote / Social Media" />
             <div className="p-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-slate-900">

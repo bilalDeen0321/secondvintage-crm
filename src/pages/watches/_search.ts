@@ -1,30 +1,73 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { debounce } from "@/app/utils";
 import { router } from "@inertiajs/react";
 
+/**
+ * Parse window.location.search into an object.
+ * Handles array params like status[]=a, status[0]=a, or repeated keys.
+ */
+function parseSearchParams(): Record<string, any> {
+    const sp = new URLSearchParams(window.location.search);
+    const params: Record<string, any> = {};
 
+    sp.forEach((val, rawKey) => {
+        // Normalize keys by stripping [index] or [] suffix
+        const baseKey = rawKey.replace(/\[\d*\]$/, "").replace(/\[\]$/, "");
 
-// debounce utility (same as before)
+        if (!(baseKey in params)) {
+            params[baseKey] = val;
+        } else if (Array.isArray(params[baseKey])) {
+            (params[baseKey] as string[]).push(val);
+        } else {
+            params[baseKey] = [params[baseKey], val];
+        }
+    });
 
+    // Normalize arrays
+    Object.keys(params).forEach((k) => {
+        if (Array.isArray(params[k])) {
+            params[k] = Array.from(new Set(params[k].map(String)));
+        } else {
+            params[k] = String(params[k]);
+        }
+    });
 
-// helper to remove empty keys from object
+    return params;
+}
+
+/**
+ * Remove empty / null / undefined values.
+ */
 export function cleanParams(params: Record<string, any>) {
     const cleaned: Record<string, any> = {};
     for (const key in params) {
         const value = params[key];
-        if (
-            value !== undefined &&
-            value !== null &&
-            (typeof value !== 'string' || value.trim() !== '') // remove empty strings
-        ) {
-            cleaned[key] = value;
+
+        if (value === undefined || value === null) continue;
+
+        if (Array.isArray(value)) {
+            const arr = value
+                .map((v) => String(v ?? "").trim())
+                .filter((v) => v && v.toLowerCase() !== "all");
+            if (arr.length > 0) cleaned[key] = Array.from(new Set(arr));
+            continue;
         }
+
+        if (typeof value === "string") {
+            const v = value.trim();
+            if (!v || v.toLowerCase() === "all") continue;
+            cleaned[key] = v;
+            continue;
+        }
+
+        cleaned[key] = value;
     }
     return cleaned;
 }
 
-// Create a debounced router call once
+/**
+ * Debounced Inertia navigation
+ */
 export const debouncedNavigate = debounce((params: Record<string, any>) => {
     router.get(route("watches.index"), params, {
         preserveScroll: true,
@@ -33,50 +76,67 @@ export const debouncedNavigate = debounce((params: Record<string, any>) => {
     });
 }, 300);
 
-
 /**
- * Handles filtering watches by updating URL parameters and navigating.
+ * Main filter handler.
+ * Removes params on unselect/empty.
  */
-export function watchFilter(key: string, value: any, query: Record<string, any> = {}) {
-    const searchParams = new URLSearchParams(window.location.search);
+export function watchFilter(
+    key: string,
+    value: any,
+    query: Record<string, any> = {}
+) {
+    const params = parseSearchParams();
 
-    // Merge params
-    const params = {
-        batch: searchParams.get('batch'),
-        brand: searchParams.get('brand'),
-        search: searchParams.get('search'),
-        location: searchParams.get('location'),
-        per_page: searchParams.get('per_page'),
-        ...query,
-        [key]: value,
-    };
+    //   Always clear the old key first
+    delete params[key];
 
-    // Clean params by removing empty keys
+    if (Array.isArray(value)) {
+        const arr = value
+            .map((v) => String(v ?? "").trim())
+            .filter((v) => v && v.toLowerCase() !== "all");
+        if (arr.length > 0) {
+            params[key] = Array.from(new Set(arr));
+        }
+    } else if (
+        value !== null &&
+        value !== undefined &&
+        !(typeof value === "string" && (value.trim() === "" || value.toLowerCase() === "all"))
+    ) {
+        params[key] = value;
+    }
+
+    // Merge overrides
+    for (const qk in query) {
+        const qv = query[qk];
+        if (qv === null || qv === undefined || (typeof qv === "string" && !qv.trim())) {
+            delete params[qk];
+        } else {
+            params[qk] = qv;
+        }
+    }
+
     const cleanedParams = cleanParams(params);
-
     debouncedNavigate(cleanedParams);
 }
 
-
+/**
+ * Helpers
+ */
 export const getSearchStatus = (data: string[]) => {
     return Array.from(
         new Set(
-            data
+            (data || [])
                 .map(String)
-                .filter(s => s.toLowerCase() !== 'all')
+                .filter((s) => s.toLowerCase() !== "all")
                 .filter(Boolean)
         )
     );
 };
 
-export const getSelectSearch = (value: string, lower: boolean = false) => {
+export const getSelectSearch = (value: string, lower = false) => {
     const str = lower ? value.toLowerCase() : value;
-    return str.replace(/all/gi, '');
+    return str.replace(/all/gi, "");
 };
 
-
-export const getSelectStatus = (arr: string[]) => {
-    return arr.filter(s => String(s) != 'all').filter(Boolean);
-};
-
-
+export const getSelectStatus = (arr: string[]) =>
+    (arr || []).filter((s) => String(s) !== "all").filter(Boolean);

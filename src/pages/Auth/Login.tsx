@@ -28,7 +28,7 @@ const Login = () => {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <Head title="Login" />
+            <Head title="SV - Login" />
 
             <div className="w-full max-w-md">
                 <div className="mb-8 text-center">

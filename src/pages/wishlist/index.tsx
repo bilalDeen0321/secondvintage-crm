@@ -17,7 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { router } from '@inertiajs/react'; 
-
+import { Head } from "@inertiajs/react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -515,6 +515,7 @@ function BrandSelect({ brands, value, onChange }: {
 
     return (
         <Layout>
+              <Head title="SV - Wish List" />
             <div className="p-4 lg:p-8">
                 {/* Mobile Header */}
                 <div className="flex flex-col space-y-4 lg:hidden">

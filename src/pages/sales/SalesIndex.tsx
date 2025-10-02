@@ -91,7 +91,7 @@ const MultiplatformSales = (props: Props) => {
 
     return (
         <Layout>
-            <Head title="Multi-platform Sales" />
+            <Head title="SV - Multi-platform Sales" />
             <div className="p-8">
                 {/* Header */}
                 <div className="mb-8">
