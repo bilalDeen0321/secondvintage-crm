@@ -22,8 +22,8 @@ class DashboardController extends Controller
     public function index(DashboardQuery $query)
     {
         $filter = request()->input('filter', 'all-time'); 
-        return Inertia::render('Dashboard', [
-            'filters' => $query->allFilters(),
+        return Inertia::render('Dashboard', [ 
+            'filters' => $query->allFilters(), 
             'selectedFilter' => $filter,
             'metrics' => $query->getDashboardMetrics($filter),
             'recentActivity' => $query->getRecentActivity($filter),
