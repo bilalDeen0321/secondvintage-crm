@@ -48,8 +48,7 @@ class WatchQuery
         // Map frontend column names to database columns if needed
         $columns = [
             'name' => 'name',
-            'sku' => 'sku',
-            'brand' => 'brand',
+            'sku' => 'sku', 
             'status' => 'status',
             'location'          => 'location',
             'created_at'        => 'created_at',
@@ -62,8 +61,27 @@ class WatchQuery
         $column = $request->input('order.column', 'created_at');
         $dir    = $request->input('order.dir', 'desc');
 
-        if ($column && isset($columns[$column])) {
-            $query->orderBy($columns[$column], $dir);
+        // if ($column && isset($columns[$column])) {
+        //     $query->orderBy($columns[$column], $dir);
+        // }
+        if ($column) {
+            if ($column === 'brand') {
+                // sort by brand relation
+                $query->join('brands', 'watches.brand_id', '=', 'brands.id')
+                    ->select('watches.*') // ensure we keep original fields
+                    ->orderBy('brands.name', $dir);
+            }  else if ($column === 'batchGroup') {
+        // assuming Watch has belongsTo('batch')
+        $query->join('batches', 'watches.batch_id', '=', 'batches.id')
+              ->select('watches.*')
+              ->orderBy('batches.name', $dir);
+
+        // if it's not 'name' but a 'group' field, adjust:
+        // ->orderBy('batches.group', $dir);
+
+    } else if (isset($columns[$column])) {
+                $query->orderBy($columns[$column], $dir);
+            }
         }
 
         $query
@@ -80,9 +98,9 @@ class WatchQuery
                 });
             })
             ->when($request->filled('brand'), function (Builder $q) use ($request) {
-                $brands = Arr::wrap($request->input('brand'));
-                $q->whereHas('brand', fn($brandQuery) => $brandQuery->whereIn('name', $brands));
-            })
+                    $brands = Arr::wrap($request->input('brand'));
+                    $q->whereHas('brand', fn($brandQuery) => $brandQuery->whereIn('name', $brands));
+                })
             ->when($request->filled('batch'), function (Builder $q) use ($request) {
                 $batches = Arr::wrap($request->input('batch'));
                 $q->whereHas('batch', fn($batchQuery) => $batchQuery->whereIn('name', $batches));

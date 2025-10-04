@@ -312,6 +312,7 @@ class DashboardQuery
             'TAG Heuer' => '#10b981',
             'Breitling' => '#ef4444',
             'IWC' => '#8b5cf6',
+            'Seiko-3' => '#ef4444',
             'Others' => '#6b7280',
         ];
         return $brandColors[$brandName] ?? '#' . substr(md5($brandName), 0, 6); // fallback to random color name

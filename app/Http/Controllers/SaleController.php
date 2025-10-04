@@ -24,8 +24,7 @@ class SaleController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-
+    { 
         // Get paginated results
         $watches = WatchQuery::init()
             ->execute($request)

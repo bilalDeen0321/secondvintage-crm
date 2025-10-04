@@ -43,4 +43,8 @@ class Brand extends Model
             $brand->code = rand(0, 100);
         });
     }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
 }

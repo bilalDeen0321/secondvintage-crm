@@ -66,10 +66,7 @@ export default function BatchEdit({ batch, watches, locations }: Props) {
         routeKey: BatchResource["routeKey"],
         watchKey: WatchResource["routeKey"],
         e,
-    ) => { 
-        console.log(routeKey);
-        console.log(watchKey);
-         console.log(batch.watches); 
+    ) => {   
     e.preventDefault(); // stop default navigation/reload
 
     if (window.confirm("Are you sure you want to remove this watch?")) {

@@ -61,6 +61,7 @@ export default function BatchWatches(props: Props) {
     const [addWatchSortDirection, setAddWatchSortDirection] = useState<"asc" | "desc">("asc");
     const [selectedWatchesToAdd, setSelectedWatchesToAdd] = useState<(number | string)[]>([]);
     const [batches, setBatches] = useState<BatchResource[]>([]);
+const [assigning, setAssigning] = useState(false);
 
      // Filtering logic
   const filteredWatches = watches
@@ -130,16 +131,26 @@ export default function BatchWatches(props: Props) {
             setSelectedWatchesToAdd([]);
         }
     };
+const [open, setOpen] = useState(true);
 
     const onAssignWatches = () => { 
+        setAssigning(true);
         const data = { ids: selectedWatchesToAdd };
         router.post(route("batches.assignWatches", batch?.routeKey), data, {
             preserveState: false,
              onSuccess: (flash) => { 
              toast({ description: 'success', variant: "default" });
+             setOpen(false);
+                setTimeout(() => {
+                    router.visit(route("batches.show", batch?.routeKey), { preserveScroll: true });
+                }, 200);
             },
             onError: (errors) => {
+                setAssigning(false);
             // handle validation errors
+            },
+             onFinish: () => {
+            setAssigning(false); // cleanup after request
             }
         });
     };
@@ -206,10 +217,40 @@ export default function BatchWatches(props: Props) {
                                 onClick={onAssignWatches}
                                 className="flex items-center gap-1"
                                 size="sm"
-                            >
-                                <Plus className="h-3 w-3" />
-                                Add Selected
-                            </Button>
+                                disabled={assigning}
+                                   >
+                                    {assigning ? (
+                                    <span className="flex items-center gap-2">
+                                    <svg className="h-4 w-4 animate-spin"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                    </svg>
+                                    Assigning...
+                                    </span>
+                                ) : (
+                                    <>
+                                    <Plus className="h-3 w-3" />
+                                    Add Selected
+                                    </>
+                                )}
+                                </Button>
+
+                                 
                             <Button
                                 onClick={() => onSelectAllWatches(false)}
                                 variant="outline"
