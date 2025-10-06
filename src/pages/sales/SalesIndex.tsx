@@ -112,7 +112,7 @@ const MultiplatformSales = (props: Props) => {
                     <SaleWatchBlukActions ids={selectedWatches} locations={locations} batches={batches} />
 
                     {/* Export Actions */}
-                    <SaleExports watch_ids={selectedWatches} />
+                    <SaleExports watch_ids={selectedWatches} watches={watches.filter(watch => selectedWatches.includes(watch.id))}/>
                 </div>
 
                 {/* Watch Table */}

@@ -154,19 +154,7 @@ class DashboardQuery
      * Fills zeros for months with no data.
      */
     public function getRevenueData(string $filter = 'all-time'): array
-    {
-        // SELECT 
-        //     DATE_FORMAT(MIN(created_at), '%Y-%m') AS month_key, -- still keep this for merging
-        //     DATE_FORMAT(MIN(created_at), '%b') AS month,        -- only month name for display
-        //     SUM(price) AS revenue,
-        //     SUM(price - COALESCE(original_price, 0)) AS profit,
-        //     COUNT(*) AS watches
-        // FROM sales
-        // AND created_at >= '2025-03-01'
-        // AND created_at <= '2025-09-30'
-        // GROUP BY YEAR(created_at), MONTH(created_at)
-        // ORDER BY MIN(created_at);
-
+    {  
         [$start, $end] = $this->getDateRange($filter);
 
         // Fetch aggregated sales data
@@ -219,27 +207,7 @@ class DashboardQuery
      * Dynamically selects top 5 brands by count, consolidates rest into "Others".
      */
     public function getWatchInventoryByBrand(string $filter = 'this-month'): array
-    {
-        // WITH ranked_brands AS (
-        //     SELECT 
-        //         b.name AS brand,
-        //         COUNT(w.id) AS count,
-        //         ROUND((COUNT(w.id) / (SELECT COUNT(*) FROM watches)) * 100, 1) AS percentage,
-        //         RANK() OVER (ORDER BY COUNT(w.id) DESC) AS rnk
-        //     FROM watches w
-        //     LEFT JOIN brands b ON b.id = w.brand_id
-        //     GROUP BY b.name
-        // )
-        // SELECT brand, count, percentage
-        // FROM ranked_brands
-        // WHERE rnk <= 5
-
-        // UNION ALL
-
-        // SELECT 'Others', SUM(count), ROUND((SUM(count) / (SELECT COUNT(*) FROM watches)) * 100, 1)
-        // FROM ranked_brands
-        // WHERE rnk > 5;
-
+    {  
         [$start, $end] = $this->getDateRange($filter);
 
         // Get ranked brands with dynamic filter
@@ -305,18 +273,22 @@ class DashboardQuery
      * Get color for a brand based on chartConfig or default.
      */
     protected function getBrandColor(string $brandName): string
-    {
-        $brandColors = [
-            'Rolex' => '#f59e0b',
-            'Omega' => '#3b82f6',
-            'TAG Heuer' => '#10b981',
-            'Breitling' => '#ef4444',
-            'IWC' => '#8b5cf6',
-            'Seiko-3' => '#ef4444',
-            'Others' => '#6b7280',
-        ];
-        return $brandColors[$brandName] ?? '#' . substr(md5($brandName), 0, 6); // fallback to random color name
-    }
+        {
+            $brandColors = [
+                'Rolex'     => '#f59e0b', // amber
+                'Omega'     => '#3b82f6', // blue
+                'TAG Heuer' => '#10b981', // green
+                'Breitling' => '#ef4444', // red
+                'IWC'       => '#8b5cf6', // purple
+                'Others'    => '#6b7280', // gray
+            ];
+
+            // Normalize brand names (trim/case-insensitive)
+            $key = trim($brandName);
+
+            // Return predefined color or fallback to "Others"
+            return $brandColors[$key] ?? $brandColors['Others'];
+        }
 
     public function getWatchesSoldPerMonth(string $filter = 'last-6-months'): array
     {

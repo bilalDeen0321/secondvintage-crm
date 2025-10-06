@@ -4,19 +4,37 @@ import { Button } from "@/components/ui/button";
 import { WatchResource } from "@/types/resources/watch";
 import { Download } from "lucide-react";
 import { useState } from "react";
+import { toast } from "@/components/ui/use-toast";
 
 type Props = {
     watch_ids: WatchResource["id"][];
-};
+    watches?: WatchResource[];
+}; 
+export default function SaleExports({ watch_ids, watches }: Props) {
+     const [loading, setLoading] = useState(false);
+    if (!watch_ids.length) return null; 
 
-export default function SaleExports({ watch_ids }: Props) {
-    //
-    const [loading, setLoading] = useState(false);
-
-    if (!watch_ids.length) return null;
-
-    const onExport = (platform: PlatformTypes) => {
-        setLoading(true);
+   const onExport = (platform: PlatformTypes) => { 
+    const safeWatches = watches ?? []; 
+    
+    if (platform === PlatformData.CATAWIKI) {
+      const invalid = safeWatches.filter(
+        (w) =>
+          w.platform !== PlatformData.CATAWIKI ||
+          w.status !== "ready_for_listing"
+      );
+       
+      if (invalid.length > 0) {
+        toast({
+          description:
+            "Only watches with status 'Ready for listing' and platform 'Catawiki' can be exported.",
+          variant: "destructive",
+        });
+        return; // stop export
+      }
+    }
+     
+    setLoading(true);
         const url = platform === PlatformData.CATAWIKI ? route("sales.exports.catawiki") : route("sales.exports.tradera");
         const form = document.createElement("form");
         form.method = "POST";

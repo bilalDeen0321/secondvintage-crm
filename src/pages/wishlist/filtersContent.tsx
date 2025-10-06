@@ -53,7 +53,7 @@ export const FiltersContent = ({
           preserveScroll: true,
           replace: true,
         });
-      }, 500),
+      }, 800),
     []
   );
 

@@ -57,7 +57,7 @@ export default function PlatformDataTable({ platformData, setPlatformData }: Pro
                     <Textarea
                         value={field.value}
                         onChange={(e) => handleFieldChange(index, e.target.value)}
-                        className="min-h-[240px]"
+                        className="min-h-[140px]"
                     />
                 );
             case "number":

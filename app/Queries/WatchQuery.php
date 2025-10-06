@@ -61,23 +61,18 @@ class WatchQuery
         $column = $request->input('order.column', 'created_at');
         $dir    = $request->input('order.dir', 'desc');
 
-        // if ($column && isset($columns[$column])) {
-        //     $query->orderBy($columns[$column], $dir);
-        // }
+        
         if ($column) {
             if ($column === 'brand') {
-                // sort by brand relation
                 $query->join('brands', 'watches.brand_id', '=', 'brands.id')
-                    ->select('watches.*') // ensure we keep original fields
+                    ->select('watches.*')
                     ->orderBy('brands.name', $dir);
             }  else if ($column === 'batchGroup') {
-        // assuming Watch has belongsTo('batch')
         $query->join('batches', 'watches.batch_id', '=', 'batches.id')
               ->select('watches.*')
               ->orderBy('batches.name', $dir);
-
-        // if it's not 'name' but a 'group' field, adjust:
-        // ->orderBy('batches.group', $dir);
+    } else if ($column === 'acquisitionCost') {
+        $query->orderBy('watches.current_cost', $dir);
 
     } else if (isset($columns[$column])) {
                 $query->orderBy($columns[$column], $dir);
