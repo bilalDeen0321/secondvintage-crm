@@ -33,7 +33,7 @@ const Login = () => {
             <div className="w-full max-w-md">
                 <div className="mb-8 text-center">
                     <img
-                        src={config.logo}
+                        src="/second_vintage_logo_blue.png"
                         alt={config.name}
                         className="mx-auto mb-6 h-12"
                     />

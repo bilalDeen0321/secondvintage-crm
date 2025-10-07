@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import newLogo from "@/assets/new-logo.png";
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const { url, props } = usePage();
@@ -20,7 +21,8 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
             <div className="border-b border-slate-700 p-6">
                 <Link prefetch href="/" onClick={onItemClick}>
                     <img
-                        src={config.logo}
+                        // src={config.logo}
+                        src="/white_logo.png"
                         alt={config.name}
                         className="mb-2 max-h-12 max-w-full cursor-pointer object-contain transition-opacity hover:opacity-80"
                     />
