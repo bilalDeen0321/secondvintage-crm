@@ -28,13 +28,27 @@ class HistoryController extends Controller
     public function index(Request $request, HistoryQuery $query)
     {
         $filter = request()->input('filter', 'all-time');
-        $perPage = (int) $request->input('per_page', 10);
-        $salesQuery = Sale::with('watch')->latest();
        
-        $sales = $salesQuery->paginate($perPage)->appends($request->query());
-        $salesPayload = SaleResource::collection($sales)->response()->getData(true);
+        $filtersData = [
+                'search' => $request->input('search'),
+                'platform' => $request->input('platform'),
+                'status' => $request->input('status'),
+                'filter' => $request->input('filter', 'all-time'),
+            ];
+
+            $sortField = $request->input('sort', 'saleDate');
+            $sortDirection = $request->input('dir', 'desc');
+            $perPage = (int) $request->input('per_page', 10);
+
+        $salesQuery = Sale::with(['watch.brand'])->latest();
+        $salesQuery = $query->filter($filtersData)
+        ->applySorting($sortField, $sortDirection);
+
+    $sales = $salesQuery->paginate($perPage);
+    $salesPayload = SaleResource::collection($sales)->response()->getData(true);
          
-        return Inertia::render('SalesHistory', [
+         
+        return Inertia::render('SalesHistory/SalesHistory', [
             'filters' => $query->allFilters(),
             'totalSales' => $query->getTotalSales($filter),
             'totalRevenue' => $query->getTotalRevenue($filter),

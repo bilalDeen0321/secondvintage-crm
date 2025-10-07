@@ -311,7 +311,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
                                 <div className="flex min-h-0 flex-col space-y-2.5">
                                     {/* Watch Details Section */}
-                                    <div className="grid grid-cols-5 gap-2">
+                                    <div className="grid grid-cols-6 gap-2">
                                         <div>
                                             <label className="mb-1 block text-sm font-medium text-slate-700">Serial</label>
                                             <input

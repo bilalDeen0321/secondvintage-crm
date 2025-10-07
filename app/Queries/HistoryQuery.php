@@ -443,4 +443,102 @@ class HistoryQuery
             ];
         })->all();
     }
+
+    public function filter(array $filters): self
+    {
+         $this->query = Sale::with(['watch.brand']);
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $this->query->whereHas('watch', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhereHas('brand', function ($q2) use ($search) {
+                      $q2->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if (!empty($filters['platform']) && $filters['platform'] !== 'All') {
+            $this->query->where('platform', $filters['platform']);
+        }
+
+        if (!empty($filters['status']) && $filters['status'] !== 'All') {
+            $this->query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['filter']) && $filters['filter'] !== 'all-time') {
+            $this->applyTimeFilter($filters['filter']);
+        }
+
+        return $this;
+    }
+
+    protected function applyTimeFilter(string $filter): void
+    {
+         $this->query = Sale::with(['watch.brand']);
+        $now = now();
+
+        switch ($filter) {
+            case 'last_7_days':
+                $this->query->where('created_at', '>=', $now->subDays(7));
+                break;
+            case 'last_30_days':
+                $this->query->where('created_at', '>=', $now->subDays(30));
+                break;
+            case 'last_3_months':
+                $this->query->where('created_at', '>=', $now->subMonths(3));
+                break;
+            case 'last_6_months':
+                $this->query->where('created_at', '>=', $now->subMonths(6));
+                break;
+            case 'this_year':
+                $this->query->whereYear('created_at', now()->year);
+                break;
+            case 'last_year':
+                $this->query->whereYear('created_at', now()->year - 1);
+                break;
+        }
+    }
+
+    public function applySorting(string $field = 'created_at', string $direction = 'desc'): self
+    {
+         $this->query = Sale::with(['watch.brand']);
+        // Allowed sortable fields mapping
+        $sortableFields = [
+            'watchName' => 'watches.name',
+            'brand' => 'brands.name',
+            'sku' => 'watches.sku',
+            'original_price' => 'original_price',
+            'sale_price' => 'sale_price',
+            'profit' => 'profit',
+            'margin' => 'margin',
+            'saleDate' => 'sales.created_at',
+            'platform' => 'platform',
+            'buyer' => 'buyer_name',
+            'status' => 'status',
+        ];
+
+        if (!isset($sortableFields[$field])) {
+            $field = 'sales.created_at'; // default fallback
+        } else {
+            $field = $sortableFields[$field];
+        }
+
+        // For sorting on related tables, join the tables
+        if (in_array($field, ['watches.name', 'watches.sku', 'brands.name'])) {
+            $this->query->leftJoin('watches', 'sales.watch_id', '=', 'watches.id')
+                ->leftJoin('brands', 'watches.brand_id', '=', 'brands.id')
+                ->select('sales.*');
+        }
+
+        $this->query->orderBy($field, $direction);
+
+        return $this;
+    }
+
+    public function paginate(int $perPage = 10)
+    {
+         $this->query = Sale::with(['watch.brand']);
+        return $this->query->paginate($perPage)->appends(request()->query());
+    } 
 }

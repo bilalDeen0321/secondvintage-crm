@@ -57,29 +57,26 @@ import {
 } from "recharts"; 
 import axios from "axios";
 import { PaginateData } from "@/types/laravel";
-import Layout from "../components/Layout";
+import Layout from "@/components/Layout";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import SalesSearch from '@/components/SalesSearch';
+import { useSalesSearch } from '@/hooks/useSalesSearch';
 
 interface SaleRecord {
   id: number | string;
   watchName: string;
-  buyer_country: string;
-  original_price: string;
-  currency: number;
-  buyer_name: number;
-  buyer_email: number;
-  buyer_address: number;
-  buyer_city: string; // ISO date string
-  buyer_postal_code: string;
+  brand: string;
+  sku: string;
+  original_price: number;
+  sale_price: number;
+  profit: number;
+  margin: number;
+  created_at: string;
+  platform: string;
+  buyer_name: string;
   country: string;
   status: string;
-  platform: string;
-  buyer: string;
-  catawiki_invoice_number: string;
-  catawiki_object_number: string;
-  catawiki_invoice_url: string;
-  sku: string;
 }
 
 interface Props {
@@ -91,10 +88,10 @@ type SortField =
     | "watchName"
     | "brand"
     | "sku"
-    | "acquisitionCost"
-    | "salePrice"
+    | "original_price"
+    | "sale_price"
     | "profit"
-    | "profitMargin"
+    | "margin"
     | "saleDate"
     | "platform"
     | "buyer"
@@ -110,6 +107,8 @@ const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorRows, setErrorRows] = useState<string[]>([]);
+
+  
 
   const handleUpload = async () => {
     if (!file) return;
@@ -146,18 +145,21 @@ const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
         }
   };
 
-
-    const [searchTerm, setSearchTerm] = useState("");
-    const [platformFilter, setPlatformFilter] = useState("All");
-    const [statusFilter, setStatusFilter] = useState("All");
-
-    // dropdown filters
+  // dropdown filters
     const [searchParams, setSearchParams] = useSearchParams();
     const defaultFilter = searchParams.get('filter') || 'all-time';
     const [timeRange, setTimeRange] = useState(defaultFilter);
-
-    const [sortField, setSortField] = useState<SortField>("saleDate");
-    const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+    
+const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+const [platformFilter, setPlatformFilter] = useState(searchParams.get("platform") || "All");
+const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "All");
+ 
+const [sortField, setSortField] = useState(searchParams.get("sort") as SortField || "saleDate");
+const [sortDirection, setSortDirection] = useState(
+  (searchParams.get("dir") as "asc" | "desc") || "desc"
+);
+   
+  
 
     const { props } = usePage();
 
@@ -176,14 +178,7 @@ const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
     const profitPerPlatformData = props.profitPerPlatform;
     const platformData = props.salesByPlatform;
 
-    const handleSort = (field: SortField) => {
-        if (sortField === field) {
-            setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-        } else {
-            setSortField(field);
-            setSortDirection("asc");
-        }
-    };
+  
 
     const sortedAndFilteredSales = useMemo(() => {
           if (!sales || !sales.data) return []; // prevent crash
@@ -321,6 +316,24 @@ const formatCurrency = (value) => {
             </div>
         </TableHead>
     );
+
+    
+useSalesSearch({
+  searchTerm,
+  platformFilter,
+  statusFilter,
+  timeRange,
+  sortField,
+  sortDirection,
+});
+const handleSort = (field: SortField) => {
+  if (sortField === field) {
+    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  } else {
+    setSortField(field);
+    setSortDirection('asc');
+  }
+};
 
     return (
         <Layout>
@@ -691,49 +704,12 @@ const formatCurrency = (value) => {
                 </div>
 
                 {/* Filters */}
-                <div className="mb-6 flex flex-col gap-4 lg:flex-row">
-                    <div className="flex-1">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                            <Input
-                                type="text"
-                                placeholder="Search sales by watch name, brand, or SKU..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
-                    </div>
-                    <div className="flex gap-4">
-                        <Select
-                            value={platformFilter}
-                            onValueChange={setPlatformFilter}
-                        >
-                            <SelectTrigger className="w-40">
-                                <SelectValue placeholder="Platform" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="All">
-                                    All Platforms
-                                </SelectItem>
-                                <SelectItem value="Chrono24">
-                                    Chrono24
-                                </SelectItem>
-                                <SelectItem value="eBay">eBay</SelectItem>
-                                <SelectItem value="Catawiki">
-                                    Catawiki
-                                </SelectItem>
-                                <SelectItem value="Tradera">Tradera</SelectItem>
-                            </SelectContent>
-                        </Select>
- 
-
-                        <Button variant="outline">
-                            <Download className="mr-2 h-4 w-4" />
-                            Export CSV
-                        </Button>
-                    </div>
-                </div>
+                <SalesSearch
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        platformFilter={platformFilter}
+                        setPlatformFilter={setPlatformFilter}
+                    />
 
                 {/* Sales Table */}
                 <Card>
@@ -741,34 +717,35 @@ const formatCurrency = (value) => {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <SortableHeader field="watchName">
+                                    <SortableHeader field="watchName" onClick={() => handleSort("watchName")}>
                                         Watch Name
                                     </SortableHeader>
                                     
-                                    <TableHead field="sku">
+                                    <SortableHeader field="brank" onClick={() => handleSort("watchName")}>
+                                        Brand 
+                                    </SortableHeader>
+                                    <SortableHeader field="sku" onClick={() => handleSort("watchName")}>
                                         SKU
-                                    </TableHead>
-                                    <TableHead field="acquisitionCost">
+                                    </SortableHeader>
+                                   
+                                    <SortableHeader field="cost" onClick={() => handleSort("watchName")}>
                                         Cost
-                                    </TableHead>
+                                    </SortableHeader>
+                                    <SortableHeader field="sale" onClick={() => handleSort("watchName")}>
+                                        Sale Price
+                                    </SortableHeader>
                                    
-                                    <TableHead field="profit">
-                                        Buyer Name
-                                    </TableHead>
-                                    <TableHead field="profitMargin">
-                                        Buyer Email
-                                    </TableHead>
-                                   
-                                    <TableHead field="platform">
-                                        Platform
-                                    </TableHead>
-                                    <TableHead field="buyer">
-                                        Buyer
-                                    </TableHead>
-                                    <TableHead>Country</TableHead>
-                                    <TableHead>Catawiki Obj Number</TableHead>
-                                    <TableHead>Catawiki Invoice Number</TableHead>
-                                    <TableHead>Invoice URL</TableHead> 
+                                    <SortableHeader field="profit" onClick={() => handleSort("watchName")}>
+                                        Profit
+                                    </SortableHeader>
+                                    <SortableHeader field="margin" onClick={() => handleSort("watchName")}>
+                                        Margin
+                                    </SortableHeader>
+                                    <SortableHeader field="date" onClick={() => handleSort("watchName")}>Date</SortableHeader>
+                                    <SortableHeader field="platform" onClick={() => handleSort("watchName")}>Platform</SortableHeader>
+                                    <SortableHeader field="buyer" onClick={() => handleSort("watchName")}>Buyer</SortableHeader>
+                                    <SortableHeader field="contry" onClick={() => handleSort("watchName")}>Country</SortableHeader> 
+                                    <SortableHeader field="status" onClick={() => handleSort("watchName")}>Status</SortableHeader> 
                                     
                                 </TableRow>
                             </TableHeader>
@@ -776,27 +753,23 @@ const formatCurrency = (value) => {
                                 {sortedAndFilteredSales.map((sale) => (
                                     <TableRow key={sale.id}>
                                         <TableCell className="font-medium">
-                                            {sale.watchName}
-                                        </TableCell>
+                                            {sale.watchName}</TableCell>
+
                                          <TableCell className="text-slate-600">
-                                            {sale.sku}
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatCurrency(sale.original_price)}
-                                        </TableCell>
+                                            {sale.brand}</TableCell>
+                                            
+                                        <TableCell>{sale.sku}</TableCell>
                                         
                                         <TableCell className="font-semibold text-green-600">
-                                            {sale.buyer_name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {sale.buyer_email}
-                                        </TableCell> 
+                                           {formatCurrency(sale.original_price)}</TableCell>
+                                        <TableCell>{formatCurrency(sale.sale_price)}</TableCell> 
+                                        <TableCell> {formatCurrency(sale.profit)}</TableCell>
+                                        <TableCell> {formatCurrency(sale.margin)}%</TableCell>
+                                        <TableCell>{sale.created_at}</TableCell>
                                         <TableCell>{sale.platform}</TableCell>
-                                        <TableCell>{sale.buyer}</TableCell>
+                                        <TableCell>{sale.buyer_name}</TableCell>
                                         <TableCell>{sale.country}</TableCell>
-                                        <TableCell>{sale.catawiki_object_number}</TableCell>
-                                        <TableCell>{sale.catawiki_invoice_number}</TableCell>
-                                        <TableCell>{sale.catawiki_invoice_url}</TableCell>
+                                        <TableCell>{sale.status}</TableCell>
                                         
                                     </TableRow>
                                 ))}

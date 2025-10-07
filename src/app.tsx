@@ -6,10 +6,10 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import Provider from "./Provider";
 
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+const appName = import.meta.env.VITE_APP_NAME || "";
 
 createInertiaApp({
-    title: (title) => `${title || "Home"} - ${appName}`,
+    title: (title) => `${title || "Home"}  ${appName}`,
     resolve: (name) =>
         resolvePageComponent(
             `./pages/${name}.tsx`,

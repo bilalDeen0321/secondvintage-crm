@@ -275,12 +275,16 @@ class DashboardQuery
     protected function getBrandColor(string $brandName): string
         {
             $brandColors = [
-                'Rolex'     => '#f59e0b', // amber
-                'Omega'     => '#3b82f6', // blue
-                'TAG Heuer' => '#10b981', // green
-                'Breitling' => '#ef4444', // red
-                'IWC'       => '#8b5cf6', // purple
-                'Others'    => '#6b7280', // gray
+                'Seiko' => '#58D68D',
+                'Rolex' => '#3b82f6',
+                'Omega' => '#10b981',
+                'TAG Heuer' => '#ef4444',
+                'Breitling' => '#8b5cf6',
+                'IWC'     => '#AF7AC5',
+                'Tudor'   => '#76B041',
+                'Cartier' => '#4B9CD3',
+                'Longines'=> '#9B59B6',
+                'Others'  => '#FF6F61', 
             ];
 
             // Normalize brand names (trim/case-insensitive)

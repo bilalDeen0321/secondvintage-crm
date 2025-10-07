@@ -12,23 +12,24 @@ class SaleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $originalPrice = $this->original_price;
+        $salePrice = $this->price;
+        $profit = $salePrice - $originalPrice;
+        $margin = $salePrice > 0 ? round(($profit / $salePrice) * 100, 2) : 0;
+
         return [
             'id'              => $this->id,
             'watchName'       => $this->watch?->name ?? $this->id,
-            'platform'           => $this->watch?->platform,
+            'brand'       => $this->watch->brand ?->name,
             'sku'           => $this->watch?->sku,
-            'buyer_country'           => $this->buyer_country,
-            'original_price'             => $this->original_price,
-            'currency'       => $this->currency,
-            'buyer_name' => $this->buyer_name,
-            'buyer_email'          => $this->buyer_email,
-            'buyer_address'    => $this->buyer_address, 
-            'buyer_city'        => $this->buyer_city,
-            'buyer_postal_code'           => $this->buyer_postal_code,
-            'country'         => $this->country, 
-            'catawiki_object_number'         => $this->catawiki_object_number, 
-            'catawiki_invoice_number'         => $this->catawiki_invoice_number, 
-            'catawiki_invoice_url'         => $this->catawiki_invoice_url, 
+            'original_price'             => $originalPrice,
+            'sale_price'             => $salePrice,
+            'profit'             =>  $profit,
+            'margin'             => $margin,
+            'created_at'           => $this->created_at->format('n/j/Y'),
+            'platform'           => $this->watch?->platform?? '-',
+            'buyer_name' => $this->buyer_name,            
+            'country'         => $this->buyer_country,
             'status'          => $this->watch?->status,
         ];
     }
