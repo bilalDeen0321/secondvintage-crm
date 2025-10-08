@@ -277,7 +277,7 @@ class DashboardQuery
             $brandColors = [
                 'Seiko' => '#58D68D',
                 'Rolex' => '#3b82f6',
-                'Omega' => '#10b981',
+                'Omega' => '#5DADE2',
                 'TAG Heuer' => '#ef4444',
                 'Breitling' => '#8b5cf6',
                 'IWC'     => '#AF7AC5',

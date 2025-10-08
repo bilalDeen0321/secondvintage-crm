@@ -63,21 +63,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import SalesSearch from '@/components/SalesSearch';
 import { useSalesSearch } from '@/hooks/useSalesSearch';
 
-interface SaleRecord {
-  id: number | string;
-  watchName: string;
-  brand: string;
-  sku: string;
-  original_price: number;
-  sale_price: number;
-  profit: number;
-  margin: number;
-  created_at: string;
-  platform: string;
-  buyer_name: string;
-  country: string;
-  status: string;
-}
 
 interface Props {
 //   sales: SaleRecord[];
@@ -145,21 +130,27 @@ const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
         }
   };
 
-  // dropdown filters
-    const [searchParams, setSearchParams] = useSearchParams();
-    const defaultFilter = searchParams.get('filter') || 'all-time';
-    const [timeRange, setTimeRange] = useState(defaultFilter);
+// dropdown filters
+const [searchParams, setSearchParams] = useSearchParams();
+const defaultFilter = searchParams.get('filter') || 'all-time';
+const [timeRange, setTimeRange] = useState(defaultFilter);
     
 const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
 const [platformFilter, setPlatformFilter] = useState(searchParams.get("platform") || "All");
 const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "All");
  
-const [sortField, setSortField] = useState(searchParams.get("sort") as SortField || "saleDate");
-const [sortDirection, setSortDirection] = useState(
-  (searchParams.get("dir") as "asc" | "desc") || "desc"
-);
-   
-  
+const [sort, setSort] = useState({
+  field: (searchParams.get("sort") as SortField) || "saleDate",
+  direction: (searchParams.get("dir") as SortDirection) || "desc",
+});
+
+const handleSort = (field: SortField) => {
+  setSort((prev) => ({
+    field,
+    direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc",
+  }));
+};
+
 
     const { props } = usePage();
 
@@ -181,94 +172,88 @@ const [sortDirection, setSortDirection] = useState(
   
 
     const sortedAndFilteredSales = useMemo(() => {
-          if (!sales || !sales.data) return []; // prevent crash
+  if (!sales || !sales.data) return []; // prevent crash
 
-        const filtered = sales.data.filter((sale) => {
-            const matchesSearch =
-                sale.watchName
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                sale.platform?.includes(searchTerm.toLowerCase()) ||
-                sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesPlatform =
-                platformFilter === "All" || sale.platform === platformFilter;
-            const matchesStatus =
-                statusFilter === "All" || sale.status === statusFilter;
+  const filtered = sales.data.filter((sale) => {
+    const matchesSearch =
+      sale.watchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sale.platform?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
-            // Time range filtering
-            let matchesTime = true;
-            if (timeRange !== "All Time") {
-                const saleDate = new Date(sale.saleDate);
-                const now = new Date();
+    const matchesPlatform =
+      platformFilter === "All" || sale.platform === platformFilter;
+    const matchesStatus =
+      statusFilter === "All" || sale.status === statusFilter;
 
-                switch (timeRange) {
-                    case "Last 7 days":
-                        matchesTime =
-                            saleDate >=
-                            new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                        break;
-                    case "Last 30 days":
-                        matchesTime =
-                            saleDate >=
-                            new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                        break;
-                    case "Last 3 months":
-                        matchesTime =
-                            saleDate >=
-                            new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-                        break;
-                    case "Last 6 months":
-                        matchesTime =
-                            saleDate >=
-                            new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
-                        break;
-                    case "This year":
-                        matchesTime =
-                            saleDate.getFullYear() === now.getFullYear();
-                        break;
-                    case "Last year":
-                        matchesTime =
-                            saleDate.getFullYear() === now.getFullYear() - 1;
-                        break;
-                }
-            }
+    // Time range filtering
+    let matchesTime = true;
+    if (timeRange !== "All Time") {
+      const saleDate = new Date(sale.saleDate);
+      const now = new Date();
 
-            return (
-                matchesSearch && matchesPlatform && matchesStatus && matchesTime
-            );
-        });
+      switch (timeRange) {
+        case "Last 7 days":
+          matchesTime =
+            saleDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case "Last 30 days":
+          matchesTime =
+            saleDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        case "Last 3 months":
+          matchesTime =
+            saleDate >= new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+          break;
+        case "Last 6 months":
+          matchesTime =
+            saleDate >= new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+          break;
+        case "This year":
+          matchesTime = saleDate.getFullYear() === now.getFullYear();
+          break;
+        case "Last year":
+          matchesTime = saleDate.getFullYear() === now.getFullYear() - 1;
+          break;
+      }
+    }
 
-        return filtered.sort((a, b) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let aValue: any = a[sortField];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let bValue: any = b[sortField];
+    return matchesSearch && matchesPlatform && matchesStatus && matchesTime;
+  });
 
-            if (sortField === "saleDate") {
-                aValue = new Date(aValue);
-                bValue = new Date(bValue);
-            }
+  return filtered.sort((a, b) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let aValue: any = a[sort.field];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let bValue: any = b[sort.field];
 
-            if (typeof aValue === "string") {
-                aValue = aValue.toLowerCase();
-                bValue = bValue.toLowerCase();
-            }
+    if (sort.field === "saleDate") {
+      aValue = new Date(aValue);
+      bValue = new Date(bValue);
+    }
 
-            if (sortDirection === "asc") {
-                return aValue > bValue ? 1 : -1;
-            } else {
-                return aValue < bValue ? 1 : -1;
-            }
-        });
-    }, [
-        sales,
-        searchTerm,
-        platformFilter,
-        statusFilter,
-        sortField,
-        sortDirection,
-        timeRange,
-    ]);
+    if (typeof aValue === "string") {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+    }
+
+    return sort.direction === "asc"
+      ? aValue > bValue
+        ? 1
+        : -1
+      : aValue < bValue
+      ? 1
+      : -1;
+  });
+}, [
+  sales,
+  searchTerm,
+  platformFilter,
+  statusFilter,
+  sort.field,
+  sort.direction,
+  timeRange,
+]);
+
 
     const chartConfig = {
         revenue: { label: "Revenue", color: "#166534" }, // Dark green
@@ -294,46 +279,47 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 0,
   }).format(value);
 };
-    const SortableHeader = ({
-        field,
-        children,
-    }: {
-        field: SortField;
-        children: React.ReactNode;
-    }) => (
-        <TableHead
-            className="cursor-pointer select-none hover:bg-slate-50"
-            onClick={() => handleSort(field)}
-        >
-            <div className="flex items-center gap-1">
-                {children}
-                <ArrowUpDown className="h-3 w-3" />
-                {sortField === field && (
-                    <span className="ml-1 text-xs">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                )}
-            </div>
-        </TableHead>
-    );
+   const SortableHeader = ({
+  field,
+  children,
+}: {
+  field: SortField;
+  children: React.ReactNode;
+}) => (
+      <TableHead
+    className="cursor-pointer select-none hover:bg-slate-50"
+    onClick={() => handleSort(field)}
+  >
+    <div className="flex items-center gap-1">
+      {children}
+      <ArrowUpDown className="h-3 w-3" />
+      {sort.field === field && (
+        <span className="ml-1 text-xs">
+          {sort.direction === "asc" ? "↑" : "↓"}
+        </span>
+      )}
+    </div>
+  </TableHead>
+);
 
-    
-useSalesSearch({
-  searchTerm,
-  platformFilter,
-  statusFilter,
-  timeRange,
-  sortField,
-  sortDirection,
-});
-const handleSort = (field: SortField) => {
-  if (sortField === field) {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-  } else {
-    setSortField(field);
-    setSortDirection('asc');
-  }
-};
+const filters = useMemo(
+  () => ({
+    searchTerm,
+    platformFilter,
+    statusFilter,
+    timeRange,
+    sortField: sort.field,
+    sortDirection: sort.direction,
+  }),
+  [searchTerm, platformFilter, statusFilter, timeRange, sort]
+);
+
+// ✅ Hook call (fires only when actual filter values change)
+useSalesSearch(filters);
+//  const [sort, setSort] = useState({
+//   field: (searchParams.get("sort") as SortField) || "saleDate",
+//   direction: (searchParams.get("dir") as SortDirection) || "desc",
+// });
 
     return (
         <Layout>
@@ -721,31 +707,31 @@ const handleSort = (field: SortField) => {
                                         Watch Name
                                     </SortableHeader>
                                     
-                                    <SortableHeader field="brank" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="brand" onClick={() => handleSort("brand")}>
                                         Brand 
                                     </SortableHeader>
-                                    <SortableHeader field="sku" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="sku" onClick={() => handleSort("sku")}>
                                         SKU
                                     </SortableHeader>
                                    
-                                    <SortableHeader field="cost" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="cost" onClick={() => handleSort("cost")}>
                                         Cost
                                     </SortableHeader>
-                                    <SortableHeader field="sale" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="sale" onClick={() => handleSort("sale")}>
                                         Sale Price
                                     </SortableHeader>
                                    
-                                    <SortableHeader field="profit" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="profit" onClick={() => handleSort("profit")}>
                                         Profit
                                     </SortableHeader>
-                                    <SortableHeader field="margin" onClick={() => handleSort("watchName")}>
+                                    <SortableHeader field="margin" onClick={() => handleSort("margin")}>
                                         Margin
                                     </SortableHeader>
-                                    <SortableHeader field="date" onClick={() => handleSort("watchName")}>Date</SortableHeader>
-                                    <SortableHeader field="platform" onClick={() => handleSort("watchName")}>Platform</SortableHeader>
-                                    <SortableHeader field="buyer" onClick={() => handleSort("watchName")}>Buyer</SortableHeader>
-                                    <SortableHeader field="contry" onClick={() => handleSort("watchName")}>Country</SortableHeader> 
-                                    <SortableHeader field="status" onClick={() => handleSort("watchName")}>Status</SortableHeader> 
+                                    <SortableHeader field="date" onClick={() => handleSort("date")}>Date</SortableHeader>
+                                    <SortableHeader field="platform" onClick={() => handleSort("platform")}>Platform</SortableHeader>
+                                    <SortableHeader field="buyer" onClick={() => handleSort("buyer")}>Buyer</SortableHeader>
+                                    <SortableHeader field="contry" onClick={() => handleSort("contry")}>Country</SortableHeader> 
+                                    <SortableHeader field="status" onClick={() => handleSort("status")}>Status</SortableHeader> 
                                     
                                 </TableRow>
                             </TableHeader>

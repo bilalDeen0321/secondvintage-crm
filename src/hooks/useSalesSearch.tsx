@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 
 interface Filters {
@@ -11,8 +11,19 @@ interface Filters {
 }
 
 export const useSalesSearch = (filters: Filters) => {
+  const prevFilters = useRef<Filters | null>(null);
+
   useEffect(() => {
-    if (!filters) return;
+    // Compare shallowly — only trigger when actual values change
+    const hasChanged =
+      !prevFilters.current ||
+      Object.keys(filters).some(
+        (key) =>
+          (filters as any)[key] !== (prevFilters.current as any)[key]
+      );
+
+    if (!hasChanged) return;
+    prevFilters.current = filters;
 
     const delay = setTimeout(() => {
       router.get(
@@ -40,8 +51,8 @@ export const useSalesSearch = (filters: Filters) => {
           replace: true,
         }
       );
-    }, 400); // Debounce 400ms
+    }, 400);
 
     return () => clearTimeout(delay);
-  }, [JSON.stringify(filters)]); // ✅ single dependency
+  }, [filters]);
 };

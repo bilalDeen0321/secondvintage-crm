@@ -11,9 +11,10 @@ type Props = {
     platformData: PlatformField[];
     watch: SaleWatchResource;
     platform?: PlatformTypes;
+    position?: "head" | "footer"; 
 };
 
-export function PlatformFooterActions({ platformData, watch, platform }: Props) {
+export function PlatformFooterActions({ platformData, watch, platform ,position = "footer"}: Props) {
     // Start hooks and states
     const [loading, setLoading] = useState(false);
     const [process, setProcess] = useState(false);
@@ -44,8 +45,12 @@ export function PlatformFooterActions({ platformData, watch, platform }: Props) 
         });
     };
 
+  const containerClass = position == "head"
+      ? "flex items-center justify-end gap-2" // header style
+      : "mt-6 flex items-center justify-end gap-2 border-t pt-4"; // footer style
+
     return (
-        <div className="mt-6 flex items-center justify-end gap-2 border-t pt-4">
+        <div className={containerClass}>
             <Button disabled={process} onClick={onSave} variant="default" className="bg-green-600 hover:bg-green-700">
                 <Save className="mr-2 h-4 w-4" />
                 {process && <Loading />} Save

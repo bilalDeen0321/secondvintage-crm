@@ -16,7 +16,7 @@ import FillOutDataWithAi from "./components/platform/FillOutDataWithAi";
 
 type Props = {
     watch: SaleWatchResource;
-    platform: PlatformResource;
+    platform: PlatformResource; 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params?: Record<string, any>;
 };
@@ -50,6 +50,9 @@ export default function SalesShow({ watch, platform, params = {} }: Props) {
                             </div>
 
                             <div className="flex items-center space-x-3">
+                             <PlatformFooterActions platformData={platformData} watch={watch}  position="head" />
+
+
                                 <FillOutDataWithAi watch={watch} platform={platform} />
                                 <button onClick={handleBackToIndex} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                                     <X className="h-5 w-5" />
@@ -70,7 +73,7 @@ export default function SalesShow({ watch, platform, params = {} }: Props) {
                         {/* <PlatformNotes platform={platform?.name} /> */}
 
                         {/* Footer with action buttons */}
-                        <PlatformFooterActions platformData={platformData} watch={watch} />
+                        <PlatformFooterActions platformData={platformData} watch={watch} position="footer"/>
                     </div>
                 </div>
             </div>
