@@ -24,6 +24,9 @@ export default function GenerateAiDescription(props: Props) {
     const { data, setData, watch = {} as WatchResource, setSavedData, setAiProcessing  } = props; 
     //state
     const [loading, setLoading] = useState(false);
+   const COOLDOWN_TIME = 90; // seconds
+  const STORAGE_KEY = "generateButtonCooldownEnd"; 
+  const [cooldown, setCooldown] = useState(0);
 
     /**
      * Handle ai ai reset thread id in database
@@ -70,6 +73,10 @@ export default function GenerateAiDescription(props: Props) {
                 if (setSavedData && watch?.routeKey) {
                     setSavedData({ ...data, ...aidata });
                 }
+                //set cooldown
+                const expiry = Date.now() + COOLDOWN_TIME * 1000;
+                localStorage.setItem(STORAGE_KEY, expiry.toString());
+                setCooldown(COOLDOWN_TIME); 
             },
         });
     };
@@ -103,6 +110,39 @@ export default function GenerateAiDescription(props: Props) {
         }
     }, [data.routeKey, setData, watch.routeKey]);
 
+
+  //Cooldown button
+   useEffect(() => {
+    const storedEnd = localStorage.getItem(STORAGE_KEY);
+    if (storedEnd) {
+      const remaining = Math.floor(
+        (parseInt(storedEnd) - Date.now()) / 1000
+      );
+      if (remaining > 0) setCooldown(remaining);
+    }
+  }, []);
+
+  // 🔹 Countdown timer
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem(STORAGE_KEY);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [cooldown]);
+  //EndCooldown button
+
+  
+  const isDisabled =
+    !data.images.some((m) => m.useForAI) || loading || cooldown > 0;
+
     return (
         <div>
             <div className="mb-2 flex items-center justify-between">
@@ -114,7 +154,7 @@ export default function GenerateAiDescription(props: Props) {
             </div>
             <Textarea name="ai_instructions" value={data.ai_instructions} onChange={(e) => setData("ai_instructions", e.target.value)} rows={1} placeholder="" className="min-h-[40px] w-full resize-y" />
             <div className="mt-3">
-                <Button type="button" variant="outline" size="sm" onClick={onGenerate} disabled={!data.images.some((m) => m.useForAI) || loading} className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50">
+                <Button type="button" variant="outline" size="sm" onClick={onGenerate}   disabled={!data.images.some((m) => m.useForAI) || loading || isDisabled} className="text-amber-600 hover:bg-amber-50 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50">
                     {loading ? (
                         <>
                             <Loader2 className="mr-1 h-4 w-4 animate-spin" />
