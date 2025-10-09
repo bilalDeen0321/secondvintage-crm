@@ -57,6 +57,7 @@ class ProcessMakeHookCatawiki implements ShouldQueue
             'Serial'          => $this->watch->serial_number ?? null,
             'Ref'             => $this->watch->reference ?? null,
             'Case_Size'       => $this->watch->case_size ?? null,
+            'Wrist_size'       => $this->watch->wrist_size ?? null,
             'Caliber'         => $this->watch->caliber ?? null,
             'Timegrapher'     => $this->watch->timegrapher ?? null,
             'Platform'        => 'Catawiki',
@@ -90,8 +91,15 @@ class ProcessMakeHookCatawiki implements ShouldQueue
             'status' => PlatformData::STATUS_SUCCESS,
             'data'   => ExtractMakeHookToCatawiki::execute($this->watch, $make),
         ]);
+        
+        //$status = Status::toDatabase($make->get('Status_Selected')) ?? $this->watch->status;
 
-        $status = Status::toDatabase($make->get('Status_Selected')) ?? $this->watch->status;
+        $statusKey = $make->get('Status_Selected');
+        if ($statusKey) {
+            $status = Status::toDatabase($statusKey);
+        } else {
+            $status = $this->watch->status; // fallback
+        }
 
         FacadesLog::info(__METHOD__, [
             'status' => $status,

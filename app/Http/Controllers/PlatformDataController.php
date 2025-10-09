@@ -174,4 +174,13 @@ class PlatformDataController extends Controller
 
         return back()->with('success', 'Approved successfully.');
     }
+  
+  
+    public function listing(Watch $watch)
+    {
+
+        $watch->update(['status' => Status::LISTING]);
+
+        return back()->with('success', 'Ready for listing successfully.');
+    }
 }

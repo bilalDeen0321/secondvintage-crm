@@ -55,6 +55,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Serial'          => $this->watch->serial_number ?? null,
             'Ref'             => $this->watch->reference ?? null,
             'Case_Size'       => $this->watch->case_size ?? null,
+            'Wrist_size'       => $this->watch->wrist_size ?? null,
             'Caliber'         => $this->watch->caliber ?? null,
             'Timegrapher'     => $this->watch->timegrapher ?? null,
             'Platform'        => $this->watch->platformData ?? 'Catawiki',
@@ -76,7 +77,7 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
 
         try {
             $make = MakeAiHook::init()->generateDescription($payload);
-
+            
             if ($make->get('Status') === 'success') {
                 $this->handleSuccess($make);
             } else {

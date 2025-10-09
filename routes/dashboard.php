@@ -50,6 +50,7 @@ Route::prefix('platform-data')->name('platform-data.')->group(function () {
     Route::post('save/{watch}', [PlatformDataController::class, 'save'])->name('save');
     Route::get('show/{watch}', [PlatformDataController::class, 'show'])->name('show');
     Route::put('approve/{watch}', [PlatformDataController::class, 'approve'])->name('approve');
+    Route::put('listing/{watch}', [PlatformDataController::class, 'listing'])->name('listing');
 });
 
 Route::prefix('sales/exports')->name('sales.exports.')->group(function () {

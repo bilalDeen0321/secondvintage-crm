@@ -45,7 +45,7 @@ class MakeAiHook
 
             $response = $this->request($payload);
 
-            Log::info(__METHOD__, $response->body());
+        Log::info(__METHOD__, $response->body());
 
             //send back
             return $response->collect()

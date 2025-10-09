@@ -54,6 +54,7 @@ class ProcessMakeHookTradera implements ShouldQueue
             'Serial'          => $this->watch->serial_number ?? null,
             'Ref'             => $this->watch->reference ?? null,
             'Case_Size'       => $this->watch->case_size ?? null,
+            'Wrist_size'       => $this->watch->wrist_size ?? null,
             'Caliber'         => $this->watch->caliber ?? null,
             'Timegrapher'     => $this->watch->timegrapher ?? null,
             'Platform'        => 'Tradera',

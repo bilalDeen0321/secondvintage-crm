@@ -32,7 +32,7 @@ export function PlatformFooterActions({ platformData, watch, platform ,position 
     };
 
     const handleApproveGoNext = () => {
-        router.put(route("platform-data.approve", watch.routeKey), null, {
+        router.put(route("platform-data.listing", watch.routeKey), null, {
             onStart: () => setLoading(true),
             onFinish: () => setLoading(false),
             onSuccess: () => {

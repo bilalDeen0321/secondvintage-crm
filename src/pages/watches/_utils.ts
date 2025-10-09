@@ -203,12 +203,13 @@ export async function printWatchSku(name: string, brand: string, sku: string) {
       const logoAspectRatio = logoImg.height / logoImg.width;
       const logoWidth = 22;
       const logoHeight = logoWidth * logoAspectRatio;
+      const yPosition = 39 - logoHeight - 1.5;
 
       pdf.addImage(
         logoDataURL,
         "PNG",
         (29 - logoWidth) / 2,
-        39 - logoHeight - 0.5,
+        yPosition,
         logoWidth,
         logoHeight
       );

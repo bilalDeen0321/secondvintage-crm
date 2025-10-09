@@ -87,7 +87,7 @@ const SalesHistory = () => {
 const { sales } = usePage<{ sales: PaginateData<SaleRecord> }>().props;
     //   const { sales, meta } = props.SaleRecord || {};
  
-     const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -145,12 +145,11 @@ const [sort, setSort] = useState({
 });
 
 const handleSort = (field: SortField) => {
-  setSort((prev) => ({
+  setSort(prev => ({
     field,
-    direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc",
+    direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc"
   }));
 };
-
 
     const { props } = usePage();
 
@@ -171,89 +170,90 @@ const handleSort = (field: SortField) => {
 
   
 
-    const sortedAndFilteredSales = useMemo(() => {
-  if (!sales || !sales.data) return []; // prevent crash
+//     const sortedAndFilteredSales = useMemo(() => {
+//   if (!sales || !sales.data) return []; // prevent crash
 
-  const filtered = sales.data.filter((sale) => {
-    const matchesSearch =
-      sale.watchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.platform?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
+//   const filtered = sales.data.filter((sale) => {
+//     const matchesSearch =
+//       sale.watchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       sale.platform?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//       sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesPlatform =
-      platformFilter === "All" || sale.platform === platformFilter;
-    const matchesStatus =
-      statusFilter === "All" || sale.status === statusFilter;
+//     const matchesPlatform =
+//       platformFilter === "All" || sale.platform === platformFilter;
+//     const matchesStatus =
+//       statusFilter === "All" || sale.status === statusFilter;
 
-    // Time range filtering
-    let matchesTime = true;
-    if (timeRange !== "All Time") {
-      const saleDate = new Date(sale.saleDate);
-      const now = new Date();
+//     // Time range filtering
+//     let matchesTime = true;
+//     if (timeRange !== "All Time") {
+//       const saleDate = new Date(sale.saleDate);
+//       const now = new Date();
 
-      switch (timeRange) {
-        case "Last 7 days":
-          matchesTime =
-            saleDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          break;
-        case "Last 30 days":
-          matchesTime =
-            saleDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-          break;
-        case "Last 3 months":
-          matchesTime =
-            saleDate >= new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-          break;
-        case "Last 6 months":
-          matchesTime =
-            saleDate >= new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
-          break;
-        case "This year":
-          matchesTime = saleDate.getFullYear() === now.getFullYear();
-          break;
-        case "Last year":
-          matchesTime = saleDate.getFullYear() === now.getFullYear() - 1;
-          break;
-      }
-    }
+//       switch (timeRange) {
+//         case "Last 7 days":
+//           matchesTime =
+//             saleDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+//           break;
+//         case "Last 30 days":
+//           matchesTime =
+//             saleDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+//           break;
+//         case "Last 3 months":
+//           matchesTime =
+//             saleDate >= new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+//           break;
+//         case "Last 6 months":
+//           matchesTime =
+//             saleDate >= new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+//           break;
+//         case "This year":
+//           matchesTime = saleDate.getFullYear() === now.getFullYear();
+//           break;
+//         case "Last year":
+//           matchesTime = saleDate.getFullYear() === now.getFullYear() - 1;
+//           break;
+//       }
+//     }
 
-    return matchesSearch && matchesPlatform && matchesStatus && matchesTime;
-  });
+//     return matchesSearch && matchesPlatform && matchesStatus && matchesTime;
+//   });
 
-  return filtered.sort((a, b) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let aValue: any = a[sort.field];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let bValue: any = b[sort.field];
+//   return filtered.sort((a, b) => {
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     let aValue: any = a[sort.field];
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     let bValue: any = b[sort.field];
 
-    if (sort.field === "saleDate") {
-      aValue = new Date(aValue);
-      bValue = new Date(bValue);
-    }
+//     if (sort.field === "saleDate") {
+//       aValue = new Date(aValue);
+//       bValue = new Date(bValue);
+//     }
 
-    if (typeof aValue === "string") {
-      aValue = aValue.toLowerCase();
-      bValue = bValue.toLowerCase();
-    }
+//     if (typeof aValue === "string") {
+//       aValue = aValue.toLowerCase();
+//       bValue = bValue.toLowerCase();
+//     }
 
-    return sort.direction === "asc"
-      ? aValue > bValue
-        ? 1
-        : -1
-      : aValue < bValue
-      ? 1
-      : -1;
-  });
-}, [
-  sales,
-  searchTerm,
-  platformFilter,
-  statusFilter,
-  sort.field,
-  sort.direction,
-  timeRange,
-]);
+//     return sort.direction === "asc"
+//       ? aValue > bValue
+//         ? 1
+//         : -1
+//       : aValue < bValue
+//       ? 1
+//       : -1;
+//   });
+// }, [
+//   sales,
+//   searchTerm,
+//   platformFilter,
+//   statusFilter,
+//   sort.field,
+//   sort.direction,
+//   timeRange,
+// ]);
 
+const sortedAndFilteredSales = sales?.data || [];
 
     const chartConfig = {
         revenue: { label: "Revenue", color: "#166534" }, // Dark green
@@ -311,10 +311,10 @@ const filters = useMemo(
     sortField: sort.field,
     sortDirection: sort.direction,
   }),
-  [searchTerm, platformFilter, statusFilter, timeRange, sort]
-);
+  [searchTerm, platformFilter, statusFilter, timeRange, sort.field, sort.direction]
 
-// ✅ Hook call (fires only when actual filter values change)
+);
+ 
 useSalesSearch(filters);
 //  const [sort, setSort] = useState({
 //   field: (searchParams.get("sort") as SortField) || "saleDate",
