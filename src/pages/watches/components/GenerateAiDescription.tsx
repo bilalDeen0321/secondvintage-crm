@@ -25,7 +25,7 @@ export default function GenerateAiDescription(props: Props) {
     //state
     const [loading, setLoading] = useState(false);
    const COOLDOWN_TIME = 90; // seconds
-  const STORAGE_KEY = "generateButtonCooldownEnd"; 
+  const STORAGE_KEY = `generateCooldown_${watch.routeKey}`;
   const [cooldown, setCooldown] = useState(0);
 
     /**
@@ -112,15 +112,14 @@ export default function GenerateAiDescription(props: Props) {
 
 
   //Cooldown button
-   useEffect(() => {
+  useEffect(() => {
+    if (!watch.routeKey) return;
     const storedEnd = localStorage.getItem(STORAGE_KEY);
     if (storedEnd) {
-      const remaining = Math.floor(
-        (parseInt(storedEnd) - Date.now()) / 1000
-      );
+      const remaining = Math.floor((parseInt(storedEnd) - Date.now()) / 1000);
       if (remaining > 0) setCooldown(remaining);
     }
-  }, []);
+  }, [watch.routeKey]);
 
   // 🔹 Countdown timer
   useEffect(() => {
