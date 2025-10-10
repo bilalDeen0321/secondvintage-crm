@@ -12,20 +12,29 @@ interface Filters {
 
 export const useSalesSearch = (filters: Filters) => {
   const prevFilters = useRef<Filters | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastCall = useRef<number>(0);
 
   useEffect(() => {
-    // Compare shallowly — only trigger when actual values change
     const hasChanged =
       !prevFilters.current ||
       Object.keys(filters).some(
-        (key) =>
-          (filters as any)[key] !== (prevFilters.current as any)[key]
+        (key) => (filters as any)[key] !== (prevFilters.current as any)[key]
       );
 
     if (!hasChanged) return;
+
     prevFilters.current = filters;
 
-    const delay = setTimeout(() => {
+    // clear previous debounce timer
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    // ✅ Debounce + rate limit: prevent rapid double calls
+    timeoutRef.current = setTimeout(() => {
+      const now = Date.now();
+      if (now - lastCall.current < 500) return; // ignore rapid repeat
+      lastCall.current = now;
+
       router.get(
         route("history.index"),
         {
@@ -53,6 +62,8 @@ export const useSalesSearch = (filters: Filters) => {
       );
     }, 400);
 
-    return () => clearTimeout(delay);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [filters]);
 };

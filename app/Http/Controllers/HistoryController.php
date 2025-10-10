@@ -36,18 +36,16 @@ class HistoryController extends Controller
                 'filter' => $request->input('filter', 'all-time'),
             ];
 
-            $sortField = $request->input('sort', 'saleDate');
-            $sortDirection = $request->input('dir', 'desc');
-            $perPage = (int) $request->input('per_page', 10);
+        $sortField = $request->input('sort', 'saleDate');
+        $sortDirection = $request->input('dir', 'desc');
+        $perPage = (int) $request->input('per_page', 10);
 
-        $salesQuery = Sale::with(['watch.brand'])->latest();
-        $salesQuery = $query->filter($filtersData)
-        ->applySorting($sortField, $sortDirection);
+        //$salesQuery = Sale::with(['watch.brand']);
+        $query->filter($filtersData)->applySorting($sortField, $sortDirection);
 
-    $sales = $salesQuery->paginate($perPage);
-    $salesPayload = SaleResource::collection($sales)->response()->getData(true);
-         
-         
+         $sales = $query->paginate($perPage);
+        $salesPayload = SaleResource::collection($sales)->response()->getData(true);
+        
         return Inertia::render('SalesHistory/SalesHistory', [
             'filters' => $query->allFilters(),
             'totalSales' => $query->getTotalSales($filter),
@@ -61,7 +59,7 @@ class HistoryController extends Controller
             'sales' => $salesPayload,
         ]);
     }
-
+ 
     /**
      * Import data from csv file.
      */

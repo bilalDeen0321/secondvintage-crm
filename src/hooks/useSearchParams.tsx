@@ -31,15 +31,15 @@ export function useSearchParams() {
                 });
             }
 
-            router.get(
-                `${url.split("?")[0]}?${newParams.toString()}`,
-                {},
-                {
-                    preserveState: true,
-                    replace: true,
-                    ...options,
-                },
-            );
+            // router.get(
+            //     `${url.split("?")[0]}?${newParams.toString()}`,
+            //     {},
+            //     {
+            //         preserveState: true,
+            //         replace: true,
+            //         ...options,
+            //     },
+            // );
         },
         [searchParams, url],
     );

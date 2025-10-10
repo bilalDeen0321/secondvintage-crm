@@ -8,11 +8,19 @@ use App\Models\Watch;
 use Carbon\CarbonPeriod;
 use App\Models\PlatformData;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class HistoryQuery
 {
     const LAST_30_DAYS = 'last-30-days';
 
+     protected EloquentBuilder $query;
+public function __construct()
+{
+    $this->query = Sale::with(['watch.brand']);
+}
+
+    
     public function allFilters(): array 
     {
         return [
@@ -444,34 +452,7 @@ class HistoryQuery
         })->all();
     }
 
-    public function filter(array $filters): self
-    {
-         $this->query = Sale::with(['watch.brand']);
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $this->query->whereHas('watch', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhereHas('brand', function ($q2) use ($search) {
-                      $q2->where('name', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        if (!empty($filters['platform']) && $filters['platform'] !== 'All') {
-            $this->query->where('platform', $filters['platform']);
-        }
-
-        if (!empty($filters['status']) && $filters['status'] !== 'All') {
-            $this->query->where('status', $filters['status']);
-        }
-
-        if (!empty($filters['filter']) && $filters['filter'] !== 'all-time') {
-            $this->applyTimeFilter($filters['filter']);
-        }
-
-        return $this;
-    }
+   
 
     protected function applyTimeFilter(string $filter): void
     {
@@ -500,45 +481,88 @@ class HistoryQuery
         }
     }
 
+  public function filter(array $filters): self
+    {
+        // --- Search by watch/brand/sku ---
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $this->query->whereHas('watch', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhereHas('brand', fn($b) => $b->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        // --- Platform filter ---
+        if (!empty($filters['platform']) && $filters['platform'] !== 'All') {
+            $this->query->where('platform', $filters['platform']);
+        }
+
+        // --- Status filter ---
+        if (!empty($filters['status']) && $filters['status'] !== 'All') {
+            $this->query->where('status', $filters['status']);
+        }
+
+        // --- Time filter ---
+        if (!empty($filters['filter']) && $filters['filter'] !== 'all-time') {
+            $this->applyTimeFilter($filters['filter']);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Apply sorting dynamically based on allowed fields.
+     */
     public function applySorting(string $field = 'created_at', string $direction = 'desc'): self
     {
-         $this->query = Sale::with(['watch.brand']);
-        // Allowed sortable fields mapping
         $sortableFields = [
             'watchName' => 'watches.name',
             'brand' => 'brands.name',
             'sku' => 'watches.sku',
             'original_price' => 'original_price',
             'sale_price' => 'sale_price',
-            'profit' => 'profit',
-            'margin' => 'margin',
             'saleDate' => 'sales.created_at',
-            'platform' => 'platform',
+            'platform' => 'watches.platform',
             'buyer' => 'buyer_name',
-            'status' => 'status',
+            'date' => 'created_at',
         ];
 
-        if (!isset($sortableFields[$field])) {
-            $field = 'sales.created_at'; // default fallback
-        } else {
-            $field = $sortableFields[$field];
-        }
+        $direction = strtolower($direction) === 'asc' ? 'asc' : 'desc';
 
-        // For sorting on related tables, join the tables
-        if (in_array($field, ['watches.name', 'watches.sku', 'brands.name'])) {
-            $this->query->leftJoin('watches', 'sales.watch_id', '=', 'watches.id')
+        $column = $sortableFields[$field] ?? 'sales.created_at';
+
+        // join tables only when necessary
+        if (in_array($column, ['watches.name', 'brands.name', 'watches.sku', 'watches.platform'])) {
+            $this->query
+                ->leftJoin('watches', 'sales.watch_id', '=', 'watches.id')
                 ->leftJoin('brands', 'watches.brand_id', '=', 'brands.id')
                 ->select('sales.*');
         }
 
-        $this->query->orderBy($field, $direction);
+        $this->query->orderBy($column, $direction);
 
         return $this;
     }
 
     public function paginate(int $perPage = 10)
-    {
-         $this->query = Sale::with(['watch.brand']);
-        return $this->query->paginate($perPage)->appends(request()->query());
+    { 
+    return $this->query->paginate($perPage)->appends(request()->query());
     } 
+    public function getLastQuery(): string
+    {
+        if (!$this->query) {
+            return 'No query has been built yet.';
+        }
+
+        $sql = $this->query->toSql();
+        $bindings = $this->query->getBindings();
+
+        foreach ($bindings as $binding) {
+            $binding = is_numeric($binding) ? $binding : "'{$binding}'";
+            $sql = preg_replace('/\?/', $binding, $sql, 1);
+        }
+
+        return $sql;
+    }
 }

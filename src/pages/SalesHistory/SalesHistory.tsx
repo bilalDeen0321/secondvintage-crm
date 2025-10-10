@@ -144,6 +144,19 @@ const [sort, setSort] = useState({
   direction: (searchParams.get("dir") as SortDirection) || "desc",
 });
 
+const filters = useMemo(
+    () => ({
+      searchTerm,
+      platformFilter,
+      statusFilter,
+      timeRange,
+      sortField: sort.field,
+      sortDirection: sort.direction,
+    }),
+    [searchTerm, platformFilter, statusFilter, timeRange, sort.field, sort.direction]
+  );
+
+  useSalesSearch(filters);
 const handleSort = (field: SortField) => {
   setSort(prev => ({
     field,
@@ -301,25 +314,8 @@ const formatCurrency = (value) => {
     </div>
   </TableHead>
 );
-
-const filters = useMemo(
-  () => ({
-    searchTerm,
-    platformFilter,
-    statusFilter,
-    timeRange,
-    sortField: sort.field,
-    sortDirection: sort.direction,
-  }),
-  [searchTerm, platformFilter, statusFilter, timeRange, sort.field, sort.direction]
-
-);
  
-useSalesSearch(filters);
-//  const [sort, setSort] = useState({
-//   field: (searchParams.get("sort") as SortField) || "saleDate",
-//   direction: (searchParams.get("dir") as SortDirection) || "desc",
-// });
+ 
 
     return (
         <Layout>
