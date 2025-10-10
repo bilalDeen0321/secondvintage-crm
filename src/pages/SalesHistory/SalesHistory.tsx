@@ -181,91 +181,6 @@ const handleSort = (field: SortField) => {
     const profitPerPlatformData = props.profitPerPlatform;
     const platformData = props.salesByPlatform;
 
-  
-
-//     const sortedAndFilteredSales = useMemo(() => {
-//   if (!sales || !sales.data) return []; // prevent crash
-
-//   const filtered = sales.data.filter((sale) => {
-//     const matchesSearch =
-//       sale.watchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//       sale.platform?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//       sale.sku.toLowerCase().includes(searchTerm.toLowerCase());
-
-//     const matchesPlatform =
-//       platformFilter === "All" || sale.platform === platformFilter;
-//     const matchesStatus =
-//       statusFilter === "All" || sale.status === statusFilter;
-
-//     // Time range filtering
-//     let matchesTime = true;
-//     if (timeRange !== "All Time") {
-//       const saleDate = new Date(sale.saleDate);
-//       const now = new Date();
-
-//       switch (timeRange) {
-//         case "Last 7 days":
-//           matchesTime =
-//             saleDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-//           break;
-//         case "Last 30 days":
-//           matchesTime =
-//             saleDate >= new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-//           break;
-//         case "Last 3 months":
-//           matchesTime =
-//             saleDate >= new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-//           break;
-//         case "Last 6 months":
-//           matchesTime =
-//             saleDate >= new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
-//           break;
-//         case "This year":
-//           matchesTime = saleDate.getFullYear() === now.getFullYear();
-//           break;
-//         case "Last year":
-//           matchesTime = saleDate.getFullYear() === now.getFullYear() - 1;
-//           break;
-//       }
-//     }
-
-//     return matchesSearch && matchesPlatform && matchesStatus && matchesTime;
-//   });
-
-//   return filtered.sort((a, b) => {
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     let aValue: any = a[sort.field];
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     let bValue: any = b[sort.field];
-
-//     if (sort.field === "saleDate") {
-//       aValue = new Date(aValue);
-//       bValue = new Date(bValue);
-//     }
-
-//     if (typeof aValue === "string") {
-//       aValue = aValue.toLowerCase();
-//       bValue = bValue.toLowerCase();
-//     }
-
-//     return sort.direction === "asc"
-//       ? aValue > bValue
-//         ? 1
-//         : -1
-//       : aValue < bValue
-//       ? 1
-//       : -1;
-//   });
-// }, [
-//   sales,
-//   searchTerm,
-//   platformFilter,
-//   statusFilter,
-//   sort.field,
-//   sort.direction,
-//   timeRange,
-// ]);
-
 const sortedAndFilteredSales = sales?.data || [];
 
     const chartConfig = {
@@ -727,7 +642,6 @@ const formatCurrency = (value) => {
                                     <SortableHeader field="platform" onClick={() => handleSort("platform")}>Platform</SortableHeader>
                                     <SortableHeader field="buyer" onClick={() => handleSort("buyer")}>Buyer</SortableHeader>
                                     <SortableHeader field="contry" onClick={() => handleSort("contry")}>Country</SortableHeader> 
-                                    <SortableHeader field="status" onClick={() => handleSort("status")}>Status</SortableHeader> 
                                     
                                 </TableRow>
                             </TableHeader>
@@ -750,8 +664,7 @@ const formatCurrency = (value) => {
                                         <TableCell>{sale.created_at}</TableCell>
                                         <TableCell>{sale.platform}</TableCell>
                                         <TableCell>{sale.buyer_name}</TableCell>
-                                        <TableCell>{sale.country}</TableCell>
-                                        <TableCell>{sale.status}</TableCell>
+                                        <TableCell>{sale.country}</TableCell> 
                                         
                                     </TableRow>
                                 ))}
