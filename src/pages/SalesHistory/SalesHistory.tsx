@@ -62,7 +62,8 @@ import { useSearchParams } from "@/hooks/useSearchParams";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import SalesSearch from '@/components/SalesSearch';
 import { useSalesSearch } from '@/hooks/useSalesSearch';
-
+ import { capitalizeWords } from "@/helpers/stringHelpers";
+ 
 
 interface Props {
 //   sales: SaleRecord[];
@@ -207,6 +208,9 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 0,
   }).format(value);
 };
+ 
+  
+
    const SortableHeader = ({
   field,
   children,
@@ -649,12 +653,12 @@ const formatCurrency = (value) => {
                                 {sortedAndFilteredSales.map((sale) => (
                                     <TableRow key={sale.id}>
                                         <TableCell className="font-medium">
-                                            {sale.watchName}</TableCell>
+                                            {capitalizeWords(sale.watchName)}</TableCell>
 
                                          <TableCell className="text-slate-600">
-                                            {sale.brand}</TableCell>
+                                            {capitalizeWords(sale.brand)}</TableCell>
                                             
-                                        <TableCell>{sale.sku}</TableCell>
+                                        <TableCell>{capitalizeWords(sale.sku)}</TableCell>
                                         
                                         <TableCell className="font-semibold text-green-600">
                                            {formatCurrency(sale.original_price)}</TableCell>
@@ -662,9 +666,9 @@ const formatCurrency = (value) => {
                                         <TableCell> {formatCurrency(sale.profit)}</TableCell>
                                         <TableCell> {formatCurrency(sale.margin)}%</TableCell>
                                         <TableCell>{sale.created_at}</TableCell>
-                                        <TableCell>{sale.platform}</TableCell>
-                                        <TableCell>{sale.buyer_name}</TableCell>
-                                        <TableCell>{sale.country}</TableCell> 
+                                        <TableCell>{capitalizeWords(sale.platform)}</TableCell>
+                                        <TableCell>{capitalizeWords(sale.buyer_name)}</TableCell>
+                                        <TableCell>{capitalizeWords(sale.country)}</TableCell> 
                                         
                                     </TableRow>
                                 ))}
