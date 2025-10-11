@@ -45,6 +45,7 @@ class ProcessPlatformEvent implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
+            // 'platform' => $this->platform->only(['id', 'name', 'data', 'status', 'message']),
             'platform' => $this->platform->only(['id', 'name', 'status', 'message']),
         ];
     }

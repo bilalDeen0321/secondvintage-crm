@@ -30,7 +30,7 @@ class StoreWatchRequest extends FormRequest
             'serial_number'   => ['nullable', 'string', 'max:255'],
             'reference'       => ['nullable', 'string', 'max:255'],
             'case_size'       => ['nullable', 'string', 'max:255'],
-            'wrist_size'       => ['nullable', 'string', 'max:255'],
+            'wrist_size'      => ['nullable', 'string', 'max:255'],
             'caliber'         => ['nullable', 'string', 'max:255'],
             'timegrapher'     => ['nullable', 'string', 'max:255'],
             'original_cost'   => ['nullable', 'numeric'],

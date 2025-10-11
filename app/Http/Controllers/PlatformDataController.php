@@ -23,7 +23,6 @@ class PlatformDataController extends Controller
      */
     public function aiFill(Request $request, Watch $watch)
     {
-
         $request->validate(['platform' => 'required|string|in:' . PlatformData::CATAWIKI]);
 
         $platformName = $request->input('platform');
@@ -70,20 +69,23 @@ class PlatformDataController extends Controller
     {
         $platform = $request->input('platform');
 
-        if (count($watch->platforms()->where('name', $platform)?->data ?? [])) {
+        // 1. Check if there’s existing data for this platform
+        $existingPlatform = $watch->platforms()->where('name', $platform)->first();
+
+        if ($existingPlatform && !empty($existingPlatform->data)) {
             $watch->update(['platform' => $platform]);
             return back()->with('info', 'Platform was updated with existing data.');
         }
 
+        // 2. If the selected platform is valid, trigger AI fill
         if (in_array($platform, PlatformData::all_patforms())) {
             return $this->aiFill($request, $watch);
         }
 
+        // 3. If user cleared selection
         $watch->update(['platform' => null]);
-
-        return back()->with('success', 'Platform was unselect.');
+        return back()->with('success', 'Platform was unselected.');
     }
-
 
     /**
      * Handle bulk actions on platform data.

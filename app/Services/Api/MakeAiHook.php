@@ -40,23 +40,34 @@ class MakeAiHook
      */
     public function generateDescription(array $payload = [])
     {
-
         try {
-
             $response = $this->request($payload);
 
-        Log::info(__METHOD__, $response->body());
-
-            //send back
-            return $response->collect()
+            // Collect response body and attach HTTP status code
+            $data = $response->collect()
                 ->mapWithKeys(function ($value, $key) {
                     return [ucfirst($key) => $value];
                 });
-            //
+
+            // Add HTTP status code to the collection
+            $data->put('HttpStatus', $response->status());
+
+            Log::info(__METHOD__, json_encode([
+                'status' => $response->status(),
+                'body'   => $response->body()
+            ]));
+
+            return $data;
+
         } catch (\Throwable $e) {
+            Log::error(__METHOD__, json_encode([
+                'error' => $e->getMessage()
+            ]));
+
             return collect([
-                'Status' => 'error',
-                'Message'   => $e->getMessage(),
+                'Status'     => 'error',
+                'HttpStatus' => 500,
+                'Message'    => $e->getMessage(),
             ]);
         }
     }
@@ -70,14 +81,25 @@ class MakeAiHook
             // Set the AI_Action for Catawiki data generation
             $payload['AI_Action'] = 'generate_catawiki_data';
             $payload['Platform'] = 'Catawiki';
-
+ 
             $response = $this->request($payload);
 
-            Log::info(__METHOD__, $response->body());
+            // Collect response body and attach HTTP status code
+            $data = $response->collect()
+                ->mapWithKeys(function ($value, $key) {
+                    return [ucfirst($key) => $value];
+                });
 
-            // Send back response
-            return $response->collect()
-                ->mapWithKeys(fn($value, $key) => [ucfirst($key) => $value]);
+            // Add HTTP status code to the collection
+            $data->put('HttpStatus', $response->status());
+
+            Log::info(__METHOD__, json_encode([
+                'status' => $response->status(),
+                'body'   => $response->body()
+            ]));
+
+            return $data;
+            
         } catch (\Throwable $e) {
             return collect([
                 'status' => 'error',

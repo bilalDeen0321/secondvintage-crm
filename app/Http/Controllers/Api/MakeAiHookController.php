@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Actions\Watch\GenerateAiDescriptionAction;
-use App\Actions\Watch\WatchUpsertForAi;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Watch\AIGenerateRequest;
-use App\Http\Resources\WatchResource;
-use App\Jobs\ProcessWatchAIDescriptionJob;
-use App\Models\Status;
 use App\Models\Watch;
+use App\Models\Status;
 use App\Traits\ApiResponse;
+use App\Enums\WatchAiStatus;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\WatchResource;
+use App\Actions\Watch\WatchUpsertForAi;
+use App\Jobs\ProcessWatchAIDescriptionJob;
+use App\Http\Requests\Watch\AIGenerateRequest;
+use App\Actions\Watch\GenerateAiDescriptionAction;
 
 class MakeAiHookController extends Controller
 {
@@ -46,11 +47,12 @@ class MakeAiHookController extends Controller
      */
     public function withQueue(AIGenerateRequest $request, WatchUpsertForAi $action)
     {
-
         //check if the the request has a name and brand send to create or update action
         if ($request->input('name') && $request->input('brand')) {
 
             $watch = $action($request->all(), $request->input('routeKey'));
+
+            $watch->update(['ai_status' => WatchAiStatus::loading, 'ai_message' => '']);
 
             dispatch(new ProcessWatchAIDescriptionJob($watch));
 

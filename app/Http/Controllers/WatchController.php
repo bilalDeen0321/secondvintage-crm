@@ -82,7 +82,6 @@ class WatchController extends Controller
      */
     public function edit(Watch $watch)
     {
-
         $nextItem = Watch::where('id', '<', $watch->id) // smaller id for next in latest-first
             ->orderBy('id', 'desc')
             ->first();

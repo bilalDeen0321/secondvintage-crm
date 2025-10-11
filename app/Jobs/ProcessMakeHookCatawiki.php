@@ -68,20 +68,25 @@ class ProcessMakeHookCatawiki implements ShouldQueue
 
         $payload = array_filter($payload, fn($v) => $v !== null);
 
-
-        // if (app()->environment('local')) {
-        //     Sleep::for(10)->seconds();
-        //     $make = Collection::fromJson(File::get(base_path('resources/make.com/catawiki-response.json')));
-        // } else {
-        // }
-
         $make = MakeAiHook::init()->generateCatawikiData($payload);
-        // $make = MakeAiHook::init()->generateCatawikiData($payload);
 
-        if ($make->get('Status') === 'success') {
-            $this->handleSuccess($make);
-        } else {
-            $this->handleFailure($make);
+        $httpStatus = (int) $make->get('HttpStatus', 500);
+
+        switch ($httpStatus) {
+            case 202:
+                // if (app()->environment('local')) {
+                //     Sleep::for(10)->seconds();
+                //     $make = Collection::fromJson(File::get(base_path('resources/make.com/catawiki-response.json')));
+                // }
+                break;
+
+            case 200:
+                $this->handleSuccess($make);
+                break;
+
+            default:
+                $this->handleFailure($make);
+                break;
         }
     }
 
@@ -90,16 +95,12 @@ class ProcessMakeHookCatawiki implements ShouldQueue
         $this->platform->update([
             'status' => PlatformData::STATUS_SUCCESS,
             'data'   => ExtractMakeHookToCatawiki::execute($this->watch, $make),
+            'message'   => '',
         ]);
         
         //$status = Status::toDatabase($make->get('Status_Selected')) ?? $this->watch->status;
 
-        $statusKey = $make->get('Status_Selected');
-        if ($statusKey) {
-            $status = Status::toDatabase($statusKey);
-        } else {
-            $status = $this->watch->status; // fallback
-        }
+        $status = Status::toDatabase($make->get('Status_Selected'));
 
         FacadesLog::info(__METHOD__, [
             'status' => $status,
@@ -122,7 +123,6 @@ class ProcessMakeHookCatawiki implements ShouldQueue
 
         $this->updatePlatformStatus(PlatformData::STATUS_FAILED, ['message' => $message]);
     }
-
 
     /**
      * Update platform status and additional data if needs.

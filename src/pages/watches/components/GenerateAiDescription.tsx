@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WatchResource } from "@/types/resources/watch";
 import { router } from "@inertiajs/react";
-import { Loader2, RotateCcw, Sparkles } from "lucide-react";
+import { Loader2, RotateCcw, Sparkles, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
+import WatchDescription, { WatchAiDescriptionError } from "./WatchDescription";
 
 type Props = {
     watch?: WatchResource | null;
@@ -24,9 +25,11 @@ export default function GenerateAiDescription(props: Props) {
     const { data, setData, watch = {} as WatchResource, setSavedData, setAiProcessing  } = props; 
     //state
     const [loading, setLoading] = useState(false);
-   const COOLDOWN_TIME = 90; // seconds
-  const STORAGE_KEY = `generateCooldown_${watch.routeKey}`;
-  const [cooldown, setCooldown] = useState(0);
+    const COOLDOWN_TIME = 90; // seconds
+    const STORAGE_KEY = `generateCooldown_${watch.routeKey}`;
+    const [cooldown, setCooldown] = useState(0);
+    const [backupDescription, setBackupDescription] = useState(data.description);
+    const [aiMessage, setAiMessage] = useState<string | null>((data as any).ai_message || watch?.ai_message || null);
 
     /**
      * Handle ai ai reset thread id in database
@@ -46,6 +49,8 @@ export default function GenerateAiDescription(props: Props) {
     // generate ai description
     const onGenerate = async () => {
         if (!data.images.some((i) => i.useForAI)) return;
+           setBackupDescription(data.description); // save before wiping
+           setData("description", ""); // visually clear it
            setLoading(true);
            setAiProcessing?.(true);
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
@@ -97,8 +102,13 @@ export default function GenerateAiDescription(props: Props) {
             const channel = `watch.${watch.routeKey}`;
             const eventJob = "WatchAiDescriptionProcessedEvent";
             echo.listen(channel, eventJob, (event: WatchResource) => {
-                if (event?.ai_status != "loading") {
-                    toast(event.ai_message, { type: event.ai_status as any });
+                console.log("WatchAiDescriptionProcessedEvent", event);
+                // if (event?.ai_status != "loading") {
+                //     toast(event.ai_message, { type: event.ai_status as any });
+                // }
+
+                if (event?.ai_status === "failed") {
+                    setAiMessage(event.ai_message || 'AI generation failed');
                 }
 
                 setData("ai_status", event.ai_status);
@@ -140,7 +150,7 @@ export default function GenerateAiDescription(props: Props) {
 
   
   const isDisabled =
-    !data.images.some((m) => m.useForAI) || loading || cooldown > 0;
+    !data.images.some((m) => m.useForAI) || loading;// || cooldown > 0;
 
     return (
         <div>
@@ -166,7 +176,21 @@ export default function GenerateAiDescription(props: Props) {
                         </>
                     )}
                 </Button>
+
+                {/* Show error message if AI generation failed */}
+                {data.ai_status === "failed" && (
+                    <WatchAiDescriptionError message={aiMessage} />
+                )}
+
+                {/* If failed — show a red warning icon */}
+                {/* {data.ai_status === "failed" && (
+                    <span className="flex items-center text-red-500 text-sm">
+                        <TriangleAlert className="h-4 w-4 mr-1" />
+                        AI Error
+                    </span>
+                )} */}
             </div>
+
         </div>
     );
 }

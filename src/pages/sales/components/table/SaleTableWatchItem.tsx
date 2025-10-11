@@ -76,7 +76,8 @@ export default function SaleTableWatchItem({ onOpenSingleView, onSelectWatch, on
                 <div className="text-sm text-slate-600">{watch.location}</div>
             </td>
             <td className="p-2">
-                <WatchTableDescription watch={watch} />
+                <div className="line-clamp-2 text-xs leading-tight text-slate-600" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden"}} title={watch.description}>{watch.description}</div>
+                {/* <WatchTableDescription watch={watch} /> */}
             </td>
         </tr>
     );
