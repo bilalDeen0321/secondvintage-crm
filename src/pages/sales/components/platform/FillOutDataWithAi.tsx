@@ -27,6 +27,9 @@ export default function FillOutDataWithAi({ watch, platform: initialPlatform }: 
         setLoading(platform?.status === PlatformData.STATUS_LOADING);
         if (platform?.status === PlatformData.STATUS_FAILED) {
             setMessage(platform?.message || "There was an error");
+        } else {
+            // clear old messages when success or other non-error status
+            setMessage("");
         }
     }, [platform]);
 

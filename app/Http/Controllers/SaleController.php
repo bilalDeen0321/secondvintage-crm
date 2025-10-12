@@ -65,7 +65,6 @@ class SaleController extends Controller
      */
     public function show(Watch $watch, Request $request)
     {
-
         $platformName = $watch->platform;
 
         $platform = $watch->platforms()->where('name', $platformName)->first();
