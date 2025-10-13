@@ -43,6 +43,10 @@ return [
         'key' => env('MAKE_HOOK_KEY', 'phm_4h9s8fdA27kLmEwQPz3XvYtB60NcUgT1'),
     ],
 
+    'make' => [
+        'token' => env('MAKE_CALLBACK_TOKEN'),
+    ],
+
     'tradera' => [
         'endpoint' => 'https://api.tradera.com/v3',
         'app_id' => (int)  env('TRADERA_APP_ID'),
