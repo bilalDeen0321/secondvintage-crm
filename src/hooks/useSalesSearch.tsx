@@ -8,6 +8,7 @@ interface Filters {
   timeRange: string;
   sortField: string;
   sortDirection: "asc" | "desc";
+   page: number;
 }
 
 export const useSalesSearch = (filters: Filters) => {
@@ -23,6 +24,7 @@ export const useSalesSearch = (filters: Filters) => {
       );
 
     if (!hasChanged) return;
+  // if (window.location.search.includes("page=")) return;
 
     prevFilters.current = filters;
 
@@ -53,6 +55,7 @@ export const useSalesSearch = (filters: Filters) => {
               : undefined,
           sort: filters.sortField,
           dir: filters.sortDirection,
+          page: filters.page || undefined,
         },
         {
           preserveScroll: true,

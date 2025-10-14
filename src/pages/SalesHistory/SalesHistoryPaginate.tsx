@@ -37,8 +37,9 @@ export default function TablePaginate({ links }: { links?: LinkItem[] }) {
             // preserveState: false by default for pagination (so we re-fetch)
             // adjust if you want to preserve local state
             className={`px-3 py-1 text-sm border rounded-md ${
-              active ? "bg-blue-600 text-white" : "bg-white text-gray-700"
+              active ? "bg-primary" : "bg-white text-gray-700"
             }`}
+            style={active ? { color: "rgb(255 255 255 / var(--tw-text-opacity, 1))" } : undefined}
             dangerouslySetInnerHTML={{ __html: label }}
           />
         );

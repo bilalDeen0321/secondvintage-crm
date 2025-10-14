@@ -43,7 +43,7 @@ class StoreWatchRequest extends FormRequest
             'ai_instructions' => ['nullable', 'string'],
             'ai_thread_id'    => ['nullable', 'string'],
 
-            'images'          => ['nullable', 'array'],
+            'images'          => ['nullable', 'array', 'max:100'],
             // images is an array of base64 strings inside objects
             // 'images.*.url'    => ['required_with:images', 'string'],
             'images.*.id'    => ['nullable'],

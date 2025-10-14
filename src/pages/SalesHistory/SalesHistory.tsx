@@ -40,6 +40,8 @@ import {
     Search,
     TrendingUp,
     Upload,
+     ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -62,8 +64,8 @@ import { useSearchParams } from "@/hooks/useSearchParams";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import SalesSearch from '@/components/SalesSearch';
 import { useSalesSearch } from '@/hooks/useSalesSearch';
- import { capitalizeWords } from "@/helpers/stringHelpers";
- 
+import { capitalizeWords } from "@/helpers/stringHelpers"; 
+
 
 interface Props {
 //   sales: SaleRecord[];
@@ -144,7 +146,7 @@ const [sort, setSort] = useState({
   field: (searchParams.get("sort") as SortField) || "saleDate",
   direction: (searchParams.get("dir") as SortDirection) || "desc",
 });
-
+const currentPage = Number(searchParams.get("page")) || 1;
 const filters = useMemo(
     () => ({
       searchTerm,
@@ -153,11 +155,21 @@ const filters = useMemo(
       timeRange,
       sortField: sort.field,
       sortDirection: sort.direction,
+      page: currentPage,
     }),
-    [searchTerm, platformFilter, statusFilter, timeRange, sort.field, sort.direction]
+    [searchTerm, platformFilter, statusFilter, timeRange, sort.field, sort.direction, currentPage]
   );
 
   useSalesSearch(filters);
+  
+    const getSortIcon = (field: string) => {
+  if (sort.field !== field) return null;
+  return sort.direction === "asc" ? (
+    <ChevronUp className="ml-1 inline h-4 w-4" />
+  ) : (
+    <ChevronDown className="ml-1 inline h-4 w-4" />
+  );
+};
 const handleSort = (field: SortField) => {
   setSort(prev => ({
     field,
@@ -617,36 +629,42 @@ const formatCurrency = (value) => {
                     <CardContent className="p-0">
                         <Table>
                             <TableHeader>
-                                <TableRow>
-                                    <SortableHeader field="watchName" onClick={() => handleSort("watchName")}>
-                                        Watch Name
-                                    </SortableHeader>
-                                    
-                                    <SortableHeader field="brand" onClick={() => handleSort("brand")}>
-                                        Brand 
-                                    </SortableHeader>
-                                    <SortableHeader field="sku" onClick={() => handleSort("sku")}>
-                                        SKU
-                                    </SortableHeader>
-                                   
-                                    <SortableHeader field="cost" onClick={() => handleSort("cost")}>
-                                        Cost
-                                    </SortableHeader>
-                                    <SortableHeader field="sale" onClick={() => handleSort("sale")}>
-                                        Sale Price
-                                    </SortableHeader>
-                                   
-                                    <SortableHeader field="profit" onClick={() => handleSort("profit")}>
-                                        Profit
-                                    </SortableHeader>
-                                    <SortableHeader field="margin" onClick={() => handleSort("margin")}>
-                                        Margin
-                                    </SortableHeader>
-                                    <SortableHeader field="date" onClick={() => handleSort("date")}>Date</SortableHeader>
-                                    <SortableHeader field="platform" onClick={() => handleSort("platform")}>Platform</SortableHeader>
-                                    <SortableHeader field="buyer" onClick={() => handleSort("buyer")}>Buyer</SortableHeader>
-                                    <SortableHeader field="contry" onClick={() => handleSort("contry")}>Country</SortableHeader> 
-                                    
+                                <TableRow> 
+
+
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("watchName")}>
+                                    Watch Name {getSortIcon("watchName")}
+                                </th>  
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("brand")}>
+                                    Brand {getSortIcon("brand")}
+                                </th> 
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sku")}>
+                                    SKU {getSortIcon("brand")}
+                                </th>  
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("cost")}>
+                                    Cost {getSortIcon("brand")}
+                                </th>  
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sale")}>
+                                    Sale Price {getSortIcon("sale")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("profit")}>
+                                    Profit {getSortIcon("profit")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("margin")}>
+                                    Margin {getSortIcon("margin")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("date")}>
+                                    Date {getSortIcon("date")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("platform")}>
+                                    Platform {getSortIcon("platform")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("buyer")}>
+                                    Buyer {getSortIcon("buyer")}
+                                </th>   
+                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("contry")}>
+                                    Country {getSortIcon("contry")}
+                                </th>  
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -654,16 +672,17 @@ const formatCurrency = (value) => {
                                     <TableRow key={sale.id}>
                                         <TableCell className="font-medium">
                                             {capitalizeWords(sale.watchName)}</TableCell>
+                                            
 
                                          <TableCell className="text-slate-600">
                                             {capitalizeWords(sale.brand)}</TableCell>
                                             
                                         <TableCell>{capitalizeWords(sale.sku)}</TableCell>
                                         
-                                        <TableCell className="font-semibold text-green-600">
+                                        <TableCell className="font-semibold ">
                                            {formatCurrency(sale.original_price)}</TableCell>
                                         <TableCell>{formatCurrency(sale.sale_price)}</TableCell> 
-                                        <TableCell> {formatCurrency(sale.profit)}</TableCell>
+                                        <TableCell className={sale.profit > 0 ? "text-green-600" : ""}> {formatCurrency(sale.profit)}</TableCell>
                                         <TableCell> {formatCurrency(sale.margin)}%</TableCell>
                                         <TableCell>{sale.created_at}</TableCell>
                                         <TableCell>{capitalizeWords(sale.platform)}</TableCell>
