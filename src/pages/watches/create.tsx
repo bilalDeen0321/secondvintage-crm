@@ -52,10 +52,10 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand, watch?.sku);
 
-    // Update the form state only when SKU changes
+    // Only update SKU if NOT in edit mode (i.e., creating a new watch)
     useEffect(() => {
-        if (data.sku !== sku) setData("sku", sku);
-    }, [sku, setData, data.sku]);
+        if (!watch && data.sku !== sku) setData("sku", sku);
+    }, [sku, setData, data.sku, watch]);
 
     const hasChanges = useMemo(() => JSON.stringify(data) !== JSON.stringify(savedData), [data, savedData]);
 
