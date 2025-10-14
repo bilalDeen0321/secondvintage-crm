@@ -629,42 +629,18 @@ const formatCurrency = (value) => {
                     <CardContent className="p-0">
                         <Table>
                             <TableHeader>
-                                <TableRow> 
-
-
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("watchName")}>
-                                    Watch Name {getSortIcon("watchName")}
-                                </th>  
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("brand")}>
-                                    Brand {getSortIcon("brand")}
-                                </th> 
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sku")}>
-                                    SKU {getSortIcon("sku")}
-                                </th>  
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("cost")}>
-                                    Cost {getSortIcon("cost")}
-                                </th>  
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sale")}>
-                                    Sale Price {getSortIcon("sale")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("profit")}>
-                                    Profit {getSortIcon("profit")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("margin")}>
-                                    Margin {getSortIcon("margin")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("date")}>
-                                    Date {getSortIcon("date")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("platform")}>
-                                    Platform {getSortIcon("platform")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("buyer")}>
-                                    Buyer {getSortIcon("buyer")}
-                                </th>   
-                                <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("contry")}>
-                                    Country {getSortIcon("contry")}
-                                </th>  
+                                <TableRow>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("watchName")}>Watch Name {getSortIcon("watchName")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("brand")}>Brand {getSortIcon("brand")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sku")}>SKU {getSortIcon("sku")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("cost")}>Cost {getSortIcon("cost")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sale")}>Sale Price {getSortIcon("sale")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("profit")}>Profit {getSortIcon("profit")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("margin")}>Margin {getSortIcon("margin")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("date")}>Date {getSortIcon("date")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("platform")}>Platform {getSortIcon("platform")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("buyer")}>Buyer {getSortIcon("buyer")}</TableHead>
+                                    <TableHead className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("contry")}>Country {getSortIcon("contry")}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
