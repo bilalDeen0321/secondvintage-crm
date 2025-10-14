@@ -639,10 +639,10 @@ const formatCurrency = (value) => {
                                     Brand {getSortIcon("brand")}
                                 </th> 
                                 <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sku")}>
-                                    SKU {getSortIcon("brand")}
+                                    SKU {getSortIcon("sku")}
                                 </th>  
                                 <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("cost")}>
-                                    Cost {getSortIcon("brand")}
+                                    Cost {getSortIcon("cost")}
                                 </th>  
                                 <th className="w-16 p-2 text-xs font-medium text-slate-700 cursor-pointer" onClick={() => handleSort("sale")}>
                                     Sale Price {getSortIcon("sale")}
