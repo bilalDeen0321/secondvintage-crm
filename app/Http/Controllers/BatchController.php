@@ -40,17 +40,20 @@ class BatchController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
- 
+    { 
         // Get paginated results
         $batches = BatchQuery::init()->execute($request)->paginate(10)->withQueryString();
 
-        // Get available watches (unassigned to any batch)
-        $availableWatches = Watch::query()->whereNull('batch_id')->with(['images', 'brand'])->get();
+        // Get available watches (unassigned to any batch) - paginate to improve performance
+        $availableWatches = Watch::query()
+            ->whereNull('batch_id')
+            ->with(['images', 'brand'])
+            ->paginate(50)
+            ->withQueryString();
 
         return Inertia::render('batch/BatchIndex', [
             'batches' => BatchResource::collection($batches)->response()->getData(true),
-            'availableWatches' => WatchResource::collection($availableWatches),
+            'availableWatches' => WatchResource::collection($availableWatches)->response()->getData(true),
             'batchStastistics' => BatchQuery::init()->getStatistics(),
             'locations' => Location::all()
         ]);

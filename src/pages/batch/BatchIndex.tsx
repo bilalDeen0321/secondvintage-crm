@@ -21,7 +21,7 @@ interface Location {
 }
 interface BatchManagementProps {
     batches: PaginateData<BatchResource>;
-    availableWatches: WatchResource[];
+    availableWatches: { data: WatchResource[]; [key: string]: any };
     batchStastistics: any;
     locations: Location[]
 }
@@ -32,6 +32,8 @@ const BatchManagement = ({
     batchStastistics,
     locations,
 }: BatchManagementProps) => {
+    // Use availableWatches.data for array operations
+    const watchesArray = availableWatches.data || [];
     const {
         selectedWatch,
         setSelectedWatch,
@@ -58,7 +60,7 @@ const BatchManagement = ({
         handleAddWatchSort,
         handleSelectAllWatches,
         handleSelectWatch,
-    } = useBatchActions(serverBatches.data, availableWatches);
+    } = useBatchActions(serverBatches.data, watchesArray);
 
     //start of the complete state and consts list
     const [viewMode, setViewMode] = useLocalStorage<"list" | "grid">("watch_view_mode", "list");
