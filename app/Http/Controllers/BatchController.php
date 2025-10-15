@@ -95,11 +95,11 @@ class BatchController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Batch $batch)
-    {  
+    {          
        return Inertia::render('batch/BatchEdit', [
             'batch' => new BatchResource($batch->load(['watches.images', 'watches.brand'])),
             //available watches that are not assigned to any batch
-            'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->get()),
+            'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->limit(50)->get()),
             'locations' => Location::all(),
         ]);
     }
