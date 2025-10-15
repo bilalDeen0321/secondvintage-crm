@@ -135,11 +135,25 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
 
             $httpStatus = (int) $make->get('HttpStatus', 500);
 
-            match ($httpStatus) {
-                202 => $this->handleProcessing($make),
-                200 => $this->handleSuccess($make),
-                default => $this->handleFailure($make),
-            };
+            // match ($httpStatus) {
+            //     202 => $this->handleProcessing($make),
+            //     200 => $this->handleSuccess($make),
+            //     default => $this->handleFailure($make),
+            // };
+
+            switch ($httpStatus) {
+                case 202:
+                    // $this->handleProcessing($make);
+                    break;
+
+                case 200:
+                    $this->handleSuccess($make);
+                    break;
+
+                default:
+                    $this->handleFailure($make);
+                    break;
+            }
         } catch (\Throwable $th) {
             LaravelLog::error('🟥 [Make.com Request Failed]', [
                 'watch_id' => $this->watch->id,
