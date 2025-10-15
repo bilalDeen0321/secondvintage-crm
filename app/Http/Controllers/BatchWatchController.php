@@ -17,10 +17,10 @@ class BatchWatchController extends Controller
      */
     public function index(Batch $batch)
     {
-         
+          
         return Inertia::render('batch/BatchWatches', [
             'batch' => new BatchResource($batch->load(['watches.images', 'watches.brand'])),
-            'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->get()),
+            'watches' => WatchResource::collection(Watch::whereNull('batch_id')->with(['images', 'brand'])->limit(50)->get()),
             'locations' => Location::all(),
         ]);
     }
