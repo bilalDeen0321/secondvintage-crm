@@ -34,7 +34,6 @@ const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
     });
 
 
-
     const handleImageClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (watch.images && watch.images.length > 0) {
@@ -141,10 +140,16 @@ const WatchCard = ({ watch, onDelete }: WatchCardProps) => {
                         </p>
                     </div>
 
-                    {watch.description && (
+                    {/* {watch.description && (
                         <p className="mb-3 line-clamp-2 text-xs text-slate-600">
                             <WatchDescription watch={watch} />
                         </p>
+                    )} */}
+
+                    {watch.description && (
+                        <div className="mb-3 line-clamp-2 text-xs text-slate-600">
+                            <WatchDescription watch={watch} />
+                        </div>
                     )}
 
                     {/* Actions */}

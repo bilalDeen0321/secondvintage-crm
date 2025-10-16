@@ -42,6 +42,8 @@ class WatchAiDescriptionProcessedEvent implements ShouldBroadcastNow
      */
     public function broadcastWith(): array
     {
-        return (new WatchResource($this->watch))->resolve();
+        // return (new WatchResource($this->watch))->resolve();
+        // return $this->watch->only(['id', 'status', 'ai_status', 'ai_message', 'description']);
+        return $this->watch->only(['id', 'status', 'ai_status', 'ai_message']);
     }
 }

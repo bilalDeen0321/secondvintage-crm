@@ -25,17 +25,16 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
     useEffect(() => {
         //the the current active platform item
         const pitem = watch?.platforms?.find((p) => p.name === platform);
-        
-        //set loading state based on the platform item status
-        setLoading(pitem?.status === PlatformData.STATUS_LOADING);
+
+        console.log('Platform Item:', pitem);
 
         //detarmine if the platform is currently has an error accured
         if (pitem?.status === PlatformData.STATUS_FAILED) {
             setMessage(pitem.message || "There was an error");
-        } else {
-            // Clear error message on success or any other state
-            setMessage("");
         }
+
+        //set loading state based on the platform item status
+        setLoading(pitem?.status === PlatformData.STATUS_LOADING);
 
         //cleanup function when component unmounts or platform/watch changes
         // return () => setLoading(false);
@@ -47,14 +46,10 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
         if (!watch?.routeKey) return;
         const channel = `platform.${watch.routeKey}`;
         const handler = (event: ProcessPlatformEvent) => {
-            console.log("Received event from table:", event.platform);
+            console.log(`Received event from table: ${channel}`, event);
             setLoading(event?.platform?.status === PlatformData.STATUS_LOADING);
             if (event?.platform?.status === PlatformData.STATUS_FAILED) {
                 setMessage(event?.platform?.message || "There was an error");
-            }
-            else {
-                // Clear error message on success or any other state
-                setMessage("");
             }
         };
 

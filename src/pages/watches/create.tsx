@@ -25,6 +25,7 @@ import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
 import WatchWatermark from "./components/WatchWatermark";
+import { toast } from "react-toastify";
 
 type Props = {
     watch?: WatchResource;
@@ -49,6 +50,8 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     const { data, setData, post, processing, errors } = useForm(watchInitData(watch, auth?.user));
     const [savedData, setSavedData] = useState<any>(watchInitData(watch, auth?.user));
 
+    const [loadingDescription, setLoadingDescription] = useState(false); 
+    
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand, watch?.sku);
 
@@ -164,6 +167,51 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
         return () => window.removeEventListener("popstate", handlePopState);
     }, [hasChanges]);
 
+    const onLoadDescription = async () => {
+        if (!data.routeKey) return;
+        setLoadingDescription(true);
+        
+        // router.post(route("api.make-hooks.ai-description.load"), { routeKey: data.routeKey }, {
+        //     preserveScroll: true,
+        //     onSuccess: (response) => {
+        //         console.log("description load response", response);
+        //         const desc = response?.props?.flash?.data?.description || response?.props?.description || "description not found";
+        //         setData("description", desc);
+        //     },
+        //     onFinish: () => setLoadingDescription(false),
+        //     onError: () => {
+        //         toast.error("Failed to load description.");
+        //         setLoadingDescription(false);
+        //     }
+        // });
+
+        try {
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                const res = await fetch(route("api.make-hooks.ai-description.load"), {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-CSRF-TOKEN": token, // ✅ include this line
+                    },
+                    body: JSON.stringify({ routeKey: data.routeKey }),
+                });
+
+                const json = await res.json();
+
+                if (json.status === "success") {
+                    setData("description", json.description);
+                } else {
+                    toast.error(json.message || "Failed to load description.");
+                }
+        } catch (error) {
+            toast.error("Something went wrong while loading the description.");
+        } finally {
+            setLoadingDescription(false);
+        }
+    };
+    
     return (
         <Layout>
             <Head title={watch?.routeKey ? "Update the Watch" : "Add New Watch"} />
@@ -392,6 +440,16 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                             className="min-h-[320px] w-full resize-y"
                                             disabled={data.ai_status === "loading"}
                                         ></Textarea>
+                                        {/* {(['success', null, ''].includes(data?.ai_status ?? '')) && !(data?.description ?? '').trim() && ( */}
+                                            <div className="mt-2 text-sm text-blue-600 cursor-pointer hover:underline">
+                                                {loadingDescription ? (
+                                                    <span>Loading description...</span>
+                                                ) : (
+                                                    <span onClick={onLoadDescription}>Load generated description</span>
+                                                )}
+                                            </div>
+                                        {/* )} */}
+
                                     </div>
 
                                     <div>

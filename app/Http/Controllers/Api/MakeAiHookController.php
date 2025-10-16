@@ -77,6 +77,59 @@ class MakeAiHookController extends Controller
     }
 
     /**
+     * Handle reset of AI generation state.
+     * 
+     * @param \Illuminate\Http\Request $request
+     */
+    public function resetAiStatus(Request $request)
+    {
+        $watchId = $request->input('routeKey');
+
+        if (!$watchId) {
+            return redirect()->back()->with([
+                'status'  => 'error',
+                'message' => 'No watch specified.',
+            ]);
+        }
+
+        $watch = Watch::where('sku', $watchId)->first();
+
+        if (!$watch) {
+            return redirect()->back()->with([
+                'status'  => 'error',
+                'message' => 'Watch not found.',
+            ]);
+        }
+
+        // Reset AI loading state
+        $watch->update([
+            'ai_status'  => null,
+            'ai_message' => null,
+        ]);
+
+        return redirect()->back()->with([
+            'status'  => 'success',
+            'message' => 'AI status has been reset.',
+            'data'    => new WatchResource($watch),
+        ]);
+    }
+
+    /**
+     * Load full AI-generated description (on demand).
+     */
+    public function loadDescription(Request $request)
+    {
+        $routeKey = $request->input('routeKey');
+
+        $watch = Watch::where('sku', $routeKey)->first();
+
+        return response()->json([
+            'status' => 'success',
+            'description' => $watch->description ?? 'test description not found',
+        ]);
+    }
+
+    /**
      * Reset thread id form watch data
      */
     public function resetThread(Request $request)

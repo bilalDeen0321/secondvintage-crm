@@ -16,6 +16,7 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
         if (watch?.routeKey) {
             const eventName = 'WatchAiDescriptionProcessedEvent';
             echo.listen(`watch.${watch.routeKey}`, eventName, (event: WatchResource) => {
+                console.log('WatchAiDescriptionProcessedEvent received:', event);
                 setAiStatus(event?.ai_status);
                 setAiMessage(event?.ai_message)
                 setDescription(event?.description)
