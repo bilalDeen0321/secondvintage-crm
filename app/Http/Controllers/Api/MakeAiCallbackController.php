@@ -36,9 +36,19 @@ final class MakeAiCallbackController extends Controller
         // ]);
 
         // $data = (object)$request->all();
-        $data = (object) $request->json()->all();
+        // $data = (object) $request->json()->all();
 
-        LaravelLog::info('Make AI Callback received: '. json_encode($request->all()));
+        // LaravelLog::info('Make AI Callback received: '. json_encode($request->all()));
+
+        $rawBody = $request->getContent();
+        LaravelLog::info('Make AI Callback raw body: ' . $rawBody);
+
+        $data = json_decode($rawBody);
+
+        if (!$data) {
+            LaravelLog::error('Failed to decode Make AI Callback JSON.');
+            return response()->json(['error' => 'Invalid JSON'], 400);
+        }
 
         if ( $data->Action == 'GenerateDescription' && $data->Status == 'success' && $data->StatusCode == '200' ) 
         {     
