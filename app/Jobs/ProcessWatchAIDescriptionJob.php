@@ -105,14 +105,14 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
             'Status_Selected' => $this->watch->status ?? Status::DRAFT,
             'AI_Instruction'  => $this->watch->ai_instructions ?? null,
             'Image_URLs'      => $this->watch->ai_image_urls,
-            'Thread_ID'       => '',
+            'Thread_ID'       => $this->watch->ai_thread_id ?? null,
         ];
 
         // Remove null values and sanitize all strings
         $payload = array_filter($payload, fn($v) => $v !== null);
         $payload = $this->deepSanitize($payload);
 
-        dump($payload);
+        // dump($payload);
         // Use a test image locally
         // if (app()->environment('local')) {
         //     $payload['Image_URLs'] = [
@@ -177,22 +177,11 @@ class ProcessWatchAIDescriptionJob implements ShouldQueue
         $this->updateWatchStatus(WatchAiStatus::loading, [
             'ai_message' => $make->get('Message', 'AI is processing...'),
         ]);
-
-        if ($this->attempts() >= 5) {
-            $this->updateWatchStatus(WatchAiStatus::failed, [
-                'ai_message' => 'AI request timed out after multiple retries.',
-            ]);
-            return;
-        }
-
-        LaravelLog::info('⏳ [AI Still Processing - Retrying]', [
+        
+        LaravelLog::info('⏳ [AI Still Processing]', [
             'watch_id' => $this->watch->id,
             'attempt'  => $this->attempts(),
         ]);
-
-        self::dispatch($this->watch)
-            ->delay(now()->addMinute())
-            ->onQueue($this->queue ?? 'default');
     }
 
     /**
