@@ -10,8 +10,7 @@ import { Loader2, RotateCcw, Sparkles, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
-import WatchDescription, { WatchAiDescriptionError } from "./WatchDescription";
-import axios from "axios";
+import WatchDescription, { WatchAiDescriptionError, loadDescription } from "./WatchDescription";
 
 type Props = {
     watch?: WatchResource | null;
@@ -106,35 +105,6 @@ export default function GenerateAiDescription(props: Props) {
         });
     };
 
-    function loadDescription2(data) {
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        fetch(route("api.make-hooks.ai-description.load"), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-CSRF-TOKEN": token,
-            },
-            body: JSON.stringify({ routeKey: data.routeKey }),
-        })
-        .then(res => res.json())
-        .then(json => {
-            if (json.status === "success") setData("description", json.description);
-            else toast.error(json.message || "Failed to load description.");
-        })
-        .catch(() => toast.error("Something went wrong."));
-    }
-
-    function loadDescription(routeKey) {
-        axios.post(route("api.make-hooks.ai-description.load"), { routeKey })
-            .then(({ data }) => {
-                if (data.status === "success") setData("description", data.description);
-                else toast.error(data.message || "Failed to load description.");
-            })
-            .catch(() => toast.error("Something went wrong."));
-    }
-
     useEffect(() => {
         if (data?.ai_status === "loading") {
             setLoading(true);
@@ -161,12 +131,12 @@ export default function GenerateAiDescription(props: Props) {
                 }
 
                 if (event?.ai_status === "success") {
-                    loadDescription(watch.routeKey);
+                    loadDescription(watch.routeKey, description => setData("description", description));
                 }
 
                 setData("ai_status", event.ai_status);
                 setData("status", event.status);
-                setData("description", event.description);
+                // setData("description", event.description);
                 setData("ai_thread_id", event.ai_thread_id);
             });
             return () => echo.leave(`watch.${watch.routeKey}`);

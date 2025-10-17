@@ -166,51 +166,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
         window.addEventListener("popstate", handlePopState);
         return () => window.removeEventListener("popstate", handlePopState);
     }, [hasChanges]);
-
-    const onLoadDescription = async () => {
-        if (!data.routeKey) return;
-        setLoadingDescription(true);
-        
-        // router.post(route("api.make-hooks.ai-description.load"), { routeKey: data.routeKey }, {
-        //     preserveScroll: true,
-        //     onSuccess: (response) => {
-        //         console.log("description load response", response);
-        //         const desc = response?.props?.flash?.data?.description || response?.props?.description || "description not found";
-        //         setData("description", desc);
-        //     },
-        //     onFinish: () => setLoadingDescription(false),
-        //     onError: () => {
-        //         toast.error("Failed to load description.");
-        //         setLoadingDescription(false);
-        //     }
-        // });
-
-        try {
-                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
-                const res = await fetch(route("api.make-hooks.ai-description.load"), {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json",
-                        "X-CSRF-TOKEN": token, // ✅ include this line
-                    },
-                    body: JSON.stringify({ routeKey: data.routeKey }),
-                });
-
-                const json = await res.json();
-
-                if (json.status === "success") {
-                    setData("description", json.description);
-                } else {
-                    toast.error(json.message || "Failed to load description.");
-                }
-        } catch (error) {
-            toast.error("Something went wrong while loading the description.");
-        } finally {
-            setLoadingDescription(false);
-        }
-    };
+    
     
     return (
         <Layout>
