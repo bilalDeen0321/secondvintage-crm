@@ -56,11 +56,11 @@ final class MakeAiCallbackController extends Controller
             
             if ($watch) {
                 $watch->update([
-                    'status'       => $data->Status_Selected,
+                    'status'       => $data->Status_Selected ?? null,
                     'ai_status'    => \App\Enums\WatchAiStatus::success,
-                    'ai_message'   => $data->Message,
-                    'ai_thread_id' => $data->Thread_ID,
-                    'description'  => ai_description_format($data->Description),
+                    'ai_message'   => $data->Message ?? null,
+                    'ai_thread_id' => $data->Thread_ID ?? null,
+                    'description'  => ai_description_format($data->Description ?? ''),
                 ]);
 
                 $watch->refresh();
