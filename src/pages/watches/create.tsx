@@ -440,16 +440,6 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                                             className="min-h-[320px] w-full resize-y"
                                             disabled={data.ai_status === "loading"}
                                         ></Textarea>
-                                        {/* {(['success', null, ''].includes(data?.ai_status ?? '')) && !(data?.description ?? '').trim() && ( */}
-                                            <div className="mt-2 text-sm text-blue-600 cursor-pointer hover:underline">
-                                                {loadingDescription ? (
-                                                    <span>Loading description...</span>
-                                                ) : (
-                                                    <span onClick={onLoadDescription}>Load generated description</span>
-                                                )}
-                                            </div>
-                                        {/* )} */}
-
                                     </div>
 
                                     <div>

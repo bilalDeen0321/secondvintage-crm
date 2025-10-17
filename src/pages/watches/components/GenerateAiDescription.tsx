@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
 import WatchDescription, { WatchAiDescriptionError } from "./WatchDescription";
+import axios from "axios";
 
 type Props = {
     watch?: WatchResource | null;
@@ -105,6 +106,35 @@ export default function GenerateAiDescription(props: Props) {
         });
     };
 
+    function loadDescription2(data) {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(route("api.make-hooks.ai-description.load"), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": token,
+            },
+            body: JSON.stringify({ routeKey: data.routeKey }),
+        })
+        .then(res => res.json())
+        .then(json => {
+            if (json.status === "success") setData("description", json.description);
+            else toast.error(json.message || "Failed to load description.");
+        })
+        .catch(() => toast.error("Something went wrong."));
+    }
+
+    function loadDescription(routeKey) {
+        axios.post(route("api.make-hooks.ai-description.load"), { routeKey })
+            .then(({ data }) => {
+                if (data.status === "success") setData("description", data.description);
+                else toast.error(data.message || "Failed to load description.");
+            })
+            .catch(() => toast.error("Something went wrong."));
+    }
+
     useEffect(() => {
         if (data?.ai_status === "loading") {
             setLoading(true);
@@ -128,6 +158,10 @@ export default function GenerateAiDescription(props: Props) {
 
                 if (event?.ai_status === "failed") {
                     setAiMessage(event.ai_message || 'AI generation failed');
+                }
+
+                if (event?.ai_status === "success") {
+                    loadDescription(watch.routeKey);
                 }
 
                 setData("ai_status", event.ai_status);
