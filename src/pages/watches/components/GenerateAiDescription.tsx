@@ -10,7 +10,7 @@ import { Loader2, RotateCcw, Sparkles, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { watchInitData } from "../_utils";
-import WatchDescription, { WatchAiDescriptionError } from "./WatchDescription";
+import WatchDescription, { WatchAiDescriptionError, loadDescription } from "./WatchDescription";
 
 type Props = {
     watch?: WatchResource | null;
@@ -18,11 +18,10 @@ type Props = {
     setData: (key: keyof ReturnType<typeof watchInitData>, value: any) => void;
     setSavedData?: (data: any) => void;
     setAiProcessing?: (state: boolean) => void;
-    
 };
 
 export default function GenerateAiDescription(props: Props) {
-    const { data, setData, watch = {} as WatchResource, setSavedData, setAiProcessing  } = props; 
+    const { data, setData, watch = {} as WatchResource, setSavedData, setAiProcessing,  } = props; 
     //state
     const [loading, setLoading] = useState(false);
     const COOLDOWN_TIME = 90; // seconds
@@ -49,8 +48,8 @@ export default function GenerateAiDescription(props: Props) {
     // generate ai description
     const onGenerate = async () => {
         if (!data.images.some((i) => i.useForAI)) return;
-           setBackupDescription(data.description); // save before wiping
-           setData("description", ""); // visually clear it
+        //    setBackupDescription(data.description); // save before wiping
+        //    setData("description", ""); // visually clear it
            setLoading(true);
            setAiProcessing?.(true);
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
@@ -86,6 +85,26 @@ export default function GenerateAiDescription(props: Props) {
         });
     };
 
+    const onCancelAiGeneration = () => {
+        if (!data.routeKey) return;
+
+        const reset_url = route("api.make-hooks.ai-description.reset_status");
+
+        router.post(reset_url, { routeKey: data.routeKey }, {
+            preserveScroll: true,
+            onSuccess: (response) => {
+                console.log("AI generation canceled", response);
+                setData("ai_status", null);
+                setLoading(false);
+                setAiProcessing?.(false);
+                // toast.success("AI generation has been canceled.");
+            },
+            onError: () => {
+                toast.error("Failed to cancel AI generation.");
+            },
+        });
+    };
+
     useEffect(() => {
         if (data?.ai_status === "loading") {
             setLoading(true);
@@ -111,9 +130,13 @@ export default function GenerateAiDescription(props: Props) {
                     setAiMessage(event.ai_message || 'AI generation failed');
                 }
 
+                if (event?.ai_status === "success") {
+                    loadDescription(watch.routeKey, description => setData("description", description));
+                }
+
                 setData("ai_status", event.ai_status);
                 setData("status", event.status);
-                setData("description", event.description);
+                // setData("description", event.description);
                 setData("ai_thread_id", event.ai_thread_id);
             });
             return () => echo.leave(`watch.${watch.routeKey}`);
@@ -175,7 +198,21 @@ export default function GenerateAiDescription(props: Props) {
                             Generate Description
                         </>
                     )}
+
                 </Button>
+
+                {loading && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={onCancelAiGeneration}
+                        className="ml-2 text-red-600 hover:text-red-800 hover:bg-red-50"
+                    >
+                        ✕
+                        {/* ✕ Cancel */}
+                    </Button>
+                )}
 
                 {/* Show error message if AI generation failed */}
                 {data.ai_status === "failed" && (

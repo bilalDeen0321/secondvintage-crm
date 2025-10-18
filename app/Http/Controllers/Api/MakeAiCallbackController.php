@@ -35,10 +35,42 @@ final class MakeAiCallbackController extends Controller
         //     'idempotency_key'  => ['required', 'string', 'max:128'],
         // ]);
 
+        //first
         // $data = (object)$request->all();
-        $data = (object) $request->json()->all();
+        // $data = (object) $request->json()->all();
+        // LaravelLog::info('Make AI Callback received: '. json_encode($request->all()));
+        // end first
 
-        LaravelLog::info('Make AI Callback received: '. json_encode($request->all()));
+        // second
+        // $rawBody = $request->getContent();
+        // LaravelLog::info('Make AI Callback raw body: ' . $rawBody);
+
+        // $data = json_decode($rawBody);
+
+        // if (!$data) {
+        //     LaravelLog::error('Failed to decode Make AI Callback JSON: ' . $rawBody);
+        //     return response()->json(['error' => 'Invalid JSON'], 400);
+        // }
+        // end second
+
+        // third
+        $rawBody = $request->getContent();
+        LaravelLog::info('Make AI Callback raw body: ' . $rawBody);
+
+        // try decode
+        $data = json_decode($rawBody);
+
+        // always inspect json_last_error()
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            LaravelLog::error('Make AI Callback JSON decode failed: ' . json_last_error_msg() . ' | raw: ' . $rawBody);
+            // don't return 400 to Make; just acknowledge receipt so Make doesn't treat it as a failed webhook
+            return response()->noContent(200);
+        }
+
+        // helpful debug: show type + value
+        LaravelLog::info('Make AI Callback decoded type: ' . gettype($data) . ' | value: ' . var_export($data, true));
+
+        // end third
 
         if ( $data->Action == 'GenerateDescription' && $data->Status == 'success' && $data->StatusCode == '200' ) 
         {     
@@ -46,11 +78,11 @@ final class MakeAiCallbackController extends Controller
             
             if ($watch) {
                 $watch->update([
-                    'status'       => $data->Status_Selected,
+                    'status'       => $data->Status_Selected ?? null,
                     'ai_status'    => \App\Enums\WatchAiStatus::success,
-                    'ai_message'   => $data->Message,
-                    'ai_thread_id' => $data->Thread_ID,
-                    'description'  => ai_description_format($data->Description),
+                    'ai_message'   => $data->Message ?? null,
+                    'ai_thread_id' => $data->Thread_ID ?? null,
+                    'description'  => ai_description_format($data->Description ?? ''),
                 ]);
 
                 $watch->refresh();
@@ -65,7 +97,7 @@ final class MakeAiCallbackController extends Controller
             if ($watch) {
                 $watch->update([
                     'ai_status'    => \App\Enums\WatchAiStatus::failed,
-                    'ai_message'   => $data->Message
+                    'ai_message'   => $data->Message ?? null
                 ]);
 
                 $watch->refresh();

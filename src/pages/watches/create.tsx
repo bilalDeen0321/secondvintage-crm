@@ -25,6 +25,7 @@ import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
 import WatchWatermark from "./components/WatchWatermark";
+import { toast } from "react-toastify";
 
 type Props = {
     watch?: WatchResource;
@@ -49,6 +50,8 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     const { data, setData, post, processing, errors } = useForm(watchInitData(watch, auth?.user));
     const [savedData, setSavedData] = useState<any>(watchInitData(watch, auth?.user));
 
+    const [loadingDescription, setLoadingDescription] = useState(false); 
+    
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand, watch?.sku);
 
@@ -163,7 +166,8 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
         window.addEventListener("popstate", handlePopState);
         return () => window.removeEventListener("popstate", handlePopState);
     }, [hasChanges]);
-
+    
+    
     return (
         <Layout>
             <Head title={watch?.routeKey ? "Update the Watch" : "Add New Watch"} />

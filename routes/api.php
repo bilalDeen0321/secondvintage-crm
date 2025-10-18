@@ -1,12 +1,13 @@
 <?php
 
+use App\Models\Watch;
+use App\Http\Resources\WatchResource;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LocationController;
-use App\Http\Controllers\Api\MakeAiHookController;
 use App\Http\Controllers\Api\WatchApiController;
 use App\Http\Controllers\Api\WatchSkuController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Resources\WatchResource;
-use App\Models\Watch;
+use App\Http\Controllers\Api\MakeAiHookController;
+use App\Http\Controllers\Api\MakeAiCallbackController;
 
 /**
  * Register all api routes
@@ -15,6 +16,8 @@ use App\Models\Watch;
 Route::prefix('hooks/ai-description')->name('make-hooks.ai-description.')->group(function () {
     Route::post('generate', [MakeAiHookController::class, 'generate'])->name('generate');
     Route::post('with-queue', [MakeAiHookController::class, 'withQueue'])->name('with-queue');
+    Route::post('reset-status', [MakeAiHookController::class, 'resetAiStatus'])->name('reset_status');
+    Route::post('load', [MakeAiHookController::class, 'loadDescription'])->name('load');
     Route::post('reset-thread', [MakeAiHookController::class, 'resetThread'])->name('reset_thread');
 });
 
@@ -26,6 +29,7 @@ Route::prefix('watches')->name('watches.')->group(function () {
 
 Route::resource('locations', LocationController::class);
 
+// Route::post('/make/ai/callback', MakeAiCallbackController::class);
 
 Route::get('tested', function(){
 
@@ -74,17 +78,17 @@ Route::get('tested', function(){
 });
 
 
-// Route::get('/fire-event/{watch}', function (Watch $watch) {
+Route::get('/fire-event-watch/{watch}', function (Watch $watch) {
 
-//     // dd($watch, request()->query('status'));
-//     $watch->update([
-//         'ai_description' => 'This is a test description from event',
-//         'ai_status' => request()->query('status'),
-//     ]);
+    // dd($watch, request()->query('status'));
+    $watch->update([
+        'ai_description' => 'This is a test description from event',
+        'ai_status' => request()->query('status'),
+    ]);
 
-//     event(new \App\Events\WatchAiDescriptionProcessedEvent($watch));
-//     return response()->json(['status' => 'Event broadcasted!']);
-// });
+    event(new \App\Events\WatchAiDescriptionProcessedEvent($watch));
+    return response()->json(['status' => 'Event broadcasted!']);
+});
 
 Route::get('/fire-event/{watch}', function (Watch $watch) {
 
@@ -134,4 +138,9 @@ Route::get('/fire-event/{watch}', function (Watch $watch) {
     }
 
     return response()->json(['status' => 'Event broadcasted!']);
+});
+
+
+Route::get('/clear-cache', function() {
+    return "Cache is cleared";
 });

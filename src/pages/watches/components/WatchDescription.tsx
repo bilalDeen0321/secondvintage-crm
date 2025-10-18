@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { WatchResource } from "@/types/resources/watch";
 import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function WatchDescription({ watch }: { watch: WatchResource }) {
 
@@ -16,9 +18,15 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
         if (watch?.routeKey) {
             const eventName = 'WatchAiDescriptionProcessedEvent';
             echo.listen(`watch.${watch.routeKey}`, eventName, (event: WatchResource) => {
+                console.log('WatchAiDescriptionProcessedEvent received:', event);
+                
+                if (event?.ai_status === "success") {
+                    loadDescription(watch.routeKey, description => setDescription(description));
+                }
+
                 setAiStatus(event?.ai_status);
                 setAiMessage(event?.ai_message)
-                setDescription(event?.description)
+                // setDescription(event?.description)
             })
             return () => echo.leave(`watch.${watch.routeKey}`);
         }
@@ -35,6 +43,35 @@ export default function WatchDescription({ watch }: { watch: WatchResource }) {
     return description || '-';
 }
 
+
+export function loadDescription(routeKey, callback) {
+    axios.post(route("api.make-hooks.ai-description.load"), { routeKey })
+        .then(({ data }) => {
+            if (data.status === "success") callback(data.description);
+            else toast.error(data.message || "Failed to load description.");
+        })
+        .catch(() => toast.error("Something went wrong."));
+}
+
+function loadDescription2(data, setData) {
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch(route("api.make-hooks.ai-description.load"), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRF-TOKEN": token,
+        },
+        body: JSON.stringify({ routeKey: data.routeKey }),
+    })
+    .then(res => res.json())
+    .then(json => {
+        if (json.status === "success") setData("description", json.description);
+        else toast.error(json.message || "Failed to load description.");
+    })
+    .catch(() => toast.error("Something went wrong."));
+}
 
 export function WatchAiDescriptionError({ message }: { message: string }) {
     return <AlertDialog>
