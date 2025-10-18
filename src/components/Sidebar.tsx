@@ -26,8 +26,7 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
                         alt={config.name}
                         className="mb-2 max-h-12 max-w-full cursor-pointer object-contain transition-opacity hover:opacity-80"
                     />
-                </Link>
-                <p className="text-sm text-slate-400">CRM System</p>
+                </Link> 
             </div>
 
             {/* Navigation */}

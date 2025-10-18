@@ -7,8 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getSelectSearch } from "@/pages/watches/_search";
 import { useForm } from "@inertiajs/react";
 import { ChevronDown, Search } from "lucide-react";
-import { useEffect } from "react";
-import { saleSearchFilter } from "../_utils";
+import { useEffect, useState } from "react";
+import { saleSearchFilter } from "../_utils"; 
 
 type Props = {
     batches: string[];
@@ -45,7 +45,11 @@ export function SaleSearchFilter({ batches, brands }: Props) {
         // Set data with URL params, filtering out null values
         setData(urlParams);
     }, [setData]);
+const [searchTerm, setSearchTerm] = useState("");
 
+const filteredBatches = ["All", ...batches].filter((batch) =>
+    batch.toLowerCase().includes(searchTerm.toLowerCase())
+);
     return (
         <div className="mb-6 flex flex-col gap-4 lg:flex-row">
             <div className="flex-1">
@@ -83,30 +87,56 @@ export function SaleSearchFilter({ batches, brands }: Props) {
                     </SelectContent>
                 </Select>
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-40 justify-between">
-                            {data.batch === "All" ? "Batch" : data.batch}
-                            <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-40 bg-white">
-                        <div className="p-2">
-                            <Input placeholder="Search batches..." className="h-8" />
-                        </div>
-                        {["All", ...batches].map((batch) => (
-                            <DropdownMenuItem
-                                key={batch}
-                                onClick={() => {
-                                    setData("batch", batch);
-                                    saleSearchFilter("batch", getSelectSearch(batch));
-                                }}
-                            >
-                                {batch}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+           <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-40 font-normal">
+            {data.batch === "All" ? "Batch" : data.batch}
+            <ChevronDown className="ml-2 h-4 w-4" />
+        </Button>
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent
+        className="w-48 bg-white z-[9999] border rounded-md shadow-md font-normal"
+        align="start"
+        sideOffset={5}
+        onKeyDown={(e) => e.stopPropagation()}  
+    >
+        <div className="p-2 border-b">
+            <Input
+                placeholder="Search batches..."
+                className="h-8 font-normal"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()} // keep typing focus
+                onKeyDown={(e) => e.stopPropagation()} // allow free typing
+                autoFocus
+            />
+        </div>
+ 
+        <div className="max-h-48 overflow-y-auto">
+            {filteredBatches.length > 0 ? (
+                filteredBatches.map((batch) => (
+                    <DropdownMenuItem
+                        key={batch}
+                        className="font-normal"
+                        onClick={() => {
+                            setData("batch", batch);
+                            saleSearchFilter("batch", getSelectSearch(batch));
+                        }}
+                    >
+                        {batch}
+                    </DropdownMenuItem>
+                ))
+            ) : (
+                <div className="p-2 text-center text-sm text-muted-foreground font-normal">
+                    No batches found
+                </div>
+            )}
+        </div>
+    </DropdownMenuContent>
+</DropdownMenu>
+
+
 
                 <Select
                     value={data.brand}
@@ -119,7 +149,7 @@ export function SaleSearchFilter({ batches, brands }: Props) {
                         <SelectValue placeholder="Brand" />
                     </SelectTrigger>
                     <SelectContent>
-                        {["All", ...brands].map((brand) => (
+                        {["Brand", ...brands].map((brand) => (
                             <SelectItem key={brand} value={brand}>
                                 {brand}
                             </SelectItem>
@@ -138,7 +168,7 @@ export function SaleSearchFilter({ batches, brands }: Props) {
                         <SelectValue placeholder="Platform" />
                     </SelectTrigger>
                     <SelectContent>
-                        {["All", ...PlatformData.allPlatforms()].map((pitem, index) => (
+                        {["Platform", ...PlatformData.allPlatforms()].map((pitem, index) => (
                             <SelectItem key={index} value={pitem}>
                                 {PlatformData.toLabel(pitem)}
                             </SelectItem>

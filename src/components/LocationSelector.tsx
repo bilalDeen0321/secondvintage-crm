@@ -48,6 +48,8 @@ const LocationSelector = ({
                             placeholder="Search locations..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                             onKeyDown={(e) => e.stopPropagation()}
+                             onClick={(e) => e.stopPropagation()}
                             className="pl-8"
                         />
                     </div>

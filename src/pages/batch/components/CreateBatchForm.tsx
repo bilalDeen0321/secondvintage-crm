@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
+import { toast } from "react-toastify";
+
 interface Location {
   id: number
   name: string
@@ -22,8 +24,10 @@ export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) =
     const { data, setData, post, processing, errors, reset  } = useForm({
         name: "",
         tracking_number: "",
-        origin: auth?.user?.country || "Denmark",
-        destination: auth?.user?.country || "Denmark",
+        origin: "",
+        destination: "",
+        // origin: auth?.user?.country || "Denmark",
+        // destination: auth?.user?.country || "Denmark",
         location: "",
         status: "preparing",
         notes: "",
@@ -31,6 +35,10 @@ export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) =
     
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault(); 
+          if (!data.name?.trim() || !data.destination?.trim()) { 
+            toast.error("Batch Name and Destination are required.");
+            return;
+        }
         post(route("batches.store"), {
             preserveScroll: true,
             preserveState: true,
@@ -38,8 +46,8 @@ export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) =
                  setData({
                     name: "",
                     tracking_number: "",
-                    origin: auth?.user?.country || "Denmark",
-                    destination: auth?.user?.country || "Denmark",
+                    origin: "",
+                    destination: "",
                     status: "preparing",
                     notes: "",
                 });
@@ -57,7 +65,7 @@ export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) =
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <label className="mb-1 block text-sm font-medium">Batch Name</label>
-                            <Input value={data.name} onChange={(e) => setData("name", e.target.value)} placeholder="Vietnam Batch #003" className={errors.name ? "border-red-500" : ""} />
+                            <Input value={data.name} onChange={(e) => setData("name", e.target.value)} placeholder="" className={errors.name ? "border-red-500" : ""} />
                             {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
                         </div>
                         <div>
@@ -65,7 +73,7 @@ export const CreateBatchForm = ({ onCancel, locations }: CreateBatchFormProps) =
                             <Input
                                 value={data.tracking_number}
                                 onChange={(e) => setData("tracking_number", e.target.value)}
-                                placeholder="VN2024001234569"
+                                placeholder=""
                                 className={errors.tracking_number ? "border-red-500" : ""}
                             />
                             {errors.tracking_number && <p className="mt-1 text-sm text-red-500">{errors.tracking_number}</p>}

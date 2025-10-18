@@ -218,7 +218,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
                                 <div>
                                     <label className="mb-2 block text-sm font-medium text-slate-700">Brand *</label>
-                                    <BrandSelector value={data.brand} onValueChange={(value) => setData("brand", value)} brands={brands} onEditBrands={handleEditBrands} />
+                                    <BrandSelector value={data.brand} onValueChange={(value) => setData("brand", value)} disabled={!!watch?.id} brands={brands} onEditBrands={handleEditBrands} />
                                 </div>
 
                                 <div>

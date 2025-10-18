@@ -9,7 +9,7 @@ import WatchTableDescription from "./watch/columns/WatchTableDescription";
 import WatchTableNote from "./watch/columns/WatchTableNote";
 import WatchTablePrice from "./watch/columns/WatchTablePrice";
 import WatchTableStatus from "./watch/columns/WatchTableStatus";
-
+ 
 type Props = {
     watch: WatchResource;
     onSelectWatch: (watchId: string, checked: boolean) => void;
@@ -17,13 +17,15 @@ type Props = {
     handleImageClick: (watch: WatchResource) => void;
     onDelete: (id: string | number) => void;
 };
+ 
 
 type ServerProps = {
     currencies: CurrencyAttributes[];
 };
 
 export default function WatchItem(props: Props) {
-    //server props
+    const currentQuery = window.location.search;
+      //server props
     const { currencies = [] } = usePage().props as unknown as ServerProps;
 
     const { watch, onSelectWatch, selectedWatches, handleImageClick, onDelete } = props;
@@ -74,7 +76,9 @@ export default function WatchItem(props: Props) {
             </td>
             <td className="p-2">
                 <div className="flex gap-1">
-                    <Linkui href={route("watches.show", watch.routeKey)} variant="ghost" size="sm" className="h-7 w-7 p-0">
+                    <Linkui  
+                     href={`${route("watches.show", watch.routeKey)}${currentQuery}`}
+                     variant="ghost" size="sm" className="h-7 w-7 p-0">
                         <Edit className="h-3 w-3" />
                     </Linkui>
                     <Button variant="ghost" size="sm" onClick={() => onDelete(watch.routeKey)} className="h-7 w-7 p-0 text-red-600 hover:bg-red-50 hover:text-red-700">
