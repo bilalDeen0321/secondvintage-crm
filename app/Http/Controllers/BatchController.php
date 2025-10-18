@@ -142,7 +142,7 @@ class BatchController extends Controller
      */
     
     public function assignWatches(Request $request, Batch $batch)
-    {  
+    {
         $request->validate([
             'ids'  => 'required|array|min:1',
             'ids.*' => 'exists:watches,id'
