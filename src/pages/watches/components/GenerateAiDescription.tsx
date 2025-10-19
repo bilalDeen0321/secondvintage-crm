@@ -92,8 +92,7 @@ export default function GenerateAiDescription(props: Props) {
 
         router.post(reset_url, { routeKey: data.routeKey }, {
             preserveScroll: true,
-            onSuccess: (response) => {
-                console.log("AI generation canceled", response);
+            onSuccess: (response) => { 
                 setData("ai_status", null);
                 setLoading(false);
                 setAiProcessing?.(false);

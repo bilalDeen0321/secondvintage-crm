@@ -9,7 +9,7 @@ import Link from "@/components/ui/Link";
 import { cleanParams } from "@/pages/watches/_search";
 import { ProcessPlatformEvent } from "@/types/events/laravel-events";
 import { useEffect, useState } from "react";
-
+import { usePage } from "@inertiajs/react";
 interface SaleTablePlatformItemProps {
     onViewPlatformData: SaleTableWatchItemProps["onViewPlatformData"];
     platform: string;
@@ -21,12 +21,15 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
+     const { url } = usePage();
+    const queryString = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+
     // Initialize loading state based on isAIProcessing prop
     useEffect(() => {
         //the the current active platform item
         const pitem = watch?.platforms?.find((p) => p.name === platform);
 
-        console.log('Platform Item:', pitem);
+         
 
         //detarmine if the platform is currently has an error accured
         if (pitem?.status === PlatformData.STATUS_FAILED) {
@@ -85,13 +88,13 @@ export function SaleTablePlatformItem({ onViewPlatformData, platform, watch }: S
         <td className="p-2">
             {platform && platform !== "None" && (
                 <Link
-                    href={route(
+                    href={`${route(
                         "sales.show",
                         cleanParams({
-                            watch: watch.routeKey,
-                            page: new URLSearchParams(window.location.search).get("page"),
+                        watch: watch.routeKey,
+                        page: new URLSearchParams(window.location.search).get("page"),
                         })
-                    )}
+                    )}${queryString}`}
                     preserveState={false}
                     preserveScroll={true}
                     variant="ghost"

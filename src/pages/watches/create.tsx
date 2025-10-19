@@ -15,7 +15,7 @@ import useKeyboard from "@/hooks/extarnals/useKeyboard";
 import { useServerSku } from "@/hooks/extarnals/useServerSku";
 import { WatchResource } from "@/types/resources/watch";
 import { Page } from "@inertiajs/core";
-import { Head, router, useForm } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { CheckCircle, Plus, Sparkles } from "lucide-react";
 import { PageProps } from "node_modules/@inertiajs/core/types/types";
 import React, { useEffect, useMemo, useState } from "react";
@@ -25,8 +25,8 @@ import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
 import WatchWatermark from "./components/WatchWatermark";
-import { toast } from "react-toastify";
-
+import { toast } from "react-toastify"; 
+ 
 type Props = {
     watch?: WatchResource;
     locations: string[];
@@ -37,6 +37,10 @@ type Props = {
 } & PageProps;
 
 export default function CreateWatch({ watch, auth, ...props }: Props) {
+    const { url } = usePage();
+    const queryString = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+
+
     //server props
     const { locations = [], batches = [], brands = [], statuses = [], currencies = [] } = props || {};
     const [aiProcessing, setAiProcessing] = useState(false);
@@ -72,6 +76,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
     const onSave = (handler?: ((res?: any) => void) | string) => {
+        
         const successcallback = (res: Page<PageProps>) => {
             setSavedData(data);
 
@@ -83,7 +88,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                 // If this is an update operation, ensure the list view gets fresh data
                 if (watch?.routeKey && updatedWatch) {
                     // Trigger a partial reload or state update to refresh the list
-                    router.reload({ only: ["watches"] });
+                   // router.reload({ only: ["watches"] });
                 }
             }
 
@@ -120,20 +125,32 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLoadName("save");
-        onSave((res) => router.visit(route("watches.show", res?.routeKey || "")));
+         
+        
+
+         onSave((res) => {
+        // Determine the route to visit after save
+        const saveRoute = route("watches.show", res?.routeKey || "");
+        const destination = queryString ? `${saveRoute}${queryString}` : saveRoute;
+
+        router.visit(destination);
+    });
     };
 
     const onSaveAndClose = () => {
-        setLoadName("save_and_close");
-        onSave(route("watches.index"));
+        setLoadName("save_and_close"); 
+         const destination = queryString ? `${route("watches.index")}${queryString}` : route("watches.index");
+        router.visit(destination); 
     };
 
-    const onClose = () => {
+    const onClose = () => { 
         if (hasChanges) {
             setShowSaveDialog(true);
             return;
-        }
-        router.visit(route("watches.index"));
+        } 
+         const destination = queryString ? `${route("watches.index")}${queryString}` : route("watches.index");
+        router.visit(destination);
+        //router.visit(route("watches.index"));
     };
 
     // Handle browser close / refresh
@@ -454,7 +471,10 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                             <Button onClick={onSaveAndClose} className="flex-1">
                                 Save & Continue
                             </Button>
-                            <Button onClick={() => router.visit(route("watches.index"))} variant="outline" className="flex-1">
+                            <Button onClick={() => {
+                                    const destination = queryString ? `${route("watches.index")}${queryString}` : route("watches.index");
+                                    router.visit(destination);
+                            }} variant="outline" className="flex-1">
                                 Discard Changes
                             </Button>
                             <Button onClick={() => setShowSaveDialog(false)} variant="ghost" className="flex-1">

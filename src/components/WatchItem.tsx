@@ -23,13 +23,13 @@ type ServerProps = {
     currencies: CurrencyAttributes[];
 };
 
-export default function WatchItem(props: Props) {
-    const currentQuery = window.location.search;
+export default function WatchItem(props: Props) { 
       //server props
     const { currencies = [] } = usePage().props as unknown as ServerProps;
 
     const { watch, onSelectWatch, selectedWatches, handleImageClick, onDelete } = props;
-
+const { url } = usePage();
+const queryString = url.includes("?") ? url.substring(url.indexOf("?")) : "";
     return (
         <tr key={watch.id} className={`hover:bg-slate-50 ${selectedWatches.includes(String(watch.id)) ? "bg-amber-50" : ""}`}>
             <td className="p-2">
@@ -77,7 +77,7 @@ export default function WatchItem(props: Props) {
             <td className="p-2">
                 <div className="flex gap-1">
                     <Linkui  
-                     href={`${route("watches.show", watch.routeKey)}${currentQuery}`}
+                     href={`${route("watches.show", watch.routeKey)}${queryString}`}
                      variant="ghost" size="sm" className="h-7 w-7 p-0">
                         <Edit className="h-3 w-3" />
                     </Linkui>

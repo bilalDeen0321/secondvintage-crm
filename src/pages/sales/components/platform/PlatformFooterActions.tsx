@@ -15,6 +15,9 @@ type Props = {
 };
 
 export function PlatformFooterActions({ platformData, watch, platform ,position = "footer"}: Props) {
+    const { url } = usePage();
+    const queryString = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+
     // Start hooks and states
     const [loading, setLoading] = useState(false);
     const [process, setProcess] = useState(false);
@@ -37,9 +40,13 @@ export function PlatformFooterActions({ platformData, watch, platform ,position 
             onFinish: () => setLoading(false),
             onSuccess: () => {
                 if (nexItem?.routeKey) {
-                    router.visit(route("sales.show", nexItem.routeKey));
+                    const saveRoute = route("sales.show", nexItem.routeKey);
+                    const destination = queryString ? `${saveRoute}?${queryString}` : saveRoute;
+                    router.visit(destination);
                 } else {
-                    router.visit(route("sales.index"));
+                     const indexRoute = route("sales.index");
+                    const destination = queryString ? `${indexRoute}?${queryString}` : indexRoute;
+                    router.visit(destination); 
                 }
             },
         });

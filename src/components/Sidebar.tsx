@@ -11,17 +11,17 @@ import newLogo from "@/assets/new-logo.png";
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
     const { url, props } = usePage();
 
-    const menuItems = menus.filter((m) =>
-        props.auth.permissions.includes(m.permission),
-    );
-
+    const menuItems = menus.filter((m, index, self) =>
+    props.auth.permissions.includes(m.permission) &&
+    index === self.findIndex(item => item.permission === m.permission)
+);  
     return (
+       
         <>
             {/* Header */}
             <div className="border-b border-slate-700 p-6">
                 <Link prefetch href="/" onClick={onItemClick}>
-                    <img
-                        // src={config.logo}
+                    <img 
                         src="/white_logo.png"
                         alt={config.name}
                         className="mb-2 max-h-12 max-w-full cursor-pointer object-contain transition-opacity hover:opacity-80"
