@@ -55,17 +55,33 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     const { data, setData, post, processing, errors } = useForm(watchInitData(watch, auth?.user));
     const [savedData, setSavedData] = useState<any>(watchInitData(watch, auth?.user));
 
+    
     const [loadingDescription, setLoadingDescription] = useState(false); 
     
     // Use the debounced server SKU hook
     const sku = useServerSku(data.name, data.brand, watch?.sku);
-
+    
     // Only update SKU if NOT in edit mode (i.e., creating a new watch)
     useEffect(() => {
         if (!watch && data.sku !== sku) setData("sku", sku);
     }, [sku, setData, data.sku, watch]);
 
-    const hasChanges = useMemo(() => JSON.stringify(data) !== JSON.stringify(savedData), [data, savedData]);
+    const hasChanges = useMemo(() => {
+        const excludeKeys = ['ai_status', 'ai_message']; // any technical keys you want ignored
+        const clean = (obj: any) => {
+            if (!obj) return obj;
+            const copy = { ...obj };
+            excludeKeys.forEach(k => delete copy[k]);
+            return copy;
+        };
+        console.log('clean(data): ', clean(data), 'clean(savedData): ', clean(savedData));
+        return JSON.stringify(clean(data)) !== JSON.stringify(clean(savedData));
+    }, [data, savedData]);
+
+    
+    // const hasChanges = useMemo(() => JSON.stringify(data) !== JSON.stringify(savedData), [data, savedData]);
+
+    console.log('create wawtch: ', data, savedData, hasChanges);
 
     // Update display value when form data or currency changes
     useEffect(() => {
