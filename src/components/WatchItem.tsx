@@ -41,12 +41,12 @@ const queryString = url.includes("?") ? url.substring(url.indexOf("?")) : "";
                 </div>
             </td>
             <td className="p-2">
-                <Link href={route("watches.show", watch.routeKey)} className="cursor-pointer truncate text-sm font-medium text-slate-900 transition-colors hover:text-blue-600" title={watch.name}>
+                <Link href={`${route("watches.show", watch.routeKey)}${queryString}`} className="cursor-pointer truncate text-sm font-medium text-slate-900 transition-colors hover:text-blue-600" title={watch.name}>
                     {watch?.name || "-"}
                 </Link>
             </td>
             <td className="p-2">
-                <Link href={route("watches.show", watch.routeKey)} className="cursor-pointer text-sm text-slate-600 transition-colors hover:text-blue-600">
+                <Link href={`${route("watches.show", watch.routeKey)}${queryString}`} className="cursor-pointer text-sm text-slate-600 transition-colors hover:text-blue-600">
                     {watch.sku}
                 </Link>
             </td>

@@ -20,6 +20,7 @@ export function saleSearchFilter(key: string, value: any, query: Record<string, 
 
     // Merge params
     const params = {
+        status: searchParams.get("status"),
         batch: searchParams.get("batch"),
         brand: searchParams.get("brand"),
         search: searchParams.get("search"),

@@ -35,11 +35,21 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-
+         $user = Auth::user();
+        $permissions = $user->getAllPermissions()->pluck('name')->toArray();
+        
         $request->user()->update([
             'last_login_at' => Carbon::now()->toDateTimeString(),
             'last_login_ip' => $request->getClientIp()
         ]);
+
+         $menus = config('menus');
+          foreach ($menus as $menu) {
+            if (in_array($menu['permission'], $permissions)) {
+                // Redirect to that path
+                return redirect($menu['path']);
+            }
+        }
 
         return redirect()->route('dashboard');
     }

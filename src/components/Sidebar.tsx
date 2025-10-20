@@ -9,12 +9,11 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import newLogo from "@/assets/new-logo.png";
 
 const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
-    const { url, props } = usePage();
-
+    const { url, props } = usePage(); 
     const menuItems = menus.filter((m, index, self) =>
-    props.auth.permissions.includes(m.permission) &&
-    index === self.findIndex(item => item.permission === m.permission)
-);  
+        props.auth.permissions.includes(m.permission) &&
+        index === self.findIndex(item => item.permission === m.permission)
+    );  
     return (
        
         <>

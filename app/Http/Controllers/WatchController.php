@@ -129,7 +129,8 @@ class WatchController extends Controller
      * @param \Illuminate\Http\Request $request
      */
     public function update(Watch $watch, UpdateWatchRequest $request, UpdateWatchAction $action)
-    { 
+    {
+       
         // Validate the request
         $input = $request->validated();
 

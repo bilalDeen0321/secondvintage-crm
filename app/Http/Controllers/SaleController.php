@@ -35,7 +35,7 @@ class SaleController extends Controller
             ->with('platforms:id,name,watch_id,status,message')
             ->paginate($request->input('per_page'))
             ->withQueryString();
-
+            
         return Inertia::render('sales/SalesIndex', [
             ...WatchQuery::init()->crudData(),
             'watches' => WatchResource::collection($watches)->response()->getData(true),

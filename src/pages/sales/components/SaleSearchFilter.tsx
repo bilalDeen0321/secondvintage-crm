@@ -44,7 +44,7 @@ export function SaleSearchFilter({ batches, brands }: Props) {
 
         // Set data with URL params, filtering out null values
         setData(urlParams);
-    }, [setData]);
+    }, []);
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredBatches = ["All", ...batches].filter((batch) =>
@@ -93,50 +93,50 @@ export function SaleSearchFilter({ batches, brands }: Props) {
 
                 {/* Batch Selector */}
                 <Select
-  value={data.batch === "All" ? undefined : data.batch} // placeholder when "All"
-  onValueChange={(value) => {
-    setData("batch", value);
-    saleSearchFilter("batch", getSelectSearch(value));
-    setSearchTerm(""); // reset search when selecting
-  }}
->
-  <SelectTrigger className="w-40 font-normal">
-    <SelectValue placeholder="Batch">
-      {data.batch === "All" ? "Batch" : data.batch}
-    </SelectValue>
-  </SelectTrigger>
+                    value={data.batch === "All" ? undefined : data.batch} // placeholder when "All"
+                    onValueChange={(value) => {
+                        setData("batch", value);
+                        saleSearchFilter("batch", getSelectSearch(value));
+                        setSearchTerm(""); // reset search when selecting
+                    }}
+                >
+                    <SelectTrigger className="w-40 font-normal">
+                        <SelectValue placeholder="Batch">
+                            {data.batch === "All" ? "Batch" : data.batch}
+                        </SelectValue>
+                    </SelectTrigger>
 
-  <SelectContent className="font-normal">
-    {/* Search input */}
-    <div className="p-2 border-b">
-      <Input
-        placeholder="Search batches..."
-        className="h-8 font-normal"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        autoFocus
-        // Only stop key events from closing the dropdown, allow typing
-        onKeyDown={(e) => e.stopPropagation()}
-        onFocus={(e) => e.stopPropagation()} // keep dropdown open
-      />
-    </div>
+                    <SelectContent className="font-normal">
+                        {/* Search input */}
+                        <div className="p-2 border-b">
+                            <Input
+                                placeholder="Search batches..."
+                                className="h-8 font-normal"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                autoFocus
+                                // Only stop key events from closing the dropdown, allow typing
+                                onKeyDown={(e) => e.stopPropagation()}
+                                onFocus={(e) => e.stopPropagation()} // keep dropdown open
+                            />
+                        </div>
 
-    {/* Filtered batch list */}
-    <div className="max-h-48 overflow-y-auto font-normal">
-      {filteredBatches.length > 0 ? (
-        filteredBatches.map((batch) => (
-          <SelectItem key={batch} value={batch}>
-            {batch}
-          </SelectItem>
-        ))
-      ) : (
-        <div className="p-2 text-center text-sm text-muted-foreground font-normal">
-          No batches found
-        </div>
-      )}
-    </div>
-  </SelectContent>
-</Select>
+                        {/* Filtered batch list */}
+                        <div className="max-h-48 overflow-y-auto font-normal">
+                            {filteredBatches.length > 0 ? (
+                                filteredBatches.map((batch) => (
+                                    <SelectItem key={batch} value={batch}>
+                                        {batch}
+                                    </SelectItem>
+                                ))
+                            ) : (
+                                <div className="p-2 text-center text-sm text-muted-foreground font-normal">
+                                    No batches found
+                                </div>
+                            )}
+                        </div>
+                    </SelectContent>
+                </Select>
 
 
                 {/* Brand Selector */}
@@ -157,14 +157,32 @@ export function SaleSearchFilter({ batches, brands }: Props) {
                             {data.brand === "All" ? "Brand" : data.brand}
                         </SelectValue>
                     </SelectTrigger>
+
                     <SelectContent>
-                        {/* Always include "All" first to clear filter */}
+                        {/* Search input */}
+                        <div className="p-2">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={data.brandSearch || ""}
+                                onChange={(e) => setData("brandSearch", e.target.value)}
+                                className="w-full rounded border border-slate-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-amber-500"
+                            />
+                        </div>
+
+                        {/* Always include "All" first */}
                         <SelectItem value="All">All</SelectItem>
-                        {brands.map((brand) => (
-                            <SelectItem key={brand} value={brand}>
-                                {brand}
-                            </SelectItem>
-                        ))}
+
+                        {/* Filtered brands */}
+                        {brands
+                            .filter((b) =>
+                                !data.brandSearch || b.toLowerCase().includes(data.brandSearch.toLowerCase())
+                            )
+                            .map((brand) => (
+                                <SelectItem key={brand} value={brand}>
+                                    {brand}
+                                </SelectItem>
+                            ))}
                     </SelectContent>
                 </Select>
 

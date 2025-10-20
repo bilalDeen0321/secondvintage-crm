@@ -30,8 +30,7 @@ class RoleController extends Controller
                 'updated_at' => $role->updated_at,
                 'permissions' => $role->permissions->pluck('name')->toArray(),
             ];
-        });
-
+        }); 
         return Inertia::render('users/roles/index', ['roles' => $roles]);
     }
 

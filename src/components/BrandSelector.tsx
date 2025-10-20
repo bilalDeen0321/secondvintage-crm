@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Edit3, Search, ChevronDown } from "lucide-react";
 
 interface BrandSelectorProps {
@@ -62,77 +69,72 @@ const BrandSelector = ({
   }
 
   return (
-    <div className="relative w-full" ref={containerRef}>
-      {/* Trigger */}
-      <div
-        className="border rounded-md px-3 py-2 text-sm flex items-center justify-between cursor-pointer"
-        onClick={() => setOpen((o) => !o)}
-      >
-        <span>{value || "Select brand..."}</span>
-        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+<Select
+  value={value}
+  onValueChange={(val) => onValueChange(val)}
+  open={open}
+  onOpenChange={setOpen}
+>
+  <SelectTrigger className="w-full">
+    <SelectValue placeholder="Select brand..." />
+  </SelectTrigger>
+
+  <SelectContent
+    onOpenAutoFocus={(e) => e.preventDefault()}
+    onCloseAutoFocus={(e) => e.preventDefault()}
+    onInteractOutside={(e) => {
+      if (e.target.closest("input")) e.preventDefault();
+    }}
+  >
+    <div className="flex items-center space-x-2 border-b p-2">
+      <div className="relative flex-1">
+        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search brands..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-8"
+          autoFocus
+          onPointerDown={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          onKeyUp={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        />
       </div>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border bg-background shadow-md">
-          <div className="flex items-center space-x-2 border-b p-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                ref={inputRef}
-                placeholder="Search brands..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8"
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-                autoFocus
-              />
-            </div>
-            {onEditBrands && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  onEditBrands();
-                  setOpen(false);
-                }}
-              >
-                <Edit3 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+      {onEditBrands && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditBrands();
+            setOpen(false);
+          }}
+        >
+          <Edit3 className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
 
-          {/* Options */}
-          <div
-            className="max-h-48 overflow-y-auto"
-            onMouseDown={(e) => e.preventDefault()} // ⚡ prevent losing focus
-          >
-            {filteredBrands().length > 0 ? (
-              filteredBrands().map((brand) => (
-                <div
-                  key={brand}
-                  className={`cursor-pointer px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground ${
-                    brand === value ? "bg-accent text-accent-foreground" : ""
-                  }`}
-                  onClick={() => {
-                    onValueChange(brand);
-                    setOpen(false);
-                    setSearchTerm("");
-                  }}
-                >
-                  {brand}
-                </div>
-              ))
-            ) : (
-              <div className="p-2 text-center text-sm text-muted-foreground">
-                No brands found
-              </div>
-            )}
-          </div>
+    <div className="max-h-48 overflow-y-auto">
+      {filteredBrands().length > 0 ? (
+        filteredBrands().map((brand) => (
+          <SelectItem key={brand} value={brand}>
+            {brand}
+          </SelectItem>
+        ))
+      ) : (
+        <div className="p-2 text-center text-sm text-muted-foreground">
+          No brands found
         </div>
       )}
     </div>
+  </SelectContent>
+</Select>
+
+
+
   );
 };
 

@@ -62,7 +62,7 @@ class WatchQuery
         $dir    = $request->input('order.dir', 'desc');
 
         
-        if ($column) {
+        if ($column) { 
             if ($column === 'brand') {
                 $query->join('brands', 'watches.brand_id', '=', 'brands.id')
                     ->select('watches.*')

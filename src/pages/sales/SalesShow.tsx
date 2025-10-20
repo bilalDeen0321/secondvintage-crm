@@ -46,7 +46,7 @@ export default function SalesShow({ watch, platform, params = {} }: Props) {
                     <div className="flex-shrink-0 border-b border-slate-200 p-6">
                         <div className="flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-slate-900">{Str.title(platform.name)} Platform Data</h2>
+                                <h2 className="text-2xl font-bold text-slate-900">{Str.title(platform?.name)} Platform Data</h2>
                             </div>
 
                             <div className="flex items-center space-x-3">

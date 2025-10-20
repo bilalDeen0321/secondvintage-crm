@@ -86,7 +86,8 @@ const Users = () => {
                             Manage system users and their permissions
                         </p>
                     </div>
-                    <Button>
+                   <div className="flex items-center space-x-3">
+                         <Button variant="outline" asChild>
                         <Link href={route("roles.index")} className="flex">
                             <Plus className="mr-2 h-4" />
                             Manage roles
@@ -96,7 +97,7 @@ const Users = () => {
                         show={isAddDialogOpen}
                         setShow={setIsAddDialogOpen}
                     />
-                </div>
+                </div></div>
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                     <Card>

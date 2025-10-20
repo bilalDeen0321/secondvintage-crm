@@ -25,7 +25,8 @@ import AutoSkuGenerate from "./components/AutoSkuGenerate";
 import GenerateAiDescription from "./components/GenerateAiDescription";
 import WatchFormNavigation from "./components/WatchFormNavigation";
 import WatchWatermark from "./components/WatchWatermark";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";  
+
  
 type Props = {
     watch?: WatchResource;
@@ -75,72 +76,62 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
 
     const aiSelectedCount = data.images.filter((img) => img.useForAI).length;
 
-    const onSave = (handler?: ((res?: any) => void) | string) => {
-        
-        const successcallback = (res: Page<PageProps>) => {
-            setSavedData(data);
-
-            // Force update of watch data in the parent component/list
-            if (res.props?.flash?.data) {
-                // Update any parent state or cache with the new watch data
-                const updatedWatch = res.props.flash.data;
-
-                // If this is an update operation, ensure the list view gets fresh data
-                if (watch?.routeKey && updatedWatch) {
-                    // Trigger a partial reload or state update to refresh the list
-                   // router.reload({ only: ["watches"] });
-                }
-            }
-
-            if (typeof handler === "function") {
-                handler(res.props?.flash?.data);
-            } else if (typeof handler === "string") {
-                router.visit(handler);
-            }
-        };
-
-        //handle update watch
-        if (watch?.routeKey) {
-            const putDate = sliceObject(data, ["sku", "id"]);
-
-            router.post(
-                route(`watches.update`, watch.routeKey),
-                { ...putDate, _method: "put" },
-                {
-                    forceFormData: true,
-                    preserveState: false, // Changed to false to ensure fresh data
-                    onSuccess: successcallback,
-                }
-            );
-
-            return;
-        }
-
-        post(route(`watches.store`), {
-            forceFormData: true,
-            onSuccess: successcallback,
-        });
-    };
+     const onSave = (handler?: ((res?: any) => void) | string) => {
+           const successcallback = (res: Page<PageProps>) => {
+               setSavedData(data);
+   
+               // Force update of watch data in the parent component/list
+               if (res.props?.flash?.data) {
+                   // Update any parent state or cache with the new watch data
+                   const updatedWatch = res.props.flash.data;
+   
+                   // If this is an update operation, ensure the list view gets fresh data
+                   if (watch?.routeKey && updatedWatch) {
+                       // Trigger a partial reload or state update to refresh the list
+                      // router.reload({ only: ["watches"] });
+                   }
+               }
+   
+               if (typeof handler === "function") {
+                   handler(res.props?.flash?.data);
+               } else if (typeof handler === "string") {
+                   router.visit(handler);
+               }
+           };
+   
+           //handle update watch
+           if (watch?.routeKey) {
+               const putDate = sliceObject(data, ["sku", "id"]);
+   
+               router.post(
+                   route(`watches.update`, watch.routeKey),
+                   { ...putDate, _method: "put" },
+                   {
+                       forceFormData: true,
+                       preserveState: false, // Changed to false to ensure fresh data
+                       onSuccess: successcallback,
+                   }
+               );
+   
+               return;
+           }
+   
+           post(route(`watches.store`), {
+               forceFormData: true,
+               onSuccess: successcallback,
+           });
+       };
 
     const onSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+        e.preventDefault(); 
         setLoadName("save");
-         
-        
-
-         onSave((res) => {
-        // Determine the route to visit after save
-        const saveRoute = route("watches.show", res?.routeKey || "");
-        const destination = queryString ? `${saveRoute}${queryString}` : saveRoute;
-
-        router.visit(destination);
-    });
+          onSave((res) => router.visit(route("watches.show", res?.routeKey || ""))); 
     };
 
-    const onSaveAndClose = () => {
+    const onSaveAndClose = () => { 
         setLoadName("save_and_close"); 
          const destination = queryString ? `${route("watches.index")}${queryString}` : route("watches.index");
-        router.visit(destination); 
+          onSave(destination);
     };
 
     const onClose = () => { 
@@ -174,12 +165,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
                 setShowSaveDialog(true);
             }
         };
-
-        // Push a new state to the history stack to intercept navigation
-        // if (hasChanges) {
-        //     window.history.pushState(null, "", window.location.href);
-        // }
-
+  
         window.addEventListener("popstate", handlePopState);
         return () => window.removeEventListener("popstate", handlePopState);
     }, [hasChanges]);
