@@ -14,12 +14,13 @@ const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => {
         props.auth.permissions.includes(m.permission) &&
         index === self.findIndex(item => item.permission === m.permission)
     );  
+    const hasDashboard = menuItems.some(item => item.permission === 'dashboard');
     return (
        
         <>
             {/* Header */}
             <div className="border-b border-slate-700 p-6">
-                <Link prefetch href="/" onClick={onItemClick}>
+                <Link prefetch href={hasDashboard ? "/dashboard" : "#"} onClick={onItemClick}>
                     <img 
                         src="/white_logo.png"
                         alt={config.name}

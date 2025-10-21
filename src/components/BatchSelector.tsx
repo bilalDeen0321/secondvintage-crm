@@ -40,7 +40,12 @@ const BatchSelector = ({
             <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select batch group" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent
+             onOpenAutoFocus={(e) => e.preventDefault()}
+            onCloseAutoFocus={(e) => e.preventDefault()}
+            onInteractOutside={(e) => {
+            if (e.target.closest("input")) e.preventDefault();
+            }}>
                 <div className="flex items-center space-x-2 border-b p-2">
                     <div className="relative flex-1">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -48,16 +53,20 @@ const BatchSelector = ({
                             placeholder="Search batch groups..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={(e) => e.stopPropagation()}
-                            onClick={(e) => e.stopPropagation()}
                             className="pl-8"
+                            autoFocus
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onKeyUp={(e) => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
                         />
                     </div>
                     {onEditBatches && (
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
+                            onClick={(e) => {
+                                 e.stopPropagation();
                                 onEditBatches();
                                 setIsOpen(false);
                             }}
