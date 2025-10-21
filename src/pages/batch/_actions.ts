@@ -60,9 +60,9 @@ export const useBatchActions = (
         .filter((watch) => {
             const matchesSearch =
                 watchSearchTerm === "" ||
-                watch.name.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
-                watch.sku.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
-                watch.brand.toLowerCase().includes(watchSearchTerm.toLowerCase());
+                watch.name?.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
+                watch.sku?.toLowerCase().includes(watchSearchTerm.toLowerCase()) ||
+                watch.brand?.toLowerCase().includes(watchSearchTerm.toLowerCase());
 
             const matchesStatus = watchStatusFilter === "all" || watch.status === watchStatusFilter;
 
@@ -85,10 +85,10 @@ export const useBatchActions = (
     const filteredBatches = batches.filter((batch) => {
         const matchesSearch =
             data.search === "" ||
-            batch.name.toLowerCase().includes(data.search.toLowerCase()) ||
-            batch.trackingNumber.toLowerCase().includes(data.search.toLowerCase()) ||
-            batch.origin.toLowerCase().includes(data.search.toLowerCase()) ||
-            batch.destination.toLowerCase().includes(data.search.toLowerCase());
+            batch.name?.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.trackingNumber?.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.origin?.toLowerCase().includes(data.search.toLowerCase()) ||
+            batch.destination?.toLowerCase().includes(data.search.toLowerCase());
 
         const matchesStatus = data.status === "all" || batch.status === data.status;
 

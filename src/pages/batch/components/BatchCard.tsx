@@ -79,8 +79,7 @@ export const BatchCard = ({ batch, viewMode, onWatchClick }: Props) => {
                         <Link
                             variant="outline"
                             size="sm"
-                            href={(() => {
-                                console.log("batch routeKey: ", batch.routeKey);
+                            href={(() => { 
                                 return route("batches.show", batch.routeKey);
                             })()}
                             className="flex items-center gap-1"
