@@ -6,32 +6,58 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MakeAiCallbackController;
 use Psl\Ref;
 
+// Route::get('/check-sku', function (Request $request) {
+//     $sku = $request->query('sku');
+
+//     if (!$sku) {
+//         return response()->json(['redirect' => "https://secondvintage.com/404"]);
+//     }
+
+//     $watch = Watch::where('sku', $sku)->first();
+
+//     if (!$watch) {
+//         return response()->json(['redirect' => "https://secondvintage.com/404"]);
+//     }
+
+//     if (strtolower($watch->status) === 'sold') {
+//         return response()->json([
+//             'redirect' => "https://secondvintage.com/thankyou/{$sku}",
+//             'data'     => $watch
+//         ]);
+//     }
+
+//     return response()->json([
+//         'redirect' => "https://secondvintage.com/watches/{$sku}",
+//         'data'     => $watch
+//     ]);
+// });
+
 Route::get('/check-sku', function (Request $request) {
     $sku = $request->query('sku');
 
     if (!$sku) {
-        return response()->json(['redirect' => "https://secondvintage.com/404"]);
+        return response()->json([
+            'status' => null,
+            'message' => 'Missing SKU',
+        ], 400);
     }
 
     $watch = Watch::where('sku', $sku)->first();
 
     if (!$watch) {
-        return response()->json(['redirect' => "https://secondvintage.com/404"]);
-    }
-
-    if (strtolower($watch->status) === 'sold') {
+        // SKU not found
         return response()->json([
-            'redirect' => "https://secondvintage.com/thankyou/{$sku}",
-            'data'     => $watch
-        ]);
+            'status' => null,
+            'message' => 'SKU not found',
+        ], 404);
     }
 
+    // Return only what middleman needs
     return response()->json([
-        'redirect' => "https://secondvintage.com/watches/{$sku}",
-        'data'     => $watch
+        'sku'    => $watch->sku,
+        'status' => $watch->status,  // e.g. "Sold", "Draft", etc.
     ]);
 });
-
 
 Route::post('/make/ai/callback', MakeAiCallbackController::class);
 

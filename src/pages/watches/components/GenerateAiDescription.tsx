@@ -27,7 +27,6 @@ export default function GenerateAiDescription(props: Props) {
     const COOLDOWN_TIME = 90; // seconds
     const STORAGE_KEY = `generateCooldown_${watch.routeKey}`;
     const [cooldown, setCooldown] = useState(0);
-    const [backupDescription, setBackupDescription] = useState(data.description);
     const [aiMessage, setAiMessage] = useState<string | null>((data as any).ai_message || watch?.ai_message || null);
 
     /**
@@ -48,8 +47,6 @@ export default function GenerateAiDescription(props: Props) {
     // generate ai description
     const onGenerate = async () => {
         if (!data.images.some((i) => i.useForAI)) return;
-        //    setBackupDescription(data.description); // save before wiping
-        //    setData("description", ""); // visually clear it
            setLoading(true);
            setAiProcessing?.(true);
         router.post(route("api.make-hooks.ai-description.with-queue"), data, {
@@ -62,6 +59,7 @@ export default function GenerateAiDescription(props: Props) {
                 },
             onSuccess: (response) => {
                 const aidata = response?.props?.flash?.data;
+                console.log("AI Response Data:", aidata);
                 if (!aidata) return;
                 const allow_keys = ["routeKey", "status", "ai_thread_id", "sku", "description", "ai_status"];
                 Object.keys(aidata)

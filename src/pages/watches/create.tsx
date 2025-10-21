@@ -67,7 +67,7 @@ export default function CreateWatch({ watch, auth, ...props }: Props) {
     }, [sku, setData, data.sku, watch]);
 
     const hasChanges = useMemo(() => {
-        const excludeKeys = ['ai_status', 'ai_message']; // any technical keys you want ignored
+        const excludeKeys = ['ai_status', 'ai_message', 'ai_thread_id']; // any technical keys you want ignored
         const clean = (obj: any) => {
             if (!obj) return obj;
             const copy = { ...obj };
